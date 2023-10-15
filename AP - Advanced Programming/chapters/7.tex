@@ -1,0 +1,43 @@
+\chapter{Annotations}
+\section*{9 - Ottobre}
+In java, \lstinline{static,private,...} modifiers are \textit{meta-data} describing properties of program elements.
+\textbf{Annotations} can be understood as (user-) definable modifiers.
+They are composed by one or two parts:
+\begin{enumerate}
+    \item \textbf{name}
+    \item finite number of \textbf{attributes} i.e. \lstinline{name=value}.
+    There may be no attributes.
+\end{enumerate}
+The syntax is the following:
+\begin{lstlisting}
+    @annName            // e.g. Override
+    @annName{constExp}  // shorthand for @annName{value=constExp}
+    @annName{name_1 = constExp_1, ..., name_k = constExp_k}
+\end{lstlisting}
+\lstinline{constExp} are expression which can be evaluated at \textit{compile time}.
+Besides, attributes have a \textit{type}, thus the supplied values have to
+convertible to that type.\\
+Annotations can be applied to almost any syntactic element, from packages to parameters and any type use.
+
+\section{Defining annotations}
+\begin{lstlisting}
+@interface InfoCode {
+    String author ();
+    String date ();
+    int ver () default 1;
+    int rev () default 0;
+    String [] changes () default {};
+}
+\end{lstlisting}
+
+This defines the custom annotation InfoCode, imposing some fields possibly with default values.
+It can be used as follows:
+\begin{lstlisting}
+@InfoCode(author="Beppe", date="10/12/07")
+    public class C {
+    public static void m1() { /* ... */ }
+    @InfoCode(author="Gianni",
+        date="4/8/08", ver=1, rev=2)
+    public static void m2() { /* ... */ }
+}
+\end{lstlisting}

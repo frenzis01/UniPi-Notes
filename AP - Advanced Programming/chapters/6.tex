@@ -1,0 +1,69 @@
+\chapter{Reflection}
+\section*{9 - Ottobre}
+\section{Introduction and Definitions}
+
+\textbf{Reflection} is the ability of a program to manipulate as data something representing the state of the program during its own execution.
+Another dimension of reflection is if a program is
+allowed to \textbf{read only}, or also to \textbf{change} itself.
+\begin{itemize}
+    \item \textbf{Introspection} is the ability of a program to observe and
+    therefore reason about its own state
+    \item \textbf{Intercession} is the ability for a program to modify its
+    own execution state or alter its own interpretation or
+    meaning
+    \item \textbf{Reification} is the mechanism of encoding execution state into data, which is needed by both \textit{introspection} and \textit{intercession}
+\end{itemize}.
+
+\textbf{Structural} reflection  is concerned with the ability of the \textbf{language} to provide a complete \textit{reification} of both the \textit{program} executed and its \textit{abstract data types}.\\
+\textbf{Behavioral} reflection is concerned instead with the reification of its\footnote{referred to a \textbf{language}} \textit{semantics} \& \textit{implementation} (processor) and the data and implementation of the \textit{run-time system}.
+
+\section{Uses and drawbacks}
+\subsection{Uses}
+\begin{itemize}
+    \item \textit{Class Browsers} need to be able to enumerate the number of classes
+    \item \textit{Visual Development Environments} can exploit type info available in reflection to aid the developer in writing correct code
+    \item \textit{Debuggers} need to be able to examine private members on classes
+    \item \textit{Test Tools} exploit reflection to ensure a high level of code coverage in a test suite
+    \item \textit{Extensibility Features} an app may make use of external, user-defined classes by creating instances of extensibility objects.
+\end{itemize}
+
+\subsection{Drawbacks}
+\begin{itemize}
+    \item \textbf{Performance Overhead}
+    \item \textbf{Security Restrictions}
+    \item \textbf{Exposure of internals}
+\end{itemize}
+
+\section{Reflection in Java}
+Java supports \textbf{introspection} and \textbf{reflexive invocation},
+but not \textit{code modification}.
+
+\subsection{Introspection}
+
+The JVM mantains for every type an associated object of type \lstinline{java.lang.Class} which "\textit{reflects}" the type it represents,
+acting as entry point for reflection,
+since it provides all info needed:
+\begin{itemize}
+    \item Class name and modifiers
+    \item Extended superclasses and implemented inferfaces
+    \item Methods, fields, constructors, etc.
+\end{itemize}
+
+To retrieve such \lstinline{java.lang.Class} object it is sufficient to do \lstinline{Object.getClass()}.
+\lstinline{Class} objects are constructed automatically by the JVM as classes are loaded.
+
+Using \lstinline{java.util.reflect.*} it is possible also to retrieve class \textbf{Members} i.e. \textit{fields, constructors} and \textit{methods}.
+The extensive \lstinline{java.util.reflect.*} API provides many \textit{methods} to achieve this which will not be reported here.\\
+There is a class for each Member
+\begin{itemize}
+    \item \lstinline{java.util.reflect.Field}: access type info and set/get values.
+    \item \lstinline{java.util.reflect.Method}: type info for parameters and return type;
+    invoking method on a given object.
+    \item \lstinline{java.util.reflect.Constructor}: note that constructors have no return values and invocation creates a new instance of the given class.
+\end{itemize}
+
+\subsection{Program Manipulation}
+By now we have talked only about \textbf{introspection} in java,
+but reflection can be used also to create objects of a type not known at compile time,
+or to access members (access fields or invoke methods) unknown at compile time.
+

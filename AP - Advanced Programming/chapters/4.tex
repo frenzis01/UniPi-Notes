@@ -1,0 +1,81 @@
+\chapter{Component-Based software}
+\section*{2 - Ottobre}
+Component software indicates \textbf{composite systems} made of \textbf{software components}.
+In short, component software allows reuse, improving reliability\footnote{Industries may even require to use \textit{certified} components} and reducing costs.\\
+Bertrand Meyer suggests some guidelines regarding Object-Oriented software construction (1997):
+\begin{enumerate}[noitemsep]
+    \item modular
+    \item reliable
+    \item efficient
+    \item portable
+    \item timely
+\end{enumerate}
+
+\section{Definitions}
+{\itshape A \textbf{software component} is a unit of composition with
+contractually specified \textbf{interfaces} and explicit context
+dependencies only. A software component can be
+deployed independently and is subject to
+composition by third parties.}
+
+A \textbf{contract}, A specification attached to an \textbf{interface} (component specification) that
+mutually binds the clients and providers of the components.
+
+\textbf{Context dependencies} are specification of the deployment
+environment and run-time environment.
+This goes beyond the simple interfaces required and provided which are specified in the contract.
+Context dependencies include required tools, platform and resources.
+
+\textbf{Deployed independently} means that a component can be plugged or unplugged from an architecture, even at runtime in some cases.
+It is common-practice to deploy "small components" called connectors,
+to resolve situations where two components supposed to interact do not provide identical interfaces,
+creating the need for a intermediary.
+
+\textbf{composition by third party} means that a component may interact with third parties components without knowing the internals of such components.
+
+\section{Concepts of Component Model}
+\begin{itemize}
+    \item \textbf{Component interface} describes the operations implemented and exposed by the component
+    \item \textbf{Composition mechanism} How components can be composed to work together to accomplish a task
+    \item \textbf{Component platform} A platfom for the development of the compnents
+\end{itemize}
+Concepts should be laguage/paradigm agnostic, laying the ground for language interoperability.
+\nl
+
+The ancestors of Components are \textbf{Modules}, whose support has been introduced in Java 9,
+but isn't very common.
+Some concepts related to modules can be found in more modern notions such as classes, components and packages.\\
+For example, objects inside a module are visible to each other, but not visible from outside unless exported.
+Modules worked {---} pretty much like classes {---} as abstraction mechanism $\rightarrow$ \textit{collection of data with operations defined on them}.
+In OOP the concept of \textbf{inheritance}, unknown in modules, is introduced.
+\nl
+
+
+\section{Components and Programming Concepts}
+Components can be anything and can contain anything, they can be \textit{collections of} classes, objects, functions/algorithms, data structures.
+
+\begin{center}
+\textit{¡Note that \textbf{OOP} $\neq$ \textbf{COP}!}
+\end{center}
+
+OOP isn't focused on \textbf{reuse}, instead its focus in onto appropriate domain and problem representation.
+
+\begin{itemize}
+    \item \textbf{Component Specification} describes the behavior (as a set of \textit{Interfaces}) of a set of Component Objects and defines a unit of implementation.
+    \item \textbf{Component Implementation} is a realization of \textit{Component Specification} which can be independently deployed\footnote{It does \textbf{not} mean that it cannot have \textit{dependencies} nor that it must be a \textit{single file}}.
+    \item \textbf{Installed Component} is an installed (i.e. \textit{deployed}) copy of a \textit{Component Implementation}.
+    \note{A Component Implementation is deployed by registering it with the runtime environment}
+    \item \textbf{Component Object} is an instance of a \textit{Component Implementation}.
+    It is a runtime concept, an object with its own data and unique identity.
+    Ideally, it is the "thing that performs the implemented behaviour".
+    An \textit{Installed Component} may have multiple \textit{Component Objects}
+\end{itemize}
+
+Some examples of successful components are Plugin architectures, Microsoft's Visual Basic, Operating Systems, Java Beans, and others.
+It is clear that components can be purchased by independent providers and deployed by the clients, and that multiple components can coexist in the same installation.
+Besides, components exist on a level on abstraction where they directly mean something to the deploying client.
+\nl
+
+Recalling the comparison with modules,
+while modules are usually seen as part of a program, \textit{components are parts of a system}.
+

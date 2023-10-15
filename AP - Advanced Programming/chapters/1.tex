@@ -1,0 +1,125 @@
+\chapter{Introduction}
+\section{19 - Settembre}
+\subsection{Info and Contact}
+% Ricevimento Lunedì 14:30 - 16:00/16:30
+
+\href{https://pages.di.unipi.it/corradini/Didattica/AP-23/}{Pagina del corso}
+% \href{http://didawiki.di.unipi.it/doku.php/magistraleinformaticanetworking/ae/ae2023/start}{Didawiki Corso}
+
+\subsection{Framwork}
+A software \textbf{framework} is a collection of common code providing generic functionality that can selectively overryidden or specialized by user code prvoiding specific functionality.
+
+When using \textit{framworks} htere is an \textbf{inversion of control}.
+Differently from what happens when using libraries,
+the program-flow is dictated by the framework, not the caller.
+
+\subsection{Design Patterns}
+A \textbf{design pattern} is a general reusable solution to a commonly occurring problem within a given context in software design. 
+A design pattern is characterized by:
+\begin{itemize}
+    \item \textbf{Name}
+	\item \textbf{Problem Addressed}
+	\item \textbf{Context} - Used to determine applicability
+	\item \textbf{Forces} - Constraints or issues that the solution must address
+	\item \textbf{Solution} - It must resolve all \textit{forces}
+\end{itemize}
+
+\section{20 - Settembre}
+Useful tool, to see preprocessor output, compiling, ecc.
+\subsection{Programming Languages}
+A \textbf{PL} is defined via \textbf{syntax}, \textbf{semantics} and \textbf{pragmatics}\footnote{the way in which the PL is intended to be used in practice}.
+\subsubsection{Syntax}
+Used by the compiler for \textit{scanning} and \textit{parsing}.
+The \textit{lexical} grammar defines the syntax of token (e.g. "for" blocks, constants)
+\subsubsection{Semantics}
+Semantics might be described using natural language, which even if precise, allows amibguousity.
+Formal approches to semantics definition are:
+\begin{enumerate}
+    \item Denotational - Mapping every syntactic entity with a mathematical entity
+    \item Operational - Defining a computation relation in a form $e \Rightarrow v$, where $e$ is a program
+    \item Axiomatic - Based on Hoare-triples $\textit{Precondition} \wedge \textit{Program}\Rightarrow \textit{Postcondition}$ 
+\end{enumerate}
+However, they rarely scale to fully-fledged programming languages.
+\subsubsection{Pragmatics}
+\textit{Pragmatics} include coding conventions, guidelines for elegant code, etc.
+
+\subsection{Programming Paradigms}
+Paradigms belong to languages \textit{pragmatics}, not to the way the language is defined, i.e. not syntax nor semantics.
+\begin{enumerate}
+    \item \textbf{Imperative}
+    \item \textbf{Object-oriented}
+    \item \textbf{Concurrent} - Processes, communication, ...
+    \item \textbf{Functional}
+    \item \textbf{Logic} - Assertions, relations, \textit{strange sorceries}...
+\end{enumerate}
+
+Modern PLs, provide constructs and solutions to program in all these paradigms
+
+\subsection{Implementing PLs}
+\begin{itemize}
+    \item Programs written in \textbf{L} must be \textit{executable}
+    \item Every language \textbf{L} implicitly defines and \textit{Abstract Machine} \textbf{$M_L$} having \textbf{L} as a Machine Language
+    \item Implementing $M_L$ on an existing host machine $M_O$ via compilation or interpretation (or both) makes programs written in \textbf{L} executables 
+\end{itemize}
+
+An \textbf{Abstract Machine} $M_L$ for $L$ is a collection of data structures and algorithms which can perform the storage and execution of programs written in L.\\
+Viceversa, $M$ defines a language $L_M$ including all programs which can be executed by the interpreter $M$.\\
+There is a bidirectional correspondance between machines and languages components.\\
+\begin{center}
+$
+\begin{array}{ccc}
+    \textit{Primitive data processing} & \longleftrightarrow & \textit{Primitive data types}  \\
+    \textit{Sequence control} & \longleftrightarrow & \textit{Control structures}  \\
+    \textit{Data transfer control }& \longleftrightarrow & \textit{Parameter passing and value return}  \\
+    \textit{Memory management }& \longleftrightarrow & \textit{Memory management}\\
+     & 
+\end{array}
+$   
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.7\textwidth]{images/interpreter_structure.png}
+\end{center}
+
+In computer science one of the main focuses is \textbf{abstraction},
+as can be seen in this hierarchical scheme.
+\begin{center}
+\includegraphics[width=0.5\textwidth]{images/machines_hierarchy.png}
+\end{center}A software component is a unit of composition with
+contractually specified interfaces and explicit context
+dependencies only. A software component can be
+deployed independently and is subject to
+composition by third parties.
+
+\subsection*{Implementing PLs - Wrap Up}
+\begin{itemize}
+    \item $L$ High-level programming language
+    \item $M_L$ Abstract machine for $L$
+    \item $M_O$ host machine
+\end{itemize}
+
+\subsubsection{Pure Interpretation}
+
+...PIC HERE
+
+$M_L$ is interpreted over $M_O$.
+It isn't very efficient, mainly because of fetch-decode phases
+
+\subsubsection{Pure Compilation}
+
+...PIC HERE
+
+$L$ programs are translated into $L_O$, the machine laguange of $M_O$,
+hence, $M_L$ is not realized at all and the programs are directly executed on $M_O$.\\
+\textit{Compilation} is more efficient than \textit{Interpretation}, 
+but produced code is larger
+
+\subsubsection{Both}
+
+...PIC HERE
+
+All real languages use both \textit{interpretation} and \textit{compilation}, 
+
+Some languages, e.g. Java, use an intermediate Abstract Machine, called a \textit{Virtual Machine},
+which increases \textit{Portability} and \textit{Interoperability}.
+

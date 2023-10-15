@@ -1,0 +1,57 @@
+\chapter{Java Beans}
+\section{3 - Ottobre}
+"A \textbf{Java Bean} is a \textit{reusable} software component that can be
+manipulated visually in a builder tool."
+
+Typically a Bean has a GUI representation but is not necessary.
+What is necessary instead for a class to be recognized as a bean is that it:
+\begin{itemize}
+    \item has a public constructor with no arguments
+    \item implements \lstinline{java.io.Serializable}
+    \item is in a \lstinline{jar} file with a \textit{manifest} file that contains:
+    \lstinline{Java-Bean: True}
+\end{itemize}
+
+Beans can be \textbf{assembled} to build a new bean or application, writing clue code to wire beans together.
+\textit{Connection-oriented} programming is based on the \textbf{Observer} or (\textit{Publish-Subscribe}) paradigm.
+\textit{Observers} come into play when there is a $1:N$ dependency between objects and one of them changes state, creating the need for the others to be notified and updated.
+Beans must be able to run in a \textit{design environment} allowing the user to customize aspect and behaviour.
+Beans provide support for some standard features:
+\begin{enumerate}
+    \item \textbf{Properties} e.g. color. 
+    \textbf{Bounded} properties generate an \textit{event} of type \lstinline{PropertyChangeEvent},
+    while \textbf{constrained} can only change value if none of the registered \textit{observers} "poses a veto",
+    by raising an \textit{exception} when they receive the \lstinline{PropertyChangeEvent} object.
+    \item \textbf{Events}: The \textbf{Observer} pattern is based on \textit{Events} and \textit{Events listeners}.
+    An \textit{event} is an object created by an \textit{event source} and propagated to the registered \textit{event listeners}.
+    Sometimes event \textbf{adaptors} can be placed between source and listener, 
+    which might implement queuing mechanism, filter events, demuxing from many sources to a single listener.
+    \begin{itemize}
+        \item \textbf{Design Patterns for Events}
+        \begin{lstlisting}
+    public void add<EventListType>(<EventListType> a)
+    public void remove<EventListType>(<EventListType> a)
+        \end{lstlisting}
+    \end{itemize}
+    \item \textbf{Customization}
+    \item \textbf{Persistence}
+    \item \textbf{Introspection}: process of analyzing a bean to determine capabilities.
+    There are implicit methods based on \textit{reflection}, \textit{naming conventions} and \textit{design patterns},
+    but can be simplified by explicitly defining info for the builder tool in the \lstinline{<BeanName>BeanInfo} class.
+    Such class allows exposition of features, specifying customizer class, segregate feats in normal/expert mode, and some other stuff.
+    \begin{itemize}
+        \item \textbf{Design Patterns for Simple Methods}
+        \begin{lstlisting}
+    public <PropertyType> get<PropertyName>();
+    public void set<PropertyName>(<PropertyType> a);
+        \end{lstlisting}
+        \item \textbf{Design Patterns for Simple Methods}
+        \begin{lstlisting}
+    public java.awt.Color getSpectrum (int index);
+    public java.awt.Color[] getSpectrum ();
+    public void setSpectrum (int index, java.awt.Color color);
+    public void setSpectrum (java.awt.Color[] colors);
+        \end{lstlisting}
+    \end{itemize}
+    
+\end{enumerate}

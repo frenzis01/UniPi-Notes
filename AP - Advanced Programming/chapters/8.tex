@@ -1,0 +1,152 @@
+\chapter{Polymorphism}
+Polymorphism basically means \textit{"many forms"}, where \textit{forms} are \textbf{types}.
+Thus there may be \textit{polymorphic} function names, or \textit{polymorphic} types.
+
+There are many "flavors" of polymorphism, many variations.
+Two main kinds opposed to each other are \textit{ad hoc} and \textit{universal} polymorphism, which however, may coexist:
+\begin{itemize}
+    \item \textbf{ad hoc} PM indicates that a single function name denotes different algorithms, determined by the actual types.
+    \item \textbf{universal} PM indicates a single algorithm (solution) applicable to objects of different types.
+\end{itemize}
+
+When PM is taken into account, it is crucial to consider when happens the \textbf{binding} between a function name and the actual code to be executed:
+\begin{itemize}
+    \item compile time; \textit{static/early binding}
+    \item linking time
+    \item execution time; \textit{late/dynamic binding}
+\end{itemize}
+In general the earlier the binding happens, the better (for debugging reasons).
+If the binding spans over more phases (e.g. \textit{overriding} in Java), as a convention we consider the \textbf{binding time} the last phase.
+
+\section{Classification}
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/polymorphism.png}
+    \caption{Polymorphism classification}
+    \label{fig:polymorphism_classification}
+\end{figure}
+\subsection{Overloading}
+\textbf{Overloading} is present in every language for basic operators $+-*...$,
+and sometimes is supported for user-defined functions, 
+and in some languages it is even allowed the overloading of primitive operator by user-defined functions.\\
+Since this falls under the \textbf{ad hoc} polymorphism family,
+the code to be executd is determined by the type of the arguments;
+the binding can either happen at \textit{compile} or at \textit{runtime},
+depending on the typing of the language,
+whether it is static or dynamic.
+
+\begin{lstlisting}
+    // C language doesn't allow overloading for user-defined functions
+    int sqrInt(int x) { return x * x; }
+    double sqrDouble(double x) { return x * x; }
+    
+    // Overloading in Java & C++
+    int sqr(int x) { return x * x; }
+    double sqr(double x) { return x * x; }
+\end{lstlisting}
+
+\note{Haskell introduces \textbf{type classes} for handling
+overloading in presence of type inference}
+
+\section{Coercion}
+\textbf{Coercion} is the automatic (implicit) conversion of an object to a different type, opposed to casting which is explicit instead.
+Coercion allows a code snippet to be applied of arguments of different (convertible) types.
+Sometimes coercion is allowed only if there is no \textbf{information loss}.
+
+\begin{lstlisting}
+    double sqrt(double x){...}
+    double d = sqrt(5) // applied to int
+\end{lstlisting}
+
+´\section{Inclusion Polymorphism}
+Inclusion polymorphism is also known as \textit{subtyping polymorphism} or \textit{\textbf{inheritance}}.
+It is ensured by \textit{Barbara Liskov}'s \textbf{substitution principle}:
+\begin{center}
+    \textit{A subtype object can be used in any context where a supertype object is expected}
+\end{center}
+Methods and fields defined in a superclass may be invoked and accessed by subclasses if not redefined (see \textit{Overriding}).
+
+\section{Overriding}
+In Java a method $m$ of a
+class $A$ can be redefined
+in a subclass $B$ of $A$.
+
+Overriding introduces ad hoc polymorphism in the universal polymorphism of inheritance.
+Notice that overriding requires the final binding to happen at runtime:
+it happens through the lookup done by \lstinline{invokevirtual} in the JVM.
+
+\section{C++ v Java}
+\begin{lstlisting}[language=C++]
+class A {
+ public:
+  virtual void onFoo() {}
+  virtual void onFoo(int i) {}
+};
+class B : public A {
+ public:
+  virtual void onFoo(int i) {}
+};
+class C : public B {};
+int main() {
+  C* c = new C();
+  c->onFoo();
+  // Compile error - doesn't exist
+}
+\end{lstlisting}
+The equivalent code in Java compiles, because in java invokes the function \lstinline{onFoo()} with no arguments defined in the superclass A.
+In C++ instead, the function onFoo(int i) defined in B is found and stops the search, but there is arguments type mismatch, thus it doesn't compile.
+This happens because in C++ the method lookup is based on the method \textit{name}, not on its \textit{signature}.
+
+\section{C++ Templates}
+They are similar to \textit{Generics} in Java, 
+they are used as function and class templates
+each concrete instantiation produces a copy of the generic code, specialized for that type:
+monomorphization.
+In java Generics, instead, \textbf{type erasure} happens at runtime, i.e. type variables \lstinline{T} are replaced by \lstinline{Object} variables.\\
+Templates support parametric polymorphism and type parameters can also be primitive types (unlike Java generics)
+\begin{lstlisting}[language=C++]
+    template <class T> // or <typename T>
+    T sqr(T x) { return x * x; }
+\end{lstlisting}
+Assuming to invoke \lstinline{sqr(T x)} on variables of different types, the compiler will generated a specific code for each type used.
+This works even on user-defined types;
+check the following code for an example:
+\begin{lstlisting}
+class Complex {
+ public:
+  double real;
+  double imag;
+  Complex(double r, double im) : real(r), imag(im){};
+  Complex operator*(Complex y) {  // overloading of *
+    return Complex(real * y.real - imag * y.imag,
+                   real * y.imag + imag * y.real);
+  }
+};
+
+Complex cc = sqr(c); // legal and produces a function "Complex sqr(Complex x) {...}"
+\end{lstlisting}
+
+It is important to check for type ambiguosity;
+in the following example, it is highlighted a case where it's not clear whether it is \lstinline{i} to be converted to \lstinline{long} or \lstinline{m} to \lstinline{i}.
+\begin{lstlisting}
+template <class T>
+T GetMax(T a, T b) {  return (a > b) ? a : b; }
+...
+n = GetMax(l, m);       // ok: GetMax<long>
+// v = GetMax(i, m);    // no: ambiguous
+v = GetMax<int>(i, m);  // ok
+\end{lstlisting}
+
+\subsection{Macros}
+\textbf{Macros} can be exploited to achieve \textit{polymorphism} and can have the same effect of the templates,
+but notice that macros are executed by the preprocessor\footnote{Macro expansion can be seen using the option \textit{-E} when compiling} and are only \textbf{textual substition},
+there is no parsing, no static analysis checks or whatsoever.
+\begin{lstlisting}
+#define sqr(x) ((x) * (x))
+int a = 2;
+int aa = sqr(a++); // int aa = ((a++) * (a++));
+// value of aa? aa contains 6  :(
+
+#define fact(n) (n == 0) ? 1 : fact(n-1) * n
+// compilation fails because fact is not defined
+\end{lstlisting}
