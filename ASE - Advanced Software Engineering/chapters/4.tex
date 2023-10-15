@@ -1,0 +1,55 @@
+\chapter{Seminario - Imola informatica}
+\section{Takeaway Messages}
+\textit{Performance} per se is not an accurate measure,
+there are many factors when developing SW systems which affect perfomance,
+like usability and efficiency.
+
+\section{Project Path}
+\begin{equation}
+\label{eq:old_project_path}
+\textbf{Demand} \longrightarrow \textbf{Plan} \longrightarrow \textbf{Design} \longrightarrow \textbf{Develop} \longrightarrow \textbf{Release}\\
+\end{equation}
+This (sadly not) deprecated path \ref{eq:old_project_path} leads to \textit{situation rooms} and subsequent performance degradation, unsatisfaction and possible skyrocketing costs.
+
+Performance should drive the whole production process, it shouldn't be treated as a post-go live concern,
+otherwise it may lead to the so called \textit{situation rooms}\footnote{Often named also \textit{war rooms}}.
+
+\section{Fitness function}
+A \textbf{fitness function} provides a summarised measure of how close a given design solution is to achieving the set aims.
+
+\section{Performance Best practices}
+"Starbucks does not use two-phase commit": they aim to maximize throughput, by using an employee chain to serve customers, from ordering to delivering coffee.
+
+Enforce business process performance with adequate fitness functions:
+\begin{itemize}
+    \item involve key stakeholders
+    \item automatically assess and evaluate
+    \item continuously review and tune
+\end{itemize}
+
+It is important to design IT architectures and solutions with real-world requirements in mind.
+For example "a customer shouldn't have to wait for more than 2s to \textit{order} a coffee".\\
+In distributed architectures, network's technical aspects and metrics must be taken into account: latency, available bandwidth, dedicated or shared, network billing models...\\
+Aside from requirements, also costs, performance and observability should be kept in mind.\\
+To measure progress fitness function must be fed periodically with real-time data.
+\nl
+Most of the times testing only in production is the only way to go,
+since mirroring the production environment and using/managing it during development would be hugely costful.
+However, precisely for this reason, production testing shouldn't be the only testing method.
+
+\section{Bad habits}
+\begin{itemize}
+    \item Worrying about performance only late in development
+    \item Last minute testing
+    \item Focusing only on performance as a technical POV,
+    not user/business pov
+\end{itemize}
+
+Enable a culteure for perf across your entire value stream
+
+embed per in business processes as well as IT systems\\
+How can this integrate with the fact that user features shouldn't be tied to implementation details? How can be performance be measured aside from implementation/technical metrics?
+
+evolutionary architectures need fitness functions
+
+continuosuly refine fitness functions

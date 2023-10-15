@@ -1,0 +1,70 @@
+\chapter{Introduction}
+\section*{19 - Settembre}
+\section{Info and Contact}
+
+\note{Info on the exam...}
+
+Question time Monday from 16:00
+
+\section{ICT Security Fundamentals}
+A system security policy should preserve:
+\begin{enumerate}
+    \item \textbf{Integrity} - Only users allowed to \textit{update} certain information are actually able to update it
+    \item \textbf{Availability} - Users who want to \textit{use} the system must be able to use it in a finite and reasonable amount of time
+    \item \textbf{Confidentiality} - Only users allowed to \textit{read} certain information are actually able to read it
+\end{enumerate}
+
+Depending on the adversary, the terminology changes
+\[\text{Natural events} \Rightarrow \textit{Safety}\]
+\[\text{Malicious and intelligent} \Rightarrow \textit{Security}\]
+
+There are other properties regarding systems and their security:
+\begin{enumerate}
+    \item \textbf{Robustness} evaluates how well the system resists and it is not violated by an attack
+    \item \textbf{Resilience} evaluates how well a system recovers and resumes its normal behaviour after it has been violated
+    \note{Resilience is preferred to robustness because it is more cost effective}
+    \item \textbf{Vulnerabilities} are defects in the system which reduce robustness, hence safety and/or security. \nl
+    NOT every \textit{defect} is a vulnerability,
+    but every vulnerability is a \textit{defect}.
+\end{enumerate}
+
+Secondarily there are properties derived from \textit{security}:
+\begin{enumerate}
+    \item Traceability - Discover who has invoked a given operation
+    \item Accountability - Those who use a resource should pay for it
+    \item Auditability - Whether the security policy is enforced and satisfied
+    \item Forensics - Proving that some action has occurred and who has executed it
+    \item Privacy/GDPR - Who can read and update a certain information
+\end{enumerate}
+
+\note{\textit{Forensics} is distinguished by \textit{Traceability} because it is related to what can be proved in a court of law,
+not only who performed a single operation on the system.
+Forensics refers to a set of information able to convince a non-expert that something }
+
+\section*{21 - Settembre}
+
+\section{Security policy - Glossary}
+First of all an \textbf{Asset analysis} is required.
+It is mandatory for a business to determine which resources are critical for their system to work,
+allowing to focus security efforts on specific assets.\nl
+It is also crucial to determine the \textbf{impact}:
+\begin{itemize}
+    \item A business process is stopeed (integrity or availability)
+    \item A resource has to be rebuilt ex novo (integrity)
+    \item Attacker discovers the information in the resource (confidentiality)
+\end{itemize}
+
+\textbf{Asset \textit{discovery}} is usually done through an application installed in specific assets and discovers all the assets in the company network.\nl
+
+An \textbf{externality} is a cost or benefit incurred or received by a third party that has no control over the creation of that cost or benefit.
+It's important also to consider this because often the security of an ICT system may depend on third parties factors and entities,
+whose security isn't controlled by the owner of the system.\nl
+
+\textit{Security} is a job \textit{shared} by many individuals,
+hence there may be some \textbf{free riders}, i.e. individuals who tend to shirk and be negligent, and whose lack of effort affects security.\nl
+There may be three prototypical case which define on which individuals depends the security of a system:
+\begin{enumerate}
+    \item \textbf{Weakest-link}: security depends on agents with the \textit{lowest} benefit-cost ratio. (worst-case scenario)
+    \item \textbf{Best shot}: security depends on agents with the \textit{highest} benefit-cost ratio.
+    \item \textbf{Total effort}: security depends on the sum of efforts of \textbf{many} agents.
+\end{enumerate}

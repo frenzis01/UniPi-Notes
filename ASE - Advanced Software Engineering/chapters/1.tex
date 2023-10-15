@@ -1,0 +1,105 @@
+\chapter{Introduction}
+\section*{27 - Settembre}
+\section{Product based}
+In \textit{Project-based SE} there is loop which nowdays cripples software since its early stages of development.
+This is due to mutable nature of requirements, which often change throughout time along the features implemented by the software.
+\begin{center}
+\begin{tikzpicture}
+    \node[draw=white,align=left] (A) at (1.5,3) {Problem};
+    \node[draw=white,align=left] (B) at (0,0) {Requirements};
+    \node[draw=white,align=left] (C) at (3,0) {Software};
+
+    \path [->] (A) edge node[left] {} (B);
+    \path [->] (B) edge node[left] {} (C);    
+    \path [->] (C) edge node[left] {} (A);    
+\end{tikzpicture}
+\end{center}
+
+\textit{Product-based SE} is opposed to \textit{Project-based SE} and the above pictures changes as follows.
+
+\begin{center}
+\begin{tikzpicture}
+    \node[draw=white,align=left] (A) at (1.5,3) {Opportunity};
+    \node[draw=white,align=left] (B) at (0,0) {Features};
+    \node[draw=white,align=left] (C) at (3,0) {Software};
+
+    \path [->] (A) edge node[left] {} (B);
+    \path [->] (B) edge node[left] {} (C);    
+    \path [->] (C) edge node[left] {} (A);    
+\end{tikzpicture}
+\end{center}
+
+\section{Agile}
+Agile is a collection of principles and methods applied in the software development field.
+\nl
+
+Opposed to project-based SE, in Agile the client is requested to express the requirements not in technical terms but in features.
+
+Agile suggests an incremental development model
+
+\subsection*{Principles}
+\begin{enumerate}
+    \label{subsec:agile_principles}
+    \item Satisfy customer through early and continuous delivery of valuable software
+    \item Welcome changing requirement, even late in development.
+    Agile processes harness change for the customer's comptetitive advantage
+    \item Deliver working software frequently, from a couple of weeks to a couple of months, with a preference to the shorter timescale
+    \item Business people and devs must work together daily throughout the prokect
+    \item Build porjects around motivated individuals and give them the environment and support they need
+    \item The most efficient and effective method of conveying information to and within a dev team is face-to-face conversation
+    \item Working software is the primary measure of progress
+    \item Agile processes promote sustainable dev 
+    \item Continuous attention to technical excellence and good design enhances agility
+    \item Simplicity i.e. art of maximizing the amount of work not done is essential
+    \item The best architectures, requirements, and designs emerge from self-organizing teams.
+\end{enumerate}
+
+Extreme Programming was proposed as part of the agile methodology
+
+\section{Scrum}
+Since requirements changes are rather frequent, long-term plans are unreliable,
+hence SE aims to formulate short-term plans.
+
+Scrum is found on \textbf{empiricism} and \textbf{lean thinking}; it asserts that knowledge comes from experience, and that decisions should be made on observations.
+
+Other key terms are code \textbf{Transparency} among the team and with the customer, \textbf{Inspection} of produced code and software (artifacts), \textbf{Adaptation} to changes in features and requirements.
+
+The \textbf{Scrum Team} is composed by:
+\begin{enumerate}
+    \item \textbf{Product Owner}: must ensure that the dev team is always focused on the goal
+    \item \textbf{Scrum Master}: Scrum expert which drives the team to apply properly the Scrum framework.
+    \item \textbf{Developers}: actual monkeys people which write code
+\end{enumerate}
+
+In scrum SW is developed in \textbf{sprints}, i.e. fixed-length periods with a specific goal to be achieved.
+
+\begin{itemize}
+    \item Product backlog: to-do list of items to be implemented
+    \item Timeboxed sprints
+    \item Self-organizing teams
+\end{itemize}
+
+...
+\textbf{Prod Backlog Revised}\\
+\textbf{PBI Estimation Metrics}
+
+\subsection{Timeboxed Sprints}
+Even if at the end of a srpint the goal hasn't been reached, "no worries", the work stops anyway;
+there will be a new sprint which will include the work which has not been implemented in the previous one.
+
+\subsection{Scrum Meetings}
+
+\subsection{Agile activities}
+Test automation
+Continuous integration
+
+\subsection{Sprint reviews}
+At the end of each sprint there is a review meeting which involves the \textit{whole} team.
+The \textit{product owner} has the ultimate authority to decide wether the sprint goal has been reached or not.
+The sprint review should include a process review, in which the whole team shares ideas on how to improve their way of working.
+
+\textbf{Team size}\nl
+
+\section{5 - Ottobre}
+
+

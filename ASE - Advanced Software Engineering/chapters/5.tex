@@ -1,0 +1,44 @@
+\chapter{TODO}
+\section*{12 - Ottobre}
+\section{Component}
+Element of implementing a coherent set of features
+...
+
+Architectural design issues
+\begin{itemize}
+    \item Non-functional product characteristics: security, reliability, availability...
+    These aspects are as important as functional properties.
+    \item Product lifetime: 
+    \textit{microservices}, for instance, easily allow scalability increasing the lifetime of our product.
+    \item Software compatibility:
+    Usually there may be legacy modules in the system,
+    thus compatibility may be crucial.
+    \item Number of users:
+    Releasing software on the internet truly complicates the prediction of the number of users for a product 
+    \item Software reuse: 
+\end{itemize}
+
+\section{Non-functional quality attributes}
+\begin{enumerate}
+    \item Responsiveness
+    \item Reliability\footnote{Do features behave as expected?}
+    \item Availability
+    \item Security
+    \item Usability
+    \item Maintainability
+    \item Resilience
+\end{enumerate}
+This typically aren't features in the mid-development prototypes,
+they usually refer to the final product.
+Implementing these in the prototypes would increase too much the time taken to develop such prototypes.
+\nl
+
+System decomposition must be done in conjunction with choosing technologies for the system.
+In this there is a mixup happening between implementation and design, however it is necessary.
+
+\section{Client-Server architecture}
+aka Model-View controller where usually the communication between client and server happens with HTTP along with JSON (/XML).
+Client requests to a server are then muxed on many slave nodes which elaborate the requests.
+
+
+\section{Servre}

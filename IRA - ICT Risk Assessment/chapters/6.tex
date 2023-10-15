@@ -1,0 +1,86 @@
+\chapter{Attacks}
+\section*{3 - Ottobre}
+\section{Attacks and Vulnerabilities}
+Following the discovery of a vulnerability $v$ there's an analysis to evaluate which attacks are enabled by $v$.
+\textbf{Attacks} can be described as a set of attributes:
+\begin{enumerate}
+    \item Precondition
+    \item Postcondition
+    \item Success Probability
+    \item Know how, abilities, tools required
+    \item Noise = Probability of being discovered
+    \item Automated/Potentially automatable/manual
+    \item Local/Remote
+    \item Actions to implement attack\footnote{See following Section on attack taxonomy}
+\end{enumerate}
+Even though some attack evaluation proposals map to each attribute a number and combine them into a value,
+such evaluations do not consider that \textbf{risk} resides in \textit{intrusions}, not individual attacks, because they have a considerable impact on the system, and keep in mind that are composed by:
+\begin{itemize}
+    \item Exploration and information collection
+    \item Persistence
+    \item Attack \textit{chain} for privilege escalation
+\end{itemize}
+
+\section{Attack Classification}
+\label{sec:attack_taxonomy}
+The actions need to implement an attack may be used to define a \textbf{taxonomy} of attacks:
+\begin{enumerate}
+    \item buffer/stack/heap overflow
+    \item \textit{sniffing} $\rightarrow$ Illegal access to info in travel
+    \item \textit{replay attack} $\rightarrow$ Repeated exchange of legal messages 
+    \item \textit{Interface attack} $\rightarrow$ Illegal order in the invocation of API functions
+    \item \textit{Man-in-the-middle} $\rightarrow$ Interception and manipulation of info in travel
+    \item Diversion of an information flow
+    \item \textit{Race-condition} $\rightarrow$ Time-to-use time-to-check
+    \item \textit{Cross site scripting} $\rightarrow$  XSS
+    \item SQL injection
+    \item \textit{Bell-Lapadula policy} $\rightarrow$ Covert channel 
+    \item Masquerading as
+    \begin{itemize}
+        \item user
+        \item machine (\textit{IP/DNS spoofing, Cache poisoning}
+        \item connection (\textit{connection stealing/insertion})
+    \end{itemize}
+\end{enumerate}
+
+\section{Examining attacks}
+\subsection*{Replay attack}
+Suppose a user asks the bank to transfer some money to $Y$ account with an $M$ message.
+$Y$ may sniff and record $M$, and before the secure channel $S$ gets deleted, $Y$ sends $M$ several time.\\
+Note that the attack may work even if encryption is used.
+
+\subsection*{Man-in-the-middle}
+If $A$ and $B$ communicate, $E$ may pose itself in the middle, acting as if it were $B$ to $A$ and $A$ to $B$.
+Such attack is possible when no authentication is required.
+
+\subsection*{XSS}
+A website allows users to upload contents to be later (possibly) downloaded by users.
+Thus a malicious user may upload hidden scripts to damage or steal information from the user who download their content.
+To avoid this the website must check the content uploaded by users.\\
+A well known attack of this type targeted BBC.
+
+\subsection*{SQL Injection}
+An input may insert a malicious query (i.e. \lstinline[language=SQL]{DROP TABLE USERS}) in a credentials field.
+The best way to avoid this is to whitelist using RegEx.
+
+\subsection*{Cryptography attacks}
+These are a category on their own, there are many types, with different variations and features.
+
+\subsection*{Side-channel attacks}
+Any attack that measures some physical value to discover an encryption key.
+Currently it is popular due to the capabilities of machine learning in exploiting large number of pairs to deduce a function.\\
+Such measures may be:
+\begin{itemize}
+    \item Electromagnetic emissions
+    \item Energy consumption
+    \item Execution time to discover inner status
+    \item Execetion time to discover cache usage and prediction mechanisms.
+\end{itemize}
+
+\subsection*{Virtual Machines \& Blue Pill}
+Cyber system may be composed of many virtual machines onion-like organized.
+Thus, attacking a low-level VM may grant access rights to higher ones.\\
+Besides, an attacker may insert a new VM in the hierarchy:
+this is called \textit{Blue Pill} attack, it's hard to discover and has a high impact.
+A new VM may return to higher VMs fake information on the status of the underlying machines and/or send malicious commands to the underlying machines.\\
+Stuxnet was a malware which used to send commands to uranium enrichment centrifuges to destroy them, and meanwhile told the operator that everything was going well.  

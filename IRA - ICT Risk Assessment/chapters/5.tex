@@ -1,0 +1,163 @@
+\chapter{Discovering Vulnerabilities}
+\section{Classification}
+To address the problem of finding out vulnerabilities many classifications have been proposed,
+and each one has its own purpose: module affected, how to discover it, enabled attacks, ...\\
+It is mandatory to understand a classification goal before using it.
+
+It is possible to consider where the vulnerability resides to provide some sort of classification:
+\begin{enumerate}
+    \item \textbf{Procedural}: the actions executed are not correct
+    \item \textbf{Organization}: actions well defined but wrongly executed
+    \item \textbf{Tool}: actions well defined and correctly executed but by bad tools, e.g. OS, compiler, run time support...
+    \note{\textit{Password transmitted in clear, missing checks on boundaries...}}
+\end{enumerate}
+
+About \textbf{tool vulnerabilities}, it is important to pay attention to \textbf{code reuse}.
+It must be considerend that reusing code may mean re-enable a vulnerability in such code.
+Code reuse is ok, but only along with \textbf{code Hardening}, which means, removing instructions and libraries which are not needed.
+
+About the implementation, it is relevant to avoid missing controls on stuff like user input, function parameters, confused program-flow...
+Generally a strong type system may aid to address these kind of problems.
+
+Besides, to avoid structural vulnerabilities, it is crucial to check whether certain modules depends on the security checks performed by others.
+
+\section*{Searching for Vulnerabilities}
+Aside from the distinction between \textit{Local} and \textit{Emerging} vulnerabilities, it is also important to distinguish between \textbf{standard} modules (OS, web servers...) and \textbf{specialized} ones (dynamic pages produced by the server).
+
+\section{Vulnerability Life-Cycle}
+\begin{enumerate}
+    \item Born when someone does something wrong
+    \item Known when someone discovers the error
+    \item Public when its presence is revealed and it is inserted in some public database
+    \item Some look for a remedy/fix while others search for an exploit\footnote{A program to implement an attack that exploits it}
+    \item Vulnerability might become exploited
+    \item If existing, the fix should be applied ASAP
+\end{enumerate}
+\note{Note that this life-cycle doesn't take into account a \textbf{zero-day} vulnerability, which is a vulnerability not made public, whose discovery is shared only among few teams or people}
+
+Historically the most dangerous vulnerabilities are public and exploited ones;
+even the oldest ones are exploited because attackers are lazy and defenders even more.
+
+\section{Attacker vs Owner POV}
+Considering the point of view of an \textbf{owner} who wants to search for vulnerabilities to improve their system's security.\nl
+
+In order to search for vulnerabilities, an inventory of \textbf{all} the system modules is required.
+This is not a trivial task, but it is necessary. 
+\note{\textit{You cannot protect what you don't know.}}
+
+
+The opposite view is the \textbf{attacker}'s one.
+Usually vulnerabilities of standard modules are \textbf{known}, thus an attacker may only need to know which \textit{modules} compose the system.
+An attacker may acquire knowledge on the vulnerabilities from public or private (by paying) databeses,
+or by buying such information in the deep web.
+It's rare for an attacker to look by himself for vulnerabilities in a module.\nl
+
+
+\section{Scanning}
+
+\subsection{Fingerprinting}
+
+\textbf{Active fingerprinting} is a (set of) tool which exploits the fact that modules communicate through ports, and appears quite appealing from both the mentioned views:
+given a range of IP addresses, it sends packets on each port and analyzes the replies to \textit{fingerprint}\footnote{i.e. "discover the identity of"} the module listening on the port.\\
+The \textit{owner} might want to run the tool on the entire network, while an attacker may target single (or a few) hosts at a time.
+
+
+\textit{Active fingerprinting} is noisy and might considerably slow down the network performance, which in some systems, e.g. \textit{ICS} (\textit{Industrial Control System}), must be avoided.\\
+(TODO - CAPIRE MEGLIO)\nl
+
+A \textbf{Passive fingerprinting} does not imply direct interaction with modules, but acts as a \textbf{sniffer}, analyzing packets the modules exchange in a transparent way.
+It exploits info in TCP and IP headers to fingerprint modules.
+The counterpart is that in networks with low noise/packets exchange, passive fingerprinting may take long to discover all the features of interest.
+Usually cannot be used by attackers.\nl
+
+It is important to note that a scanner may not know whether a \textbf{patch} has been applied or not to a module,
+hence it may report vulnerabilties which in fact have been patched, generating a \textbf{false positive}.
+A scanner may also generate \textbf{false negatives}, since some vulnerabilities for a given module may not appear in the DB the scanner uses to map modules to related vulnerabilities.
+There are also some \textbf{breach and simulation} tools which besides scanning also execute an exploit to check whether given vulnerabilities have been patched or not.
+Even though interesting, it may be dangerous to run such software in low-tolerance systems.
+
+
+To evaluate vulnerabilities discovery methods it is common practice to use a \textbf{confusion matrix}\footnote{\href{https://en.wikipedia.org/wiki/Confusion_matrix}{wikipedia.org/wiki/Confusion\_matrix}},
+which provides, amongst others measures, \textit{accuracy}, \textit{precision}, \textit{recall}\footnote{sensitivity}, \textit{specificity}.\nl
+
+\subsection{Stealth scanning}
+Clearly, the owner is interested in discovering if anyone aside from him is currently scanning the system.
+An attacker may configure message frequency and the number of nodes to scan, to reduce the chance to be detected.
+
+\subsection{More on scanning}
+An owner may combine:
+\begin{itemize}
+    \item External vulnerabilities scan: Try to access the sytem from outside, to understand what can an attacker discover before starting an intrusion.
+    \item Internal vulnerabilities scan: Aims to test and fingerprint devices and modules inside a network.
+    It might be ran by either owner or attacker after the initial access.
+    \item Intrusive scans: i.e. breach and simulation. These are the most stringent scans, but may be disruptive.
+\end{itemize}
+
+Anyway note that it is crucial to \textbf{periodically scan} a system, due to its eventually mutable nature but way more importantly, because about 20 new vulnerabilities get published every day, 
+along with new potential attackers and attack techniques.
+
+\section{Searching in a Module}
+Vulnerabilities can be searched and assessed when designing the system.
+Modules can be standard (e.g. OS), and thus be affected by public vulnerabilities, or specialized modules, whose vulnerabilities are unknown.
+
+\section*{2 - Ottobre}
+
+\textit{Static Application Security Testing} (SAST) indicates tools of static analysis, which has advantages like scalability and easy patching,
+but is limited on other aspects, such as:
+\begin{itemize}
+    \item Authentication Issues
+    \item Dangerous Management of access rights
+    \item Unsafe use of cryptography
+    \item Many False negatives
+    \item Cannot evaluate runtime values
+\end{itemize}
+
+Opposed to static analysis, there are \textit{Dynamic Analysis} techniques on which big companies generally rely on.
+The most common technique is \textbf{Fuzzing}.
+
+\subsection{Fuzzing}
+\textbf{Fuzzing} is associable to \textit{"Chaos Monkey"} test design paradigm:
+the idea is to send \textit{malformed inputs} to a module.\\
+If the system responds with a crash to malformed inputs, such crash may indicate a bug, i.e. a \textit{vulnerability}.\\
+A fuzzing tool results from the composition of three modules:
+\begin{center}
+% \begin{tikzpicture}[shorten >=1pt,auto,node distance=2.8cm]
+%     \node[shape=circle,draw=gray,align=center] (A) at (0,0) {Interpreter \\ Test \\ Modulea};
+% \end{tikzpicture}
+\begin{tikzpicture}
+    \node[shape=ellipse,draw=gray] (A) {\textit{Malformed input generator}};
+    \node[shape=ellipse,draw=gray, right=1cm of A] (B) {\textit{Input scheduler}};
+    \node[shape=ellipse,draw=gray, right=1cm of B] (C) {\textit{Monitoring crashes tool}};
+\end{tikzpicture}
+\end{center}
+
+Before executing a fuzz test, a \textbf{tainting analysis} is perfomed.
+Its aim is to computer for each input the set of variables that could be affected by the input.
+Usually this is done along with a coloring analysis, i.e. \textit{TODO}.
+
+(...)
+
+\textbf{Black-box} fuzzing makes no assumptions on the implementation details of modules.
+It has grown a lot in popularity since it is faster and, more importantly, nowdays many modules, especially in IoT sector, do not provide open source code.
+\nl
+
+Some rules to efficiently apply fuzzing should be considered:
+First of all, input-format knowledge should be kept in mind especially for black-box debugging;
+in general the longer you run a test, the more bugs you may find, until a saturation point is reached;
+It is advisable to use different fuzzers, since they may find different bugs.
+
+\section{Web Vulnerability Scanner}
+Despite the name, it doesn't work as other scanners: 
+its focus is onto discovering vulnerabilities in a website whose behaviour is determined by the dynamic generation of pages.
+Passwords and credentials may be given as input to look deeper into the website.
+Such scanners work much more like to \textit{breach and simulation} then to regular scanners.
+
+\begin{itemize}
+    \item SQL Injection: inserting or deleting information from a database
+    \item XSS: inserting a malware on a website to be later downloaded and executed by the end user (\textit{cross site scripting})
+    \item CSRF: forces an end user to perform unwanted actions on a website he is authenticated. (\textit{cross site request forgering}) 
+\end{itemize}
+
+\section*{3 - Ottobre}
+
+\section*{5 - Ottobre}

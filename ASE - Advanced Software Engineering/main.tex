@@ -1,0 +1,84 @@
+% \documentclass{article}
+% Tipo di documento. L'uso di twoside implica che i capitoli inizino sempre con la prima pagina a sinistra, eventualmente lasciando una pagina vuota nel capitolo precedente. Se questa cosa è fastidiosa, è possibile rimuoverlo. 
+% \documentclass[a4paper, twoside,openright]{report}
+\documentclass[a4paper,openright]{report}
+
+\usepackage{graphicx} % Required for inserting images
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{hyperref}
+
+\usepackage{graphicx}
+\usepackage{wrapfig}
+
+\usepackage{enumitem}
+\usepackage{paracol}
+\usepackage{multicol}
+
+\usepackage{geometry}
+
+\usepackage{color}
+
+\usepackage{listings}
+
+\usepackage{amsmath}
+\usepackage{bm}
+
+% Uso dei colori
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{tikz}
+\usetikzlibrary{automata, arrows}
+\usetikzlibrary{positioning}
+\usetikzlibrary{shapes.geometric}
+
+\geometry{margin=0.6in}
+
+\setlist[description]{itemsep=0em,topsep=0.5em,parsep=0em}
+\setlist[itemize]{itemsep=0em}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=mauve,
+    urlcolor=blue,
+}
+
+\definecolor{gray}{gray}{0.3}
+
+\newenvironment{notes}{
+\par
+\color{gray}
+\small}
+
+\newcommand{\note}[1]{\begin{notes}{#1}\end{notes}}
+\newcommand{\lst}[1]{\lstinline{#1}}
+\newcommand{\nl}[0]{\parskip = \baselineskip}
+
+\lstset{frame=false,
+ showstringspaces=false,
+ breaklines=true;
+ columns=flexible,
+ basicstyle={\small\ttfamily},
+ keywordstyle=\color{blue},
+ commentstyle=\color{dkgreen},
+ stringstyle=\color{mauve}
+ tabsize=3
+}
+
+\title{Advanced Software Engineering - Appunti}
+\author{Francesco Lorenzoni}
+\date{September 2023}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\include{chapters/1}
+\include{chapters/2}
+\include{chapters/3}
+\include{chapters/4}
+
+\end{document}
