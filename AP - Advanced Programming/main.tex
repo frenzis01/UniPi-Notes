@@ -62,7 +62,7 @@
 \newcommand{\lst}[1]{\lstinline{#1}}
 \newcommand{\nl}[0]{\parskip = \baselineskip}
 
-\lstset{frame=false,
+\lstdefinestyle{javaBlock}{frame=false,
  language=java,
  showstringspaces=false,
  breaklines=true;
@@ -73,6 +73,7 @@
  stringstyle=\color{mauve},
  tabsize=3
 }
+\lstset{style=javaBlock}
 
 \title{Advanced Programming - Appunti}
 \author{Francesco Lorenzoni}

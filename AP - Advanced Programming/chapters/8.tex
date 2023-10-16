@@ -98,13 +98,15 @@ In C++ instead, the function onFoo(int i) defined in B is found and stops the se
 This happens because in C++ the method lookup is based on the method \textit{name}, not on its \textit{signature}.
 
 \section{C++ Templates}
+\lstset{language=C++}
+
 They are similar to \textit{Generics} in Java, 
 they are used as function and class templates
 each concrete instantiation produces a copy of the generic code, specialized for that type:
 monomorphization.
 In java Generics, instead, \textbf{type erasure} happens at runtime, i.e. type variables \lstinline{T} are replaced by \lstinline{Object} variables.\\
 Templates support parametric polymorphism and type parameters can also be primitive types (unlike Java generics)
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}
     template <class T> // or <typename T>
     T sqr(T x) { return x * x; }
 \end{lstlisting}
@@ -150,3 +152,40 @@ int aa = sqr(a++); // int aa = ((a++) * (a++));
 #define fact(n) (n == 0) ? 1 : fact(n-1) * n
 // compilation fails because fact is not defined
 \end{lstlisting}
+
+\section*{16 - Ottobre}
+
+\subsection{Specialization}
+A template can be \textbf{specialized} by defining a template with the same name but with more specific parameters (\textit{partial specialization}) or with no parameters (\textit{full specialization}).
+This is kinda similar to \textit{Overriding},
+leaving to the compiler the choice of the most appropriate template.
+
+\begin{lstlisting}
+/* Primary template */
+template <typename T> class Set {
+        // Use a binary tree
+    };
+/* Full specialization */
+template <> class Set<char> {
+        // Use a bit vector
+    };
+/* Partial specialization */
+template <typename T> class Set<T*> {
+        // Use a hash table
+    };
+\end{lstlisting}
+
+Templates can be used by a compiler to
+generate temporary source code, which is
+merged by the compiler with the rest of the
+source code and then compiled.
+
+Template compilation happens \textit{on demand}: the code of a template
+is not compiled until an instantiation is required,
+however in case of \textit{fully-specialized} template,
+the compiler treats the template as a function, thus it generates its code \textbf{regardless} whether it is ever used or not.
+
+Note that in C/C++ while method \textit{prototypes} usually are in a separate \lstinline{.h} file,
+the compiler needs the template \textit{declaration} and \textit{definition} in the same place to instatiate it. 
+
+\lstset{style=javaBlock}
