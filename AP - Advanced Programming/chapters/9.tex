@@ -1,0 +1,178 @@
+\chapter{Generics}
+\textbf{Generics} are instance of \textit{Universal Polymorphism} with explicit parameters (see Fig \ref{fig:polymorphism_classification}).
+
+\section{Methods}
+\begin{lstlisting}
+   public static <T> T getFirst(List<T> list)
+\end{lstlisting}
+Invocations of generic methods must instantiate all
+type parameters, either explicitly or implicitly.
+Some sort of \textit{type inference} is applied in case of implicit instantiation.
+
+\begin{lstlisting}
+class NumList<E extends Number> {
+      void m(E arg) {
+            arg.intValue();   // OK, since...
+            // Number and its subtypes support intValue()
+         }
+   }
+\end{lstlisting}
+
+Type parameters can also be \textbf{bounded} as in the above example,
+allowing methods (and fields) defined in the \textbf{bound} to be invoked on objects of the type parameter \lstinline|T|.\\
+There may be various kinds of type bounds:
+\begin{lstlisting}
+<TypeVar extends SuperType>
+   // UPPER bound; SuperType and any of its subtype are ok.
+<TypeVar extends ClassA & InterfaceB & InterfaceC & ...>
+   // MULTIPLE UPPER bounds
+<TypeVar super SubType>
+   // LOWER bound; SubType and any of its supertype are ok
+\end{lstlisting}
+
+Unlike C++ where \textit{overloading} is resolved and can \textbf{fail} after
+instantiating a template, in Java \textbf{type checking} ensures that
+overloading will succeed.
+
+\section{Inheritance and Arrays}
+There are two major issues which came up along with generics.
+The first one regards \textbf{inheritance}; 
+consider the following example:
+\begin{center}
+   Since \lstinline|Integer| is a \textit{subtype} of \lstinline|Number|,\\
+   is \lstinline|List<Integer>| \textit{subtype} of \lstinline|List<Number>|?\nl
+
+   {\color{red}\textbf{\textit{NO!}}}
+\end{center}
+In a formal way, \textit{subtyping is invariant} for Generic classes.
+Informally, given \lstinline|A,B| concrete types, \lstinline|MyClass<A>| has no relationship to \lstinline|MyClass<B>|,
+even if \lstinline|A,B| have one.\\
+On the other hand if \lstinline|A extends B| and are \textit{generic} classes, 
+then \lstinline|A<C> extends B<C>| for any type \lstinline|C|.
+For example, \lstinline|ArrayList<Integer> extends List<Integer>|.
+\note{
+   Note that the common parent of \lstinline|MyClass<B>| and \lstinline|MyClass<A>| is \lstinline|MyClass<?>|.
+}
+\nl
+
+Let's now discuss \textbf{covariance} and \textbf{contravariance}, with the aid of a few examples.
+
+\begin{lstlisting}
+List<Integer> lisInt = new ...;
+List<Number> lisNum = new ...;
+lisNum = lisInt; // ??? - Reassign pointer
+lisNum.add(new Number(...)); // NOT ALLOWED
+listInt = lisNum; // ??? - Reassign pointer
+Integer n = lisInt.get(0); // NOT ALLOWED
+\end{lstlisting}
+
+\lstinline|List<Integer>| is neither a subtype or a supertype of \lstinline|List<Number>|,
+thus the above operations aren't allowed.
+However there are \textit{read-only} and \textit{write-only} situations where they may be allowed.
+
+\begin{lstlisting}
+RO_List<Integer> lisInt = new ...;
+RO_List<Number> lisNum = new ...;
+lisNum = lisInt; // ???
+Number n = lisNum.get(0); // OK
+\end{lstlisting}
+It is ok to \textit{read} a \textbf{supertype} starting from a \textbf{subtype}.
+\begin{center}
+   \textit{\textbf{covariance} is safe if the type is \textbf{read-only}}
+\end{center}
+
+\begin{lstlisting}
+WO_List<Integer> lisInt = new ...;
+WO_List<Number> lisNum = new ...;
+lisInt = lisNum; // ???
+lisInt.add(new Integer(...)); // OK
+\end{lstlisting}
+It is ok to \textit{write} a \textbf{subtype} in the place of from a \textbf{supertype}.
+\begin{center}
+   \textit{\textbf{contravariance} is safe if the type is \textbf{write-only}}
+\end{center}
+\section*{17 - Ottobre}
+\subsubsection*{Other languages}
+In the case of \textbf{C\#}, generic classes can be marked with the keyword \lstinline|out| (\textit{covariant}) or \lstinline|in| (\textit{contravariant}),
+otherwise the class is invariant.
+In \textbf{Scala} the same happens,
+but with the \lstinline|+| or \lstinline|-| operators.\nl
+
+Let's now discuss \textbf{arrays}.\\
+Let \lstinline|A extends B|, then \lstinline|A[] extends B[]| even if instead \lstinline|Array<A>| is not related to \lstinline|Array<B>|.
+\begin{center}
+   Thus, \textit{arrays in Java are \textbf{covariant}.}
+\end{center}
+
+However there is a counterpart, since this allows rule-breaking assignments
+which are allowed by the compiler but which lead to a runtime \lstinline|ArrayStoreException|.
+This happens because the dynamic type of an array is checked at runtime.
+Knowing this, for each array update, a runtime check is performed by the JVM which throws the exception if needed.
+\begin{lstlisting}
+Apple[] apples = new Apple[1];
+Fruit[] fruits = apples;      // Ok, covariance
+fruits[0] = new Strawberry(); // Compiles!
+// Throws ArrayStoreException at runtime
+\end{lstlisting}
+
+After compilation Generic are all \textbf{type-erasured} to \lstinline|Object| or to their first \textit{bound}, if present.
+This choice has been made mainly for compatibility with legacy code, leading all instances of the same generic type to have the same type at runtime; 
+i.e.
+\begin{lstlisting}
+   List<String> lst1 = new ArrayList<String>();
+   List<Integer> lst2 = new ArrayList<Integer>();
+   assert(lst1.getClass() == lst2.getClass())   
+\end{lstlisting}
+
+\subsection{Generic Arrays}
+What about \textit{arrays of generics}?
+Such arrays in Java are \textbf{not allowed},
+because every array update needs a runtime check which is impossible to perform on generics,
+since at runtime generics are all of the same type due to \textit{type-erasure}.
+
+\section{Wildcards}
+\textbf{Wildcards} are strongly related to the topic of \textit{covariance} and \textit{contravariance}.\\
+As briefly mentioned before, wildcards are the only relationship between generic classes.
+
+To use \textit{wildcards}, the \textbf{PECS} principle is applied:
+\textit{\textbf{P}roducer \textbf{E}xtends, \textbf{C}onsumer \textbf{S}uper}.
+\begin{itemize}
+   \item \lstinline|? extends T| to \textbf{get} values from a \textit{Producer}: \textbf{covariance} allowed
+   \item \lstinline|? super T| to \textbf{insert} values into a \textit{Consumer}: \textbf{contravariance} allowed
+   \item Never use \lstinline|?| when both insertion and retrieving is needed, \lstinline|T| is sufficient and way more appropriate.
+\end{itemize}
+
+Wildcards improve type-safety, allowing a program to fail at \textit{compile-time} instead of \textit{runtime}.
+\begin{lstlisting}
+List<Apple> apples = new ArrayList<Apple>();
+List<? extends Fruit> fruits = apples;
+fruits.add(new Strawberry()); // COMPILING FAILS
+\end{lstlisting}
+
+\section{Generics Limitations}
+\begin{itemize}
+   \item Cannot instantiate Generics with primitive types:
+   \begin{lstlisting}
+      ArrayList<int> a = ...                       // compile error
+   \end{lstlisting}
+   \item Cannot create instances of type parameters
+   \item Cannot declare static fields whose types are type parameters
+   \begin{lstlisting}
+      public class C<T>{ public static T local; ...}
+   \end{lstlisting}
+   \note{Because static fields are represented in the \textbf{unique} representation of the class in the dedicated static memory area of the JVM for classes}
+   \item Cannot use casts or instanceof with parameterized types
+   \begin{lstlisting}
+      mylist instanceof ArrayList<Integer>         // fails
+      mylist instanceof ArrayList<?>               // OK
+   \end{lstlisting}
+   \item Cannot Create arrays of parameterized types
+   \item Cannot create, catch, or throw objects of parameterized types
+   \item Cannot overload a method where the formal parameter types of each overload erase to the same raw type.
+   \begin{lstlisting}
+      public class Example {                       // does not compile
+         public void print(Set<String> strSet) { }
+         public void print(Set<Integer> intSet) { } }
+   \end{lstlisting}
+\end{itemize}
+
