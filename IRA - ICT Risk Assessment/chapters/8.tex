@@ -153,4 +153,44 @@ In \textbf{centralized} systems, instead, each pointer corresponds to a capabili
 This solution provides storing the matrix in colums, one column for each object.
 An object implementation also stores the information to control the accesses to the object.
 
-An instance of ACL is the packet routing in Linux
+An instance of ACL is the packet routing in Linux made with \texttt{iptables},
+which allows to define rules for each packet "chain":
+\begin{itemize}
+    \item Input chain
+    \item Output chain
+    \item Forward chain
+\end{itemize}
+Besides it is possible to define default policy PASS/DROP.
+For each packet it is possible to perform various actions:
+\begin{itemize}
+    \item DROP/PASS (route)
+    \item goto/return i.e. call/return packet to a chain
+    \item Queue i.e. handle packets queue using user's code
+    \item Log
+    \item Reject
+    \item dnat/snat/masquerade
+\end{itemize} 
+
+In general, filtering packets going \textit{outside} a node, is called \textbf{egress filtering};
+in other words, before allowing an \textit{outbound connection} a user-defined \textit{rule} must be checked.
+Such control allows to \textit{discover malware}, stop contributing to \textit{attacks}, or to \textit{block local users} from using illegal services.
+
+\section{Role Based Access Control}
+Basically pairing \textit{access rights} with a \textit{professional \textbf{role}}.
+When representing such access rights, there is a simple matrix for each role, making room for scalability and easy management.
+Clearly, also a mapping between users and roles is needed.
+
+\textit{Roles} may be partially ordered, leading to $R_1,R_2 \Leftrightarrow (R_2.\textit{access\_rights} \in R_1.\textit{access\_rights})$
+
+\section{Attribute Based Access Control}
+Access rights are granted or denied according to values of 4 key attributes:
+\begin{enumerate}
+    \item \textit{\textbf{Subject}}
+    \item \textit{\textbf{Action}}
+    \item \textit{\textbf{Object}}
+    \item \textit{\textbf{Contextual}}
+\end{enumerate}
+
+This is a flexible approach, but strongly relies on how attributes resist manipulation.
+Besides it must be noted that \textit{ACL} and its derivations can grant access even to unknown subjects,
+which instead is not possible with capabilities since they are distributed only to entities we already know.
