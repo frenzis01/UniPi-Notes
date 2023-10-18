@@ -1,0 +1,94 @@
+\chapter{Enterprise Applications}
+In Enterprise applications there heterogeneous services, data sources and participants, all connected via network.\\
+In short, \textbf{Enterprise Applications} are \textit{complex distributed multi-service applications} whose services must work together, them being suitably \textbf{integrated}.
+
+\section{Integration}
+The architectural question is how to integrate multiple different services to realize enterprise applications that are
+\begin{itemize}
+   \item \textit{coherent}
+   \item \textit{extensible}
+   \item \textit{maintainable}
+   \item (reasonably) simple to \textit{understand}
+\end{itemize}
+
+This is really what enterprise application integration was conceived for
+\begin{itemize}
+   \item complexity management
+   \item change management
+   \item \textbf{pattern-based}
+\end{itemize}
+
+\textbf{\textit{Pattern}} refers to high-level abstraction of accepted, reusable solutions to recurring problems.\\
+When facing a problem, considering existing patterns that are applicable to
+solve such problem saves us from re-inventing the wheel and making
+the same mistakes as others
+
+Typically, patterns are given in terms of
+\begin{itemize}   
+   \item \textbf{problem statement}
+   including involved software components
+   \item \textbf{context}
+   including involved actors
+   \item \textbf{forces}
+   clarifying the problem rationale and importance
+   \item \textbf{solution}
+   given abstractly, and independent of its actual implementations
+\end{itemize}
+
+
+An \textbf{EIP} (\textit{Enterprise Integration Pattern}) is a reusable abstraction of proven solutions to well-known problems raising while integrating the software components/services forming enterprise applicatioms.
+
+\section{Messages and Communication Means}
+A \textbf{message} is a discrete piece of data sent from a service to another, typically structured into header and body,
+and generally sent through \textbf{one-way channels}.
+Thus by itself the communication is \textit{\underline{a}synchronous}, but it can be made \textit{synchronous} by duplicating a channel and thus creating a bidirectional communication.
+
+Channels supports extends to two main categories:
+\begin{itemize}
+   \item \textbf{Point-to-Point} ($1:1$) channels ensure that only one receiver will receive a given message
+   \item \textbf{Publish-Subscribe} ($1:N$) channels deliver a copy of the message to each receiver
+\end{itemize}
+
+Channels generally require the data to serialized in some way: 
+to this extent \textbf{adapters} "translate" (\textit{adapt}) application-specific data into a format suitable to be sent;
+note that adapters are place between the \textit{application} and the \textit{channel}, not the \textit{receiver}.\\
+Besides, a \textbf{message endpoint} for each node/application is required,
+to handle channel connections and queue/handling the messages received before letting the application process them.\nl
+
+\textbf{Message endpoints} and \textbf{channels} provide the most trivial integration possible,
+however they do not solve the problem when the \textit{receiver application} requires the data to be in a specific format e.g. \texttt{JSON}.
+\textbf{Message translators} are intermediary entities which can trasnlate and eventually filter data.
+
+\section{Deeper message integration}
+Some problems are still not solved e.g. message \textit{routing}, \textit{splitting}, \textit{aggregating}, etc.\nl
+
+That's where \textbf{pipes} and \textbf{filters} architecture syle comes in.\\
+Messages travel through many \textit{filters} (and components) processing them.
+Components flush messages into \textbf{pipes} they are connected to.\\
+Clearly this is (again) a flexible abstraction which can adapt to circumstances and environment.
+
+This architecture, along with endpoints and channels,
+includes \textbf{Content Enrichers}, which add contextual information which the source may not have, \textbf{Routers} which may be \textit{content-based} (header/body) or \textit{context-based} (testing/production env).\\
+Speaking of \textbf{routers}, such components are connected to multiple channels and contain the logic to discern which is the correct channel onto which a message should be sent.
+
+\subsection{Composite Patterns}
+Patterns may be composed to build other patterns.
+\textbf{Normalizers}, for instance, enable data received from different sources to be normalized and then sent in a proper format to receivers;
+behind the curtain, \textit{normalizer} are nothing more than a router and a set of translators.
+
+\subsection{Parallelism}
+Sometimes some integration steps may be computed in \textbf{parallel} and then results from such processes may be \textbf{aggregated} to decide which actions to perform.
+
+\textbf{Splitters} break out composite messages into a series of individual messages, which can be \textit{processed independently}.\\
+\textbf{Aggregators} collect and store individual messages until a complete set of related messages has been received,
+ultimately publishing a single message which be processed as a whole. 
+
+
+\section{Handling Problems}
+\begin{itemize}
+   \item \textbf{Validate} messages
+   \item \textbf{Architectural smells} and \textbf{refactoring}
+   \item \textbf{Security} issues
+   \item \textbf{Isolate} features in integrated applications
+   \item \textbf{Deploy serverlessly} integrated applications
+\end{itemize}
