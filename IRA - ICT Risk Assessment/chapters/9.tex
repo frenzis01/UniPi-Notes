@@ -1,0 +1,102 @@
+\chapter{Windows authentication}
+
+The key concept is the relationship between \textbf{logon sessions} and \textbf{access tokens}.
+A logon session represents the \textit{presence} of a user on a machine and begins with a successful authentication and ends when the user logs off.
+
+When a user logs in they provide a pair of $\langle username, password \rangle$ which is checked by \textit{Local Security Authority} (LSA).
+If the credentials are valid, 
+LSA will create a new logon session and produce an
+\textbf{access token};
+multiple access tokens may be associated with a session, but one
+token can only be linked to one session, typically the logon that generated it.
+However Windows can change the logon session (and cached credentials) a current token is associated with.
+
+\section{Access token}
+Access tokens cache some attributes regarding the user security context, i.e. the privileges and permissions of a user on a specific workstation (and across the network).
+\begin{itemize}
+   \item The security identifier (SID) for the user
+   \item Group memberships
+   \item Privileges held
+   \item A logon ID which references the origin logon session
+\end{itemize}
+
+An \textit{access token} act as proxy or stand-in for the logon session. When making security
+decisions, Windows never interact with the logon session itself (“hidden” in \texttt{lsass},
+the process implementing LSA), but with an access token which represents it.
+
+\subsection{Mandatory Integrity Control}
+Aside from access tokens, there is another secury level in Windows:
+security \textit{principals} and securable \textit{objects} are assigned \textbf{integrity} levels that determine their levels of protection or
+access.
+MIC is a mechanism for controlling access to securable objects in addition to discretionary access control and evaluates "integrity" access before evaluating access checks via an object's DACL\footnote{D? Access Control List}.
+For instance, a principal with a low integrity level cannot write to an object with a medium
+integrity level, even if the DACL of the object allows write access to the principal.
+
+\subsection{Access Control List(s)}
+\textit{ACLs} are the lists in a \textbf{security descriptor} with information on actions
+users, groups, or objects can perform on the file or folder to which the descriptor is applied.\\
+A security descriptor may contain different two types of lists:
+\begin{enumerate}
+   \item \textbf{DACLs} Discrestionary ACL -
+   the list of SIDS for the users, groups, and computer objects allowed or denied access to perform actions on files or folders
+   \item \textbf{SACLs} System ACL -
+   the list of SIDS for the users, groups, and computer objects for which successful or failed auditing events are logged
+\end{enumerate}
+\note{ACEs are individual entries in either DACLs or SACLs for particular users, groups, or computer objects}
+
+
+\subsection{Sandboxing Tokens}
+Applications e.g. browsers, have historically been victims of attacks.
+An attacker who successfully exploits a browser,
+then the attacker's \textit{payload} shares the same \textit{access token} of the browser,
+allowing it to perform any action the browser is allowed to do.
+
+To mitigate such kinds of attacks, browsers' code has been moved into lower-privilege processes by creating a smaller and restricted security context;
+in the Unix Documentation, such context is called a \textbf{sandbox}.
+
+The key idea is to limit the extent of an attack to only the resources accessible to the sandbox maliciously exploited. 
+
+\section{Remote Hosts AC}
+A logon session is unique to a workstation and users cannot send an access token over the wire because it would be meaningless as it does not correspond to a valid logon session on the remote host. Furthermore, this is a target for replay attacks.
+Thus, the user needs to \textbf{re-authenticate} and establish a new session on the remote host.
+
+In order to establish a new logon session, the \textbf{SMB} server has to authenticate the client over the network.
+In Windows domains, network authentication is
+performed via \textbf{Kerberos} or the \textbf{NTLM} challenge-response protocol.
+Regardless of the auth method, network logins do not cache credentials and this token cannot be used to
+authenticate to another remote host. This is the \textit{"double hop"} problem.
+
+Kerberos is \textbf{default} authentication method today, NTLM acts a backup in case Kerberos authentication fails.\\
+In NTLM, passwords stored on the server and domain controller are not
+\textit{\textbf{“salted”}}, 
+which means adding a random string of characters is not added to the hashed
+password to further protect it from cracking techniques.
+Besides NTLM doesn't support many modern encryption algorithms and techniques.
+
+\subsection{MS Kerberos and MIT Kerberos}
+In a standard authentication, a user asks its Kerberos key distribution center (KDC) for a session ticket for a specific host.
+In Windows instead, once authorized to enter, the user must
+still show his rights for the resource requested, such as a shared file or
+network printer.
+In this way the user's security access token in the application-specific data field in a message protocol
+
+\section{Impersonation/Delegation}
+In multi-threaded applications, complex race conditions may arise if different threads start enabling/disabling different privileges or modifying default token DACLs.
+By default all threads will inherit the same security context as their process’s primary token.
+However, impersonation allows a thread to switch to a different security context.
+Impersonation enables threads to have their own local copy of a token: an \textbf{impersonational token}.
+Such process allows, for instance, an SMB server to handle each incoming request in a separate thread and \textit{impersonate}
+the access token representing the \textit{remote client}.
+Thus, \textbf{locally}, since the thread is associated with an impersonational access token,
+any \textit{access checks} will be performed with such token.
+\note{
+What does this mean?\\   
+\textit{"as this impersonated token may be linked to a different logon session with different cached credentials the thread’s security context remotely is also different"}}
+
+Unless some mechanism protects the token, a thread running as
+SYSTEM can modify it.
+To avoid too impactful exploitation of such feature, there is an undocumented feature called \textit{“trust labels”}, 
+which is an optional component of
+every security descriptor,
+restricting specific access rights to
+some types of protected processes.

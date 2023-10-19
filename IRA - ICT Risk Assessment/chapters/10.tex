@@ -1,0 +1,75 @@
+\chapter{Deception}
+\section{Honeypot}
+A \textbf{honeypot} is a system designed exclusively to be attacked an to \textbf{collect information} about the attacker and its tactics, techniques and procedures;
+the other focus of an honeypot is also to possibly slow down an attack to a system by \textbf{diverting} it on itself.
+
+The scaled version of a honeypot, is a \textbf{honeynet},
+which is an entire network attached to a real system designed to be targeted instead of the main system.
+
+\subsection{Classification}
+\begin{enumerate}
+   \item \textbf{Interaction}-based
+   \begin{enumerate}
+      \item \textit{Low} - e.g. simple port listener
+      \item \textit{Medium} - emulation of a network service that analyzes the inputs and returns some replies similar to those the real service would return.
+      \begin{itemize}
+         \item Simulates just some \textbf{features} of the service
+         \item Easy to implement, \textbf{low risk}
+         \item Can collect a low amount of information
+         \item Tools $\longrightarrow$ OS + Honeyd
+      \end{itemize}
+      \item \textit{High} - built around real services that run on real machines to fool the attacker
+      \note{realistic but dangerous due to the large amount of vulnerable software}
+      \begin{itemize}
+         \item Simulates \textbf{all features} of the service and of the underlyng OS
+         \item The attacker may fully compromise and control it
+         \item \textbf{High risk}
+         \item A larger amount of information
+         \item Tools $\longrightarrow$ Honeynet.
+      \end{itemize}
+   \end{enumerate}
+   
+   \item \textbf{Implementation}-based
+   \begin{enumerate}
+      \item \textit{Virtual}
+      \item \textit{Physical}
+   \end{enumerate}
+   
+   \item \textbf{Goal}-based
+   \begin{enumerate}
+      \item Production
+      \item Research on attacker behaviour
+   \end{enumerate}
+\end{enumerate}
+
+\section{Honeyd}
+\textbf{Honeyd} is a daemon which creates virtual nodes in a network.
+It is highly configurable and is able to reproduce even large and complex networks;
+besides it can integrate with virtual and physical real-existing networks.\\
+\textbf{Honeyd} provides many features, we can list some of the main ones:
+\begin{itemize}
+   \item It detects illegal activities in a network by monitoring the IP addresses that are not withing a \textbf{range} named \textit{“dark space“}.
+   Any attempt of connection to or from the \textit{dark space} is assumed to be an attack or a vulnerability scan.
+   \item It monitors activities related to TCP and UDP ports and ICMP traffic.
+   \item It can emulate network services using script in Perl, shell or other way of interacting with the attacker.
+\end{itemize}
+
+\subsection{Architecture}
+\begin{itemize}
+   \item \textit{Configuration database} -
+   Queried to discover the model paired with the destination IP address
+   \item \textit{Packet dispatcher} -
+   analyzes input packets and checks correctness and integrity.
+   Anything different from TCP, UDP and ICMP gets \textit{discarded}.
+   \item \textit{Protocol manager} -
+
+   \item \textit{Personality engine} -
+   computes a reply packet and updates it to guarantee coherence with the OS that the destination is expected to use
+   \item \textit{Optional routing component} -
+   allows the routing of a packet to a real application
+\end{itemize}
+
+\subsection{Research results}
+\textbf{Honeypot}s provided an important amount of data to perform research on.
+Many statistics have been computed to produce estimations and interesting results,
+a \textit{\textbf{UniPi} student presented a thesis on the topic} \smiley.
