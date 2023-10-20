@@ -1,0 +1,122 @@
+\chapter{as a Service}
+
+In traditionally distributed software,
+customers had to configure, manage updates, while producers had to mantain different product versions; 
+in \textbf{Saas} instead,
+a product is delivered as a \textbf{service}, thus there's no need to install anything,
+and there is a form of monthly (and/or pay-per-usage) subscription, to use the service.
+
+\section{Benefits and cons}
+\textit{\textbf{Producer} point of view}
+\begin{itemize}
+   \color{darkgreen}
+   \item Regular cash flow
+   \item Easier and less costful update management
+   \item Continuous deployment: a new software version can be deployed as soon as it is tested
+   \item Payment flexibility, making room for different subscription plans possibly attracting a wider range of users
+   \item Try-before-you-buy options are easily available without fearing piracy, besides they'd make the product look more appealing to new customers
+   \item Telemetry and data collection are way easier and hardly avoidable by customers   
+\end{itemize}
+
+\textit{\textbf{Consumer} point of view}
+\begin{itemize}
+   \color{darkgreen}
+   \item Mobile, laptop and desktop access
+   \item No upfront costs for software or servers
+   \item Immediate and transparent software updates
+   \item Reduced software management costs
+\end{itemize}
+\begin{itemize}
+   \color{darkred}
+   \item Privacy regulation conformance
+   \item Security concerns
+   \item Network constraints may limit the usability of the software
+   \item Data exchange from/to services might be difficult if the service doesn't provide a suitable API
+\end{itemize}
+
+\section{Design issues}
+When designing Saas there are some critical points the developers has to make decisions on:
+\begin{itemize}
+   \item \textbf{Authentication} method: federated auth, personal auth, \textit{Google/Linkedin/...} credentials... 
+   \item Whether some features should be available \textbf{locally}
+   \item \textbf{Info leakage}
+   \item \textit{Multi-tenant} vs \textit{multi-instance} \textbf{DB management}:
+   i.e. single repository vs separate copies of system and database
+\end{itemize}
+
+\subsection{DB management}
+\subsubsection{Multi-tenant}
+\textbf{Multi-tenant} systems forsee a single DB schema shared by all system's users,
+where DB items are tagged with a \textit{tenant identifier} to provide some form of "logical isolation".
+
+Mid-size and large businesses rarely want to use a generic multi-tenant software, 
+they often prefer a customized version adapted to their own requirements.
+
+(...)
+
+(Solutions I and II)
+
+(...)
+
+\textbf{Security} is the makor concern of corporate customers with multi-tenant systems,
+since a centralized DB may represent a single point-of-failure for data leak or damage.\\
+A common solution is to implement \textbf{multilevel access control}, checking data access both at the organizational level and at individual level.
+A technlogy which can clearly help in this matter is \textbf{encryption},
+however it might cripple performance.
+
+\subsubsection{Multi-instance}
+Multi-instance may mainly be \textbf{VM}-based or \textbf{Container}-based.\\
+With \textit{containers}, each user has an \textbf{isolated} version of software and database running in a set of container,
+defining a solution perfect for products whose users work onto independently from others.\\
+With the other solution instead, for each \textbf{customer} there is a VM running an instance of the DB \textbf{shared} and accessible to all customer's users.\nl
+
+Let's consider pros and cons of such a solution.
+Flexibility, security, scalability ... pros
+Update costs ... cons
+
+\section{Architectural decisions}
+Software and scalability and Resilience\\
+monolithic or service oriented\\
+multi-tenant or multi-instance DB\\
+\textit{What cloud platform fits best development and delivery?}
+
+\subsection{Scalability}
+To allow scalability on cloud-based systems,
+the product implementation must be organized so that the individual software components can be replicated and run in parallel,
+besides, also a load-balancing mechanism must be implemented.
+
+\subsection{Resilience}
+Achieving resilience can be done through \textit{hot/cool standby}.
+The difference lies in the fact that while cool standby relies restarting the system using backup copies of the data,
+hot standby forsees a clone-instance running at the same time of the main one with a mirrored DB:
+in case of system failure,
+there is and entire backup system which can take its place while the main recovers.
+This is clearly more costful, but more effective.
+
+\section{Choosing cloud platform}
+Supported cloud services
+Privacy and data protection
+Resilience
+Expectd load and load predictability
+
+Cost
+Dev experience
+Service-level agreements
+Portability and cloud migration
+Target customers
+
+\begin{tikzpicture}[main/.style = {draw, ellipse},node distance={3cm}] 
+   \node[main] (P) [align=center]{\textbf{Business} \\ \textbf{Issues}};
+   \node[main] (a) [align=center,above left=0.7cm and 2.5cm of P] {\textit{Cost}};
+   \node[main] (b) [align=center, above right=0.7cm and 2.5cm of P] {\textit{Development} \\ \textit{experience}};
+   \node[main] (c) [align=center, below right= 0.7cm and 2cm of P] {\textit{Service-level} \\ \textit{agreements}};
+   \node[main] (d) [align=center, below left=0.7cm and 2cm of P] {\textit{Portability and} \\ \textit{cloud migration}};
+   \node[main] (e) [align=center, above=1.5cm of P] {\textit{Target customers}};
+
+   \draw[->] (P) -- (a);
+   \draw[->] (P) -- (b);
+   \draw[->] (P) -- (c);
+   \draw[->] (P) -- (d);
+   \draw[->] (P) -- (e);
+   
+\end{tikzpicture}

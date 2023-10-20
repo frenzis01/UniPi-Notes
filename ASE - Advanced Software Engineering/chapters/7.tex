@@ -1,0 +1,64 @@
+\chapter{Cloud computing}
+\section*{19 - Ottobre}
+Powerful hardware and high-speed networking have made room for the development of cloud computing.
+\textbf{Cloud computing} allows virtual resources accessible \textbf{on demand},
+and provides many advantages against the standard old-style scaling methods i.e. buying resources.
+\begin{itemize}
+   \item \textit{Scalability}
+   \item \textit{Elasticity}
+   \item \textit{Resilience}
+   \item \textit{Cost}
+\end{itemize}
+
+\section{Virtualization and Containers}
+\begin{paracol}{2}
+   Virtual machines on a single physical machine are managed by hypervisor
+   \begin{table}[!htbp]
+      \centering
+      \begin{tabular}{|cc|}
+         \hline
+         App A & App B\\
+         bins/libs & bins/libs\\
+         Guest OS & Guest OS\\
+         \midrule
+         \multicolumn{2}{|c|}{\textbf{Hypervisor}}\\
+         \hline
+         \multicolumn{2}{|c|}{Host OS}\\
+         \hline
+         \multicolumn{2}{|c|}{Hardware}\\
+         \hline
+      \end{tabular}
+   
+   \end{table}
+
+   \vspace{\fill}
+   \switchcolumn
+
+   Containers instead exclude one layer of abstraction, saving up a lot of resources
+   \vspace{\fill}
+   \begin{table}[!htbp]
+      \centering
+      \begin{tabular}{|cc|}
+         \hline
+         App A & App B\\
+         bins/libs & bins/libs\\
+         \midrule
+         \multicolumn{2}{|c|}{\textbf{Container Manager}}\\
+         \hline
+         \multicolumn{2}{|c|}{Host OS}\\
+         \hline
+         \multicolumn{2}{|c|}{Hardware}\\
+         \hline
+      \end{tabular}
+   \end{table}
+
+   \vspace{\fill}
+\end{paracol}
+
+\section{Docker}
+Docker exploits container-based virtualization to run multiple isolated guest instances on the same SO.
+Software is packaged into \textbf{images} which are read-only templates to instantiate and run containers.
+External \textbf{volumes} can be mounted to ensure data persistance when used by multiple containers or by the host machine.
+
+It is possible to \textbf{stack} multiple docker \textit{images},
+and if desired create a new image as a result of stacking other ones.

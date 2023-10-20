@@ -1,0 +1,109 @@
+\chapter{Countermeasures}
+\section*{20 - Ottobre}
+\section{Robust Programming}
+Ideally it indicates a programming style focused on minimizing vulnerabilities and the impact of any vulnerability still exploitable.
+
+\textbf{Robust programming} can be summarized with a few guidelines:
+\begin{enumerate}
+   \item \textit{Validate} program inputs aka input is evil
+   \item \textit{Prevent} buffer overflow aka check sizes
+   \item A robust implementation minimizes any \textit{information leaked outside} 
+   e.g. module, object, function ...
+   \note{
+      \begin{itemize}
+         \item Logical pointers rather than physical ones
+         \item Validate any information that is exchanged
+      \end{itemize}
+   }
+   \item Check values transmitted to other functions (egress filtering)
+   \item Check returned results
+\end{enumerate}
+Besides, it is important to focus also on \textbf{interaction controls},
+robustness must be enforced on both malicious and erroneous behaviour.
+
+\subsection{Input validation}
+Usually input validation is achieved with a form of \textit{default \textbf{deny}} by defining a legal input structure and discarding every input which doesn't satisfy it.
+\note{In case of string this may be done through RegEx, max length, ...}
+
+It is important that the checks to validate the input should be specified when the program is designed rather than after an attack;
+besides a check should be designed in an simple and readable way,
+to easily ensure its correctness.
+Some examples of input which usually must be validated are:
+\begin{itemize}
+   \item Environment variables
+   \item File names (blanks, .., /)
+   \item Email addresses
+   \item URL
+   \item HTML headers/body
+   \item Data
+\end{itemize} 
+
+Memory allocation and strings length is a crucial aspect:
+only library functions with an explicit string length specified should be used\footnote{e.g. \lstinline|strncpy()| instead of \lstinline|strcpy()|},
+and in general,
+it is appropriate to
+allocate only the memory actually needed by a data structure according to its sizeto avoid leaving
+space to store dangerous values or inputs.\nl
+
+Speaking of functions,
+attention must be paid to a rigorous \textbf{interfaces definition} and to avoid making assumptions on relationships between input and output values of function;
+in other words, if a function $A$ takes as input the value $x$ returned by $B$,
+it must not be \textit{asserted} that $x$ is for sure a \textbf{valid} value,
+$B$ should check the correctness of the input regardless of knowing how it was generated.
+
+\subsection{CWE - Vulnerabilities Ranking}
+\href{https://cwe.mitre.org/top25/archive/2023/2023_top25_list.html#tableView}{This article} by \textit{\textbf{CWE}} (\textit{Common Weaknesses Enumeration}) lists the most dangerous and frequent software weaknesses of 2023,
+based on data provided by \textit{NIST}.
+
+The scoring formula to calculate a ranked order of weaknesses
+considers the \textbf{frequency} a CWE is the root cause of a vulnerability
+with the \textbf{severity} of its exploitation. Both frequency and severity are
+\textit{normalized} relative to the minimum and maximum values seen.
+\textbf{Frequency} is obtained by counting weaknesses occurences in the \textit{National Vulnerabilities Database} (NVD),
+while \textbf{severity} is the average computed on the Vulnerabilities score in the \textit{CVSS}\footnote{\textit{Common Vulnerabilities Scoring System}} a given weakness is mapped to.\\
+The \textbf{final weakness score} is computed by multiplying frequency and severity scores.
+
+\subsubsection{Biases and limitations}
+There are two biases which CWE doesn't take into account,
+which somehow negatively affect how valid CWE's scores are:
+\begin{enumerate}
+   \item \textbf{Metric bias}
+   \begin{enumerate}
+      \item 
+      Indirect prioritization of implementation faults over design flaws
+      \item 
+      Prefers frequency over severity due to distributions of real-world
+   \end{enumerate}
+   \item \textbf{Data bias}
+   \item \begin{enumerate}
+      \item Only uses NVD data based on publicly-reported CVE Records
+      \item Many CVEs do not have sufficient details to assign a CWE
+      mapping, omitting them from ranking
+      \item There may be an over-representation of certain programming
+      languages, frameworks, or weakness-detection techniques
+   \end{enumerate}
+\end{enumerate} 
+
+There also a few aspects which this scoring system cannot represent and should be taken care of.
+First of all,
+weaknesses that are rarely discovered will not receive a high score,
+regardless of the consequence of an exploitation.
+Weaknesses that begin with a root cause of a mistake leading to
+other mistakes, create a chain relationship.
+As we have seen, chains of mistakes/vulnerabilities/attacks are a key point in security,
+but CWE's scoring system treats any $\langle V_1, V_2 \rangle \wedge V_1 \rightarrow V_2$ as if $V_1$ and $V_2$ were independent i.e. $V_1 \not\rightarrow V_2$.
+
+
+\section{Firewall}
+A \textbf{firewall} is a module to filter all the messages exchanged by \textit{two} networks with a distinct security level;
+\textit{all and only} the messages travelling on the wires
+connecting the two networks cross the firewall and therefore get filtered.
+A firewall works correctly under the assumption that a network has been split (\textit{segmented}) into two \textbf{subnets}, 
+and that it \textit{correctly implements} a security policy, which should \textit{\textbf{not}} define the policy by itself.
+Firewalls are usually \textbf{classified} on the known and manageable \textbf{protocols} and on their \textbf{implementation}.
+
+\subsection{Segmenting}
+Firewalling goes along with \textbf{segmenting} a network,
+which results in multiple subnets with different security levels whose interaction is determined by firewalls inbetween them.
+This architecture increases \textbf{robustness} by preventing an attacker from having \textbf{initial access} on an entire system and from freely performing \textbf{lateral movements};
+besides this architecture perfectly integrates with \textbf{honeypot} deception mechanisms.
