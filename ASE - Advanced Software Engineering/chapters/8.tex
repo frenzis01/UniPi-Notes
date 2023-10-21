@@ -1,4 +1,4 @@
-\chapter{as a Service}
+\chapter{* as a Service}
 
 In traditionally distributed software,
 customers had to configure, manage updates, while producers had to mantain different product versions; 
@@ -22,16 +22,18 @@ and there is a form of monthly (and/or pay-per-usage) subscription, to use the s
 \begin{itemize}
    \color{darkgreen}
    \item Mobile, laptop and desktop access
-   \item No upfront costs for software or servers
+   \item No \textbf{upfront costs} for software or servers
    \item Immediate and transparent software updates
-   \item Reduced software management costs
+   \item Reduced software \textbf{management costs}
 \end{itemize}
 \begin{itemize}
    \color{darkred}
-   \item Privacy regulation conformance
-   \item Security concerns
+   \item \textbf{Privacy} regulation conformance
+   \item \textbf{Security} concerns
    \item Network constraints may limit the usability of the software
    \item Data exchange from/to services might be difficult if the service doesn't provide a suitable API
+   \item No control over updates
+   \item Service \textbf{lock-in}
 \end{itemize}
 
 \section{Design issues}
@@ -51,12 +53,11 @@ where DB items are tagged with a \textit{tenant identifier} to provide some form
 
 Mid-size and large businesses rarely want to use a generic multi-tenant software, 
 they often prefer a customized version adapted to their own requirements.
+Generally it is of interest to have a custom UI mutating according to the user,
+along with custom optional fields accessible only by some classes of users.
+In case there's the need to expand the DB schema to achieve such results,
+\textbf{storage waste} becomes a major concern.
 
-(...)
-
-(Solutions I and II)
-
-(...)
 
 \textbf{Security} is the makor concern of corporate customers with multi-tenant systems,
 since a centralized DB may represent a single point-of-failure for data leak or damage.\\
@@ -67,18 +68,41 @@ however it might cripple performance.
 \subsubsection{Multi-instance}
 Multi-instance may mainly be \textbf{VM}-based or \textbf{Container}-based.\\
 With \textit{containers}, each user has an \textbf{isolated} version of software and database running in a set of container,
-defining a solution perfect for products whose users work onto independently from others.\\
+defining a solution perfect for products whose users work onto independently from others.
+Besides, since there is no direct sharing of a single data structure, 
+many security aspects are easy to manage.\\
 With the other solution instead, for each \textbf{customer} there is a VM running an instance of the DB \textbf{shared} and accessible to all customer's users.\nl
 
-Let's consider pros and cons of such a solution.
-Flexibility, security, scalability ... pros
-Update costs ... cons
+Let's consider \textit{pros and cons} of such a solution.
+Flexibility, security, scalability and resilience are clearly some key points of \textit{multi-instance DBs}.
+However update management difficulty and cloud VMs renting costs are not negligible.
+
+Wrapping up,
+there are three possible ways of
+providing a customer \textbf{database} in
+a \textit{cloud-based} system:
+\begin{enumerate}
+   \item As a \textbf{multi-tenant} system, \textit{shared by all customers} for your product.
+   This may be hosted in the cloud using large, powerful servers. 
+   \item As a \textbf{multi-instance} system, with \textit{each customer database} running on its own \textit{virtual machine}. 
+   \item As a \textbf{multi-instance} system, with \textit{each database} running in its own \textit{container}.
+   The customer database may be distributed over several containers.
+\end{enumerate}
 
 \section{Architectural decisions}
-Software and scalability and Resilience\\
-monolithic or service oriented\\
-multi-tenant or multi-instance DB\\
-\textit{What cloud platform fits best development and delivery?}
+\begin{center}
+   \begin{tikzpicture}[main/.style = {draw, ellipse},node distance={3cm},>=stealth',shorten >=1pt,auto] 
+      \node[main] (P) [align=center]{\textbf{What cloud platform fits best} \\ \textbf{development and delivery?}};
+      \node[main] (a) [align=center,above left=1.5cm of P] {\textit{Scalability and} \\ \textit{Resilience}};
+      \node[main] (b) [align=center, above=1.5cm of P] {\textit{Monolithic/Service} \\ \textit{oriented}};
+      \node[main] (c) [align=center, above right=1.5cm of P] {\textit{Multi-tenant or} \\ \textit{Multi-instance DB}};
+   
+      \draw[->] (a) edge [out=-90, in=150] node {} (P);
+      \draw[->] (b) edge node {} (P);
+      \draw[->] (c) edge [out=-90, in=30] node {} (P);
+      
+   \end{tikzpicture}
+\end{center}
 
 \subsection{Scalability}
 To allow scalability on cloud-based systems,
@@ -94,29 +118,36 @@ there is and entire backup system which can take its place while the main recove
 This is clearly more costful, but more effective.
 
 \section{Choosing cloud platform}
-Supported cloud services
-Privacy and data protection
-Resilience
-Expectd load and load predictability
-
-Cost
-Dev experience
-Service-level agreements
-Portability and cloud migration
-Target customers
-
-\begin{tikzpicture}[main/.style = {draw, ellipse},node distance={3cm}] 
-   \node[main] (P) [align=center]{\textbf{Business} \\ \textbf{Issues}};
-   \node[main] (a) [align=center,above left=0.7cm and 2.5cm of P] {\textit{Cost}};
-   \node[main] (b) [align=center, above right=0.7cm and 2.5cm of P] {\textit{Development} \\ \textit{experience}};
-   \node[main] (c) [align=center, below right= 0.7cm and 2cm of P] {\textit{Service-level} \\ \textit{agreements}};
-   \node[main] (d) [align=center, below left=0.7cm and 2cm of P] {\textit{Portability and} \\ \textit{cloud migration}};
-   \node[main] (e) [align=center, above=1.5cm of P] {\textit{Target customers}};
-
-   \draw[->] (P) -- (a);
-   \draw[->] (P) -- (b);
-   \draw[->] (P) -- (c);
-   \draw[->] (P) -- (d);
-   \draw[->] (P) -- (e);
+\begin{center}
+   \begin{tikzpicture}[main/.style = {draw, ellipse},node distance={3cm},>=stealth',shorten >=1pt,auto] 
+      \node[main] (P) [align=center]{\textbf{Cloud-platform} \\ \textbf{choice}};
+      \node[main] (a) [align=center,above left=1.5cm of P] {\textit{Privacy and Data} \\ \textit{Protection}};
+      \node[main] (c) [align=center, above right=1.5cm of P] {\textit{Expected load and} \\ \textit{laod predictability}};
+      \node[main] (b) [align=center, below left=1.5cm of P] {\textit{Supported cloud} \\ \textit{services}};
+      \node[main] (d) [align=center, below right=1.5cm of P] {\textit{Resilience}};
    
-\end{tikzpicture}
+      \draw[->] (a) edge node {} (P);
+      \draw[->] (b) edge node {} (P);
+      \draw[->] (c) edge node {} (P);
+      \draw[->] (d) edge node {} (P);
+      
+   \end{tikzpicture}
+\end{center}
+
+\begin{center}
+   \begin{tikzpicture}[main/.style = {draw, ellipse},node distance={3cm}] 
+      \node[main] (P) [align=center]{\textbf{Business issues when} \\ \textbf{choosing platform}};
+      \node[main] (a) [align=center,above left=0.7cm and 2.5cm of P] {\textit{Cost}};
+      \node[main] (b) [align=center, above right=0.7cm and 2.5cm of P] {\textit{Development} \\ \textit{experience}};
+      \node[main] (c) [align=center, below right= 0.7cm and 1.5cm of P] {\textit{Service-level} \\ \textit{agreements}};
+      \node[main] (d) [align=center, below left=0.7cm and 1.5cm of P] {\textit{Portability and} \\ \textit{cloud migration}};
+      \node[main] (e) [align=center, above=1.5cm of P] {\textit{Target customers}};
+   
+      \draw[->] (P) -- (a);
+      \draw[->] (P) -- (b);
+      \draw[->] (P) -- (c);
+      \draw[->] (P) -- (d);
+      \draw[->] (P) -- (e);
+      
+   \end{tikzpicture}
+\end{center}
