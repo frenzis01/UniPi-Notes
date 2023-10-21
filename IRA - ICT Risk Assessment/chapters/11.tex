@@ -107,3 +107,38 @@ Firewalling goes along with \textbf{segmenting} a network,
 which results in multiple subnets with different security levels whose interaction is determined by firewalls inbetween them.
 This architecture increases \textbf{robustness} by preventing an attacker from having \textbf{initial access} on an entire system and from freely performing \textbf{lateral movements};
 besides this architecture perfectly integrates with \textbf{honeypot} deception mechanisms.
+
+\subsection{Classification}
+Firewall may operate on different levels of the TCP/IP stack and in different ways:
+\begin{itemize}
+   \item Packet filtering firewall
+   \item Circuit-level gateway
+   \item Application-level gateway (aka \textit{Proxy Firewall}):
+   firewall which recognizes application level protocols and can make assumptions on it
+   \item Stateful inspection firewall
+   \textit{Stateful} means that the firewall inspects also the contents of a communication and the properties related to the status of a connection.
+   \item Next-generation firewall (NGFW)
+\end{itemize} 
+
+At level 3 (IP Packet Inspection) the firewall can check only the header of IP packets,
+while at level 4 (circuit level firewall) ...\nl
+
+TODO\nl
+
+\subsection{Pros \& Cons}
+\begin{itemize}
+   \color{darkgreen}
+   \item A Single device can filter traffic for an entire network
+   \item Extremely fast and efficient in scanning traffic
+   \item Inexpensive
+   \item Minimal effect on other resources, network performance and end-user experience
+\end{itemize}
+
+\begin{itemize}
+   \color{darkred}
+   \item Since traffic filtering is entirely based on IP addresses and ports,
+   it lacks broader context that informs other types of firewalls
+   \item Doesn't check the payload and can be easily spoofed
+   \item Not an ideal option for every network
+   \item Access control lists can be difficult o set up and manage
+\end{itemize}
