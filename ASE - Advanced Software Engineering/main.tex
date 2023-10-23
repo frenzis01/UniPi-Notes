@@ -31,6 +31,8 @@
 \usepackage{soul}
 \usepackage{booktabs}
 
+\usepackage{rotating}
+\usepackage{adjustbox}
 
 % Uso dei colori
 \usepackage[dvipsnames]{xcolor}
@@ -67,6 +69,21 @@
 \newcommand{\note}[1]{\begin{notes}{#1}\end{notes}}
 \newcommand{\lst}[1]{\lstinline{#1}}
 \newcommand{\nl}[0]{\parskip = \baselineskip}
+
+\newcommand{\labelitemize}[2]{
+\newlength{\currentparindent}
+\setlength{\currentparindent}{\parindent}
+\setlength{\parindent}{0pt}
+
+\begin{minipage}{0em} % Adjust the width as needed
+    \makebox[0em][c]{\rotatebox{90}{\small #1}}
+\end{minipage}
+\begin{minipage}{\dimexpr\textwidth-1cm\relax}
+    #2
+\end{minipage}
+\setlength{\parindent}{\currentparindent}
+\undef{\currentparindent}
+}
 
 \lstset{frame=false,
  showstringspaces=false,

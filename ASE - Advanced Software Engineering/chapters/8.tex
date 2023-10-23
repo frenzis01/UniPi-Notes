@@ -8,17 +8,26 @@ and there is a form of monthly (and/or pay-per-usage) subscription, to use the s
 
 \section{Benefits and cons}
 \textit{\textbf{Producer} point of view}
-\begin{itemize}
-   \color{darkgreen}
-   \item Regular cash flow
-   \item Easier and less costful update management
-   \item Continuous deployment: a new software version can be deployed as soon as it is tested
-   \item Payment flexibility, making room for different subscription plans possibly attracting a wider range of users
-   \item Try-before-you-buy options are easily available without fearing piracy, besides they'd make the product look more appealing to new customers
-   \item Telemetry and data collection are way easier and hardly avoidable by customers   
-\end{itemize}
 
+\labelitemize{
+   \color{darkgreen}
+   \textit{\textbf{Pros}}
+}{
+   \begin{itemize}
+      \color{darkgreen}
+      \item Regular cash flow
+      \item Easier and less costful update management
+      \item Continuous deployment: a new software version can be deployed as soon as it is tested
+      \item Payment flexibility, making room for different subscription plans possibly attracting a wider range of users
+      \item Try-before-you-buy options are easily available without fearing piracy, besides they'd make the product look more appealing to new customers
+      \item Telemetry and data collection are way easier and hardly avoidable by customers   
+   \end{itemize}
+   }\\
 \textit{\textbf{Consumer} point of view}
+\labelitemize{
+   \color{darkgreen}
+   \textit{\textbf{Pros}}
+}{
 \begin{itemize}
    \color{darkgreen}
    \item Mobile, laptop and desktop access
@@ -26,6 +35,12 @@ and there is a form of monthly (and/or pay-per-usage) subscription, to use the s
    \item Immediate and transparent software updates
    \item Reduced software \textbf{management costs}
 \end{itemize}
+}
+
+\labelitemize{
+   \color{darkred}
+   \textit{\textbf{Cons}}
+}{
 \begin{itemize}
    \color{darkred}
    \item \textbf{Privacy} regulation conformance
@@ -35,6 +50,7 @@ and there is a form of monthly (and/or pay-per-usage) subscription, to use the s
    \item No control over updates
    \item Service \textbf{lock-in}
 \end{itemize}
+}
 
 \section{Design issues}
 When designing Saas there are some critical points the developers has to make decisions on:

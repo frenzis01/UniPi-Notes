@@ -80,7 +80,7 @@ a shared and \textit{centralized} DB, might act as a bottleneck or, even-worse,
 as a single point of failure.\\
 Using smaller local DBs for each \textbf{component} which later synchronize with the main one would avoid these two issues,
 however it introduces the need for \textbf{consistency} techniques and rules.
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.7\textwidth]{images/component_DBs.png}
     \caption{Centralized vs Component DBs}
@@ -105,7 +105,7 @@ there are a few techniques to do so:
 \end{itemize}
 
 One way to implement this is to have a \textbf{layered architecture} where to each \textit{layer} corresponds a \textit{concern}, and the components within the same layer are independent and do not overlap in functionality.
-\begin{figure}[h]
+\begin{figure}[ht]
     \label{fig:layered_architecture}
     \centering
     \includegraphics[width=0.45\textwidth]{images/layered_architecture.png}
