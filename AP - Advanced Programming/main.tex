@@ -15,6 +15,11 @@
 \usepackage{wrapfig}
 
 \usepackage{enumitem}
+\renewcommand{\labelitemi}{$\diamond$}
+\renewcommand{\labelitemiii}{$\circ$}
+\setlist[enumerate,2]{label=\roman*.}
+\setlist[enumerate,3]{label=(\alph*)}
+
 \usepackage{paracol}
 \usepackage{multicol}
 
@@ -36,6 +41,9 @@
 
 \usepackage{booktabs}
 
+% needed for labelitemize
+\usepackage{rotating}
+\usepackage{adjustbox}
 
 \geometry{margin=0.6in}
 
@@ -66,6 +74,21 @@
 \newcommand{\note}[1]{\begin{notes}{#1}\end{notes}}
 \newcommand{\lst}[1]{\lstinline{#1}}
 \newcommand{\nl}[0]{\parskip = \baselineskip}
+
+\newcommand{\labelitemize}[2]{
+    \newlength{\currentparindent}
+    \setlength{\currentparindent}{\parindent}
+    \setlength{\parindent}{0pt}
+    
+    \begin{minipage}{0em} % Adjust the width as needed
+        \makebox[0em][c]{\rotatebox{90}{\small #1}}
+    \end{minipage}
+    \begin{minipage}{\dimexpr\textwidth-1cm\relax}
+        #2
+    \end{minipage}
+    \setlength{\parindent}{\currentparindent}
+    \undef{\currentparindent}}
+
 
 \lstdefinestyle{javaBlock}{frame=false,
  language=java,
@@ -99,5 +122,6 @@
 \include{chapters/8}
 \include{chapters/9}
 \include{chapters/10}
+\include{chapters/11}
 
 \end{document}

@@ -22,3 +22,110 @@ FPL\footnote{Short for \textit{\textbf{F}unctional \textbf{P}rogramming \textbf{
    \item \textbf{Structured function returns} allow to pass more meaningful information to the caller, avoiding the need for "side-effects".
    \item \textbf{Gargabe collection}
 \end{itemize}
+
+\section*{23 - Ottobre}
+\section{FP language families}
+\begin{enumerate}
+   \item \textbf{LISP}: currently most used for \textit{AI} after Python.
+   Original LISP is no longer used, the current standard is \textit{Common LISP} which introduced statical scope opposed to the dynamic one of \textit{Original LISP} ;
+   another version is called \textit{Scheme}
+   \item \textbf{ML}: Common languages of this family are \textit{Standard ML, Caml,OCaml, F\#}.
+   These are compiled languages, but intended for interactive use.
+   ML results from the combination of Lisp and Algol-like features, including Garbage collection,
+   Abstract data types,
+   Module system and
+   Exceptions
+   \item \textbf{Haskell}: Many features are shared with \textit{ML} languages,
+   but with some differences.
+   \begin{itemize}
+      \item Type inference, Implicit parametric polymorphism, Ad hoc polymorphism (\textbf{overloading}) with type classes
+      \item \textbf{Lazy} evaluation, Tail recursion and continuations
+      \item \textbf{Purely functional} $\rightarrow$ precise management of side effects
+   \end{itemize}
+\end{enumerate}
+\newpage
+\section{Haskell basics}
+\begin{paracol}{2}
+   \labelitemize{\textbf{\textit{Basic types}}}{
+      \begin{itemize}
+         \item \texttt{Unit}
+         \item \texttt{Booleans}
+         \item \texttt{Integers}
+         \item \texttt{Strings}
+         \item \texttt{Reals}
+         \item \texttt{Tuples}
+         \item \texttt{Lists}
+         \item \texttt{Records}
+      \end{itemize}
+   }
+      \note{
+         Note that basic types are written with the first letter Uppercased.
+      }
+\vspace{\fill}
+\switchcolumn
+\vspace{\fill}
+\labelitemize{Other types}{
+   \begin{itemize}[label=$\circ$]
+      \item Patterns
+      \item Declarations
+      \item Functions
+      \item Polymorphism
+      \item Type declarations
+      \item Type Classes
+      \item Monads
+      \item Exceptions
+   \end{itemize}
+}
+\vspace{\fill}
+\end{paracol}
+
+Haskell provides an interactive  read-eval-print interpreter (\texttt{ghci}):
+many examples are available in the lecture's slides,
+here we will discuss only some more interesting ones.
+
+Variables (\textbf{names}) are bound to expressions,
+\textit{without }evaluating them (because of \textit{lazy
+evaluation}); 
+the scope of the binding is the rest of the session.
+\lstset{language=Haskell}
+
+\begin{lstlisting}
+ghci> let a = 3   -- 'let' can be omitted
+ghci> b = a + 2
+ghci> b
+5
+ghci> a = a + 1   -- okay, until here
+ghci> a           -- infinite recursion
+-- CTRL+C Manual Interrupt
+ghci> x = 1:x 
+ghci> x           -- infinite ',1' print
+\end{lstlisting}
+
+
+Moving onto \textbf{anonymous functions} i.e. \lstinline|\x -> ...| lambda notation
+\begin{lstlisting}
+ghci> (\x -> x+1)5      -- apply 5 to anon function
+6
+ghci> f = (\x -> x+1)
+ghci> f 5               -- brackets () can be omitted
+6
+ghci> h = \(x,y) -> x+y -- tuple Pattern instead of single variable
+ghci> h (3,4)           -- brackets are needed here
+7
+ghci> h 3 4             -- brackets are needed here
+-- ERROR
+ghci> :t f
+f :: Num a => a -> a
+ghci> :t h
+h :: Num a => (a, a) -> a
+\end{lstlisting}
+
+To declare explicit functions instead, the syntax is quite simple
+\begin{lstlisting}
+f (x,y) = x+y --argument must match pattern (x,y)
+\end{lstlisting}
+
+reverse xs = -- linear, tail recursive
+   let rev ( [], accum ) = accum
+      rev ( y:ys, accum ) = rev ( ys, y:accum )
+   in rev ( xs, [] )
