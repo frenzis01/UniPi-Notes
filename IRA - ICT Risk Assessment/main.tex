@@ -34,6 +34,9 @@
 % Uso dei colori
 \usepackage[dvipsnames]{xcolor}
 
+\usepackage{rotating}
+\usepackage{adjustbox}
+
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes.geometric}
@@ -63,6 +66,24 @@
 
 \newcommand{\note}[1]{\begin{notes}{#1}\end{notes}}
 \newcommand{\nl}[0]{\parskip = \baselineskip}
+
+
+\newlength{\currentparindent}
+\newcommand{\labelitemize}[2]{
+\setlength{\currentparindent}{\parindent}
+\setlength{\parindent}{0pt}
+
+\begin{minipage}{0em} % Adjust the width as needed
+    \makebox[0em][c]{\rotatebox{90}{\small #1}}
+\end{minipage}
+\begin{minipage}{\dimexpr\columnwidth-1cm\relax}
+    #2
+\end{minipage}
+\setlength{\parindent}{\currentparindent}
+% \renewcommand{\currentparindent}{} % Redefine to empty
+% \let\currentparindent\undefined
+% \undef{\currentparindent}
+}
 
 \lstset{frame=false,
  showstringspaces=false,

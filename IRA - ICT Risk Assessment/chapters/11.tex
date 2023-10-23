@@ -125,20 +125,234 @@ while at level 4 (circuit level firewall) ...\nl
 
 TODO\nl
 
-\subsection{Pros \& Cons}
+\subsection{Pros \& Cons analysis}
+
+\subsubsection{Packet-filtering firewall}
+\begin{paracol}{2}
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Pros}
+   }{
+      \begin{itemize}
+         \color{darkgreen}
+         \item A Single device can filter traffic for an entire network
+         \item Extremely fast and efficient in scanning traffic
+         \item Inexpensive
+      \item Minimal effect on other resources, network performance and end-user experience
+      \end{itemize}
+   }
+   \vspace{\fill}
+   \switchcolumn
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Cons}
+   }{
+      \begin{itemize}
+         \color{darkred}
+         \item Since traffic filtering is entirely based on IP addresses and ports,
+         it lacks broader context that informs other types of firewalls
+         \item Doesn't check the payload and can be easily spoofed
+         \item Not an ideal option for every network
+         \item Access control lists can be difficult o set up and manage
+      \end{itemize}
+   }
+   \vspace{\fill}
+\end{paracol}
+
+\subsubsection{Circuit-level gateway}
+\begin{paracol}{2}
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Pros}
+   }{
+      \begin{itemize}
+         \color{darkgreen}
+         \item Only processes requested transactions; all other traffic is rejected
+         \item Easy to set up and manage
+         \item Low cost and minimal impact on end-user experience
+      \end{itemize}
+   }
+
+   \vspace{\fill}
+   \switchcolumn
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Cons}
+   }{
+      \begin{itemize}
+         \color{darkred}
+         \item No protection against data leakage from devices within the firewall that should be used in conjunction with other security technology
+         \item No application layer monitoring
+         \item Requires ongoing updates to keep rules current
+      \end{itemize}
+   }
+   \vspace{\fill}
+\end{paracol}
+
+
+\subsubsection{Stateful inspection}
+\begin{paracol}{2}
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Pros}
+   }{
+      \begin{itemize}
+         \color{darkgreen}
+         \item Monitors the entire session for the state of the connection, while also checking
+         IP addresses and payloads for more thorough security only layer 4 information
+         \item Offers a high degree of control over what content is let in or out of the network
+         \item Does not need to open numerous ports to allow traffic in or out
+         \item Delivers substantive logging capabilities
+         \item Some defence against DOS
+      \end{itemize}
+   }
+   \vspace{\fill}
+   \switchcolumn
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Cons}
+   }{
+      \begin{itemize}
+         \color{darkred}
+         \item Resource-intensive and interferes with the speed of network communications
+         \item More expensive than other firewall options
+         \item No authentication capabilities to validate traffic sources aren't spoofed
+      \end{itemize}
+   }
+   \vspace{\fill}
+\end{paracol}
+Most popular firewall as it acts as a gateway between computers and other assets
+within the firewall and resources beyond the enterprise
+
+\subsubsection{Application-level}
+\begin{paracol}{2}
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Pros}
+   }{
+      \begin{itemize}
+         \color{darkgreen}
+         \item Examines all communications between outside sources and devices behind the
+         firewall, checking not just address, port and TCP header information, but the
+         content itself before it lets any traffic pass through the proxy. Layer 7 analysis
+         \item Provides fine-grained security controls that can, for example, allow access to a
+         website but restrict which pages on that site the user can open
+         \item Protects user anonymity
+   \end{itemize}
+   }
+
+   \vspace{\fill}
+   \switchcolumn
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Cons}
+   }{
+      \begin{itemize}
+         \color{darkred}
+         \item Can inhibit network performance
+         \item Costlier than some other firewall options
+         \item Requires a high degree of effort to derive the maximum benefit from the
+         gateway
+         \item Doesn't work with all network protocols
+      \end{itemize}
+   }
+   \vspace{\fill}
+\end{paracol}
+NGFWs are an essential safeguard for organizations in heavily
+regulated industries, such as healthcare or finance
+
+\subsubsection{NGFW}
+\begin{paracol}{2}
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Pros}
+   }{
+      \begin{itemize}
+         \color{darkgreen}
+         \item Combines DPI with malware filtering and other controls to provide an
+         optimal level of filtering. Considers also sender addresses
+         \item Tracks all traffic from Layer 2 to the application layer for more
+         accurate insights than other methods
+         \item Can be automatically updated to provide current context
+   \end{itemize}
+   }
+   \vspace{\fill}
+   \switchcolumn
+   \vspace{\fill}
+   \labelitemize{
+      \textit{Cons}
+   }{
+      \begin{itemize}
+         \color{darkred}
+         \item In order to derive the biggest benefit, organizations need to integrate
+         NGFWs with other security systems, which can be a complex process
+         \item Costlier than other firewall types
+      \end{itemize}
+   }
+   \vspace{\fill}
+\end{paracol}
+NGFWs are an essential safeguard for organizations in heavily
+regulated industries, such as healthcare or finance
+
+\subsection*{Proxies}
+\textbf{Proxies} protect clients from attacks from an external server,
+while \textbf{reverse proxies} protect internal servers from attacks by external agents, 
+besides they can also act as a load balancer.
+
+\subsection{Wrapping Up}
+\textbf{Stateful inspection} is the most common technology:
+it works at the network layer and provides
+dynamic packet filtering.
+While packet filtering examines information in a
+packet header, stateful inspection tracks each connection traversing any
+firewall interface and confirms they are valid.
+It is a system backed up by a state table that
+tracks all sessions and inspects all packets passing through: 
+if packets have
+the properties the state table predicts, they can pass, otherwise they don't.
+Clearly the state table changes
+dynamically according to traffic flow.
+
+\begin{figure}[ht]
+   \centering
+   \includegraphics{images/firewall_comparison.png}
+   \caption{Brief Firewall families comparison}
+   \label{fig:firewall_comparison}
+\end{figure}
+
+\subsection{Takeaway guidelines}
+These are the guidelines according to SNAS which indicate "suspicious" traffic \textbf{outgoing} from your network,
+thus the network traffic which should be \textbf{egress-filtered}.
 \begin{itemize}
-   \color{darkgreen}
-   \item A Single device can filter traffic for an entire network
-   \item Extremely fast and efficient in scanning traffic
-   \item Inexpensive
-   \item Minimal effect on other resources, network performance and end-user experience
+   \item All traffic directed to IP addresses in your network(or that you manage)
+   \item MS RPC (TCP/UDP 135), NetBIOS/IP (TCP/UDP 137-139), SMB/IP (TCP/445)
+   \item Trivial File Transfer Protocol - TFTP (UDP/69)
+   \item Syslog (UDP/514)
+   \item Simple Network Management Protocol – SNMP (UDP 161-162)
+   \item SMTP from all but your mail server
+   \item Internet Relay Chat IRC (TCP 6660-6669)
+   \item ICMP Echo/Reply
+   \item ICMP Host Unreachable
 \end{itemize}
 
-\begin{itemize}
-   \color{darkred}
-   \item Since traffic filtering is entirely based on IP addresses and ports,
-   it lacks broader context that informs other types of firewalls
-   \item Doesn't check the payload and can be easily spoofed
-   \item Not an ideal option for every network
-   \item Access control lists can be difficult o set up and manage
-\end{itemize}
+\section{Segmentation}
+
+A \textbf{segmented} network forces an attacker to adopt \textbf{pivoting},
+which is attacking a host only to exploit it to route traffic to other nodes or subnets,
+usually this is achieved with the aid of a \textbf{beacon} to remotely control the host.
+Hence, in general, segmentation leads the attacker to implement \textit{more} attacks.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/pivoting.png}
+   \caption{Segmented network and the need for Pivoting}
+   \label{fig:pivoting}
+\end{figure}
+
+The attacker needs to perform pivoting to intrude in the network, thus they need to attack at least one host in left subnet and one in the right subnet;
+otherwise they'd need to attack the firewall, but generally this is more costful in terms of effort and resources.
+
+It is also possible to combine \textbf{firewalls} and \textbf{honeypots}.
+They can be placed
+
+TODO
