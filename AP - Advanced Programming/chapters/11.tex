@@ -125,7 +125,218 @@ To declare explicit functions instead, the syntax is quite simple
 f (x,y) = x+y --argument must match pattern (x,y)
 \end{lstlisting}
 
-reverse xs = -- linear, tail recursive
-   let rev ( [], accum ) = accum
-      rev ( y:ys, accum ) = rev ( ys, y:accum )
-   in rev ( xs, [] )
+\begin{lstlisting}
+   reverse xs =      -- linear, tail recursive
+      let rev ( [], accum ) = accum
+         rev ( y:ys, accum ) = rev ( ys, y:accum )
+      in rev ( xs, [] )
+\end{lstlisting}
+
+
+\section*{24 - Ottobre}
+\section{More on Haskell features}
+Let's recall that Haskell is a \textbf{lazy} language,
+thus functions and data constructor don't evaluate arguments until they actually need them.
+
+\paragraph{List comprehension}
+\begin{lstlisting}
+   myData = [1,2,3,4,5,6,7]
+   twiceData = [2 * x | x <- myData]
+   -- [2,4,6,8,10,12,14]
+   twiceEvenData = [2 * x| x <- myData, x `mod` 2 == 0]
+   -- [4,8,12]
+\end{lstlisting}
+
+\begin{lstlisting}
+ghci> [ x | x <- [10..20], x /= 13, x /= 15, x /= 19]
+      [10,11,12,14,16,17,18,20] -- more predicates
+ghci> [ x*y | x <- [2,5,10], y <- [8,10,11]]
+      [16,20,22,40,50,55,80,100,110] -- more lists
+length xs = sum [1 | _ <- xs] -- anonymous (dont care) var
+      -- strings are lists...
+removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]
+\end{lstlisting}
+
+\subsection*{Datatype declearations}
+\begin{lstlisting}
+   data Color = Red | Yellow | Blue
+   data Atom = Atom String | Number
+   data List = Nil | Cons (Atom, List)
+
+   -- General form:
+   data <name> = <clause> | ... | <clause>
+   <clause> ::= <constructor> | <contructor> <type>
+\end{lstlisting}
+
+\begin{lstlisting}
+   -- also possible to define Recursive data types
+   data Tree = Leaf Int | Node (Int, Tree, Tree)
+
+   Node(4, Node(3, Leaf 1, Leaf 2), Node(5, Leaf 6, Leaf 7))
+
+   -- it is possible to use constructors in pattern matching
+   sum (Leaf n) = n
+   sum (Node(n,t1,t2)) = n + sum(t1) + sum(t2)
+\end{lstlisting}
+
+Besides it is possible to match different cases with a specific \texttt{case} statement;
+note that \textbf{Indendation} in case statement \textit{MATTERS}
+\begin{lstlisting}
+   data Exp = Var Int | Const Int | Plus (Exp, Exp)
+
+   case e of
+      Var n -> ...
+      Const n -> ...
+      Plus(e1,e2) -> ...
+
+   -- Indendation in case statement MATTERS
+\end{lstlisting}
+
+\subsection{Function Types}
+\lstinline{f :: A -> B} means that:
+ \begin{align*}
+   \forall x \in A & f(x) =
+   \begin{cases}
+      \exists y = f(x) \in B \\
+      \textit{run forever}
+   \end{cases}
+\end{align*}
+In other words, if $f(x)$ terminates, then $f(x) \in B$.
+In ML, functions with type A → B can throw an exception or
+have other effects, but \textbf{not} in Haskell.
+
+\subsection{Loops and Recursion}
+In FP \texttt{for} and \texttt{while} iterative loops are replaced by \textbf{recusive} subroutines calling themselves directly or indirectly (\textit{mutual recursion}).
+
+\begin{lstlisting}
+length' [] = 0
+length' (x:s) = 1 + length'(s)
+   -- definition using guards and pattern matching
+   -- take' n lst returns first n elements of a list
+take' :: (Num i, Ord i) => i -> [a] -> [a]
+take' n _
+| n <= 0 = []
+take' _ [] = []
+take' n (x:xs) = x : take' (n-1) xs
+\end{lstlisting}
+
+\subsection{Higher-Order functions}
+Functions that take other functions as arguments or return a function as a result are \textbf{higher-order} functions.
+
+\begin{lstlisting}
+applyTwice :: (a -> a) -> a -> a    -- function as arg and res
+applyTwice f x = f (f x)
+
+> applyTwice (+3) 10 => 16
+> applyTwice (++ " HAHA") "HEY" => "HEY HAHA HAHA"
+> applyTwice (3:) [1] => [3,3,1]
+
+applyTwice' f = f.f                 -- equivalent definition
+:t (.)
+> (.) :: (b -> c) -> (a -> b) -> a -> c
+\end{lstlisting}
+
+\begin{lstlisting}
+   -- define the operator |> which inverts the order between function and argument
+   (|>) a f = f a
+   (|>) :: t1 -> (t1 -> t2) -> t2
+   -- Seems dull right?
+   -- Look at the following example
+   
+   -- Here, the order of invocation is the same,
+   -- but the second "infix" form is (might be) more readable
+   > length ( tail ( reverse [1,2,3])) 
+      2
+   > [1,2,3] |> reverse |> tail |> length 
+      2
+\end{lstlisting}
+
+\begin{lstlisting}
+(+) :: Num a => a -> a -> a
+> let f = (+) 5 // partial application
+>:t f ==> f :: Num a => a -> a
+> f 4 ==> 9
+elem :: (Eq a, Foldable t) => a -> t a -> Bool
+> let isUpper = (`elem` ['A'..'Z'])
+>:t isUpper ==> isUpper :: Char -> Bool
+> isUpper 'A' ==> True
+> isUpper '0' ==> False
+\end{lstlisting}
+
+\subsubsection{Combinators}
+\lstinline|map| \textit{combinator} applies argument function to each element in
+a collection.
+\begin{lstlisting}
+   map :: (a -> b) -> [a] -> [b]
+   map _ [] = []
+   map f (x:xs) = f x : map f xs
+\end{lstlisting}
+
+\lstinline|filter| takes a collection and a boolean predicate, and
+returns the collection of the elements satisfying the
+predicate.\\
+It is defined as follows:
+\begin{lstlisting}
+   filter :: (a -> Bool) -> [a] -> [a]
+   filter _ [] = []
+   filter p (x:xs)
+      | p x = x : filter p xs
+      | otherwise = filter p xs
+\end{lstlisting}
+And can be applied in the following way
+\begin{lstlisting}
+   > filter (>3) [1,5,3,2,1,6,4,3,2,1]
+   [5,6,4]
+   > filter (==3) [1,2,3,4,5]
+   [3]
+   > filter even [1..10]
+   [2,4,6,8,10]
+   > let notNull x = not (null x)
+   in filter notNull [[1,2,3],[],[3,4,5],[2,2],[],[],[]]
+   [[1,2,3],[3,4,5],[2,2]]
+\end{lstlisting}
+
+reduce (\lstinline|foldl|,\lstinline|foldr|): takes a collection, an initial value,
+and a function, and combines the elements in the
+collection according to the function.
+
+\begin{lstlisting}
+-- folds values from end to beginning of list
+foldr :: Foldable t => (a -> b -> b) -> b -> t a -> b
+foldr f z [] = z
+foldr f z (x:xs) = f x (foldr f z xs)
+-- folds values from beginning to end of list
+foldl :: Foldable t => (b -> a -> b) -> b -> t a -> b
+foldl f z [] = z
+foldl f z (x:xs) = foldl f (f z x) xs
+-- variants for non-empty lists
+foldr1 :: Foldable t => (a -> a -> a) -> t a -> a
+foldl1 :: Foldable t => (a -> a -> a) -> t a -> a
+\end{lstlisting}
+
+Let's provide some examples:
+\begin{lstlisting}
+   sum' :: (Num a) => [a] -> a
+   sum' xs = foldl (\acc x -> acc + x) 0 xs
+   
+   maximum' :: (Ord a) => [a] -> a
+   maximum' = foldr1 (\x acc -> if x > acc then x else acc)
+   
+   reverse' :: [a] -> [a]
+   reverse' = foldl (\acc x -> x : acc) []
+   
+   product' :: (Num a) => [a] -> a
+   product' = foldr1 (*)
+   product' = foldr (*) 1
+   -- Notice that product' [] returns 1 !
+
+   filter' :: (a -> Bool) -> [a] -> [a]
+   filter' p = foldr (\x acc -> if p x then x : acc else acc)[]
+   
+   head' :: [a] -> a
+   head' = foldr1 (\x _ -> x)
+   last' :: [a] -> a
+   last' = foldl1 (\_ x -> x)
+\end{lstlisting}
+
+TODO finish to read facultative slides
