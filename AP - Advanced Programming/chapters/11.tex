@@ -339,4 +339,46 @@ Let's provide some examples:
    last' = foldl1 (\_ x -> x)
 \end{lstlisting}
 
-TODO finish to read facultative slides
+\subsection{Recursion and Optimization}
+
+From a theoretical point of view recursion and iteration are equivalently expressive,
+and typically one is preferred over the other depending on the problem being faced to make the code more intuitive.
+In general a procedure call is \textit{much more expensive} than a conditinoal branch,
+however FP compilers can perform many optimizations and produce better code, especially for known blocks;
+for this reason the use of combinators such as \lstinline|map,reduce,filter, foreach,...| is strongly encouraged.
+
+\textbf{Tail-recursive} functions are functions in which no operations follow the recursive call(s) in the function,
+thus the function returns immediately
+after the recursive call,
+allowing the compiler to reuse the subroutine's frame on the run-time
+stack, since the current subroutine state is no longer needed.
+Besides many compilers instead of re-invoking the function,
+simply jump to the beginning of the function.
+
+Let's provide the classic example of Fibonacci to illustrate how to convert a normal recursive function to its tail-recursive correspondant one:
+\begin{lstlisting}
+   -- typical Fibonacci
+   fib = \n -> if n == 0 then 1
+      else if n == 1 then 1
+         else fib (n - 1) + fib (n - 2)
+   
+   fibTR = \n -> let fibhelper (f1, f2, i) =
+      if (n == i) then f2
+         else fibhelper (f2, f1 + f2, i + 1)
+      in fibhelper(0,1,0)
+\end{lstlisting}
+Notice that fibTR takes only $\mathcal{O}(n)$ since it builds the Fibonacci sequence starting from 1 to $n$,
+while the more canonical approach calculates multiple times the same values,
+and starts from $n$ until 1 is reached.
+
+\lstinline|foldl| is tail-recursive, \lstinline|foldr| is not. But because of
+laziness Haskell has \textbf{no} tail-recursion optimization.
+Despite this, it provides a more efficient variant of foldl called \lstinline|foldl'| where f is evaluated \textbf{strictly}.\\
+\textit{Strictly} means that the compiler evaluates the accumulator at \textit{each step} of the folding process, ensuring that intermediate values are not built up as \textit{unevaluated thunks} i.e. Haskell's term for delayed computations.
+Due to its \textit{strictness} \lstinline|fold'| is less likely to cause \textbf{space leaks} (see note below), and it generally has better performance for many common folding operations.
+
+\note{\textbf{"Space leaks"} mahy happen when a program retains references to data that should no longer be needed, preventing the garbage collector from reclaiming memory. 
+This can lead to inefficient memory usage and, in some cases, cause the program to run out of memory.
+This (generally) occurs only when handling large data sources or \textit{infinite data structures} (which are allowed in Haskell);
+space leaks may be very hard to debug,
+tools like memory profilers and heap profiling can be helpful in identifying them}
