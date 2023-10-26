@@ -354,3 +354,127 @@ otherwise they'd need to attack the firewall, but generally this is more costful
 
 It is also possible to combine \textbf{firewalls} and \textbf{honeypots}.
 They can be placed either in the internal network amongst other nodes or between the router and the global/outside network.
+
+\subsubsection{Microsegmentation}
+
+What about \textbf{cloud}-based computing?
+The concept of firewalling still holds,
+even for virtual networks,
+but with a few adjustments.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/firewall_cloud.png}
+   \caption{Firewalling in cloud environments}
+   \label{fig:firewall_cloud}
+\end{figure}
+
+\textbf{Microsegmentation} software with network virtualization technology is
+used to create "zones" in cloud deployments.
+These granular secure zones isolate \textit{workloads}, securing them individually with custom,
+workload-specific policies.
+This kind of granular security allows organizations to apply security controls to individual workloads and
+applications, rather than having a single security policy for the entire server.
+
+In this scenario, we can broadly define a \textbf{workload} as the resources and processes
+needed to run an application. 
+Hosts, virtual machines and containers are a few examples of workloads.
+Since most modern enterprise systems are distrubuted among many cloud and local architectures, 
+the goal of microsegmentation and zero trust is to overcome
+\textbf{Perimeter Security} while protecting workloads.\nl
+
+\textit{Perimeter security} makes up a significant part of most organizations’
+network security controls.
+Network security devices, such as network firewalls,
+inspect “\textit{north-south}” (client $\rightarrow$ server) traffic that crosses the
+security perimeter and block "bad" traffic.\\
+Assets within the perimeter are instead implicitly trusted,
+which means that “\textit{east-west}” (i.e. workload to workload) traffic may be allowed without inspection;
+this is why \textbf{lateral movements} are usually hard to be identified.\\
+Microsegmentation provides isolation and determines if two endpoints should access each other, hence
+enforcing segmentation with least-privileged access reduces the scope of
+lateral movements and might contains data breaches.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.4\textwidth]{images/microsegmentation_1.png}
+   \includegraphics[width=0.4\textwidth]{images/microsegmentation_2.png}
+   \caption{Microsegmentation example figures}
+   \label{fig:microsegmentation}
+\end{figure}
+
+\subsubsection*{VLANs and Subnets}
+VLANs virtually separate LANs into smaller networks,
+they work like normal LANs but are logically or virtually separated instead of being
+physically so.\\
+Amongst reasons to use VLANs, the main one is to broadcast traffic.
+VLANs give us all of the
+benefits of physically separating our network, by doing it virtually without spending extra money on hardware and phyisical wiring management.
+
+Subnets instead are networks inside a network or, in other words are smaller sections (subnetworks) of a larger network.
+Basically, subnets are a logical partition of an IP network into several smaller
+networks for making the network fast and efficient.
+
+The key point is that VLAN are based on \textit{Layer-2} protocol, while subnet on \textit{Layer-3}.
+
+\section{VPN}
+A \textbf{Virtual Private Network} \textit{(VPN)} is an overlay network that emulates a secure connection on top of a public (\textit{unsecure}) network.
+VPN connect local subnets that may even include just one machine.
+
+\textbf{IPSEC} is an IPv4 extension to encrypt an authenticate information flow.
+There are also other solutions to encrypt information also on different OSI layers, like PGP, HTTPs, SSL/TLS, ...
+There are also network boards\footnote{FPGAs (?)} designed specifically to speed up IPSEC encryption/decryption.\\
+IPSEC provides two possibile behaviours/protocols:
+\begin{enumerate}
+   \item \textbf{Authentication} Mode: auth header
+   \item \textbf{Encapsulated Security Payload}: information encryption
+\end{enumerate}
+Besides, each of them can be used in two modes:
+\begin{enumerate}
+   \item \textbf{Transport} Mode: new fields are added to original packets.
+   It is used to create a secure point-to-point connection between two nodes
+   \item \textbf{Tunnel} Mode: IP packets become the payload of new IPSEC packets
+   \note{This is the preferred and most popular way, since it may act transparently to internal nodes in a LAN,
+   given that a host is delegated with the task of encrypting and decrypting}
+\end{enumerate}
+
+
+Each connection between nodes is protected using symmetric encryption while
+the endpoints of the VPN may own a pair of public/private keys;
+rhere is a protocol for the initial exchange that uses asymmetric encryption to
+determine the shared key to create a secure connection between two nodes
+that is protected through symmetric encryption.
+In general symmetric encryption is better than asymmetric in terms of performance,
+since it requires only basic operations like shifts and XOR.\nl
+
+IPSEC defines 4 new protocols:
+\begin{enumerate}
+   \item \textbf{AH} \textit{Authentication header }- mutual authentication and message integrity
+   \item \textbf{ESP} \textit{Encapsulating Security Payload }- it guarantees confidentiality by protecting all the content that is exchanged
+   \item \textbf{IKE} \textit{Internet Key Exchange }- two partners reach a consensus on the key to be used to protect their communications and on how long such key is valid
+   4 messages needed.
+   \item \textbf{ISAKMP} \textit{Internet Security Association and Key Management Protocol }- to agree on the \textit{“Security Association (SA)”} to be established and on its attributes.\\
+   6 messages needed, or 3 in case of \textit{ISAKMP-AGGRESSIVE}, which is usually preferred.
+\end{enumerate}
+
+The abovementioned \textbf{security association} (\textit{SA}) describes a direct connection with the
+services associated with the traffic that crosses that connection;
+it defines all the information needed to achieve a secure
+communication.
+The security services of a SA are implemented through either AH
+or ESP, even if in principle the two protocols can be applied
+simultaneously to the same connection this never happens in
+practice.
+Besides note that to defend a bidirectional communication two SAs are required,
+one for each direction.\\
+When negotiating on the SA the two nodes exchange a \textit{Security Parameters Index} \textit{SPI} used to lookup in a \textit{Security Associations Database SAD}.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/IPSEC_ah.png}
+   \caption{Authentication Mode header}
+   \label{fig:IPSEC_ah}
+\end{figure}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/IPSEC_esp.png}
+   \caption{ESP mode}
+   \label{fig:IPSEC_ah}
+\end{figure}
