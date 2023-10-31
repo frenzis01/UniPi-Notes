@@ -60,4 +60,51 @@ Sometimes continuous learning is preferred since the normal behavior \textbf{cha
 
 \subsection{Specification Based}
 The key point here is that the so-called normal network behaviour is not deduced by observing programs behaviour over time,
-instead by what are the running programs and what they should do according to their specification. 
+instead by what are the running programs and what they should do according to their specification.
+
+\section{Signature Based}
+
+The main idea is that there are some \textbf{behaviors} and some \textbf{data} in a \textit{malware} that \textbf{identify}
+the malware in a reliable way, i.e. \textit{malware signature}.\\
+All the signatures are stored in a database that is used to discover malware,
+hence two issues arise:
+\begin{enumerate}
+   \item How to discover a signature
+   \item How to update the database
+\end{enumerate}
+Note that this kind of detection needs malware signatures, thus it cannot detect an attack exploiting a 0-day vulnerability.
+
+A 0-day exploit can be discovered through anomaly detection or by analyzing the
+information that a {---}for-intelligence-{---} honeypot  returns,
+however thare also alternative strategies exist to define a signature,
+for instance
+extending the approach by uploading suspicious code on the system of the tool supplier when a partial matching occurs.
+This is a solution inspired by \textit{default allow},
+i.e. anything that does not match the signature is allowed.\nl
+
+Signature based detection methods can be classified as follows
+\begin{enumerate}
+   \item \textbf{Dynamic}:
+   The program runs in a protected environment (virtual machine or sandbox), 
+   and then the collected information is compared against the signature
+   \item \textbf{Static}:
+   The program code is analyzed, and the output is compared against the signature.\\
+   This was the standard approach in old antivirus tools, which nowdays instead apply a hybrid one
+   \item \textbf{Hybrid}:
+   Merge of the two previous approaches:
+   a static analysis collects suspicious programs and then the behavior of each program is monitored.
+\end{enumerate}
+
+A simple antivirus scanner performing \textbf{static} analysis
+matches code fragments against signatures, uses heuristic strategies to discover viruses and polymorphic viruses,
+and performs 
+integrity checks on files to discover malicious updates by pairing files with checksum, hash, keyed hash etc.
+
+\textbf{Dynamic} solutions typically use a \textit{decryption and emulation} approach:
+The suspicious code is uploaded on a remote system 
+(cloud run by the antivirus supplier)
+which emulates the execution for a predefined number of
+instructions.
+If the executions yields the expected results,
+the code is classified as safe.
+Clearly this does not discover viruses hidden within normal code.
