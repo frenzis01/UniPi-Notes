@@ -1,0 +1,183 @@
+\chapter{Type Inference}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/haskell_polymorphism.png}
+   \caption{Haskell Polymorphism Recap}
+   \label{fig:haskell_polymorphism}
+\end{figure}
+
+\section{Overloading}
+Haskell allows \textbf{overloading} even of \textbf{primitive types}:
+the code to be executed is determined by the type of the arguments,
+leading to have \textit{early binding} in \textit{statically} typed languages
+or \textit{late binding} in \textit{dynamically} typed languages.
+
+In Haskell we can write the following, but what is the type?
+\begin{lstlisting}
+   sqr x = x * x
+\end{lstlisting}
+
+When considering overloading besides arithmetic, we find that some functions are \textbf{fully polymorphic}:
+\begin{lstlisting}
+   length :: [w] -> Int
+\end{lstlisting}
+
+While others not so much;
+for example, \textit{membership} works only for types that support equality,
+while \textit{sorting} works only for types which support \textit{ordering}. 
+\begin{lstlisting}
+   member :: [w] -> w -> Bool
+   sort :: [w] -> [w]
+\end{lstlisting}
+
+\section{Type Classes}
+\textbf{Type Classes} solve many overloading problems concerning arithmetic and equality (and similar properties) support.
+
+The idea is to generalize ML’s eqtypes to arbitrary types
+and provide concise types to describe overloaded
+functions, so no exponential blow-up (i.e. defining functions for every possible combination of type arguments).\\
+Type classes allow users to define functions using overloaded
+operations {---}e.g. square, squares, and member{---} and to
+declare new collections of
+overloaded functions: equality and arithmetic
+operators are not privileged built-ins.
+Haskell's solutions fits perfectly within type inference framework.
+
+The intuition is that a sorting function may allow to be passed a comparison \lstinline|cmp| operator as argument,
+thus making the function parametric.
+\begin{lstlisting}
+   qsort:: (a -> a -> Bool) -> [a] -> [a]
+   qsort cmp [] = []
+   qsort cmp (x:xs) = qsort cmp (filter (cmp x) xs) ++ [x] ++
+   qsort cmp (filter (not.cmp x) xs)
+\end{lstlisting}
+
+Developing this idea, consider rewriting the parabola function to take operators as argument
+\begin{lstlisting}
+   parabola x = (x * x) + x
+   parabola' (plus, times) x = plus (times x x) x
+\end{lstlisting}
+Here the extra parameter is a \textit{\textbf{dictionary}} that provides implementations for the overloaded ops.
+These implies rewriting calls to pass appropriate implementations for plus and times:
+\begin{lstlisting}
+   y = parabola'(intPlus,intTimes) 10
+   z = parabola'(floatPlus, floatTimes) 3.14
+\end{lstlisting}
+
+\begin{enumerate}
+   \item Type class declarations
+   \begin{enumerate}
+      \item Define a set of operations, give it a name
+      \item Example: \lstinline|Eq a| type class
+      • operations \lstinline|==| and \lstinline|\=| with \lstinline|type a -> a -> Bool|
+   \end{enumerate}
+   \item Type class instance declarations
+   \begin{enumerate}
+      \item Specify the implementations for a particular type
+      \item For \lstinline|Int| instance, \lstinline|==| is defined to be integer equality
+   \end{enumerate}
+   \item Qualified types (or Type Constraints)
+   Concisely express the operations required on otherwise polymorphic type
+   \lstinline|member:: Eq w => w -> [w] -> Bool|
+\end{enumerate}
+
+\labelitemize{
+   \textit{implementation summary}
+}{
+   \begin{enumerate}
+      \item Each overloaded symbol has to be introduced in at least one type class
+      \item The compiler translates each function that uses an overloaded symbol into a function with an extra parameter: the dictionary.
+      \item References to overloaded symbols are rewritten by the compiler to lookup the symbol in the dictionary.
+      \item The compiler converts each type class declaration into a dictionary type declaration and a set of selector functions.
+      \item The compiler converts each instance declaration into a dictionary of the appropriate type.
+      \item The compiler rewrites calls to overloaded functions to pass a dictionary. It uses the static, qualified type of the function to select the dictionary.
+   \end{enumerate}
+}
+
+\subsection{Compositionality}
+\begin{lstlisting}
+   class Eq a where
+   (==) :: a -> a -> Bool
+   instance Eq Int where
+   (==) = intEq -- intEq primitive equality
+   instance (Eq a, Eq b) => Eq(a,b) where
+   (u,v) == (x,y) = (u == x) && (v == y)
+   instance Eq a => Eq [a] where
+   (==) [] [] = True
+   (==) (x:xs) (y:ys) = x==y && xs == ys
+   (==) _ _ = False
+\end{lstlisting}
+
+\subsection{Compound Translation}
+\newpage
+\subsection{Subclasses}
+\begin{paracol}{2}
+   \vspace{\fill}
+   
+   A subclass declaration expresses this relationship:
+   \begin{lstlisting}
+      class Eq a => Num a where
+      (+) :: a -> a -> a
+      (*) :: a -> a -> a
+   \end{lstlisting}
+• With that declaration, we can simplify the type of the function
+
+\begin{lstlisting}
+   memsq :: (Eq a, Num a) => a -> [a] -> Bool
+   memsq x xs = member (square x) xs
+\end{lstlisting}
+
+\vspace{\fill}
+\switchcolumn
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/haskell_subclasses.png}
+   \caption{Haskell Subclasses relationships}
+   \label{fig:haskell_subclasses}
+\end{figure}
+
+\end{paracol}
+
+\subsection{Deriving}
+For Read, Show, Bounded, Enum, Eq, and Ord, the compiler
+can generate instance declarations automatically.
+\begin{lstlisting}
+   data Color = Red | Green | Blue
+      deriving (Show, Read, Eq, Ord)
+   
+   Main>:t show
+   show :: Show a => a -> String
+   Main> show Red
+   "Red"
+   Main> Red < Green
+   True
+   Main>:t read
+   read :: Read a => String -> a
+   Main> let c :: Color = read "Red"
+   Main> c
+   Red
+\end{lstlisting}
+
+\subsection{Numeric Literals}
+\begin{lstlisting}
+   class Num a where
+      (+) :: a -> a -> a
+      (-) :: a -> a -> a
+      fromInteger :: Integer -> a
+      -- Even literals are overloaded.
+      -- 1 :: (Num a) => a
+      ...
+
+   inc :: Num a => a -> a
+   inc x = x + 1
+\end{lstlisting}
+
+\labelitemize{
+   \textit{Advantages}
+}{
+   Numeric literals can be interpreted as values of any
+   appropriate numeric type,
+   for example: 1 can be an Integer or a Float or a user-
+   defined numeric type.
+}
