@@ -79,14 +79,41 @@ check to detect a VM.
 To communicate from inside the VM to the host and vice versa, VMMs use
 things like shared memory or special instruction sequences.
 Even if the guest
-additions are not installed, these mechanisms are there to make guest
-additions work can be detected.
+additions are not installed, these mechanisms are there and can be detected.
 
 Besides, some malware look for signs of a system used by a normal user doing routine
 things as opposed to a clean system for a special purpose, like analysing
 malware.
-Usually, malware analysis starts with a clean VM because it is simpler
+Usually, malware analysis starts with a \textit{clean VM} because it is simpler
 to get a clean VM going for each malware analysis and having a clean system
-removes a lot of variability
+removes a lot of variability.
 
 There is a debate on compatibility against transparency.
+
+\subsection{More-specific detection}
+Digging in deeper into VMs detection, we can consider a few known ways for malwares to understand whether they are running inside a VM environment.
+
+\begin{itemize}
+   \item Assembly implementation of the \texttt{IsDebuggerPresent} API function:
+   can indicate whether the current process is being debugged by checking the \texttt{BeingDebugged} flag of the \textit{Process Environment Block}.
+   The malware can execute a \texttt{CPUID} instruction with \texttt{EAX=40000000} and check if the returned value contains the string \texttt{"vmware"}.
+   \item \texttt{NtGlobalFlag} field anti-debugging:
+   indicates if the process was
+   created by the debugger
+   \item \texttt{RDTSC} instruction:
+   indicates how many CPU ticks have
+   taken place since the processor was reset
+   \item \textit{Stack Segment Register}: 
+   used to detect if the program is being
+   traced.
+   \item Malware usually uses the \texttt{Sleep} API (\texttt{Beep} API in \textit{Windows}) function
+   to delay execution and avoid detection by sandboxes.
+\end{itemize}
+
+\subsection{\texttt{WannaCry} example}
+\texttt{WannaCry} was malware first appeared back in 2017.
+It was a worm which encrypted the boot block.
+The malware tried to contact a non-existing website,
+if no response was given it would have infected other nodes, otherwise it would have not.
+Sandboxes (typically) always answer positively to attempts to contact outside network, making the malware perfectly designed to determine whether it was running in a sandbox or not,
+since in a real environment no response would have been received, since the website doesn't exist. 
