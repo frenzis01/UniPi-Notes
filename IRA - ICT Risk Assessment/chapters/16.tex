@@ -1,0 +1,205 @@
+\chapter{Intrusion Analysis}
+
+Discover possible intrusions
+A critical point in improving the robustness of a system and resist to intrusions
+is to know all the intrusions of one or some threat agents aka attackers;
+the reason is that we are sure that our changes improve the robustness and
+resilience of a system only if we know all the intrusions.
+
+\begin{center}
+   \color{gray}
+   \textit{If we know just a \textbf{proper subset} $Sub$ of the possible intrusions $Int$ against a system
+   $S$ and if we change $S$ to stop intrusion in $Sub$ only, then this may increase the
+   success probability of some intrusions against $S$ in $Int-Sub$}
+\end{center}
+There is also a formal proof of the above \textit{theorem},
+which is a consequence of \textbf{Bayes theorem} and shows the holistic nature of
+security,
+meaning that you \textbf{cannot} achieve security by \textbf{local} improvements.
+
+The theorem can explain the failure of risk assessment and management solutions
+based upon the discovery of a few intrusions against a system (penetration test,
+red/purple team, capture the flag) and stresses that automated discovery is needed due to the huge number of intrusions.
+
+\section{Bayes theorem}
+\textbf{Bayes Theorem} came out from logistic and operational research and states the following:
+\emph{Let us assume there is a group of people that want to go from A to B but all the paths between the two points cross a bridge,
+then an increase in the number of bridges may increase the
+average time from A to B.}
+
+In \textit{cybersecurity} the increase may be due to lack of information on the \textbf{shortest paths} from A to B.
+By increasing the number of paths we increase uncertainty
+about the optimal choice at a choke point.
+Looking at the theorem from an opposite point of view, a decrease in the number of possible
+intrusions ($=paths$) may decrease the time to implement an intrusion.
+
+\section{Measuring \#intrusions}
+
+\subsection{Graph}
+Build an oriented graph $OG$ paired with the triple $\langle \textit{system S}, \textit{attacker TA}, \textit{goal G} \rangle$ as following:
+\begin{enumerate}
+   \item Each node $N$ of $OG$ is paired with a set of access rights of $S = \textit{security status} =SS(N) = $access rights TA has acquired through the previous attacks
+   \item Each arc $A$ of $OG$ is labelled with $\langle A, V, M \rangle$ where $A$ is an attack, $V$ a vulnerability
+   and $M$ is a module of $S$
+   \item The \textit{precondition} of $A$ (i.e. the access rights to execute $A$) are a subset of $SS(N)$
+   where $N$ is the source of $A$
+\end{enumerate}
+
+\labelitemize{
+   \textit{Graph properties}
+}{
+   \begin{itemize}
+      \item $OG$ is acyclic ($TA$ is rational and minimizes its efforts)
+      \item No path of $OG$ has multiple occurrences of an arc with the same label
+      \item The initial node $I$ is the one where $SS(I)$ is the set of legal access rights of $TA$
+      \item A node $FN$ is final if there is at least one path from $I$ to $FN$ and the $FN$ is the first node
+      on the path where $SS(FN)$ includes $G$
+      \item Any intrusion defines a path from $I$ to a final node
+      \item $G$ can be generalized to a set of goals and node $N$ is final if $SS(N)$ belongs to $G$
+   \end{itemize}
+}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/attack_graph.png}
+   \caption{Simple attack graph example}
+   \label{fig:attack_graph}
+\end{figure}
+\note{Note that attack graphs assume that attacks \textit{always succeed},
+and that access rights are \textit{never lost},
+in fact they are always increasing}
+
+Since no defense is considered the acquisition of rights is \textbf{monotonically increasing},
+leading to \textbf{huge graphs}, making them computationally unfeasable to be analyzed.
+To consider attack failures we need to define an \textbf{attacker state} that also takes into account previous \textbf{failures},
+since overall process is not a Markov process because the next action also
+depends upon the past history.
+However, a detailed modeling of attacks and access rights increases the overall complexity.
+
+\subsection{Tree}
+
+We can simplify the attack graph and represent intrusions with trees:
+\begin{enumerate}
+   \item A leaf represents an attack enabled by a vulnerability = an elementary attack
+   \item a node that is not a leaf represents a complex attack
+   \item the subtree rooted in the node shows how a complex attack may be implemented
+\end{enumerate}
+
+\begin{itemize}
+   \item Each node that cannnot be mapped into an elementary attack should be then
+   decomposed into a sequence of attack
+   \item The leaves of the tree represents the sequence of attacks in an intrusion
+   \item We can have an AND/OR trees where a not leaf node may have AND or OR sons:
+   \begin{itemize}
+      \item AND = All the attacks that are sons of the node have to be executed
+      \item OR = One attack sufficies
+      \item The son of AND/OR nodes may be either elementary or complex attacks
+   \end{itemize}
+   \item Useful to represent or discover a decomposition and possible choices but not to
+   discover all intrusions
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/attack_tree.png}
+   \caption{Attack tree}
+   \label{fig:attack_tree}
+\end{figure}
+
+\note{Spoiler alert: intrusion-trees do not work either \smiley}
+
+\subsection{Building and stopping intrusions}
+\subsubsection{Building intrusions}
+The critical point to discover intrusions is \textbf{adversary emulation},
+understanding how
+attackers behaves and how they can chain actions to reach a goal.
+
+A starting point may be given by the following properties of an adversary
+\begin{enumerate}
+   \item Attacks they may execute (due to preferences, tools, resources, know how)
+   \item Initial access rights = the legal ones
+   \item Initial informations on the system
+   \item Final access rights = those in a goal
+\end{enumerate}
+
+Recall that an attacker \textbf{cannot} build an attack graph before starting it intrusion
+since they have limited
+visibility and thus \textit{lack information} on system components.
+The attacker interleaves the building of a map of the whole
+system with the attacks to reach its goal,
+possibly resulting in the execution of \textit{"useless" attacks} that
+do not grant any access right to reach the goal,
+but are try-and-error steps towards defining such map.
+
+\note{
+   Insiders are among the most dangerous attackers because they do not
+   have to collect information as they already have a map
+}
+
+\subsubsection{Stopping an intrusion}
+To stop an attacker we have to stop all its intrusions, 
+and to stop an intrusion we need to stop at least one attack in the attack chain in an intrusion (stopping other actions may be more difficult).
+
+It is important to focus only to impactful attacks,
+the so-called "useless" ones are negligible in the analysis.
+To \textbf{optimize} the security investment,
+we should aim to stop attacks useful for several intrusions:
+choose the \textit{minimal} number of attacks to stop all intrusions
+or
+choose a set of attacks to stop such that there is at least \textit{one attack for
+each intrusion} and the overall cost is the lowest one.
+
+This optimization problem highlights how to rank vulnerability
+to produce a ranking tailored for the target system:
+the score of a vulnerability $v$ increases with the number of chains or paths
+we can stop by removing the vulnerability $v$.
+In the attack graph, 
+tailor the score to the pair $\langle system, attacker \rangle$ by considering
+the paths the attacker can implement.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.48\columnwidth]{images/stop_intrusions_step1.png}
+   \includegraphics[width=0.48\columnwidth]{images/stop_intrusions_step2.png}\\
+   \includegraphics[width=0.48\columnwidth]{images/stop_intrusions_step3.png}
+   \includegraphics[width=0.48\columnwidth]{images/stop_intrusions_step4.png}
+   \caption{Stopping an intrusion using graphs}
+   \label{fig:stop_intrusions_steps}
+\end{figure}
+
+\section{Automating intrusion}
+Even if it's possible to automate attacks, automating intrusions is more complex since
+doing so implies having a strategy on ordering attacks and alternating them with actions.\\
+In simple cases where the ordering of actions can be easily
+discovered automation is possible,
+otherwise 
+only some phases are automated but not the whole intrusion.
+\labelitemize{
+   \textit{Intrusion} 
+   \textit{steps}
+}{
+   \begin{itemize}
+      \item {\color{gray} Initial access to the system $\longleftarrow$ \textit{Automatable}}
+      \item Lateral movement and information collection
+      \item {\color{gray} Deployment of malware and encryption $\longleftarrow$ \textit{Automatable}}
+   \end{itemize}
+}
+
+Instead of using the standard previously described attack graph, a more realistic solution is the following:
+\begin{enumerate}
+   \item \textbf{Emulate} the behavior of the various attackers
+   \item Record each action in a graph
+   \item Merge the graphs
+   \item Analyze the graph describing their intrusions (a posteriori graph)
+   \item Compute a \textbf{cut} of the graph
+\end{enumerate}
+
+An important feature of an \textbf{emulation} is the modeling of attack \textbf{failure} and
+how they are handled by an attacker, which can be done in various ways:
+\begin{enumerate}
+   \item Repeat the attack till it succeeds
+   \item Repeat for a predefined number of times and then forget
+   \item Choose another action but do not forget the attack and come back later.\\
+   The last strategy may result in the discovery of \textbf{black swans},
+   which are events with a very low but \textit{\textbf{not} neglectable} probability.
+\end{enumerate}
