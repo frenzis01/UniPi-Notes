@@ -10,11 +10,16 @@
 \usepackage{hyperref}
 
 \usepackage{graphicx}
-\setkeys{Gin}{width=0.6\textwidth}
+\setkeys{Gin}{width=0.6\columnwidth}
 
 \usepackage{wrapfig}
 
 \usepackage{enumitem}
+\renewcommand{\labelitemi}{$\diamond$}
+\renewcommand{\labelitemiii}{$\circ$}
+\setlist[enumerate,2]{label=\roman*.}
+\setlist[enumerate,3]{label=(\alph*)}
+
 \usepackage{paracol}
 \usepackage{multicol}
 
@@ -114,6 +119,7 @@
 \include{chapters/7}
 \include{chapters/8}
 \include{chapters/9}
+\include{chapters/10}
 
 
 \end{document}
