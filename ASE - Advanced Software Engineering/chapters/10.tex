@@ -96,10 +96,10 @@ When speaking of services "size" two measures come in handy:
    \item 
    \textbf{Coupling} measures number of \textit{inter}-component relationships.\\
    \textit{Low \textbf{coupling}} $\longrightarrow$ \textit{independent services, independent updates}\\
-   Idea $\longrightarrow$ if two services interact too much, then they should have be unified in a single service.
+   \textit{idea} $\longrightarrow$ if two services interact too much, then they should have be unified in a single service.
    \item \textbf{Cohesion} measures number of \textit{intra}-component relationships.\\
    \textit{High \textbf{cohesion}} $\longrightarrow$ \textit{less inter-service communication overhead}\\
-   idea $\longrightarrow$ if a service intracommunicates too much with itself, then it should be split into smaller services.
+   \textit{idea} $\longrightarrow$ if a service intracommunicates too much with itself, then it should be split into smaller services.
 \end{enumerate}
 The key principle which the two measures aim to address is the "Single responsibility principle",
 which states that each service should do one thing only and should do it well.
@@ -157,7 +157,8 @@ Understanding how to decompose is not a trivial task:
 \end{figure}
 
 
-Ideally each microservice should manage its \textit{own data}, but this arises the problem of dealing with possible \textbf{data dependencies}.\nl
+Ideally each microservice should manage its \textit{own data}, but this arises the problem of dealing with possible \textbf{data dependencies}.
+\\
 To avoid major issues, data sharing should be as little as possible
 and should mostly be \textit{read-only}, with few services responsible for data updates.
 Besides, it is advisable to include a mechanism to keep \textbf{consistent db copies} used by replicated services.
@@ -181,7 +182,7 @@ hence microservices systems must be designed to \textbf{tolerate} some degree of
 \begin{center}
    \textbf{\textit{CAP} Theorem}\\
    
-   It is \textbf{impossible} for a web service to provide \textit{\underline{C}onsistency}, {\underline{A}vailability} and \textit{\underline{P}artition-tolerance}at the same time
+   It is \textbf{impossible} for a web service to provide \textit{\underline{C}onsistency}, \textit{\underline{A}vailability} and \textit{\underline{P}artition-tolerance} at the same time
    
    \note{
       In presence of a \textit{network \underline{P}artition}, you cannot have both \textit{\underline{A}vailability} and \textit{\underline{C}onsistency}
@@ -215,7 +216,7 @@ in case such local transaction fails then the saga executes a series of \textbf{
 }
 
 \labelitemize{
-   \textit{\textbf{Coordinating} sagas}
+   \textit{Compensating transactions}
 }{
    \begin{enumerate}
       \item \textit{Backward model}: \textbf{undo} changes made by previously executed local transactions
@@ -226,7 +227,7 @@ in case such local transaction fails then the saga executes a series of \textbf{
 \subsection{Netflix Approach}
 
 Netflix eventual consistency is backed up by \textit{Apache Cassandra},
-in a nutshell, to replicate data in n nodes:
+in a nutshell, to replicate data in $n$ nodes:
 "write to the ones you can get to, then fix it up afterwards";
 A quorum is used as threshold, e.g. $(n/2 + 1)$ of the replicas must respond.
 
@@ -294,7 +295,8 @@ which causes at a given rate random failures in the tested system.
 
    \begin{center}
       \textit{
-      "each action resulting in a transition
+      "a network of Web pages forms a virtual state machine,
+      with each action resulting in a transition
       to the next state of the application by
       transferring a representation of that
       state to the user"}
@@ -389,7 +391,7 @@ remaining able to revert it if needed.
          is one of the biggest challenges"
       \end{itemize}
    
-      \hspace{1em}"A poor team will always create a poor system"
+      \hspace{1em}\textit{"A poor team will always create a poor system"}
    }
 \end{paracol}
 

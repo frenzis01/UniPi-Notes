@@ -57,12 +57,12 @@ to handle channel connections and queue/handling the messages received before le
 
 \textbf{Message endpoints} and \textbf{channels} provide the most trivial integration possible,
 however they do not solve the problem when the \textit{receiver application} requires the data to be in a specific format e.g. \texttt{JSON}.
-\textbf{Message translators} are intermediary entities which can trasnlate and eventually filter data.
+\textbf{Message translators} are intermediary entities which can translate and eventually filter data.
 
 \section{Deeper message integration}
 Some problems are still not solved e.g. message \textit{routing}, \textit{splitting}, \textit{aggregating}, etc.\nl
 
-That's where \textbf{pipes} and \textbf{filters} architecture syle comes in.\\
+That's where \textbf{pipes} and \textbf{filters} architecture style comes in.\\
 Messages travel through many \textit{filters} (and components) processing them.
 Components flush messages into \textbf{pipes} they are connected to.\\
 Clearly this is (again) a flexible abstraction which can adapt to circumstances and environment.
@@ -74,7 +74,7 @@ Speaking of \textbf{routers}, such components are connected to multiple channels
 \subsection{Composite Patterns}
 Patterns may be composed to build other patterns.
 \textbf{Normalizers}, for instance, enable data received from different sources to be normalized and then sent in a proper format to receivers;
-behind the curtain, \textit{normalizer} are nothing more than a router and a set of translators.
+behind the curtain, a \textit{normalizer} is nothing more than a router and a set of translators.
 
 \subsection{Parallelism}
 Sometimes some integration steps may be computed in \textbf{parallel} and then results from such processes may be \textbf{aggregated} to decide which actions to perform.
