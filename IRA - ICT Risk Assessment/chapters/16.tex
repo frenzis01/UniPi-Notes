@@ -203,3 +203,144 @@ how they are handled by an attacker, which can be done in various ways:
    The last strategy may result in the discovery of \textbf{black swans},
    which are events with a very low but \textit{\textbf{not} neglectable} probability.
 \end{enumerate}
+
+\subsection{Possible attacker's actions}
+\subsubsection{Persistence}
+An attacker aiming to steal information or to attack later is interested in persisting in a system, i.e. acquiring permanent access to a system.
+\note{
+   This can be achieved by, for instance, installing a backdoor or some trojan
+}
+Persistence may be also useful to restart an intrusion from an intermediate point when and if the intrusion has been detected.
+The modules the intrusion installs onto the system interact with the \textit{command
+and control} infrastructure the attacker has created before starting the
+intrusion.
+To avoid easy detection and blacklisting,
+some attackers store the address of the nodes of the \textbf{C2}\footnote{\textit{Command \& Control}} Infrastructure in a public blockchain.
+
+\subsubsection{Evasion}
+This class of actions aims to defeat IDS and EDR tools.
+Some examples of mechanisms to evade a network signature-based IDS are
+\begin{itemize}
+   \item Message fragmentation
+   \item Message reconstruction
+   \item Fake messages
+\end{itemize}
+
+Other examples, assessing different defendants countermeasures, are
+\textit{token manipulation}, to evade control on authentication, or 
+\textit{locally building} container images on a host, evading controls on container images that are first retrieved and then installed on a host.
+
+A frequent choice is to run malicious code inside a VM 
+instance, allowing attackers to hide artifacts from security tools that are unable to
+monitor activity inside the virtual instance.
+
+\note{
+   Notice that the evasion techniques the attacker applies changes the success
+   probabilities of some attacks
+}
+
+\subsection{Mitre att\&ck matrix}
+
+Mitre att\&ck matrix is {---}a public knowledge database{---} the de facto standard to describe possible behaviors of attackers,
+intended as
+the \textit{steps} of an intrusion but not the intrusion \textit{itself}.
+
+The matrix format slightly changes according to the type of attack discussed
+\begin{enumerate}
+   \item Pre-Attack
+   \item Enterprise
+   \item Cloud
+   \item ICS
+   \item Mobile
+\end{enumerate}
+
+
+Provides a hierarchical definition of behaviours:
+\begin{enumerate}
+   \item \textbf{Tactics}: \textit{\color{gray}{--}why{--}}\\
+   short term goal in an intrusion 
+   \item \textbf{Technques}:  \textit{\color{gray}{--}how{--}}\\
+   how the short term goal is reached 
+   \item \textbf{Procedure}:  \textit{\color{gray}{--}more detailed how{--}}\\
+   detailed implementation of a technique 
+\end{enumerate}
+
+
+\labelitemize{
+   \textit{Enterprise (?) Tactics}
+}{
+\begin{enumerate}
+   \item \textbf{Reconnaissance}:
+   gathering information to plan future intrusions
+   \item \textbf{Resource Development}:
+   establishing resources to support operations 
+   $\longrightarrow$ \textit{setting up C2 infrastructure}
+   \item \textbf{Initial Access}:
+   how to get into your network 
+   $\longrightarrow$ \textit{spear phishing }
+   \item \textbf{Execution}:
+   run adversary-controlled code 
+   $\longrightarrow$ \textit{running a remote access tool}
+   \item \textbf{Persistence}:
+   trying to maintain their foothold 
+   $\longrightarrow$ \textit{changing configurations}
+   \item \textbf{Privilege Escalation}:
+   trying to gain higher-level permissions 
+   $\longrightarrow$ \textit{leveraging a vulnerability to higher access}
+   \item \textbf{Defense Evasion}:
+   trying to avoid being detected 
+   $\longrightarrow$ \textit{using trusted processes to hide malware}
+   
+   \item \textbf{Credential Access}: stealing accounts names and passwords 
+   $\longrightarrow$ \textit{keylogging}
+   \item \textbf{Discovery}: trying to figure out your environment 
+   $\longrightarrow$ \textit{exploring what they can control}
+   \item \textbf{Lateral Movement}: moving through the environment 
+   $\longrightarrow$ \textit{using legitimate credentials to pivot through multiple systems}
+   \item \textbf{Collection}: gathering data of interest to the adversary goal 
+   $\longrightarrow$ \textit{accessing data in cloud storage}
+   \item \textbf{Command and Control}: C2 communication with compromised
+   systems 
+   $\longrightarrow$ \textit{mimicking normal web traffic to communicate with a victim network}
+   \item \textbf{Exfiltration}: stealing data 
+   $\longrightarrow$ \textit{transferring data to cloud account}
+   \item \textbf{Impact}: manipulate, interrupt, or destroy systems and data 
+   $\longrightarrow$ \textit{encrypting data with ransomware}
+\end{enumerate}
+}
+
+\subsubsection{ICS}
+When considering attacks to ICSs,
+there are two other tactics that are \textit{not} present in \textit{Enterprise}:
+\begin{enumerate}
+   \item 
+   \item \textbf{Inhibit Response Function}:
+   techniques that adversaries use to hinder the
+   safeguards put in place for processes and products.
+   They result in the inhibition of
+   safety, protection, quality assurance, or operator intervention functions to
+   disrupt safeguards that aim to prevent the loss of life, destruction of
+   equipment, and disruption of production.
+   \item \textbf{Impair Process Control}:
+   techniques to disrupt control logic and cause
+   malicious effects to processes the target environment controls. 
+   Targets may include active procedures or parameters that manipulate the
+   physical environment. These techniques can also include prevention or
+   manipulation of reporting elements and control logic.
+\end{enumerate}
+
+\textit{Exfiltration} is missing because these systems are usually not attacked to steal information,
+while some techniques are typical of ICS,
+like manipulating an indicator on a host.
+
+\subsubsection{Cloud}
+Use of standard malicious software is not taken into account when considering attacks to cloud-based system,
+since they are easily detectable.
+
+Instead, a typical way of attacking and exfiltration,
+is for attackers to have a cloud account and transfer information from other accounts to theirs,
+resulting in stolen information.
+
+\subsection{Exam Project Ideas}
+Looks for slides of $7^{th}$ \textit{November}.
+Slides $10...14$ provide a list of more specific examples of several tactics.
