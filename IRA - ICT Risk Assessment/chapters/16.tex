@@ -348,3 +348,47 @@ Slides $10...14$ provide a list of more specific examples of several tactics.
 \section{9 Novembre}
 Didn't take any notes today.
 \section{Caldera}
+\textbf{Caldera} is an open-source framework developed by MITRE for the
+creation of automated adversary emulation plans.
+It is designed to help security teams assess their
+organization’s defences by simulating real-world attacks
+using a techniques and tactics mapped to the MITRE ATT\&CK framework.
+This automated solution includes a graphical user interface
+(\texttt{GUI}) that allows users to easily create and manage custom
+attack plans, as well as a range of plugins and modules for
+different attack techniques.
+It shows an attack in real-time
+and allows security teams to identify their weaknesses in a
+controlled environment.
+
+The simulation of an \textbf{adversary profile} corresponds to an operation
+structured into \textbf{phases}
+\begin{itemize}
+   \item Each phase involves the execution of an ability,
+   so there's a matrix with abilities and phases.
+   \item Two abilities in different phases can communicate through facts the
+   first one produces. 
+   \item A centralized architecture with one server and client-side agents,
+   where each agent simulates an attacker on the executing host.
+   The server
+   administers the operations, plans the actions to be executed and
+   returns to the user all the information from by the various agents.
+   \item After planning actions to be performed, the server waits for the
+   agents to connect and then order them what to do. Each agent
+   executes on the host where it runs the action the server chooses.
+   \item An agent can be started manually by the user or by another agent
+   following some lateral movements in an operation
+\end{itemize}
+
+
+\section{Cascade}
+\textbf{Cascade} is a command-and-control (C2) framework developed by MITRE for
+use in red team operations and adversary emulation;
+it is designed to enable red teams to quickly and
+easily create and manage C2 infrastructure, allowing them to
+more effectively simulate the actions of a real-world adversary.
+
+Like \textit{Caldera}, \textit{Cascade} is based on the \textit{MITRE ATT\&CK}
+framework, and it is designed to support a wide range of different attack techniques and tactics by being highly modular.
+It can be integrated with other tools and platforms to provide a
+comprehensive adversary emulation solution for red teams and security practitioners.
