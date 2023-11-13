@@ -186,4 +186,146 @@ can generate instance declarations automatically.
 \subsection{Missing Notes}
 Look at slides $34...64$ for more on Type Inference.
 
+\section{Inferencing types}
+In standard type checking the compiler examine body of each function and uses declared types to check agreement;
+type inference instead consists in examining code without type information, and infer the
+most general types that could have been declared
+
+\subsection{Steps schematics}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.4\columnwidth]{images/typeinference_step1.png}
+   \includegraphics[width=0.4\columnwidth]{images/typeinference_step2.png}
+   \label{fig:typeinference_step1_2}
+\end{figure}
+
+% \begin{figure}[htbp]
+%    \centering
+%    \label{fig:typeinference_step2}
+% \end{figure}
+
+\textbf{Constraints} can be deduced from (function) \textit{Application} nodes \lstinline|f x| and from \textit{Abstractions} \lstinline|f x = e|.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/typeinference_constraints_application.png}
+   \caption{Deducing constraints from function application}
+   \label{fig:typeinference_constraints_application}
+\end{figure}
+\begin{itemize}
+   \item Type of \lstinline|f| (\lstinline|t_0| in figure) must be $domain \longrightarrow range$.
+   \item \textbf{Domain} of \lstinline|f| must be type of argument \lstinline|x| (\lstinline|t_1|)
+   \item \textbf{Range} of f must be result of application (\lstinline|t_2|)
+   \item \textbf{Constraint}: \lstinline|t_0 = t_1 -> t_2|
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/typeinference_constraints_abstraction.png}
+   \caption{Deducing constraints from abstractions}
+   \label{fig:typeinference_constraints_abstraction}
+\end{figure}
+
+\begin{itemize}
+   \item Type of \lstinline|f| (\lstinline|t_0|) must $domain \longrightarrow range$
+   \item \textbf{Domain} is type of abstracted variable \lstinline|x| (\lstinline|t_1|)
+   \item \textbf{Range} is type of function body \lstinline|e| (\lstinline|t_2|)
+   \item \textbf{Constraint}: \lstinline|t_0 = t_1 -> t_2|
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.4\columnwidth]{images/typeinference_step3.png}
+   \includegraphics[width=0.4\columnwidth]{images/typeinference_step4.png}
+   \label{fig:typeinference_step3_4}
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.4\columnwidth]{images/typeinference_step5.png}
+   \label{fig:typeinference_step5}
+\end{figure}
+
+\subsubsection{Steps summary}
+\begin{enumerate}
+   \item Parse program to build parse tree
+   \item Assign type variables to nodes in tree
+   \item Generate constraints:
+   \begin{enumerate}
+      \item From environment: constants (\lstinline|2|), built-in
+      operators (\lstinline|+|), known functions (\lstinline|tail|).
+      \item From shape of parse tree: e.g., application and
+      abstraction nodes.
+   \end{enumerate}
+   \item Solve constraints using unification
+   \item Determine types of top-level declarations
+\end{enumerate}
+
+\subsection{Polymorphism}
+
+In general \textbf{unconstrained} type variables become \textbf{polymorphic types};
+for instance, in the example below \lstinline|t_4| is unconstrained, hence we get a polymorphic type:
+\begin{lstlisting}
+   f g = g 2
+   > f :: (Int -> t_4) -> t_4
+\end{lstlisting}
+\nl
+
+For functions with multiple clauses, i.e. \textit{polymorphic datatypes},
+for each clause a separate type is inferred, 
+and then the resulting types are combined by adding constraints such as that all clauses have the same type.
+In case of \textit{recursive calls}:
+the function has same type as its definition.
+
+\begin{lstlisting}
+   append ([],r) = r
+   append (x:xs, r) = x : append (xs, r)
+\end{lstlisting}
+
+\begin{enumerate}
+   \item Infer type of each clause
+   \begin{enumerate}
+      \item First clause:
+      \begin{lstlisting}
+   > append :: ([t_1], t_2) -> t_2
+      \end{lstlisting}
+      \item Second clause:
+      \begin{lstlisting}
+   > append :: ([t_3], t_4) -> [t_3]
+      \end{lstlisting}
+   \end{enumerate}
+   \item Combine by equating types of two clauses
+   \begin{lstlisting}
+   > append :: ([t_1], [t_1]) -> [t_1]
+   \end{lstlisting}
+\end{enumerate}
+
+\subsection{Overloading}
+In presence of \textbf{overloading} (\textit{Type Classes}), type inference infers a \textbf{qualified type} \lstinline|Q => T|
+\begin{itemize}
+   \item T is a Hindley Milner type, inferred as seen before
+   \item Q is set of type class predicates, called a constraint
+\end{itemize}
+\begin{lstlisting}
+   example :: Ord a => a -> [a] -> Bool
+   example z xs = 
+      case xs of
+         [] -> False
+         (y:ys) -> y > z || (y==z && ys == [z])
+\end{lstlisting}
+
+\begin{paracol}{2}
+   \colfill
+   In the example \textbf{Type} \lstinline|T| is \lstinline|a -> [a] -> Bool|
+   while the \textbf{Constraint} \lstinline|Q| is \lstinline|{ Ord a, Eq a, Eq [a]}|.
+   \lstinline|Q| later simplifies\footnote{According to some rules not discussed here} to \lstinline|Ord a|
+   \colfill
+   \switchcolumn
+
+   \begin{itemize}
+      \item \lstinline|Ord  a| because \lstinline|y>z|
+      \item \lstinline|Eq a| because \lstinline|y==z|
+      \item \lstinline|Eq [a]| because \lstinline|ys == [z]|
+   \end{itemize}
+\end{paracol}
 \subsubsection{Functor and \texttt{fmap}}
