@@ -64,3 +64,22 @@ interface Iterable<T>{ //java.lang
       for (T t : this)
          action.accept(t);
 \end{lstlisting}
+
+\subsubsection{Method References}
+\textbf{Method references} can be used to pass an existing
+function in places where a lambda is expected,
+but their signature needs to
+match the signature of the functional interface method required.
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|c|}
+      \hline
+      static  & \lstinline|ClassName::StaticMethodName| & \lstinline|String::valueOf|\\
+      constructor &  \lstinline|ClassName::new| & \lstinline|ArrayList::new|\\
+      specific object instance & \lstinline|objectReference::MethodName| & \lstinline|x::toString|\\
+      arbitrary object of a given type & \lstinline|ClassName::InstanceMethodName| & \lstinline|Object::toString|\\
+      \hline
+   \end{tabular}
+   \caption{Method references examples}
+   \label{tab:method_references}
+\end{table}
