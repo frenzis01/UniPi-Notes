@@ -69,6 +69,7 @@
 
 \definecolor{gray}{gray}{0.3}
 \definecolor{dkgreen}{rgb}{0,0.5,0}
+\definecolor{blue}{rgb}{0,0,1}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{dkred}{rgb}{0.5,0,0}
 
@@ -105,9 +106,12 @@
  columns=flexible,
  basicstyle={\small\ttfamily},
  keywordstyle=\color{blue},
+ keywordstyle=[2]\color{blue},
  commentstyle=\color{dkgreen},
  stringstyle=\color{mauve},
- tabsize=3
+ tabsize=3,
+ morekeywords=[2]{Arrays, List, ArrayList, Set, HashSet, Map, HashMap, LinkedList, Queue, PriorityQueue, Stack, Vector, Iterator, forEach, stream, System, out}
+%  morekeywords=[2]{out}
 }
 \lstset{style=javaBlock}
 
@@ -134,5 +138,6 @@
 \include{chapters/12}
 \include{chapters/13}
 \include{chapters/14}
+\include{chapters/15}
 
 \end{document}

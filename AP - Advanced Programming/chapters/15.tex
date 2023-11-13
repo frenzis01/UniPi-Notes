@@ -1,2 +1,66 @@
 \chapter{Lambdas}
 \section{Java 8}
+\lstset{style=javaBlock}
+\begin{lstlisting}
+   List<Integer> intSeq = Arrays.asList(1,2,3);
+   intSeq.forEach(x -> System.out.println(x));
+   // equivalent syntax
+   intSeq.forEach((Integer x) -> System.out.println(x));
+   intSeq.forEach(x -> {System.out.println(x);});
+   intSeq.forEach(System.out::println); //method reference
+\end{lstlisting}
+
+Note that local variables used inside the body of a lambda must be \lstinline|final| or \textit{effectively} \lstinline|final|, or have to be static.
+\begin{lstlisting}
+   int var = 10; // must be [effectively] final
+   intSeq.forEach(x -> System.out.println(x + var));
+   // var = 3; // uncommenting this line it does not compile
+\end{lstlisting}
+\begin{lstlisting}
+public class SVCExample { // static variable capture
+   private static int var = 10;
+   public static void main(String[] args) {
+      List<Integer> intSeq = Arrays.asList(1,2,3);
+      static int var = 10;
+   
+      intSeq.forEach(x -> System.out.println(x + var));
+      var = 3; // OK! it compiles
+}}
+   \end{lstlisting}
+
+\section{Functional Interfaces}
+Java 8 \textit{lambdas} are instances of \textit{functional
+interfaces},
+which are java interfaces with exactly \textit{one} \textit{\textbf{abstract}} method.
+
+\begin{lstlisting}
+   public interface Comparator<T> { //java.util
+      int compare(T o1, T o2);
+   }
+   public interface Runnable { //java.lang
+      void run();
+   }
+   public interface Consumer<T>{ //java.util.function
+      void accept(T t)
+   }
+   public interface Callable<V> {//java.util.concurrent
+      V call() throws Exception;
+   }
+\end{lstlisting}
+
+The lambda is invoked by calling the only abstract method
+of the functional interface;
+lambdas can be interpreted as instances of anonymous
+inner classes implementing the functional interface.
+
+For instance, recalling the forEach presented earlier, the corresponding interface is the following.
+Note that it must be checked that the lambda matches the \lstinline|forEach| signature defined in the interface:
+\begin{lstlisting}
+intSeq.forEach(x -> System.out.println(x));
+
+// List<T> extends Iterable<T>
+interface Iterable<T>{ //java.lang
+   default void forEach(Consumer<? super T> action)
+      for (T t : this)
+         action.accept(t);
+\end{lstlisting}
