@@ -1,5 +1,30 @@
 \chapter{Monads}
-\section{Constructor}
+\section{Type Constructors}
+
+\subsection{Towards Monads}
+Often type constructors can be thought of as
+defining \textit{"boxes"} for values, and \lstinline|Functors| with \lstinline|fmap| allow to apply functions
+inside such \textit{"boxes"}.\\
+\lstinline|Monad| is a constructor class introducing
+operations for \textit{putting a value} into a "box" (\lstinline|return|) and \textit{composing} functions that return "boxed" values (\lstinline|bind|)
+
+\note{
+   \textbf{"Monads"} are type constructors that are instances of \lstinline|Monad|
+}
+
+\subsection{\texttt{Maybe}}
+A function \lstinline|f :: a -> Maybe b| is a partial function from
+\lstinline|a| to \lstinline|b|.
+\begin{lstlisting}
+   father :: Person -> Maybe Person -- partial function
+   mother :: Person -> Maybe Person -- (lookup in a DB)
+   maternalGrandfather :: Person -> Maybe Person
+   maternalGrandfather p =
+   case mother p of
+   Nothing -> Nothing
+   Just mom -> father mom -- Nothing or a Person
+\end{lstlisting}
+
 \subsection{Bind operator}
 
 

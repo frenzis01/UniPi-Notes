@@ -328,4 +328,55 @@ In presence of \textbf{overloading} (\textit{Type Classes}), type inference infe
       \item \lstinline|Eq [a]| because \lstinline|ys == [z]|
    \end{itemize}
 \end{paracol}
-\subsubsection{Functor and \texttt{fmap}}
+
+\section{Type Constructors}
+\textbf{Type Classes} are \textit{predicates} over \textit{types},
+while \textbf{[Type] Constructor Classes} are \textit{predicates} over \textit{type constructors}.
+
+For example, consider three versions of the \lstinline|map| function (implementation is omitted): the basic one for lists, one for trees and one for \lstinline|Maybe|.
+\begin{lstlisting}
+   map :: (a -> b) -> [a] -> [b]
+   mapTree :: (a -> b) -> Tree a -> Tree b
+   mapMaybe :: (a -> b) -> Maybe a -> Maybe b
+\end{lstlisting}
+They all share the same structure, thus they can all be written as
+\begin{lstlisting}
+   fmap:: (a -> b) -> g a -> g b
+\end{lstlisting}
+where \lstinline|g| is a function from \textit{types to types}, i.e.
+a \textbf{type constructor};
+it is:
+\lstinline|[-]| for lists, \lstinline|Tree| for trees, and \lstinline|Maybe| for options.
+
+\subsection{\texttt{Functor}}
+This pattern can be captured in a constructor
+class \lstinline|Functor|. 
+A \textbf{constructor class} is simply a type class where
+the predicate is over a type constructors rather
+than on a type:
+\begin{lstlisting}
+   class Functor g where
+      fmap :: (a -> b) -> g a -> g b
+\end{lstlisting}
+
+Compare with the definition of a \textit{standard type class}:
+\begin{lstlisting}
+   class Eq a where
+      (==) :: a -> a -> Bool
+\end{lstlisting}
+
+So, wrapping up, we can instantiate \lstinline|Functor| on all three data structures,
+and then simply use the \textit{overloaded} symbol \lstinline|fmap|, instead of \lstinline|map|, \lstinline|mapTree| and \lstinline|mapMaybe|.
+\begin{lstlisting}
+   class Functor f where
+      fmap :: (a -> b) -> f a -> f b
+   instance Functor [] where // [] is an instance of Functor
+      fmap f [] = []
+      fmap f (x:xs) = f x : fmap f xs
+   instance Functor Tree where // Tree is an instance of Functor
+      fmap f (Leaf x) = Leaf (f x)
+      fmap f (Node(t1,t2)) = Node(fmap f t1, fmap f t2)
+   instance Functor Maybe where // Maybe is an instance of Functor
+      fmap f (Just s) = Just(f s)
+      fmap f Nothing = Nothing
+\end{lstlisting}
