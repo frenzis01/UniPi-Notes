@@ -1,0 +1,220 @@
+\chapter{Streams}
+Let's consider the properties of \textbf{Streams}, and we'll clearly see how they are different from Collections.
+\begin{itemize}
+   
+   \item \textbf{No storage}\\
+   A stream is \textit{not} a data structure that
+   stores elements; instead, it conveys elements
+   from a \textit{source} \footnote{e.g. a data structure, an array, a
+   generator function, an I/O channel,...} through a
+   pipeline of computational operations.
+   \item \textbf{Functional} in nature\\
+   An operation on a stream produces a \textit{result}, but does \textit{not} modify its source.
+   \item \textbf{Laziness-seeking}
+   Many stream operations can be
+   implemented lazily, exposing opportunities for optimization.
+   Stream operations are divided into \textbf{intermediate} 
+   (\textit{stream-producing}) operations {---}which are \textit{always lazy}{---} and
+   \textbf{terminal}
+   (\textit{value- }or \textit{side-effect-producing}) operations.
+   \item Possibly \textbf{unbounded}\\
+   While collections have a \textit{finite size}, streams need \textit{not}.
+   Short-circuiting operations such as \lstinline|limit(n)| or
+   \lstinline|findFirst()| can allow computations on \textit{infinite streams} to
+   complete in \textit{finite time}.
+   \item \textbf{Consumable}\\
+   The elements of a stream are only \textit{visited once}
+   during the life of a stream. 
+   Like an Iterator, a new stream must be generated to \textit{revisit} the same elements of the source.\\
+   The Stream is considered \textit{consumed} when a \textit{terminal}
+   operation is invoked. 
+   No other operation can be performed on
+   the Stream elements afterwards.
+\end{itemize} 
+\section{Pipelines}
+
+A typical pipeline contains
+\begin{enumerate}
+   \item A \textbf{source}, producing (by need) the elements of the stream
+   \item Zero or more \textbf{intermediate} operations, producing streams
+   \item A \textbf{terminal} operation, producing side-effects or non-
+   stream values
+\end{enumerate}
+\note{
+   Example of typical pattern: \texttt{filter / map / reduce}
+} 
+
+\begin{lstlisting}
+   double average = listing // collection of Person
+      .stream() // stream wrapper over a collection
+      .filter(p -> p.getGender() == Person.Sex.MALE) // filter
+      .mapToInt(Person::getAge) // extracts stream of ages
+      .average() // computes average (reduce/fold)
+      .getAsDouble(); // extracts result from OptionalDouble
+\end{lstlisting}
+
+\subsection{Sources}
+Common sources are \lstinline|Collection|s via \lstinline|stream()| and \lstinline|parallelStream()| methods,
+but there are several and various other sources,
+like \lstinline|IntStream.range(int, int)|, \lstinline|Stream.iterate(Object, UnaryOperator)|, \lstinline|BufferedReader.lines()|, \lstinline|Random.ints()|, and many others.
+
+\subsection{Intermediate operations}
+An intermediate operation keeps a stream \textit{open} for further operations.
+Intermediate operations are lazy, and 
+several of them have arguments of \textit{functional interfaces},
+thus \textbf{lambdas} can be used.\\
+Exampls are \lstinline|map(), peek(), distinct(), sorted()|
+
+\subsection{Terminal operations}
+A terminal operation must be the \textit{final operation} on a stream.
+Once a terminal operation is invoked, the stream is consumed and is no longer usable.
+As said before, the typical approach is to collect values in a data structure, reduce to a value, and lastly print or
+cause other side effects.\\
+Examples are \lstinline|reduce(),forEach(),allMatch()| and others.
+\note{\lstinline|reduce()| is basically our well-known \lstinline|fold|}
+
+\section{Mutable Reduction}
+
+Suppose we want to concatenate a stream of strings:
+\begin{lstlisting}
+   String concatenated = listOfStrings
+      .stream()
+      .reduce("", String::concat)
+\end{lstlisting}
+The above works, but is highly inefficient: it builds one new string for each element, since \lstinline|Strings| are immutable in Java.\\
+It would be better to "accumulate" the elements in a mutable object (e.g. a \lstinline|StringBuilder|, a \lstinline|collection|, ...).
+In our aid comes the \textbf{mutable reduction operation} which is called \lstinline|collect()|, which requires
+three functions:
+\begin{enumerate}
+   \item a \textbf{supplier} function to \textit{construct} new instances of the result container,
+   \item an \textbf{accumulator} function to \textit{incorporate} an input element into a result container,
+   \item a \textbf{combining} function to \textit{merge} the contents of one result container into another.
+\end{enumerate}
+\begin{lstlisting}
+   <R> R collect( Supplier<R> supplier,
+                  BiConsumer<R, ? super T> accumulator,
+                  BiConsumer<R, R> combiner);
+\end{lstlisting}
+
+\begin{lstlisting}
+   // NO streams
+   ArrayList<String> strings = new ArrayList<>();
+   for (T element : stream) {
+      strings.add(element.toString());
+   }
+
+   // with streams and lambdas
+   ArrayList<String> strings =
+   stream.collect(
+      () -> new ArrayList<>(),         // Supplier
+      (c, e) -> c.add(e.toString()),   // Accumulator
+      (c1, c2) -> c1.addAll(c2));      // Combining
+   
+   // with streams and method references
+   ArrayList<String> strings = stream.map(Object::toString)
+   .collect(   ArrayList::new,      // Supplier
+               ArrayList::add,      // Accumulator
+               ArrayList::addAll);  // Combining
+\end{lstlisting}
+
+However, \lstinline|collect()| can also be invoked with a \lstinline|Collector| argument,
+which encapsulates the functions used as
+arguments to collect (\textit{Supplier}, \textit{BiConsumer},
+\textit{BiConsumer}),
+allowing for reuse of collection strategies and composition of collect operations.
+
+\begin{lstlisting}
+   Map<String, List<Person>> peopleByCity =
+      personStream.collect(Collectors.groupingBy(Person::getCity));
+\end{lstlisting}
+
+\section{Parallelism}
+Streams facilitate parallel execution:
+stream operations can execute either in serial
+(default) or in parallel, with the runtime support transparently taking care of using multithreading
+for parallel execution.
+If operations \textit{don’t} have side-effects, \textit{thread-safety} is
+\textbf{guaranteed} even if \textit{non-thread-safe collections} are
+used (e.g. \lstinline|ArrayList|).
+
+Also \textit{concurrent mutable reduction} is supported for parallel streams, however
+Order of processing stream elements depends on
+serial/parallel execution and intermediate operations,
+and may not be predictable.
+
+\begin{lstlisting}
+   double average = persons   // average age of all males
+      .parallelStream()       // members in PARALLEL
+      .filter(p -> p.getGender() == Person.Sex.MALE)
+      .mapToInt(Person::getAge)
+      .average()
+      .getAsDouble();
+
+      sorted_listOfIntegers.parallelStream()
+      .forEach(e -> System.out.print(e + " "));
+      // may print: 3 4 1 6 2 5 7 8
+\end{lstlisting}
+
+\subsection{Summing up}
+One should use Parallelism
+\begin{itemize}
+   \item When operations are independent, and
+   \item Either or both:
+   \begin{itemize}
+      \item Operations are computationally expensive
+      \item Operations are applied to many elements of
+   \end{itemize}
+   efficiently splittable data structures
+\end{itemize}
+\emph{"Always measure before and after \emph{parallelizing}!"}
+
+\subsection{Critical Issues}
+\begin{itemize}
+   \item \textbf{Non-interference}
+   \begin{itemize}
+      \item Behavioural parameters (like \textit{lambdas}) of stream
+      operations should \textit{not affect} the source (i.e. \textit{non-interfering behaviour})
+      \item Risk of \lstinline|ConcurrentModificationExceptions|, even in
+      single-threaded execution
+   \end{itemize}
+   \item \textbf{Stateless behaviours}
+   \begin{itemize}
+      \item \textit{Stateless} behaviour for intermediate operations is
+      \textit{encouraged}, as it facilitates parallelism, and functional
+      style, thus maintenance
+   \end{itemize}
+   \item \textbf{Parallelism and thread safety}
+   \begin{itemize}
+      \item For parallel streams with \textit{side-effects},
+      ensuring thread safety is the programmers’ responsibility
+   \end{itemize}
+\end{itemize}
+
+\begin{lstlisting}
+   String concatenatedString = listOfStrings
+   .stream()
+   .peek(s -> listOfStrings.add("three")) // DON'T DO THIS!
+      // Interference occurs here.
+   .reduce((a, b) -> a + " " + b)
+   .get();
+\end{lstlisting}
+
+\section{Monads in Java}
+\begin{lstlisting}
+   public static <T> Optional<T> of(T value)
+   // Returns an Optional with the specified present non-null value.
+   <U> Optional<U> flatMap(Function<? super T,Optional<U>> mapper)
+\end{lstlisting}
+If a value is present, \lstinline|flatMap| applies the provided \textit{Optional-bearing} mapping
+function to it, return that result, otherwise return an empty
+\lstinline|Optional|.
+
+\begin{lstlisting}
+   static <T> Stream<T> of(T t)
+   // Returns a sequential Stream containing a single element.
+   <R> Stream<R> flatMap(
+   Function<? super T,? extends Stream<? extends R>> mapper)
+\end{lstlisting}
+Here \lstinline|flatMap| returns a \lstinline|Stream| consisting of the results of replacing each element
+of this stream with the contents of a mapped stream produced by applying
+the provided mapping function to each element.
