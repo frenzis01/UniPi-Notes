@@ -144,3 +144,26 @@ The model is epidemiological, meaning that it has been defined to evaluate the o
    \end{itemize}
 
 }
+
+\subsection{More complex models}
+Many models have been proposed, to take into discussion also other key points,
+such as \textbf{patching},
+and possibly consider how patching impacts on the spreading of a worm.
+
+Another aspect is to define partial connections between nodes,
+meaning that there is a \textbf{topology} which determines how the nodes interact,
+thus how the spreading may proceed.
+Consider the internet \textit{Scale Free} topology:
+When a new node is connected the connection to a , node with
+a larger number of connections is preferred:
+\labelitemize{
+   \textit{"rich become richer"}
+}{
+   \begin{itemize}
+      \item a few \textit{hubs} with a huge number of connections
+      \item a huge number of \textit{nodes} with a few connections
+   \end{itemize}
+}
+This structure is \textbf{robust} against random node attacks and faults,
+since most nodes only have a few connections (hence low spreading capabilities),
+but is very \textbf{fragile} against targeted attacks towards highly connected hubs.
