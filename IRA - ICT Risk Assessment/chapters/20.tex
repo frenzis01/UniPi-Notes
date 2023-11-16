@@ -4,3 +4,35 @@
 \section{Thesis = Fuzzing Hardware}
 Baiardi is interested in \textit{Fuzzing Hardware},
 he would like to do a thesis on such topic.
+
+\section{System View}
+\textbf{System view} is a perspective aiming to consider \textit{design rules} and consequentently \textit{vulnerabilities},
+focusing on wrong design choices rather than
+implementation error.
+A set of design rules is used to determine the \textit{optimal} set of \textbf{controls} for a system, where \textit{optimal} indicates the smallest (i.e. \textit{cheapest} \smiley)set of controls to achieve the required robustness.\\
+It is important to understand whether the optimal set of controls as imposed
+by the design rules is compatible with the required performance,
+and from this point of view we can define a \textbf{vulnerability} as a \textit{violation} of system design rules.
+
+\subsection{Robustness agains Vulnerabilities}
+Thus, in this scenario, designing a system means finding an acceptable \textbf{tradeoff} between \textit{design rules} and \textit{vulnerabilities}.
+
+All the modules in an ideal system satisfy the design rules,and such ideal system is the asymptote of a sequence of distinct systems each applying more controls than the previous one as required by the design rules.\\
+Any difference between the ideal system and the one being
+created/under analysis may be considered as a \textbf{vulnerability},
+but to decide if it is an actual vulnerability we consider the \textbf{context}
+and the \textbf{cost} of the control against its usefulness.
+\nl
+
+Some differences between the ideal system and the current one cannot be avoided, supponsing some rules have been violated due to {---}possibly basic{---} performance requirements.
+Other violations (i.e. \textit{missing controls}) instead may be unrelated to
+performance, hence they should be fixed.\\
+The key strategy to discover vulnerabilities evaluates the cost of
+missing controls and compares it against
+\begin{itemize}
+   \item the required final \textit{performance}
+   \item the \textit{risk} ($\mathcal{P}(intrusion) *impact$) due to the missing control
+\end{itemize}
+In a whole-system comprehensive view it is important to check \textbf{compensative controls}, i.e.
+a missing control in a module may be compensated by a
+control in another one.
