@@ -36,3 +36,109 @@ missing controls and compares it against
 In a whole-system comprehensive view it is important to check \textbf{compensative controls}, i.e.
 a missing control in a module may be compensated by a
 control in another one.
+
+\section{Saltzer \& Schroeder}
+\labelitemize{S\&S Design Principles}{
+   \begin{enumerate}
+      \item \textbf{Economy of Mechanism}\\
+      The protection mechanism should have a \textit{simple} and small design.
+      \item \textbf{Fail-safe Defaults}\\
+      The protection mechanism should \textit{deny} access by \textit{default}, and grant access
+      only when explicit permission exists.
+      \item \textbf{Complete Mediation}\\
+      The protection mechanism should check \textit{every access} to every object.
+      \note{
+         Rather expensive this is the reason is one of the most hard to satisfy.
+      }
+      \item \textbf{Open Design}\\
+      Protection mechanism should not depend on attackers being ignorant of
+      its \textit{design} to successfully secure the system. 
+      But may be based on the attacker's ignorance of
+      specific information such as passwords or cipher keys.
+
+      \emph{
+         \color{darkgray}"An attacker who learns the key learns nothing that helps them break any message
+      encrypted with a different key. That’s the essence of Kerkhoff’s principle: that
+      systems should be designed that way."}
+      
+      \note{
+         However, you should publish information on your system design \emph{iff} it results in a
+         useful peer review.
+         }
+      \item \textbf{Separation of Privilege}\\
+      The protection mechanism should grant access based on \textit{more than
+      one piece} of information, e.g. \textit{two keys} for a safe.
+      \item \textbf{Least Privilege}\\
+      The protection mechanism should force every process to operate with
+      the \textit{minimum privileges} needed to perform its task.
+      \item \textbf{Least Common Mechanism}\\
+      The protection mechanism should be shared as little as possible among users.
+      \item \textbf{Psychological Acceptability}\\
+      The protection mechanism should be easy to use (at least as easy as not using it).
+
+      \note{
+         Before introducing the last two principles, Saltzer and Schroeder state two things:
+         \begin{itemize}
+            \item Analysis of traditional physical security systems has suggested two further design principles which, unfortunately,
+            apply only \textit{imperfectly} to computer systems
+            \item The principles apply both to a system and to the \textit{mechanisms} we introduce to secure the system
+         \end{itemize}
+      }
+
+      \item \textbf{Principle of Work Factor}\\
+      Compare the cost of circumventing the mechanism against the resources of a potential attacker.
+      \item \textbf{Compromise Recording}\\
+      Mechanisms that reliably record a compromise of information may replace more elaborate ones that completely prevent loss.\\
+      In other words,
+      if you cannot be robust be aware you may be attacked and be resilient.
+   \end{enumerate}
+}
+\subsection{Economy of mechanisms}
+\begin{center}
+   \textit{Keep the design as simple and small as possible}
+   \note{
+      \textit{KISS} rule $\longrightarrow$ \textit{\underline{K}eep \underline{I}t \underline{S}imple, \underline{S}tupid}
+   }
+\end{center}
+
+\textbf{Simple} implies that less things can go wrong and when bugs occur, they are easier to find, understand and fix.
+Vulns are proportional to the complexity of a mechanism and the code implementing it.
+% = cyclomatic number to predict software bugs
+When needed, complexity can be achieved by \textbf{composition} of simpler modules, and might be preferreable to building a single more comprehensive yet complex module.\\
+\subsection{Designing Operating Systems}
+\textbf{OS Hardening} is an approach embodying this principle:
+it consists in removing useless OS functionalities for applications
+of interest.\\
+With respect to kernel, there are two approaches which aim to reduce complexity:
+\begin{itemize}
+   \item \textbf{Microkernel}\\
+   Avoid the implementation of complex functions in the kernel,
+   stick only to \textbf{basic} ones such as inter-process communication and basic memory management,
+   possibly making room for a \textit{modular} design.
+   \note{Unix and Windows do not follow this approach,
+   which is instead adopted by QNX and MINIX, for instance}
+   \item \textbf{Esokernel}\\
+   Focus on providing \textbf{minimal abstractions} to applications and exposing as much hardware functionality as possible to applications,
+   creating astrong \textbf{integration} between the OS kernel and the
+   applications not only violates modularity principles
+   but helps the spreading of errors.
+\end{itemize}
+
+\subsection{Wrapping Up}
+\begin{itemize}
+   \color{darkgreen}
+   \item \textbf{Simplify} the interface
+   \item Complex operations should be implemented by \textbf{composing}
+   simple operations
+
+\end{itemize}
+\begin{itemize}
+   \color{darkred}
+   \item If most of the operations are rather complex (and hence
+   powerful), we may be forced to enable a user to invoke a
+   powerful operation just because the simple one it needs is
+   missing
+   \item Hence, users will apply complex operations even to
+   implement simple operations and this increases their rights
+   (related to the least privilege principle)
+\end{itemize}
