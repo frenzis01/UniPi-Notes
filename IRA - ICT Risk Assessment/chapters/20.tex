@@ -63,7 +63,7 @@ control in another one.
       
       \note{
          However, you should publish information on your system design \emph{iff} it results in a
-         useful peer review.
+         useful \textbf{peer review}.
          }
       \item \textbf{Separation of Privilege}\\
       The protection mechanism should grant access based on \textit{more than
@@ -142,3 +142,284 @@ With respect to kernel, there are two approaches which aim to reduce complexity:
    implement simple operations and this increases their rights
    (related to the least privilege principle)
 \end{itemize}
+
+\subsection{Fail-safe and Intel \texttt{CSME}}
+\begin{center}
+   \textit{Base access decisions on permission rather than
+   exclusion}
+\end{center}
+Fail-safe related vulnerabilities are fascinating, and may be \textit{non-trivial} to abuse.
+Some aspects cannot be fixed without replacing the \textit{silicon}, but only \textit{mitigated}.
+
+Fail-safe is related to a \textit{design flaw} baked into millions of Intel chipsets:
+the problem revolves around cryptographic keys that, if obtained by an attacker,
+can be used to break the \textbf{root of trust} in a system.
+
+\subsubsection{Intel Countermeasure}
+Buried deep inside modern Intel chipsets there is the \textbf{Converged
+Security and Manageability Engine} (\texttt{CSME}),
+which is a miniature computer within a computer with its own CPU, RAM, code in a boot ROM, and with the capability to access the rest of the machine.
+
+Currently, the \texttt{CSME}'s CPU core is 486-based, and its software is
+derived from the free \textbf{microkernel} operating system \texttt{MINIX}.
+\note{
+   You can
+   find a deep dive into the technology behind it all, sometime known
+   as the Minute IA System Agent.
+}
+The \texttt{CSME} is digital janitor, working behind the scenes, below
+operating system, hypervisor, and firmware, performing lots of
+crucial low-level tasks.
+\begin{itemize}
+   \item 
+   • Bringing up the computer, controlling power levels,
+   • Starting the main processor chips
+   • Verifying and booting motherboard firmware, and providing
+   cryptographic functions.
+   • The engine is the first thing to run when a machine is switched on.
+\end{itemize}
+
+\paragraph{Possible Flaw}
+One of the first things the \texttt{CSME} protects is its \textbf{own built-in RAM} so that other hardware and software module cannot interfere.
+• However, these protections are disabled by default, there is a tiny timing gap between a system turning on and the \texttt{CSME} executing the code
+in its boot ROM that installs such protections in the form of input-
+output memory-management unit page tables.
+During that timing gap, other hardware - physically attached or
+present on the motherboard can fire off a DMA transfer into the
+\texttt{CSME}’s private RAM to overwrite variables and pointers and hijack
+its execution. 
+At that point, the \texttt{CSME} can be controlled for
+malicious purposes, all out of view of the software running above it.
+
+Clearly this a strong \textbf{race condition}, but still possible.
+
+\subsection{Complete Mediation}
+\begin{center}
+   \textit{Every access to every object must be checked for authority}
+\end{center}
+
+This is the most crucial principle when considering performance,
+since verbatim applying it would be very impactful on the system's performance.
+
+Usually access to object is done only once on the first time,
+but this leads to possible unauthorized accesses if permissions change later on.\\
+Performance enhancements are achieved by caching results of
+authority checks,
+but they should be examined skeptically,
+to avoid the above mentioned unpleasant situation.
+Every uncontrolled operation that is a potential vulnerability as it may be invoked without proper rights.
+
+\subsubsection{Fail-safe integration}
+If \textbf{both} principles are \textbf{satisfied} the system starts in a secure state and,
+provided that the security kernel is correct, further on only secure transictions are enabled.
+In other words, it is possible to prove security correctness using an induction approach to determine reachable states.\\
+\textit{Fail-safe} plays a key role since it makes valid the base case for the induction, it acts as a "starting point".
+If fail-safe default does not hold then no induction is possible
+there is no base case for the induction.
+
+\subsection{Open Design}
+\begin{center}
+   
+   The design should not be secret\\
+   or\\
+   Security should not depend on the secrecy of
+   the design or of the implementation
+\end{center}
+Popularly misunderstood as
+\textit{"source code should be public"} or \textit{"open-source is safer than proprietary"}.
+
+A system \textbf{peer review} is fundamental to discover vulns in
+design or implementation.
+A \textit{peer review} is review made by \textbf{competent experts} which can discover flaws and vulnerabilities in a system.
+So, an open source implementation is useful only if it results in a peer review, and if any peer that discovers a vulnerability communicates it
+to the owner.
+Instead it is useless and possibly dangerous if there are no peers available to review the code,
+or they do not reveal to the owner the discovered vulnerabilities.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/opendesign_redhat.png}
+   \caption{RedHat vulnerabilities}
+   \label{fig:opendesign_redhat}
+\end{figure}
+As an example, consider RedHat's statistics:
+as you can see in Fig \ref{fig:opendesign_redhat}, most of the known vulnerabilities were discovered by peers,
+not by RedHat's own experts.
+
+\subsection{Separation of Privilege}
+\begin{center}
+   \textit{Where feasible, a protection mechanism that requires
+   two keys to unlock is more \textbf{robust} and \textbf{flexible} than one
+   that allows access using a single key}\\
+   or\\
+   \textit{Require multiple conditions to grant privilege}
+\end{center}
+
+\subsubsection{Decomposing}
+A complex operation should be decomposed into simpler
+operations, 
+each enabled by a proper access rights,
+both the complex and the simple ones.\\
+In this way we can check that the subject owns both
+\begin{enumerate}
+   \item The right of invoking the complex op (if it still exists)
+   \item The right of invoking each simple op
+\end{enumerate}
+
+\subsection{Least Privilege}
+
+Every subject should operate using the least set of privileges
+necessary to complete its job
+or
+A subject should be given only those privileges it needs to complete
+its task and only for the time to complete it
+
+According to Baiardi, this is the most crucial principle to be kept in mind.
+Many intrusion have succeed due to the violation of this principle. 
+\labelitemize{\textit{Key Points}}{
+   \begin{itemize}
+      \item Owning a useless access right is a \textit{vulnerability}
+      \item Rights \textit{granted as needed}, \textit{revoked} after being used
+      \item The \texttt{AC} matrix is a \textit{highly dynamic} data structure
+      \item Rights are \textit{assigned} and \textit{revoked} as the \textit{computation evolves}
+   \end{itemize}
+}
+
+This principle should be applied even if the security policy is
+\textbf{static},
+since it defines mostly how rights should be managed \textit{after} being
+granted to each subject rather than how they are granted.\\
+If, in a given time interval, a subject \textit{does not need} a right
+then this right should be revoked and then granted again later on by
+updating the \texttt{ACM} to prevent the subject from exploiting the right in such time interval.\\
+The right is removed at the beginning and then granted at the
+end of the \textit{"not-needing" interval}.
+
+\subsubsection{Protection Domain Switching}
+\textbf{Protection Domain Switching} (\texttt{PDS}) consists in updating an \texttt{ACM} row,
+making the same subject executed
+with \textit{updated rights} in \texttt{ACM}.\\
+Note that it is possible to have a \texttt{PDS} without a \textit{context switch}.
+The performance overhead introduced by \texttt{PDS} is a function of the
+implementation level and the adopted implementation of the
+\texttt{ACM} (\textit{Capabilities} vs \texttt{ACL});
+When the implementation relies on capabilities revoking a right is not trivial,
+delegation and race conditions are involved.
+
+\subsubsection{Small Domain Principle}
+An alternative definition of this principle is \textbf{the small
+domains principle}, to stress the importance of minimizing the
+protection domains $\longrightarrow$ the number of the subject rights $\longrightarrow$ the
+\textit{frequency} of the \textit{commutation} of the protection domain.\\
+Besides, as the size of the protection domain decreases, it also
+decreases the risk of an attack against the considered
+subject.\\
+If the protection domains are \textit{not small}, then we revoke access
+rights when not needed and grant them again when needed, as described before.
+
+\nl
+Notice the strong relation between the two last principles
+because segmented networks force the reduction of protection
+domain and separation of duties enables the implementation of
+the least privilege.
+
+\subsubsection{Common implementation}
+In the classical solution a \textit{domain switching} occurs when
+\begin{enumerate}
+   \item A procedure (method) is \textbf{invoked}
+   \item A procedure (method) \textbf{returns}
+\end{enumerate}
+
+Instead of updating row, creation (\textit{invoke}) and deletion (\textit{return}) are typically preferred.\\
+When a procedure is invoked, a new row that defines its
+rights is created and gets deleted when the procedure returns.
+Rights are paired with the \textbf{instance} of a procedure executed
+by (or on behalf of) a subject rather than with the actual procedure
+code or with the subject.
+
+The rights in the new row are a function of:
+\begin{itemize}
+   \item Method private variables
+   \item Input parameters
+\end{itemize}
+The program structure in terms of \textit{classes/methods} defines the
+strategy to manage rights granted to the subjects on
+program data structures,
+allowing automated handling of \texttt{PDS} and 
+the programmer to choose the size of each protection
+domain.
+
+\subsubsection{Network Programming}
+In network programming the least privilege principle is
+managed through dynamic communication channels.\\
+A server can be designed by introducing a distinct communication
+channel for each operation implemented by the server; 
+a process is \textbf{connected}\footnote{i.e. can send messages} to the channel
+paired with an operation \texttt{Op} {---}{with a service \texttt{S}}{---} when it can
+invoke the operation {---}{can access the service}{---};
+then process is \textbf{disconnected} from the channel when it can no
+longer invoke the operation.
+
+The adoption of dynamic channels \textit{reduces} the \textbf{overhead} to reject a request by implementing in the OS kernel a mechanism to ope and close ports.\\
+The overhead \textit{on the server} can be further reduced by \textit{"spreding the news"}
+that a message from a given node to a given port of a receiver
+can be \textit{dropped} by routers or firewall;
+However, this implies a larger overhead on other nodes to update \textit{routing tables} or \textit{firewall rules}.\\
+On the other side, if only the final node or, even worse, the final
+server can drop messages we offer an opportunity for a
+\textbf{DDoS attacks} where a server is overflown by a large number of
+requests to be discarded.
+
+\subsubsection{Defence-in-depth and Network Segmentation}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/leastprivilege_networkseg.png}\\
+   \textbf{Network Segmentation} can be seen as an implementation of \textit{Defence-in-Depth} (Least Privilege key point) when designing system networks.
+   \caption{Least Privilege and Network Segmentation}
+   \label{fig:leastprivilege_networkseg}
+\end{figure}
+
+\subsubsection{ZeroTrust Network}
+
+Recall that the basic idea of \texttt{ZT} is to authenticate both the \textbf{user} and the \textbf{device} exploited by the user to access a \textbf{service};
+\note{
+   Authenticating a device means searching for the device security status in an inventory to check the vulnerabilities that affect the device and which patches have been applied
+}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/leastprivilege_zerotrust.png}
+   \caption{ZeroTrust in Networks to apply \textit{Least Privilege} principle}
+   \label{fig:leastprivilege_zerotrust}
+\end{figure}
+
+\begin{enumerate}
+   \item \textbf{No implicit trust} is granted to assets or user accounts based
+   \textit{solely} on their physical or network location (i.e., local area networks versus the internet) or based on asset ownership
+   (enterprise or personally owned).
+   \item Authentication and authorization (both subject and device) are
+   performed \textbf{before} establishing a session to enterprise resources
+   \item Zero trust is a response to enterprise network trends that include remote users, "bring your own device" and cloud-based assets
+   not located within an enterprise-owned network boundary.
+   \item Zero trust protects \textbf{resources} (assets, services, accounts, etc.), \textbf{\textit{not} network segments},
+   since the network location in most nowdays infrastructures is no longer the
+   prime component to the security posture of the resource.
+
+   \item All data sources and computing services are considered resources
+   \item All communication is secured regardless of network location because
+   location alone does not imply trust.
+   \item Access to individual enterprise resources is granted on a per-session
+   basis (no caching). Trust in the requester is evaluated before granting
+   access with the least privileges to complete the task.
+   \item Access to resources is determined by dynamic policy (= the
+   observable client identity, application/ service, and the requesting
+   asset) and may include behavioral and environmental attributes.
+   \item The enterprise monitors and measures the integrity and security
+   posture of all owned and associated assets. No asset is inherently
+   trusted.
+\end{enumerate}
+
+
+\begin{center}
+   \textit{"You cannot satisfy \textbf{ZeroTrust} unless you satisfy, at least to some degree, the \textbf{Least Privilege} principle."}
+\end{center}
