@@ -423,3 +423,127 @@ Recall that the basic idea of \texttt{ZT} is to authenticate both the \textbf{us
 \begin{center}
    \textit{"You cannot satisfy \textbf{ZeroTrust} unless you satisfy, at least to some degree, the \textbf{Least Privilege} principle."}
 \end{center}
+
+\subsection{Least Common Mechanism}
+\begin{center}
+   \textit{Minimize the amount of mechanisms common to more than
+   one user and depended on by all users}
+\end{center}
+
+Instead of \textbf{sharing} \textit{mechanisms} theirselves,
+the implementation usually relies on making the information flow along \textit{shared channels}, 
+allowing the creation of \textbf{covert channels}.\\
+Sharing should be avoided since it also decreases \textbf{isolation},
+and is difficult to manage when handling Virtual machines
+and Host/Network Segmentation.
+
+Usually shared mechanisms are rather \textbf{powerful}, hence they should be \textbf{decomposed} into
+simpler ones to
+better satisfy the separation of privilege and least
+privilege principles,
+since simpler operations allow to assign to each subject \textit{only} the rights it \textit{needs}, and it is entitled to.
+
+\subsubsection{Cover Channels}
+
+\textbf{Covert Channels} are a means of communication between two processes that do not explicitly provide interaction mechanisms.
+One process is a \textit{Trojan}, which transmits data covertly
+and the other a \textit{Spy} which receives data.
+
+\begin{enumerate}
+   \item \textbf{Storage Channels}\\
+   Communication is achieved by modifying a stored object.\\
+   \emph{\underline{Countermeasure}} $\longrightarrow$
+   shared memory areas should be always \textit{reinitialized} before being passed to another
+   process,
+   and they should not exist among processes with distinct security levels.
+   \note{
+      With cache memories information can be transmitted through faults (a page has been accessed or not)
+   }
+   \item Information is transmitted by affecting the relative timing of events.
+   \note{
+      The \texttt{Hi} \textit{Trojan} process transmits "we attack at dawn by attempting to acquire the disk drive at midnight";\\
+      the \texttt{Lo} \textit{Spy} process knows that, if the disk is unavailable at midnight,
+      then "we attack at dawn", otherwise, not.
+   }
+   Timing channels are very difficult to avoid on time-shared system but are \textbf{noisy}.
+   \emph{\underline{Countermeasure}} $\longrightarrow$ Traffic Analysis and Pattern Recognition, to detect \textit{noise}.
+\end{enumerate}
+
+\subsection{Psychological Acceptability}
+\begin{center}
+   \textit{The human interface should be designed for ease of use so that
+   users routinely and automatically accept the protection
+   mechanisms correctly}\\
+   or\\
+   \textit{Do not adopt policies users will surely violate}
+\end{center}
+
+Security mechanisms should allow ease of installation, configuration and use,
+and in general should not increase the complexity of
+accessing a resource: such complexity should be hidden.
+
+\subsection{Salter \& Schroeder considerations}
+After defining the first 8 principles, \textit{S\&S} admit that
+\begin{center}
+   Analysis of traditional physical security systems have suggested
+   two further design principles which, unfortunately, apply only
+   \textbf{imperfectly} to computer systems
+\end{center}
+
+\begin{enumerate}
+   \item Principle of \textbf{Work Factor}\\
+   Compare the cost of circumventing the mechanism with the
+   resources of a potential attacker
+   \item Principle of \textbf{Compromise Recording}\\
+   Mechanisms that reliably record a compromise of information
+   may replace more elaborate ones that completely prevent loss
+   \begin{enumerate}
+      \item Robustness vs resilience
+      \item If you cannot be robust be at least resilient
+      \item At least discover successful intrusions and persistence
+   \end{enumerate}
+\end{enumerate}
+
+The two principles are useful if some attacks are
+successful in spite of the adoption of the previous
+principles, and can be even more useful if some of such principles have been violated.
+In some sense they anticipate the presence of vulnerabilities and possible failures,
+reminding a system designer to not believe that they can be robust against \textit{any} adversary.
+
+\subsection{Work Factor}
+\begin{center}
+   \textit{Compare the cost of circumventing the mechanism with the resources
+   of a potential attacker:
+   the enemy is the master and the measure}
+\end{center}
+
+The probability of a successful attack \textit{increases} with the \textbf{resources} the attacker can access,
+while the cost of circumventing a mechanism is the \textbf{work factor} of the attacker.\\
+So, we can consider a mechanism better than another if it can be defeated only through a larger amount of work.
+
+The number of attacks in escalations and their attribute together with the action to collect the information on the vulnerabilities and implement the attacks determine the \textit{(minimal)} attacker work.
+
+Measuring the amount of work the attacker (the adversary) has to do is an otput of \textbf{adversary emulation}, i.e. mimicking the attacker to understand if they can successfully attack a system.
+If you have information on your adversaries then you can exploit \textit{Att\&ck Matrix} to understand if and
+how they can successfully attack your system,
+otherwise
+
+\subsection{Compromise Recording}
+\begin{center}
+   Mechanisms that reliably record a compromise of information may replace more elaborate ones that completely prevent loss
+\end{center}
+A mechanism supports the discover of unauthorized use if it produces a \textbf{tamperproof record} that is reported to the owner.
+It is difficult to guarantee discovery after a computer system has been attacked and controlled from the outside.
+Logical damage (and internally stored records of tampering) can be undone by a clever attacker.
+
+When collecting for security the integrity of the log is
+fundamental, if the integrity of a log for security is not assured then the
+log is useless.\\
+The difference between a sequence of blocks and a
+blockchain is a good example of the difference between
+collect for debugging and collect for security
+
+\subsection{Takeaway message}
+Remember that tools do not solve security problems.
+Buying a firewall doens't make a network secure, and it's not the key point.
+The real problem is to understand and define the policy rules to be applied.
