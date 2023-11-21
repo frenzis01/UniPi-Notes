@@ -270,3 +270,214 @@ it is easier to find dependencies of component if \textit{Dependency Injection} 
    Check \textit{constructors} and \textit{setters}\\vs\\Check \textit{all invocations} to
    \texttt{Locator} in the source code
 \end{center}
+
+\section{Designing Frameworks}
+Frameworks are normally implemented in an object-
+oriented language such as Java.
+It is important to learn to analyze a potential software family, identifying
+its possible common and variable aspects, and evaluating
+alternative framework architectures.
+\nl
+
+A possible idea is to start from a known divide-and-conquer algorithm such as:
+\begin{lstlisting}[label={lst:divideandconquer_example},caption={Example pseudocode of a Divide-and-Conquer algorithm}]
+   function solve (Problem p) returns Solution { 
+      if isSimple(p)
+         return simplySolve(p);
+      else
+         sp[] = decompose(p);
+         for (i= 0; i < sp.length; i = i+1)
+            sol[i] = solve(sp[i]);
+         return combine(sol);
+   }
+\end{lstlisting}
+We can apply known techniques and patterns to \textbf{define} a
+\textit{framework} for a \textbf{software family}.
+Instances of the defined framework, obtained by standard
+extension mechanism, 
+will be concrete algorithms of the \textit{family}.
+
+\subsection{Terminology}
+\begin{itemize}
+   \item \textbf{Frozen Spot}\\
+   common (shared) aspect of the software family
+   \item \textbf{Hot Spot}\\
+   variable aspect of the family
+   \item \textbf{Template method}\\
+   concrete method of base (abstract) class implementing behavior common to all members of the family
+   \item A hot spot is represented by a group of abstract \textit{\textbf{hook} methods}.
+   \item A template method calls a \textit{hook method} to invoke a function that is specific to one family member {---}Inversion of Control{---}.
+   \item A hot spot is realized in a framework as hot spot subsystem:
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/hotspot.png}
+      \caption{\textit{Hotspot} implementation}
+      \label{fig:hotspot}
+   \end{figure}
+\end{itemize}
+\labelitemize{
+   \textit{Principles}
+}{
+   \begin{enumerate}
+      \item The unification principle [Template Method Design Pattern]
+      \begin{enumerate}
+         \item It uses inheritance to implement the hot spot subsystem
+         \item Both the template methods and hook methods are defined in
+         the same abstract base class
+         \item Hook methods are implemented in subclasses of the base class
+         
+      \end{enumerate}
+      \item The separation principle [Strategy Design Pattern]
+      \begin{enumerate}
+         \item It uses delegation to implement the hot spot subsystem
+         \item The template methods are implemented in a concrete context
+         class; the hook methods are defined in a separate abstract class
+         and implemented in its subclasses
+         \item The template methods delegate work to an instance of the
+         subclass that implements the hook methods
+      \end{enumerate}
+   \end{enumerate}
+}
+
+\subsection{Template Method design pattern}
+It is one of the behavioural pattern of the \textit{Gang of Four};
+Its intent is to define the skeleton of an algorithm in an operation,
+\textit{deferring} some steps to subclasses:
+A \textbf{template method} belongs to an \textit{abstract} class and it defines an algorithm in terms of \textit{abstract} operations that subclasses \textbf{override}
+to provide \textit{concrete behavior}.
+
+Template methods call, among others, the following operations:
+\begin{enumerate}
+   \item \textbf{concrete} operations of the abstract class $\longrightarrow$ fixed parts of the algorithm
+   \item \textbf{primitive} operations, $\longrightarrow$ abstract operations that subclasses have to implement
+   \item \textbf{hook} operations $\longrightarrow$ provide default behavior that subclasses may override if necessary.\\
+   A hook operation often does nothing by default.
+\end{enumerate}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/dp_templatemethod.png}
+   \caption{Template method}
+   \label{fig:dp_templatemethod}
+\end{figure}
+
+\subsubsection{Applying \textit{Unification Principle}}
+Let's consider the result of applying \textit{unification principle} to the example code \ref{lst:divideandconquer_example} provided before.
+\lstset{
+   morekeywords=[3]{solve,templatemethod},
+   keywordstyle=[3]\color{green},
+   morekeywords=[4]{hotspots,isSimple,simplySolve,decompose,combine},
+   keywordstyle=[4]\color{red}
+}
+\begin{lstlisting}
+   -- hotspots
+   function solve (Problem p) returns Solution { -- templatemethod
+      if isSimple(p)
+         return simplySolve(p);
+      else
+         sp[] = decompose(p);
+         for (i= 0; i < sp.length; i = i+1)
+            sol[i] = solve(sp[i]);
+         return combine(sol);
+   }
+\end{lstlisting}
+\lstset{style=javaBlock}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/dp_templatemethod_divide.png} 
+   \caption{The generic schema of a Divide-and-Conquer \textit{Template Method} designed Framework}
+   \label{fig:dp_templatemethod_code}
+\end{figure}
+
+\subsection{Strategy design pattern}
+Another one of the behavioural pattern of the \textit{Gang of Four};
+Its intent is to allow to select (part of) an algorithm at runtime, leading the client to use an object implementing the interface and
+invoking methods of the interface for the hot spots of the
+algorithm.
+
+\subsubsection{Applying \textit{Separation Principle}}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/dp_strategy_code.png}
+   \caption{Result of applying the Separation principle on the example code}
+   \label{fig:dp_strategy_code}
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/dp_comparison.png}
+   \caption{Comparison between the two pattern's schemas}
+   \label{fig:dp_comparison}
+\end{figure}
+
+\section{Development by generalization}
+
+Recalling what said earlier, we try to address:
+\begin{center}
+   \textit{Learning to analyze a potential software \textbf{family}, identifying its
+   possible common and variable aspects, and evaluating
+   alternative framework architectures. Framework design involves
+   incrementally \textbf{evolving} a design rather than discovering it in one
+   single step}
+\end{center}
+
+Where the \emph{evolution} consists of examining \textbf{existing designs} for family members, identifying the \textbf{frozen} and \textbf{hot spots} of the family, and ultimately \textbf{generalizing} the program structure to enable \textit{code reusing} for frozen spots and
+multiple \textit{different implementations} for each hot spot.
+
+We will consider an example based on binary tree traversals, and discuss each generalization step.
+
+\subsection{Identifying Frozen and Hot spots}
+\textbf{Frozen Spots}, which are fixed for the whole family:
+\begin{enumerate}
+   \item The structure of the tree, as defined by the
+   BinTree hierarchy
+   \item A traversal accesses every element of the tree
+   once, but it can stop before completing
+   \item A traversal performs one or more visit actions
+   accessing an element of the tree
+   \note{
+      meaning that there may be different and multiple actions after visiting a node,
+      since it may represent the end of a left subtree visit, a right subtree visit or a root.}
+\end{enumerate}
+
+Let's identify possible \textbf{Hot Spots}, which have to be fixed in each element of the family.
+\begin{enumerate}
+   \item Variability in the visit operation’s \textbf{action}:
+   a function of the current node’s value and the accumulated result
+   \item Variability in \textbf{ordering} of the visit \textit{action} with respect to subtree traversals;
+   Should support \textit{preorder},
+   \textit{postorder}, \textit{in-order}, and their combination.
+   \item Variability in the \textbf{tree navigation} technique. 
+   Should support any access order.
+   \note{not only left-to-right, depth-first, total traversals}
+\end{enumerate}
+
+\newpage
+\section{Visitor Pattern}
+\begin{paracol}{2}
+   \colfill
+   The \textbf{Visitor} pattern guarantees \textit{separation} between algorithm
+   and data structure.
+   \nl
+
+   The data structure can be made of different types of components (\textit{ConcreteElements}), and each component implements an
+   \lstinline|accept(Visitor)| method.
+   The \lstinline|Visitor| defines one visit method
+   for each type, including the navigation logic in itself.
+   At each step, the correct visit method
+   is selected by \textbf{overloading}.
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.9\columnwidth]{images/visitorpattern_treecode.png}
+      \caption{Visitor Pattern applied to the BinTree visit}
+      \label{fig:visitorpattern_treecode}
+   \end{figure}
+\end{paracol}
+
+Even if in the \textit{Visitor} pattern, as in the \textit{Template Method} pattern, an abstract class is defined and later implemented by subclasses which provide concrete behaviour,
+in the \textit{Visitor} pattern such classes are \textit{\textbf{intended}} to be used directly by \textit{clients},
+while in the \textit{Template Method} pattern they are \textit{\textbf{intended}} to be called by the \textit{Frozen Spots} inside the abstract class itself, not by \textit{clients}.
