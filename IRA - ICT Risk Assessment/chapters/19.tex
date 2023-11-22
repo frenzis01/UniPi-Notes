@@ -26,6 +26,13 @@ i.e. K cannnot be discovered because of  mathematical vulnerabilities.
 \section{Proposed Solutions}
 Below are listed possible vulnerabilities with some form of categorization,
 although they may be related and/or not mutually exclusive.
+
+\note{
+   Despite the challenge title being \textit{"Capture-the-Flag"},
+   the following vulnerabilities are {--}briefly{--} discussed and addressed from a "security" point of view,
+   however they may be exploited as foundation to define and implement CTF competitions.
+}
+
 \subsection{Vulnerability 1 - Authentication}
 
 First of all we can observe that the lack of \textbf{authentication} allows an attacker to impersonate the \texttt{Security Kernel},
@@ -46,7 +53,8 @@ In this way he may achieve \textit{Denial-of-Service} or may obtain capabilities
 \begin{center}
    \textit{"Each subject manages a list with its own capabilities"}.
 \end{center}
-Depending on where and how such capabilities are stored and managed,
+Capabilities are usually stored in the subject,
+but if it's not the case (e.g. distributed systems), depending on where and how such capabilities are stored and managed,
 an attacker may manipulate them.
 
 \subsection{Vulnerability 3 - Replay/Redirecting}
@@ -57,8 +65,33 @@ both obtaining access rights and denying the service for legitimate clients.
 
 He may even copy \texttt{op} and \texttt{opsfield} and insert them in a \texttt{Req} sent by him.
 
-\subsection{Vulnerability 4 - Overflow}
+\subsection{Bonus Vulnerabilities}
+The following paragraphs do not refer to proper vulnerabilities,
+but more generally to some security aspects  {---} or to vulnerabilities which are not as crucial/straightforward as the first ones{---}, which may result in undesired behaviour, possible intrusions, or simply bad system design choices.
 
+\subsubsection{Vulnerability 4 - Overflow}
 Probably not of interest here,
 but every entity may be flooded by requests and messages,
-resulting in the denial of service.
+resulting in a denial of service.
+
+\subsubsection{Vulternability 5 - Lack of logging}
+The protocol doesn't explicitly log anything,
+which instead might be useful to track both legitimate and unlegitimate operation,
+aiming to discover possible intrusion or to prove in a court of law that an intrusion has taken place.
+
+\subsubsection{Vulnerability 6 - Encryption Info Leakage}
+The problem outline states that \texttt{K} cannot be discovered due to mathematical vulnerabilities,
+so we can leave aside all encryption attacks, mathematical vulnerabilities, etc.
+
+However there are some techniques to infer information starting from the observation of one or multiple encrypted payloads,
+exploiting statistical properties like size, entropy, and possibly others;
+the attacker may also infer how costful (hence get an idea of which encryption method is being used) is to encrypt/decrypt fields by observing how much latency is introduced by communications which involve an encrypted payload.
+
+\subsubsection{Vulnerability 7 - Least privilege violation}
+
+The \textit{least privilege principle} states that a subject should own only the rights he needs to execute the operation he is currently performing.\\
+The described protocol doesn't forbid a subject from requesting multiple operations on the same object before the previous ones have terminated,
+resulting in multiple channels simulateneously open between an object \texttt{O} and a subject \texttt{S}, 
+and in multiple rights owned by \texttt{S}.\\
+This may be the desired outcome in some situations,
+otherwise it results in the violation of the \textit{least privilege principle} and might be harmful.
