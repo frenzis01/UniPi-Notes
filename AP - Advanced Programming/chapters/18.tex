@@ -1,0 +1,194 @@
+\chapter{Java Memory Model}
+A \textbf{memory model} for \textit{multithreaded} systems specifies how mem actions in a program will appear to execute to the programmer, i.e. {---}more specifically{---} which value each read of a memory location may return.\\
+Every hardware and software interface of a system that admits multithreaded access to shared memory \textbf{requires} a memory model.
+such model determines the transformations that the system can apply to a program
+
+In the case of high-level programming languages such as Java the memory model determines
+\begin{enumerate}
+   \item the transformations the compiler may apply to a program when \textbf{producing bytecode}
+   \item the transformations a VIrtual-Machine may apply to bytecode when \textbf{producing native code}
+   \item the \textbf{optimizations} that hardware may perform on the native
+\end{enumerate}
+Besides, the model also impacts the programmer,
+since such transformations determine the possible outcomes of a program.\\
+Without a well defined memory model for a programming language, it is impossible to known what the legal results are for a program in such language.
+\note{When we programming \textit{"correctly"} in Java, using \texttt{volatile} keywords and related constructs, we can however {---}in some sense{---} ignore the memory model}
+
+\paragraph{Memory Hierarchy}
+In modern architectures memory is stratified ranging from mass memory (hard disks) to \texttt{CPU} registers, passing through different cache levels (\texttt{L1,L2,L3}),
+obtaining a \textbf{memory hierarchy};
+depending on \texttt{CPU} architectures, cache levels may be shared or not among cores.
+
+\section{Java Memory Model}
+For incorretly synchronized programs, the behaviour is \textit{bounded} by a well-defined notion of \textbf{causality},
+so the semantics are \textit{not} completely undefined as they were in the early (pre \texttt{Java 5} - $2004$) versions of the memory model.\\
+The causality constraints are \textit{strong enough} to \textit{respect} the \textbf{safety} and \textbf{security} \textbf{properties} of java,
+and \textit{weak enough} to \textit{allow} standard compiler and hardware \textbf{optimizations}.
+
+\subsection{Runtime Data Areas}
+\textbf{Local} {-}\textit{primitive} type{-} \textbf{variables} of methods are allocated on thread stacks,
+and \textit{cannot} be accessed by other threads;
+\textit{Objects} are instead allocated on the Heap. 
+\nl
+
+For what concerns the distribution of data in Java,
+it may be spread orthogonally around the memory hierarchy, 
+i.e. anything can go anywhere.\\
+This leads to two key issues:
+\begin{enumerate}
+   \item \textbf{Visibility} of variable updates
+   \item 
+\end{enumerate}
+
+(...)
+
+\section{\texttt{volatile} modifier}
+\lstinline|volatile| is a modifier that can only be applied to fields of a class,
+and intuitively it declares that a field can be modified by multiple threads\footnote{Clearly incompatible with \lstinline|final|}.
+The JMM guarantees that the write of a volatile variable is visible when it is read.
+An \textit{implementation} should guarantee that the new value is flushed from the cache to the RAM, if a read happens "after" a write.
+
+\begin{center}
+   What does it mean that \textit{"a read happens after a write"}?
+\end{center}
+This will be discussed later on in Sec \ref{sec:behaviour_actions}, however,
+When threads do \textit{not} use any synchronization mechanism,
+their behavior is described as the sequence of performed read/write \textbf{actions},
+along with the results of the read operations;
+such sequence has a \textbf{partial ordering} whose \textit{legitimacy} is checked by the JMM
+which aims to ensure that a read results in the actual last value written in this partial ordering.
+\nl
+
+Notice that \lstinline|volatile| doesn't solve \textbf{Data Races}, which need synchronization mechanism;
+the typical example is incrementing a shared counter, which actually consists of three operations, \texttt{read}, increment the value read, and \texttt{write} it;
+such actions are \textbf{not} performed \textit{atomically}\footnote{So... which operations are atomic and which are not?},
+thus a second thread may read the "old" before the first one writes the updated one, 
+resulting in only one incrementation instead of two.
+
+\subsubsection{Monitors}
+Monitors are the default Java synchronization mechanisms.
+Every object has a monitor exposing a lock which can be held only by one thread at a time.
+methods and ... with the \lstinline|synchronized| modifier are guarded by the lock.
+
+\section{Describing thread behaviour}
+\label{sec:behaviour_actions}
+The JMM has no explicit global ordering of all actions by time consistent with each thread's perception of time, and has no global store.\\
+Executions are instead described in terms of memory \textbf{actions},
+\textbf{partial orders} on these actions, and a \textbf{visibility function} that assigns a write action to each read action.
+
+\labelitemize{
+   \textit{Actions}
+}{
+   \begin{enumerate}
+      \item Volatile read
+      \item Volatile write
+      \item lock
+      \item TODO
+   \end{enumerate}
+   }
+\nl
+
+An execution of a \textit{single-threaded} program fixes a total order $\leq_{po}$ on its \textit{actions}, called \textbf{program order};
+while for a \textit{multi-threaded} the program order consists in the union the program order of its threads,
+so it does not relate actions of different threads.\\
+An execution of a \textit{multi-threaded} program is \textbf{sequentially consistent} if there is a total order of its actions consistent with the program order {---}and such that each read has the value of the last write{---}.\\
+For \textit{datarace-free}\footnote{Also called \textit{\underline{corretly}} or \textit{\underline{well} synchronized programs}} mt-programs, the JMM guarantees that only \textbf{sequential consistent} executions are legal.
+
+JMM has been designed to guarantee three things:
+\begin{enumerate}
+   \item Promise for programmers\\
+   Sequential consistency must be sacrificed to allow optimizations, 
+   but it still holds for datarace-free program
+   \item Promise for security\\
+   Values should not appear "out of thin air", allowing for information leakage
+   \item Promise for compilers\\
+   HW and SW optimizations should be applied without violating (both) the first two requirements
+\end{enumerate}
+
+TODO
+
+\begin{paracol}{2}
+   \begin{lstlisting}
+      int r1
+   \end{lstlisting}
+\end{paracol}
+Instr reordering may be performed as long as it guarantees sequential consistency in the \textit{single thread}
+
+TODO
+
+\begin{paracol}{2}
+   \begin{lstlisting}[caption={Thread 1}]
+      r1 = x;
+      y = r1;
+   \end{lstlisting}
+\switchcolumn
+   \begin{lstlisting}[caption={Thread 2}]
+      r2 = y;
+      x = r2;
+   \end{lstlisting}
+\end{paracol}
+\lstinline|x = y = 0| initially;
+can we obtain \lstinline|r1 == r2 == 42| at the end?\\
+\textit{"Well \textbf{no}, but actually \textbf{yes}..."}\\
+In some situations the Runtime environment may \textit{guess} that, 
+at some point, \lstinline|x| evaluates to \lstinline|42|:
+we say that \lstinline|42| comes \textit{"out-of-thin-air"}.
+Then it checks by looking at the two thread instructions if it may happen that \lstinline|r1 == r2 == 42|:
+\begin{center}
+   "Yes! So x actually really evaluates to 42! I guessed right! \smiley"
+\end{center}
+This was an accepted guess before the JMM introduced with Java 5 (2004),
+but currently such claims at runtime are forbidden.
+
+\subsection{Synchronization order}
+Each execution of a program is associated with a \textbf{synchronization order} $\leq_{so}$ which is a total order over all synchronization actions satisfying:
+\begin{enumerate}
+   \item Consistency with program order
+   \item Read to a volatile variable $v$ returns the value of the write to $v$ that is ordered last before the read by the synchronization order.
+\end{enumerate}
+TODO
+
+\paragraph{Formally Defining Data Races}
+Two accesses $x$ and $y$ form a data race in an execution of a program if they are from different threads, they conflict, and they are not ordered by happens-before.
+
+A program is said to be correctly synchronized or datarace-free if and only if all sequentially consistent executions of the program are free of data races.
+
+The first requirement for the JMM is to ensure sequential consistency for correctly synchronized or datarace free programs\\
+Programmers should not worry about code transformations for datarace-free programs.
+TODO
+
+\labelitemize{\textit{Executions - Formal Definition}}
+{
+   $E = (P,A,\leq_{po},\leq_{so},W,V,\leq_{sw},\leq_{hb})$
+   \begin{enumerate}
+   \item TODO
+   TODO
+\end{enumerate}}
+
+$E = (P,A,\leq_{po},\leq_{so},W,V,\leq_{sw},\leq_{hb})$ is a \textbf{well-formed execution} if:
+\begin{enumerate}
+   \item Each read of a var $x$ sees a write to $x$, and all reads and writes of volatile variables are volatile actions
+   \item Synchronization order is consistent with program order and mutual exclusion
+   \item The execution obeys intra-thread consistency
+   \item The execution obeys intra-thread and happens-before consistency on
+   TODO
+
+\end{enumerate}
+
+Now, which \textit{well-formed executions} are \textbf{legal}?
+\textbf{Legal executions} are built iteratively:
+in each iterations, the JMM commits a set of memory actions;
+actions can be committed if they occur in some well-behaved...
+
+A well-formed $E = (P,A,\leq_{po},\leq_{so},W,V,\leq_{sw},\leq_{hb})$ is validated by \textit{commiting} actions in A;
+if all actions of A are committed, then E is legal.
+There must exists a sequence of subsets of a
+\[
+  C_0 C_1 = A 
+\]
+and one $\{E_i\}$ of well-formed executions such that each $E_i$ witnesses the actions in $C_i$
+
+
+TODO many slides have been skipped
+
+\section{Intructions reordering}
