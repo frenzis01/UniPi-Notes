@@ -171,17 +171,16 @@ The \texttt{CSME} is digital janitor, working behind the scenes, below
 operating system, hypervisor, and firmware, performing lots of
 crucial low-level tasks.
 \begin{itemize}
-   \item 
-   • Bringing up the computer, controlling power levels,
-   • Starting the main processor chips
-   • Verifying and booting motherboard firmware, and providing
+   \item Bringing up the computer, controlling power levels,
+   \item Starting the main processor chips
+   \item Verifying and booting motherboard firmware, and providing
    cryptographic functions.
-   • The engine is the first thing to run when a machine is switched on.
+   \item The engine is the first thing to run when a machine is switched on.
 \end{itemize}
 
 \paragraph{Possible Flaw}
 One of the first things the \texttt{CSME} protects is its \textbf{own built-in RAM} so that other hardware and software module cannot interfere.
-• However, these protections are disabled by default, there is a tiny timing gap between a system turning on and the \texttt{CSME} executing the code
+However, these protections are disabled by default, there is a tiny timing gap between a system turning on and the \texttt{CSME} executing the code
 in its boot ROM that installs such protections in the form of input-
 output memory-management unit page tables.
 During that timing gap, other hardware - physically attached or
