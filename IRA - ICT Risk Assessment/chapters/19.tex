@@ -60,7 +60,7 @@ an attacker may manipulate them.
 \subsection{Vulnerability 3 - Replay/Redirecting}
 
 The attacker may sniff and record valid \texttt{Createchan(S,op)} and \texttt{Exec(op)} messages and replay them when desired.
-Even if more costful and complex he may \textit{redirect}\footnote{equivalent to recording a message, dropping it, and replay it towards a different entity} them,
+Even if more costful and complex he may \textit{redirect}\footnote{equivalent to recording a message, dropping it, and replaying it towards a different entity} them,
 both obtaining access rights and denying the service for legitimate clients.
 
 He may even copy \texttt{op} and \texttt{opsfield} and insert them in a \texttt{Req} sent by him.

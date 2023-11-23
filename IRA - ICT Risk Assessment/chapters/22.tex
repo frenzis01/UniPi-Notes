@@ -1,0 +1,250 @@
+\chapter{Data Handling}
+
+\section{Classification}
+Do understand how to protect data several security policies \textbf{classify data} into \textit{four }categories according the need for
+\textbf{confidentiality} and the resulting risk profile:
+\labelitemize{\textit{Security needs classification}}{
+   \begin{enumerate}
+      \item \textbf{Public Data}\\
+      Data can be disclosed without restriction.
+      \note{Directories,
+      Maps, Syllabi and Course Materials, de-identified data sets}
+      \item \textbf{Internal Data}\\
+      Confidentiality of data is preferred, but information contained in
+      data may be subject to open records disclosure.
+      \note{email
+      correspondence, budget plans, employee EmplID}
+      \item \textbf{Sensitive Data}\\
+      Data confidentiality required by law, policy, or contractual
+      obligation
+      \item \textbf{Restricted Data}\\
+      Restricted data requires privacy and security protections.
+      Special authorization may be required for use and collection.
+      \note{data
+      sets with individual Social Security Numbers (or last four of SSN), credit card
+      transaction or cardholder data, patient health data, financial data}
+   \end{enumerate}
+}
+
+Another classification is the one based on the availability needed for data:
+\labelitemize{Availability needs classification}{
+   \begin{enumerate}
+      \item \textbf{Supportive Data}\\
+      Data that is necessary for day-to-day operations, but
+      is not critical to the mission or core functions.
+      \item \textbf{High-priority Data}\\
+      Availability of data is necessary for organization function. 
+      Destruction or temporary loss of data may have an adverse
+      affect on organization mission, but would not affect organization-wide
+      function.
+      \item \textbf{Critical Data}\\
+      Critical data has the highest need for availability. If the
+      information is not available due to system downtime, modification,
+      destruction, etc., the organization functions and mission would be
+      impacted. Availability of this information must be rigorously protected.
+   \end{enumerate}   
+}
+
+\section{Protection}
+Having classified the data, we can discuss how to protect it:
+\begin{enumerate}
+   \item Data \textbf{discovery and inventory}\\
+   The first step in data protection is discovering data sets in the organization, paying attention to which are business-critical and which contain
+   sensitive data that might be subject to compliance regulations.
+   \item Data \textbf{loss prevention} (\textbf{DLP})\\
+   DLP is a set of strategies and tools to prevent data from
+   being stolen (exfiltration), lost, or accidentally deleted. 
+   DLP besides protecting against data loss,
+   also helps to recover it.
+   \item Storage with \textbf{built-in data protection}\\
+   Modern storage equipment provide
+   \textit{built-in} disk clustering and redundancy \texttt{RAID}.
+   For example, some store
+   providers offer up to 14 nines of durability, low cost enabling storage of large
+   volumes of data, and fast access for minimal $RecTimeO/RecPercObj$.
+   \item \textbf{Backup}\\
+   A backup is copy of data and stored separately from the source;
+   allows to restore the data to a previous state in case of loss or modification.
+   \item \textbf{Snapshots}\\
+   A snapshot is a backup of a complete image of a system, including data and
+   system files. 
+   A snapshot can be used to restore an entire system to a specific point in time.
+\end{enumerate}
+
+\subsection{RAID}
+\begin{center}
+   \textit{\underline{R}edundacy through \underline{A}rray of \underline{I}nexpensive \underline{D}isks}
+\end{center}
+
+\begin{itemize}[left=0pt, align=left]
+
+   \item \textbf{RAID 0: Striping}\\
+      Data is striped across multiple disks to improve performance, but there is no redundancy. If one disk fails, all data is lost.
+
+   \item \textbf{RAID 1-4: Mirroring}\\
+      Data is mirrored on two or more disks for redundancy. If one disk fails, the data is still available on the mirrored disk(s).
+
+   \item \textbf{RAID 5: Striping with Parity}\\
+      Data is striped across multiple disks with distributed parity for fault tolerance. If one disk fails, data can be reconstructed from parity information on the remaining disks.
+
+   \item \textbf{RAID 6: Striping with Double Parity}\\
+      Similar to RAID 5, but with an additional set of parity data, providing fault tolerance against the failure of two disks simultaneously.
+
+   \item \textbf{RAID 10: Mirrored Striping}\\
+      It combines mirroring and striping. Data is both mirrored and striped for performance and redundancy. It requires a minimum of four disks.
+
+   \item \textbf{RAID 50: Striped RAID 5 Arrays}\\
+      It combines the straight block-level striping of RAID 0 with the distributed parity of RAID 5. It requires a minimum of six disks.
+
+   \item \textbf{RAID 60: Striped RAID 6 Arrays}\\
+      Similar to RAID 50, but with double distributed parity for enhanced fault tolerance. It requires a minimum of eight disks.
+
+\end{itemize}
+
+\labelitemize{\textit{\textbf{Protection }Solutions}}{
+   \begin{enumerate}
+      \item \textbf{Replication}\\
+      Copying data \textit{periodically} on an ongoing basis locally or to another location, 
+      providing a living up-to-date data copy,
+      allowing both recovery and failover to the copy if the primary system goes
+      down.
+      \item \textbf{Encryption}\\
+      Altering data content according to an algorithm that can only be
+      reversed with the right encryption key. Encryption makes data unreadable, protecting it from
+      unauthorized access even if stolen.
+      \item \textbf{Data erasure}\\
+      Eraruse limits liability by deleting data that is no longer needed.
+      This can be done after data is processed and analyzed or periodically when data
+      is no longer relevant.
+      Erasing unnecessary data is a \textit{requirement} of many compliance regulations, \footnote{such as GDPR}.
+      \note{\textbf{Effectively} erasing data is not as trivial as it may seem}
+      \item \textbf{Disaster recovery}\\
+      \textit{Disaster recovery} is A set of practices and technologies that determine how to
+      deal with a disaster, such as a cyber attacks, natural disasters, or large-scale
+      equipment failures.
+      \textit{Disaster recovery} typically involves setting up a remote
+      disaster recovery site with copies of protected systems, and switching
+      operations to those systems in case of disaster.
+   \end{enumerate}
+}
+
+\section{API}
+The \textbf{API} of a distributed system includes all the ways someone can \textit{query} or
+\textit{modify} its \textbf{internal state}.
+
+\textbf{Administrative} \texttt{API}s are clearly more critical than "user" ones for what concerns reliability and security:
+typos and trivial mistakes by an admin may result in catastrophic outages or leaks of
+huge amounts of data,
+making such APIs very \textit{appealing for attackers}.\\
+Administrative APIs include APIs for \textit{installing/removing} software and deploying containers or VMs,
+and some \textbf{maintenance} and emergency APIs to delete corrupted user data or state, or
+to restart misbehaving processes.
+
+When designing with the \textit{Least privilege principle} in mind,
+the most intuitive solution is to \textbf{decompose} a large API in smaller ones.
+The \textbf{POSIX} API, popular for its flexibility, is huge and kind of suffers from this point of view;
+for instance, traditional host setup and maintenance is often performed via an interactive
+\texttt{OpenSSH} session or with tools that script against the \texttt{POSIX API},
+in both cases exposing the whole API to the caller,
+making it difficult to constraint user activities only to the ones he actually needs.
+\nl
+
+However, in some situations, minimal APIs may prevent an admin(/user) from performing some tasks.
+\textit{\textbf{Breaking-glass} Mechanisms} (BGM) have been created to this extent,
+essentially allowing an admin to bypass {--}violate{--} access control
+mechanisms \footnote{i.e. the Access Control Matrix} and execute critical
+operations such as shutting down a machine or killing a process.\\
+BGM may consideratively speed up problem solving and error recovering, but their usage should not be \textit{abused};
+actually it should be \textbf{ruled} by the security policy,
+and recorded {--}\textit{logged}{--} and checked {--}\textit{audit}{--}.
+
+The ability to use a BGM should be \textit{highly restricted}. 
+In general, it should be available only to the team responsible for the operational \textbf{SLA}\footnote{\textit{Service Level Agreement}} of a system.\\
+In \textit{ZeroTrust} networks, BGMs should be available only from specific locations, e.g. panic rooms, 
+resulting in a strategy which \textbf{distrusts} \textit{network location} but \textbf{trusts} a few locations
+with additional \textbf{physical access controls}.\\
+BGMs should not only be logged and check (\textit{audited}),
+but also regularly tested to ensure that they work when actually needed.
+Besides, after solving an issue via a BGM,
+the security team should \textbf{inspect} the underlying problem and provide a solution to avoid needing to use a BGM in case such problem arises again.
+
+\paragraph{Service Level Agreement}
+Each service contract determines performance indexes to evaluate quality of service, and the minimum performance the service \textbf{must} provide.
+Some indicators for a \textbf{SLA} focused on performance are:
+\begin{itemize}
+   \item \textit{Network performance} (bandwidth, \textbf{availability})
+   \item System \textit{component availability} (mainframe, network, bandwidth, ...)
+   \item End-to-end \textit{service availability}
+   \item Web \textit{response time}
+   \item \textbf{Uptime}
+\end{itemize}
+
+\section{Yale - BGM Guidelines}
+\begin{enumerate}
+   \item \textit{Break-glass} solutions are based on \textbf{pre-staged} emergency user accounts (created in advance, to carefully define respective access controls),
+   managed and distributed in a way that can make them quickly available
+   without unreasonable administrative delay. 
+   In other words they should be \textit{simple},
+   \textit{effective}, and \textit{reliable}.\\
+   Account \textit{usernames} should be simple and \textbf{meaningful}, while \textit{passwords} should be \textbf{effective} but \textbf{easy to remember} by the admins.
+
+   \item \textit{Account Permissions} should be set to \textit{\textbf{minimum} necessary privilege}.
+   \item \textbf{Auditing} should be enabled if available, to log details of the account usage and
+   details of the work carried out while using the account.
+   \item The individuals who create the accounts are \textbf{not} those ones reviewing the audit trails, since this can be a source of abuse.
+   \item The \textit{break-glass} accounts and distribution procedures should be \textbf{documented}
+   and tested as part of implementation.
+   \item BGMs require the emergency-account details to be made available in an appropriate and reasonable manner: such details may be provided on a media
+   e.g. a printed page, a magnetic-stripe card, a smart card or a token. 
+   Some distribution possibilities for break-glass accounts include the following:
+   \begin{enumerate}
+      \item Kept behind \textbf{actual glass} in a cabinet, where access to the accounts literally requires 
+      to break the glass \footnote{similar to a fire extinguisher or alarm},
+      providing an obvious indication that the accounts have been accessed and a deterrent to casual use.
+      \item Maintained within \textbf{sealed envelopes}, where a broken seal would be an obvious
+      indication that the accounts have been accessed.
+      \item \textbf{Locked} in a desk drawer that only \textit{specific people} can access.
+      \item Sealed and taped to the side of a monitor in a criical area,
+      \textbf{visible} to many so it
+      will be obvious when it is missing or damaged.
+      \item For cases where \textit{more than one person} is needed to declare an emergency,
+      \textbf{locked} in a safe or cabinet where one person knows the combination or has the
+      \textbf{cabinet key} and a different person has the \textbf{room key}.
+   \end{enumerate}
+\end{enumerate}
+
+\section{Testing}
+A system designed for least privilege is more complex than one that grants any privilege to anyone,
+so \textbf{testing} is needed.
+Sadly, also testing is more complex too, because a problem (i.e. an error) arises any time an \textit{access right} is missing.
+Testing and debugging to discover \textbf{legal rights} that are \textit{not} granted both
+\textbf{differ} from those to check the correct implementation of functions.
+
+A \textbf{testing infrastructure} monitoring a deployed system may be adopted but two problems follow:
+\begin{enumerate}
+   \item \textit{Testing \textbf{of}} least privilege to ensure that access is properly granted only to
+   \textit{proper resources}.
+   \item \textit{Testing \textbf{with}} least privilege to ensure that the \textit{infrastructure} for testing has only
+   the access it needs.
+\end{enumerate}
+
+\section{Authentication \& Authorization}
+\begin{center}
+   \textit{\textbf{Authenticate}} $\longrightarrow$ verify the \textit{identity} of a user or process as we have seen\\
+   \textit{\textbf{Authorize}} $\longrightarrow$ evaluate (to permit) a request from an \textit{authenticated} party
+\end{center}
+\textbf{Authorization} may consider additional parameters aside from \textit{identity} and \textit{operation} requested, such as:
+\begin{enumerate}
+   \item Requesting \textbf{device}
+   \item Request \textbf{parameters}
+   \item Metadata about \textbf{geolocation} of the device, \textbf{security status} of the device
+\end{enumerate}
+
+For both \textit{MultiParty authorization} (\texttt{MPAuto}) and \textit{3-Factor Auth/Auto} (\texttt{3F}), 
+request authorization is confirmed by \textbf{another node},
+beloging to a subset of more robust and secure node with the role of confirming choices of less robust.\\
+An interesting case is when the "more robust node" is a \textit{smartphone},
+which makes \texttt{3FA} very useful when a malware on a \textbf{workstation} tries to implement an attack,
+but useless against \textbf{insiders} because they can freely use their smartphones.
+
+\textbf{Temporary Access}
