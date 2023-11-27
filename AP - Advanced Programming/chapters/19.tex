@@ -1,0 +1,176 @@
+\chapter{RUST}
+\textbf{Rust} is a general purpose, system programming language
+with a focus on safety, especially \textbf{safe concurrency},
+supporting both \textit{functional} and \textit{imperative} paradigms.
+Its main goal is to \textit{ensure \underline{safety} without penalizing \underline{efficiency}}.\\
+\texttt{C/C++} provide more control but less safety, while \texttt{Python/Haskell} provide less control but more safety.
+\textbf{Rust} aims to get the best of both worlds, providing both \textbf{control} and \textbf{safety}.
+
+Despite its syntax resemblance to C/C++, in a deeper sense Rust is closer to the ML family languages;
+in fact almost every part of a function body is an expression, include \texttt{if-then-else} constructs, which returns a value.
+
+\section{Key Points}
+Rust, similarly to C, compilates to \textbf{object code} for bare-metal performance,
+but it supports \textbf{memory safety}:
+programs can \textit{dereference} only previously allocated pointers that have
+not been freed, and \textit{out-of-bound} array accesses not allowed;
+Besides, the \textbf{overhead} introduced is very low, since it's the \textit{compiler} which checks that memory safety rules are followed,
+and there's \textit{\underline{no} garbage collection}, so zero-cost abstraction in managing memory.\\
+This is achieved through and \textbf{advanced type system} and three key concepts to prevent memory corruption:
+\begin{enumerate}
+   \item Ownership
+   \item Borrowing
+   \item Lifetime
+\end{enumerate}
+
+Again, Rust is designed to be \textbf{memory safe} even in the presence
+of concurrency, and guarantees the following properties \textbf{statically}, meaning that
+if the program \textit{compiles} it will \textit{never manifest a violation} of these properties: 
+\begin{itemize}
+   \item No \texttt{null} pointers\\
+   $longrightarrow$ accessing a variable which does not hold a value
+   \item No dangling pointers\\
+   $longrightarrow$ Pointers to invalid memory location
+   \begin{itemize}
+      \item Pointers to explicitly deallocated objects;
+      \item Pointers to locations beyond the end of an array;
+      \item Pointers to objects allocated on the stack;
+   \end{itemize}
+   \item No double frees\\
+   $longrightarrow$ A memory location in the heap is reclaimed twice
+   \item No data races\\
+   $longrightarrow$ unpredictable results in concurrent computations
+   \item No iterator invalidation
+\end{itemize}
+
+\section{\texttt{null} and Primitive types in Rust}
+A \texttt{null} value does \textbf{not} exist in Rust, so in some way it must address the problem of accessing a variable which does not hold a value.\\
+Data values can only be initialized through a fixed set of
+forms, requiring their inputs to be already initialized, and if 
+any branch of code fails to assign a
+value to the variable, we get a \textbf{compile time error}.
+\note{Static/global variables must be initialized at declaration
+time.}
+\lstset{language=Rust}
+\textit{Nullable} types, are managed with a generic \lstinline|Option<T>|, playing
+the role of Haskell’s \texttt{Maybe} or Java’s \texttt{Optional}
+\begin{lstlisting}
+   enum std::option::Option<T> {
+      None,
+      Some(T)
+   }
+\end{lstlisting}
+
+\subsection{Primitive Types}
+\begin{lstlisting}[caption={Rust primitive types}]
+   // Numeric types:
+   i8 / i16 / i32 / i64 / isize
+   u8 / u16 / u32 / u64 / usize
+   f32 / f64
+   
+   bool
+   char // (4-byte unicode)
+\end{lstlisting}
+\begin{itemize}
+\item \textbf{Type inference} for variables declarations with let
+\item \textbf{No overloading} for literals: type annotations to disambiguate
+\item \textbf{Tuples} like in Haskell
+\item \textbf{Arrays} with fixed length. 
+\note{\textit{out-of-bound} access is checked at \textbf{runtime},
+but it's just a single comparison, its overhead is negligible}
+\end{itemize}
+
+\section{Memory Management}
+As usual, Rust uses a \textbf{stack} of activation records, and a \textbf{heap} for dynamically allocated data structures.
+
+The user is forced to be \textit{aware of where} the data are stored: 
+there is no \textbf{implicit boxing}\footnote{Act of \textit{boxing} an \texttt{int} in \texttt{Integer}, or extracting an \textit{int} from \textit{Integer}}.
+
+\begin{lstlisting}
+   fn main() {
+      let x = 3; // 'let' allocates a variable on the stack
+      let y = Box::new(3); // y is a reference to 3 on the heap
+      println!("x == y is {}", x == *y); // "x == y is true"
+      }
+\end{lstlisting}
+
+To avoid the overhead of a Garbage collection mechanism and the possible subtle errors introduced a programmer to whom memory management is delegated, Rust provides \textit{deterministic management of
+resources}, with very low overhead, using \textbf{RAII} (\textit{\underline{R}esource \underline{A}cquisition \underline{I}s \underline{I}nitialization}).
+\nl
+
+By \textit{default}, Rust variables are \textbf{immutable}, and their usage is statically checked by the compiler.
+\lstinline|mut| is used to declare a resource as mutable.
+\begin{paracol}{2}
+\begin{lstlisting}[caption={Compilation \textit{error}}]
+   fn main() {
+      let a: i32 = 0;
+      a = a + 1;
+      println!("a == {}", a);
+   }
+\end{lstlisting}
+\switchcolumn
+\begin{lstlisting}[caption={Compilation \checkmark}]
+   fn main() {
+      let mut a: i32 = 0;
+      a = a + 1;
+      println!("a == {}", a);
+   }
+\end{lstlisting}
+\end{paracol}
+
+The \textit{Resource Acquisition Is Initialization} (\textbf{RAII}) programming idiom states that Resource \textit{allocation} is done during object
+\textit{initialization}, by the constructor, while resource \textit{deallocation}
+(\textbf{release}) is done during object destruction (specifically
+\textbf{finalization}), by the destructor.
+
+This approached is adopted in modern \texttt{C++}: 
+small objects are allocated on \textit{stack},
+while larger resources are on the \textit{heap} {--}or elsewhere{--} and are \textbf{owned} by an object on the \textit{stack},
+who is responsible for \textit{releasing} the resource in its destructor.\\
+Each resource has a \textbf{unique owner}.
+
+Rust supports RAII in a \textit{strict} way through an \textbf{ownership system}, based on the concepts of \textit{\underline{ownership}} and \textit{\underline{borrowing}}.
+\labelitemize{\textit{Ownership}}{
+   \begin{enumerate}[label=\texttt{O\arabic*} - , left=1em]
+      \item Every value is \textit{owned} by a variable, identified by a name (possiby a path);
+      \item Each value has \textit{at most \underline{one owner} at a \underline{time}};
+      \item When the owner goes \textit{out-of-scope}, the
+      value is \textit{reclaimed} / destroyed.
+   \end{enumerate}
+}
+
+By default, an assignment between variables has
+a \textbf{\underline{move} semantics}:
+the ownership is moved from the RHS to the LHS 
+\begin{lstlisting}
+   fn main() {
+      let x = Box::new(3);
+      let _y = x; // underscore to avoid 'unused' warning
+      println!("x = {}", x); // error!
+      }
+\end{lstlisting}
+For primitive types and types implementing the \textbf{Copy
+trait}, assignment has a \textbf{\underline{copy} semantics};
+\begin{center}
+   Here \texttt{O2} is satisfied because a new value is created
+\end{center}
+\begin{paracol}{2}
+   \begin{lstlisting}
+      fn main() {
+         let x = 3;
+         let _y = x;
+         println!("x = {:?}", x); // OK
+      }
+   \end{lstlisting}
+   
+   \switchcolumn
+
+   \begin{lstlisting}
+      fn main() {
+         let x = Option::Some(3);
+         let _y = x;
+         println!("x = {:?}", x); // OK
+      }
+   \end{lstlisting}
+\end{paracol}
+   
