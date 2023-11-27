@@ -173,4 +173,34 @@ trait}, assignment has a \textbf{\underline{copy} semantics};
       }
    \end{lstlisting}
 \end{paracol}
-   
+
+The same move semantics apply also for parameter passing:
+Any value passed to the function will be reclaimed
+when it returns, as the formal parameters gets out of
+scope;
+only returned values can survive.
+\note{
+   tuples allow to return more
+}
+\begin{lstlisting}
+   struct Dummy { a: i32, b: i32 }
+   fn foo() {
+      let mut res = Box::new(Dummy {
+         a: 0,
+         b: 0
+   });
+   take(res);
+   println!("res.a = {}", res.a); \\ compilation error
+   }
+   fn take(arg: Box<Dummy>) {...}
+\end{lstlisting}
+
+When invoking \lstinline|take(res)| the ownership of \lstinline|Dummy| is moved from \lstinline|res| to \lstinline|arg|:
+when \texttt{take()} returns \lstinline|arg| goes out of scope, so the resource gets freed automatically, making it no longer usable in \lstinline|println|:
+this result in a \textbf{compilation error}.
+To use again the resource, we would have to make take return it, i.e. \lstinline|res = take(res)|.
+
+This looks rather limiting, but allows to completely avoid the \textit{Double-free} problem:
+memory is freed automatically
+when the owner goes out of scope, and by rule \texttt{O2}, each value has only one owner.
+\note{Rust does not allow explicit memory allocation}
