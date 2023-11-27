@@ -162,7 +162,8 @@ The ability to use a BGM should be \textit{highly restricted}.
 In general, it should be available only to the team responsible for the operational \textbf{SLA}\footnote{\textit{Service Level Agreement}} of a system.\\
 In \textit{ZeroTrust} networks, BGMs should be available only from specific locations, e.g. panic rooms, 
 resulting in a strategy which \textbf{distrusts} \textit{network location} but \textbf{trusts} a few locations
-with additional \textbf{physical access controls}.\\
+with additional \textbf{physical access controls}.
+\note{BGMs kind of subvert the \textit{ZeroTrust} approach, so they should be used only as a debugging mechanisms or in extreme cases}
 BGMs should not only be logged and check (\textit{audited}),
 but also regularly tested to ensure that they work when actually needed.
 Besides, after solving an issue via a BGM,
@@ -247,4 +248,156 @@ An interesting case is when the "more robust node" is a \textit{smartphone},
 which makes \texttt{3FA} very useful when a malware on a \textbf{workstation} tries to implement an attack,
 but useless against \textbf{insiders} because they can freely use their smartphones.
 
-\textbf{Temporary Access}
+\textbf{Temporary Access} consists in granting for \textit{minimal time}
+rather than with minimal access rights,
+and is useful when fine-grained controls are not available for every action to grant
+the least privilege possible with the available tools.
+Temporary access can be granted in a structured and scheduled way or in an
+\textit{on-demand} fashion where users explicitly request access,
+as it happens with "\textit{Run as administrator}" or "\texttt{sudo}".
+
+\section{Summary - Designing for \textit{Least Privilege}}
+To sum up, let's discuss what we need to design a system according to the least privilege principle:
+\begin{enumerate}
+   \item A \textbf{comprehensive} knowledge of your system to classify each part according to its ris
+   \note {classification is much easier in the design phase}
+   \item Based on this classification, a \textbf{partitioning} of your system and access to your data to as fine a level as possible,
+   allowing \textbf{small functional API}s,
+   which are a necessity for least privilege.
+   \item An \textbf{authentication} system for validating credentials as users attempt to access the system.
+   \item An \textbf{authorization} system that enforces a well-defined security policy for your finely
+   partitioned systems.
+   \item A set of advanced controls for \textbf{authorization} to provide \textit{temporary}, \textit{MFA} and \textit{MPA} approval.
+   \item A set of operational requirements for your system to support these key concepts/abilities:
+   \begin{enumerate}
+      \item to \textbf{audit} all access and to generate signals so you can identify threats and perform
+      historical forensic analysis
+      \item to design, define, test, and debug your \textbf{security policy}, and to provide end-user
+      support for it
+      \item a \textbf{Breaking-glass} mechanism to help when your system does not behave as expected
+   \end{enumerate}
+\end{enumerate}
+
+\section{Design for Robustness}
+We can integrate the features for \textbf{system robustness} (i.e. \textit{S\&S}) we have already seen with rules for understandability, for several reasons:
+\begin{enumerate}
+   \item \textit{Decreases the likelihood of security vulnerabilities or resilience failures.}\\
+   Any system change might introduce a new vulnerability or compromise the resilience.
+
+   $\longrightarrow$ The less understandable the system, the more likely this occurs (\texttt{KISS} rule)
+   
+   \item \textit{Facilitates effective incident response.}\\
+   In an intrusion, it is vital that responders can quickly and accurately assess the
+   damage, contain the incident, and identify and remediate root causes.
+
+   $\longrightarrow$ A complex, difficult-to-understand system significantly hinders this response.
+   
+   \item \textit{Increases confidence in assertions about system security}\\
+   \textbf{Assertions} about security are system \textbf{invariants} $rightarrow$ properties that must hold for all possible
+   system behaviors.\\ 
+   As an example, when receiving malformed or malicious inputs, the system behavior must not violate any security property.
+   In a difficult-to-understand
+   system, invariants may be impossible to verify.
+
+   $\longrightarrow$ Only an abstract reasoning can establish invariants and \textit{not} testing.
+\end{enumerate}
+
+\section{Invariants}
+The system has to ensure that a desired invariant holds
+even if its environment misbehaves in unexpected or malicious ways, 
+taking into account that also the environment might misbehave, 
+since it also includes everything the system cannot directly control, from
+nefarious users who submit maliciously crafted requests to hardware failures
+that result in random crashes (\textit{"chaos engineering"}).
+
+\labelitemize{Invariant examples}{
+   \begin{itemize}
+      \item Only authenticated and authorized users can access the persistent data store.
+      \item ll operations on sensitive data in the persistent data store are recorded in an
+      audit log in accordance with the auditing policy
+      \item The number of queries to a back-end scales with those the front end receives.
+      \item The system can only receive RPCs from a set of designated systems and can only
+      send RPCs to a set of designated systems.
+   \end{itemize}
+   Natural language can be \textbf{formalized} by pairing a user with state variables denoting properties indicating whether the user has been authenticated and authorized.
+}
+
+\subsection{Analyzing Invariants and Understandability}
+A \textbf{spectrum} defines the \textit{tradeoff} between the impact resulting from the violations
+of an invariant and the effort to assure it actually holds.\\
+The problem can be approached from two perspectives;
+The low-effort/high-performance is \textbf{testing} to remove bugs that could violate the invariant.
+The other is analyzing on formally proving soundness, having the system properties \textbf{formally modeled};
+this approach is in most cases unfeasable and extremely costful even for mid-sized systems.
+
+A different approach is to define \textbf{mental models} of
+a system which abstract and focus on some system features neglecting secondary ones, and
+then design the system such that it detects and signals anomalous situations outside the mental model.\\
+Mental models are defined starting from the most frequent cases of \textit{functioning} and interaction,
+while security cannot be based on past experience, 
+since it is linked to intrusions, which are \textbf{rare events}.
+
+We can improve \textbf{understandability} by \textbf{decomposing} a system horizontally and
+vertically through modules and onions, creating a hierarchy of virtual machines.\\
+Decomposing verticaly simplifies many but not all problems, because security and robustness are holistic:
+a mistake in one level can enable attacks in higher levels.\\
+Similar problems arise in horizontal decomposition into modules where
+centralization reduces complexity by using a single authentication server or by
+a strong synchronization between modules.
+
+\section{Identities}
+Identities are important not only for users but even for services (logging, audit).
+Besides recall that \textit{Access control} robustness is built on top of user identity.
+\note{
+   \texttt{IP}s are dynamic and can be reused, making them not reliable identifiers;
+   besides they can be easily spoofed to produce fake messages.
+}
+\labelitemize{\textit{Identities} properties}{
+   \begin{itemize}
+      \item \textbf{Understandable} by a human
+      \item Robust against \textbf{spoofing} (no vs password vs certificate)
+      \item Not \textbf{reused}
+      \note{
+         if a person working in an organization leaves the
+      organization reusing its identifier may result in attribution
+      problems in log analysis}
+   \end{itemize}
+}
+
+\subsection{Google}
+As an example let's see what are identities in Google:
+\begin{enumerate}
+   \item Users
+   \item Administrators
+   \item Machine
+   \begin{enumerate}
+      \item The DNS name is the identifier
+      \item The identity describe the role of the machine (testing, users, admin… )
+   \end{enumerate}
+   \item Workload
+   \begin{enumerate}
+      \item Required by a user
+      \item Assigned to a machine in a predefined set
+      \item Handled by a kubernetes like system that solves among others
+   \end{enumerate}
+      \item Load balancing
+   \item Resource optimization
+\end{enumerate}
+
+\section{Trusted Computing Base}
+Recall that the \textbf{Trusted Computing Base} is the set of components (hardware, software, human, ...) whose \textit{correct functioning} is sufficient to ensure that the \underline{security policy}
+is \textbf{enforced}, or, conversely,
+whose \textit{failure} could cause a \textbf{breach} of the \underline{security policy}.
+
+The TCB must handle also misbehaving by component outside it.
+The interface between the TCB and “everything else” is referred to as a
+\textbf{security boundary},
+allowing the TCB to treat anything that crosses the security boundary with
+\textit{suspicion}.
+
+Ensuring that a system enforces the desired security policy, implies
+understanding that the whole TCB is relevant to such security policy.
+Understanding a TCB becomes more difficult as it includes more code
+and complexity, 
+so it is important to keep TCBs as small as possible and
+to exclude components not involved in upholding the security policy.
