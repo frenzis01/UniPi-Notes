@@ -546,5 +546,15 @@ security, and improved performance:
    system firmware.
    \item \textit{The Nitro Hypervisor}\\
    A minimized and firmware-like \textbf{hypervisor} to
-   provide strong isolation, and performance nearly indistinguishable from a metal server
+   provide strong isolation, and performance nearly indistinguishable from a metal server.
+   A limited and carefully designed component intentionally minimized and built with the capabilities to perform its required functions, and no more.
 \end{enumerate}
+
+In the Nitro System there is a \textbf{Nitro Controller} which provides the hardware \textbf{root of trust} for the overall system.
+It is responsible for
+managing all other components of the server system, including the firmware
+loaded onto the other system components;
+It is the exclusive gateway between the physical server and the control planes for EC2, EBS and VPC, 
+and it operates together with Nitro Cards as a single domain.
+
+A \textbf{Security chip} links the domain of the Controller to the domain of the external component that controls the system's main board (where the security chip usually resides).
