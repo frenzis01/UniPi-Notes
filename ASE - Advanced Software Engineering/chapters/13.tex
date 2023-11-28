@@ -113,3 +113,27 @@ and transitions may be annotated with triggers to indicate which entity is respo
       \item every transition occurs in at least one net execution
    \end{enumerate}
 }
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/wfnet_sound.png}
+   \caption{Soundness check with examples}
+   \label{fig:wfnet_sound}
+\end{figure}
+
+\subsection{Formally}
+A Petri net $(PN,M)$ is \textbf{live} $\Longleftrightarrow$ for any reachable state $M'$ and every transition $t$ there is a reachable state $M''$ reachable from $M'$ where $t$ is enabled.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/wfnet_liveness.png}
+   \label{fig:wfnet_liveness}
+\end{figure}
+
+A Petri net $(PN,M)$ is \textbf{bounded} $\Longleftrightarrow$ for each place $p$ there is an $n \in N$ such that for each reachable state $M'$ the number of tokens in $p$ in $M'$ is less than $n$.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/wfnet_bounded.png}
+   \label{fig:wfnet_bounded}
+\end{figure}
