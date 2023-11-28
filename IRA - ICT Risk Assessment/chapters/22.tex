@@ -400,4 +400,151 @@ understanding that the whole TCB is relevant to such security policy.
 Understanding a TCB becomes more difficult as it includes more code
 and complexity, 
 so it is important to keep TCBs as small as possible and
-to exclude components not involved in upholding the security policy.
+to exclude components not involved in upholding the security policy.\\
+Sometimes this aligns with \textbf{database decomposition} where data with \textit{distinct security requirements} is mapped into \textit{disjoint databases}.
+Furthermore there usually a \textbf{frontend} which allows users to access data(bases):
+errors in the frontend may lead to security violations;
+Hence, in a web threat model, the TCB again includes all the
+frontend,
+and it may be useful to decompose also the frontend into multiple ones which respectively access a disjoint database.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/tcb_decomposition.png}
+   \caption{TCB Decomposition}
+   \label{fig:tcb_decomposition}
+\end{figure}
+
+
+\section{Design for Change}
+
+"\textit{Design for Change}" i.e. design to allow changes to disable new \textit{vulnerabilities}.
+This poses many software engineering issues, but focusing only on security ones,
+we can first consider which attributes should \textit{changes} {---}in a system{---} have:
+\begin{enumerate}
+   \item Incremental
+   \item Documented
+   \item Tested
+   \item Isolated
+   \item Qualified
+   \item Staged i.e. check the benefit of the n-th change before applying the
+   n+1-th change
+\end{enumerate}
+
+Note that Zero-day are not the only critical vulnerabilities;
+important questions are:
+\begin{itemize}
+   \item "is this vulnerability currently exploited?"
+   \item "is this vulnerability in the attack surface or can it be reached from the surface = an attack chain from the surface?"
+\end{itemize}
+Based on the answers to the previous questions, a \textbf{patching policy} chosen;
+Generally patches are distributed using two distribution channels
+\begin{enumerate}
+   \item \textbf{low} risk vulnerabilities $\Rightarrow$ according to scheduling policy
+   \item \textbf{high} risk vulnerability $\Rightarrow$ immediate patch to minimize the ris
+\end{enumerate}
+
+\section{Design for Resilience}
+
+Each system layer should be designed to be \textbf{independently resilient}, implementing defense in depth among the
+layers.
+
+Compute the cost of prioritizing each feature, in order to understand which features are critical
+enough to be sustained and which are less important and can be throttled or disabled.\\
+\textbf{Compartmentalize} the system along clearly defined boundaries to promote the
+independence of the isolated functional parts, achieving both \textit{segmentation} and \textit{isolation}.
+
+Reduce \textit{reaction time} by \textbf{automating} as many of your resilience measures as possible, exploiting
+intrusion detection, anomaly detection and pattern matching;
+Also periodically validate resilience properties to ensure the effectiveness of the system.
+
+\subsection{Risk assessment perspective}
+Both attackers and defenders assess a target for weaknesses, but while \textit{attackers} perform \textbf{reconnaissance} against targets, find weaknesses, and model their
+intruisons and the related attacks,
+the \textit{defenders} instead (should) \textbf{know} the system, allowing for the assessment to be much more precise and comprehensive, 
+but the defender has to implement \textit{remediations}, not attacks, which is very different.
+The crucial point here is to understand that an \textit{attacker} is \textbf{\underline{not}} a \textit{defender}.
+\begin{center}
+   Defense is more effective if the defender understands the attacker methods and the more the defender understands the attacker methods\footnote{MITRE ATT\&CK matrix} the more the benefit is amplified.
+   \nl
+
+   \textit{"Enemy is the master"}
+\end{center}
+
+\subsection{Degradation}
+The general idea is that if a system cannot resist to adversaries, then it can {--}and should{--} \textbf{limit} the blast radius of attacks.
+
+The system layers are complementary, with each layer anticipating the weak
+points or likely failures of the previous on;
+designing for defense in depth assumes system components or even entire systems can fail due to physical damage, hardware malfunction, or an intrusion.
+
+To control degradation, 
+select properties to disable when specific circumstances
+arise, while doing all you can to protect the system security.
+By designing multiple response options for these events, the system can have controlled
+\textbf{\textit{proactive} breakpoints} rather than a chaotic collapse;
+in other words, we can "design" even \textit{crashes}.
+\nl
+
+For what concerns the "\textbf{blast radius}",
+controlling it means \textit{compartmentalizing} the impact of an event, 
+as, for instance, compartments on a ship grant resilience against the whole ship sinking;
+security breach or traffic overload in one compartment should not jeopardize all compartments.
+To this extent, when designing for resilience, there should be \textbf{compartmental barriers} that constrain both attackers and accidental failures, creating \textbf{failure domains} and 
+allowing to better tailoring and automation of responses.
+
+The principle behind compartmentalization is to isolate system elements and enable and control the
+interactions essential for their intended purpose.
+Compartmentalization can happen in two ways:
+\begin{enumerate}
+   \item Parallel decomposition
+   \item Clustering
+   \begin{enumerate}
+      \item Containers
+      \item VMs
+      \item Phyisical machines
+   \end{enumerate}
+\end{enumerate}
+
+\section{Trusted Platform Module}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/tpm.png}
+   \caption{TPM}
+   \label{fig:tpm}
+\end{figure}
+
+Usually this protected chips are used to perform the \textbf{hash} of software running on nodes,
+to ensure that the software has not been manipulated,
+allowing a system to \textbf{trust} another one.
+More generally , \textit{Remote Attestation Procedures} (\texttt{RAT}s) forsee one an \textit{Attester} peer which produces
+believable information {--}\textit{Evidence}{--} about itself to enable a remote \textit{Challenger}\footnote{aka "Relying Party"} peer to decide whether the \textit{Attester} is a trustworthy peer
+or not;
+\texttt{RAT}S are facilitated by an additional vital party, the \textit{Verifier}.
+
+
+\subsection{AWS Nitro System}
+An EC2 server is made up of one or more \textbf{Nitro Cards} and a main system
+board that contains the host CPUs and memory.
+
+Nitro Cards are dedicated hardware components with 64-bit processing
+capabilities and specialized \textit{Application Specific Integrated Circuits}
+(\texttt{ASIC}s) that operate independently from the system; 
+they implement all the outward-facing control interfaces used by the EC2 service to provision and manage computer, memory, and storage.
+
+Three key components of the Nitro System, provide faster innovation, enhanced
+security, and improved performance:
+\begin{enumerate}
+   \item \textit{Purpose-built Nitro Cards}\\
+   Hardware devices designed by AWS that
+   provide overall \textbf{system control} and input/output (\texttt{I/O}) virtualization
+   independent of the main system board with its CPUs and memory.
+   \item \textit{The Nitro Security Chip}\\
+   Enables a \textit{secure boot} process based on a
+   hardware \textbf{root of trust}, the ability to offer bare metal instances, as well as
+   defense in depth to protect the server from unauthorized modification of
+   system firmware.
+   \item \textit{The Nitro Hypervisor}\\
+   A minimized and firmware-like \textbf{hypervisor} to
+   provide strong isolation, and performance nearly indistinguishable from a metal server
+\end{enumerate}
