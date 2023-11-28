@@ -123,6 +123,8 @@ The \textit{Resource Acquisition Is Initialization} (\textbf{RAII}) programming 
 (\textbf{release}) is done during object destruction (specifically
 \textbf{finalization}), by the destructor.
 
+\subsection{Ownership}
+
 This approached is adopted in modern \texttt{C++}: 
 small objects are allocated on \textit{stack},
 while larger resources are on the \textit{heap} {--}or elsewhere{--} and are \textbf{owned} by an object on the \textit{stack},
@@ -204,3 +206,208 @@ This looks rather limiting, but allows to completely avoid the \textit{Double-fr
 memory is freed automatically
 when the owner goes out of scope, and by rule \texttt{O2}, each value has only one owner.
 \note{Rust does not allow explicit memory allocation}
+
+\subsection{Borrowing}
+Since Ownership rules in some case may be too restrictive, \textbf{borrowing} is introduced: a resource can be \textit{borrowed} from its owner via
+assignment or parameter passing.
+To guarantee memory safety, borrowing rules ensure
+that \textit{aliasing}\footnote{Both the owner and the borrower can access the resource.
+More generally indicates that there are multiple ways to access a resource on the heap.} and \textit{mutability cannot \textbf{coexist}}.\\
+Values can be passed
+\begin{enumerate}
+   \item by immutable reference $\longrightarrow$ \lstinline|x = &y|
+   \item by mutable reference $\longrightarrow$ \lstinline|x = &mut y|
+   \item or by value $\longrightarrow$ \lstinline|x = y|
+\end{enumerate}
+
+\labelitemize{\textit{Borrowing}}{
+\begin{enumerate}[label=\texttt{O\arabic*} - , left=1em]
+   \label{enum:borrowing_rules}
+   \item[] \note{\qquad About mutable and immutable references:}
+   \item At most \textbf{one} \textit{mutable} reference to a resource can exist at any time
+   \item If there is a \textit{mutable} reference, \textbf{no} \textit{immutable} references can exist
+   \item If there is \textbf{no}\textit{ mutable} reference,\textbf{several}
+   \textit{immutable} references to the same resource can exist
+
+   \item[] \note{\qquad During borrowing, ownership is reduced or
+   suspended:}
+   \item Owner \textit{cannot} free or \textbf{mutate} its resource while it is \textit{immutably borrowed}
+   \item Owner \textit{cannot} even \textbf{read} its resource while it is \textit{mutably borrowed}
+\end{enumerate}
+}
+
+\subsection{Strings}
+\labelitemize{\textit{String types}}{
+   \begin{enumerate}
+      \item \lstinline|String|
+      does not require to know the length at compilation
+      time, thus allocated on the \textit{heap}.
+      \item \lstinline|&str|
+      size must be known statically, allocated on the \textit{stack}.
+   \end{enumerate}
+   }
+\note{
+   Method \lstinline|String::from()| allocates memory on the heap: it takes an argument of type \lstinline|&str| and returns a \lstinline|String|.
+}
+
+A String object has three components:
+\begin{enumerate}
+   \item a reference to the heap location containing the character sequence
+   \item capacity (unsigned integer)
+   \item length (unsigned integer)
+\end{enumerate}
+\lstinline|String| does not implement \lstinline|Copy|, thus assignment is subject to move semantics;
+assignment creates a copy of length, capacity and reference,
+but not of the char sequence in the heap.
+
+\subsection{Lifetime}
+A \textbf{lifetime} is a construct that the borrow checker uses to ensure the validity of the \textit{borrowing rules} \ref{enum:borrowing_rules}.
+Lifetimes are associated with each individual ownership
+and borrowing: 
+a lifetime \textit{begins} when the ownership starts, and \textit{ends}
+when it is moved / destroyed, 
+while for borrowings, it ends where the borrowed value is
+accessed the last time.
+
+Lifetimes are mostly \textit{inferred},
+but sometimes they must be made explicit using the same syntax of generics.
+Using lifetimes, the compiler checks the validity of the
+rules of ownership and borrowing in the expected way;
+in particular, it ensures that {--}the \textit{owner} of{--} every
+borrowed variable/reference has a lifetime that is longer
+than the borrower \texttt{[B4,B5]}.
+\nl
+
+Borrowed (reference) formal parameters (arguments, return value) of a function have a
+lifetime, and  
+if borrowed values are returned, each \textit{must} have a lifetime.\\
+The compiled tries to infer output lifetimes according to the following rules, but when not sufficient explicit lifetimes are necessary:
+\labelitemize{\textit{Lifetime}}{
+   \begin{enumerate}[label=\texttt{R\arabic*} - , left=1em]
+      \item The lifetimes of the borrowed paramers are, by default, all \textbf{distinct}
+      \item If there is \underline{exactly} \textbf{one input} lifetime, it will be assigned to \textbf{each
+      output} lifetime
+      \item If a method has \textbf{more than one input} lifetime, \textit{but} \textbf{one} of them is
+      \lstinline|&self| or \lstinline|&mut self|, then this lifetime is assigned to \textbf{all output} lifetimes
+   \end{enumerate}
+}
+
+\begin{lstlisting}
+   fn longest(s1: &str, s2: &str) -> &str { //does not compile
+      if s1.len() > s2.len() { s1 }
+      else { s2 }
+   }
+\end{lstlisting}
+Here the lifetime of the parameters depends on whether \lstinline|s1| or \lstinline|s2| is returned,
+so the compiler cannot infer the lifetime of the output parameters;
+hence, an \textbf{explicitly named lifetime} for input parameters is requires, as in the following snippet.
+\begin{lstlisting}
+   fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str {
+      if s1.len() > s2.len() { s1 }
+      else { s2 }
+\end{lstlisting}
+\newpage
+
+\section{More on Types}
+\subsection{Enums}
+\begin{paracol}{2}
+   \begin{lstlisting}
+enum RetInt {
+      Fail(u32),
+      Succ(u32)
+   }
+fn foo_may_fail(arg: u32) -> RetInt {
+      let fail = false;
+      let errno: u32;
+      let result: u32;
+      ...
+      if fail {
+            RetInt::Fail(errno)
+         } else {
+            RetInt::Succ(result)
+         }
+   }
+\end{lstlisting}
+\switchcolumn
+\begin{lstlisting}
+#[derive(Debug)] // needed to print
+enum Tree<T> {
+   Empty,
+   Node(T, Box<Tree<T>>, Box<Tree<T>>)
+}
+
+fn main() {
+   let tree = Tree::Node(
+      42,
+      Box::new(Tree::Node(
+         0,
+         Box::new(Tree::Empty),
+         Box::new(Tree::Empty)
+      )),
+      Box::new(Tree::Empty));
+   println!("{:?}", tree);
+   //>Node(42, Node(0, Empty, Empty), Empty)
+}
+\end{lstlisting}
+   \lstinline|println!("{:?}", tree);| indicates to print \lstinline|tree| in \textit{"debug mode"}.
+\end{paracol}
+
+\subsection{Pattern Matching}
+\begin{lstlisting}
+   let x = 5; // try others...
+   match x {
+      1              => println!("one"),
+      2              => println!("two"),
+      3|4            => println!("three or four"),
+      5..=10         => println!("five to ten"),
+      e @ 11..=20    => println!("{}", e),
+      i32::MIN..=0   => println!("less than zero"),
+      21..           => println!("large"),
+      _              => println!("???"),
+   }
+\end{lstlisting}
+
+
+\subsection{Classes}
+Rust is \textbf{not} \textit{Object Oriented} and there is \textbf{no inheritance}, instead it pushes for composition over inheritance.
+
+\begin{lstlisting}
+#[derive(Debug)]
+struct Rectangle { // class
+      width: u32, // instance variable
+      height: u32,
+   }
+impl Rectangle { // methods
+      fn area(&self) -> u32 { // first argument is this
+            self.width * self.height
+            // self.width = 20; // <- illegal, self is immutable
+         }
+   }
+fn main() {
+      let rect1 = Rectangle {
+            width: 30,
+            height: 50,
+         };
+      println!(
+      "The area of the rectangle is {} square pixels.", rect1.area()
+      );
+   }
+\end{lstlisting}
+
+\subsection{Traits}
+\textbf{Traits} are equivalent to \textit{Type Classes} in Haskell and to \textit{Concepts} in
+C++20, similar to Interfaces in Java.
+A trait can include \textit{abstract} and \textit{concrete} (default)
+\textbf{methods}, but \underline{not} fields or variables.
+A struct can implement a trait providing an
+implementation for at least its abstract methods
+\begin{lstlisting}
+   impl <TraitName> for <StructName>{ ... }
+\end{lstlisting}
+
+The \lstinline|#[derive]| clause can be used {--}if possible{--} to derive
+automatically an implementation of a trait.
+
+Rust supports \textbf{bounded universal explicit polymorphism}
+with \textbf{generics}, as in Java, where bounds are one or
+more traits. 
