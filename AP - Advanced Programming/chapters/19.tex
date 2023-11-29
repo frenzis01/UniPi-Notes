@@ -460,6 +460,47 @@ Its implementation is single-threaded, and it is typically used with \lstinline|
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/smartpointers.png}
-   \caption{<caption>}
-   \label{<label>}
+   \caption{Pointers comparison}
+   \label{fig:smartpointers}
 \end{figure}
+
+\section{Functional elements}
+
+\textbf{Closures} can capture non-local variables in three ways,
+corresponding to ownership, mutable and immutable
+borrowing; 
+this is reflected in the trait they implement: \lstinline|FnOnce|,
+\lstinline|FnMut| and \lstinline|Fn|.
+The trait implemented is inferred.
+With \lstinline|move| before \lstinline{||} \lstinline|FnOnce| is enforced.
+\begin{lstlisting}
+   let greater_than_x = |y| y > x; // Parameters within ||
+   let vector = vec![1, 2, 3, 4, 5]; // stream-like
+   vector.iter()
+      .map(|x| x + 1)
+      .filter(|x| x % 2 == 0)
+      .for_each(|x| println!("{}", x));
+\end{lstlisting}
+
+\subsection{Race conditions}
+TODO Listen to lecture
+\nl
+
+\subsection{\texttt{Sync} and \texttt{Send}}
+\lstinline|Send| and \lstinline|Sync| are two strongly related traits regarding multithreading: 
+an error is signaled by the compiler if the ownership of
+a value \textit{not} implementing \lstinline|Send| is passed to another thread;
+for a value to be referenced by multiple threads, it has to
+implement \lstinline|Sync|.
+\begin{equation}
+   \texttt{T} \textit{implements} \texttt{Send} \Leftrightarrow \texttt{\&T} \textit{implements} \texttt{Sync}
+\end{equation}
+\labelitemize{
+   Examples
+}{
+   \begin{itemize}
+      \item \lstinline|Arc<T>| is the thread-safe version of \lstinline|Rc<T>| which implements Send and Sync
+      \item \lstinline|Mutex<T>| supports mutual exclusive access to a value via a
+      lock. It is both Send and Sync, and typically wrapped in Arc
+   \end{itemize}
+}
