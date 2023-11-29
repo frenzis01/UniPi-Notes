@@ -407,7 +407,59 @@ implementation for at least its abstract methods
 
 The \lstinline|#[derive]| clause can be used {--}if possible{--} to derive
 automatically an implementation of a trait.
+\nl
 
 Rust supports \textbf{bounded universal explicit polymorphism}
 with \textbf{generics}, as in Java, where bounds are one or
 more traits. 
+Generic functions may have the generic type of parameter
+bound by one or more traits, so within such a function, the
+generic value can only be used through those traits,
+allowing for generic function to be \textbf{type-checked} when
+defined, as it happens in Java, unlike C++ templates.\\
+• However, implementation of Rust generics uses \textit{monomorphization} and is similar to
+typical implementation of C++ templates, where a separate copy
+of the code is generated for each instantiation, in contrast with the
+type erasure scheme of Java.
+
+\section{Smart Pointers}
+\textbf{Smart pointers} act as a pointer but with additional metadata and capabilities, and are typically structs, implementing \texttt{Deref} (\lstinline|*|) and
+\texttt{Drop} (\textit{reclaiming} when out of scope).
+
+\begin{lstlisting}
+   fn main() {
+      let b = Box::new(5);
+      println!("b = {}", b);
+      }
+\end{lstlisting}
+
+\lstinline|Box<T>| Allow to store a data of type T on the heap, with no performance overhead.
+Deref (*) returns the value. Optional by coercion.
+\note{
+   TODO\\
+   What does \emph{"Optional by coercion"} mean?
+}
+
+Rc\lstinline|<T>| supports immutable access to resource with
+reference counting.
+Method \lstinline|Rc::clone()| \emph{doesn’t clone!}
+It simply returns a new reference, incrementing the counter,
+whose value can be obtained by \lstinline|Rc::strong_count|;
+when the counter is 0 the resource is reclaimed.
+
+
+\lstinline|RefCell<T>| supports shared access to a mutable
+resource through the \textbf{interior mutability} pattern.
+It provides two methods \lstinline|borrow()| and \lstinline|borrow_mut()| which
+return a smart pointer (\lstinline|Ref<T>| or \lstinline|RefMut<T>)|.
+\lstinline|RefCell<T>| keeps track of how many \lstinline|Ref<T>| and
+\lstinline|RefMut<T>| are active, and \textit{panics} if the
+ownership/borrowing rules are invalidated.
+Its implementation is single-threaded, and it is typically used with \lstinline|Rc<T>| to allow multiple accesses.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/smartpointers.png}
+   \caption{<caption>}
+   \label{<label>}
+\end{figure}
