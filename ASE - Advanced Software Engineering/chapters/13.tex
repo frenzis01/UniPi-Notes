@@ -137,3 +137,16 @@ A Petri net $(PN,M)$ is \textbf{bounded} $\Longleftrightarrow$ for each place $p
    \includegraphics{images/wfnet_bounded.png}
    \label{fig:wfnet_bounded}
 \end{figure}
+
+\begin{theorem}   
+   A worflow net $N$ is \textbf{sound} $\Longleftrightarrow$ ($\check{N}$,{i}) is both \textit{live} and \textit{bounded}, where $\check{N}$ is $N$ extended with a transition from the sink place $o$ to the source place $i$.
+\end{theorem}
+\subsection{BPMN to Workflow Nets}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.5\columnwidth]{images/bpm_net1.png}
+   \includegraphics{images/bpm_net2.png}
+   \caption{From BPMN to Workflow Nets}
+   \label{fig:bpm_net}
+\end{figure}
