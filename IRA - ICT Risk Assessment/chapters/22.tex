@@ -547,7 +547,19 @@ security, and improved performance:
    \item \textit{The Nitro Hypervisor}\\
    A minimized and firmware-like \textbf{hypervisor} to
    provide strong isolation, and performance nearly indistinguishable from a metal server.
-   A limited and carefully designed component intentionally minimized and built with the capabilities to perform its required functions, and no more.
+   A limited and carefully designed component intentionally minimized and built with the capabilities to perform its required functions, and no more.\\
+   The meticulous exclusion of non-essential features from the Nitro
+   Hypervisor eliminates entire classes of bugs that other hypervisors
+   can suffer from (remote networking attacks or driver-based privilege
+   escalations).
+   Besides, even in the unlikely event of a bug in the Nitro Hypervisor that allows
+   access to privileged code, there is an \textbf{inhospitable environment} to any
+   potential attacker due to the \textit{lack of} standard operating system
+   features such as interactive shells, filesystems, common user space
+   utilities, or access to resources that could facilitate lateral movement
+   within the larger infrastructure
+   \note{(harden your system \textit{S\&S})}
+
 \end{enumerate}
 
 In the Nitro System there is a \textbf{Nitro Controller} which provides the hardware \textbf{root of trust} for the overall system.
@@ -558,3 +570,71 @@ It is the exclusive gateway between the physical server and the control planes f
 and it operates together with Nitro Cards as a single domain.
 
 A \textbf{Security chip} links the domain of the Controller to the domain of the external component that controls the system's main board (where the security chip usually resides).
+
+
+By design there is \textbf{no operator} access, 
+meaning there is no mechanism for systems or
+persons to log in to EC2 Nitro hosts, access memory of EC2 instances
+or any customer data stored on local encrypted instance storage or
+remote encrypted EBS volumes.\\
+If any AWS operator, even with the highest privileges, needs to do
+maintenance work on an EC2 server, they can only use a limited set of
+authenticated, authorized, logged, and audited \textit{administrative APIs}.
+\textit{None} offers access customer data on the EC2 server.\\
+Clearly this leads to not-so-easy debugging operations.
+
+\section{Other resilience concepts}
+\subsection{Graceful Degradation}
+Essential and difficult choices should be carefully made in advance, not during an incident while being "under pressure".
+Free up resources, thus decrease failed operations, by disabling infrequently used
+features, least critical functions, or high-cost service capabilities,
+prioritizing instead important features and functions.
+Improving the system capacity to absorb load or failure supports all other
+resilience mechanisms—and buys more time for response.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/graceful_degradation.png}
+   \label{fig:graceful_degradation}
+\end{figure}
+
+\subsection{Failure Management}
+\textbf{Failure management} should balance between optimizing for \underline{reliability} by failing
+\textit{open} (safe) and optimizing for \underline{security} by failing \textit{closed} (secure).\\
+To maximize \textbf{reliability}, a system should resist failures and serve as much as possible in face of uncertainty, even if integrity is not intact.\\
+$\Longrightarrow$ If ACLs failed to load, the default ACL is \textit{"allow all"}
+
+To maximize \textbf{security} instead, a system should lock down \textit{fully} in uncertainty.
+If it cannot verify integrity the system can’t operate and should protect itself as much as possible.\\
+$\Longrightarrow$ If ACLs failed to load, the assumed default ACL is \textit{"deny all"}
+\begin{center}
+   "Emergency exit doors" need \textit{fail safe} rather than \textit{fail secure} ones.
+\end{center}
+
+Security-critical operations should not \textit{fail open} because an attacker would be able to degrade system security through simple DoS attacks(think of a firewall),
+but a controlled degradation of security-critical operations is possible.
+A lower-cost component could replace failing security controls apllying stronger (possibly simpler) controls, making attacks to the default security controls \textit{not} effective, enhancing \textbf{resilience}.
+
+TODO slide $[7...16]$ fatte velocemente
+\nl
+
+A strategy adopted by Google is to limit an attacker’s impact using the \textbf{location} hosting a service to prevent
+an adversary who has compromised a datacenter to read data in other ones:
+\textit{location-based} cryptographic compartments limit access to applications and
+their stored data to specific locations, containing the \textit{blast radius} of attacks.
+
+
+
+\subsection{Continous Validation}
+
+\subsection{Observations}
+All Google strategies are based on the fact that they have a huge number of resources all around the world.
+They neglect hardware faults,
+because they can easily fix by migrating software from a physical machine to another,
+making hardware failures not so critical.
+
+Amazon's approach instead is focuses also on physical aspects.
+
+A feature of almost any cloud application is the adoption of multiple copies of resources, each managed by a distinct server and with a load balancer that can also change the number of copies.
+
+
