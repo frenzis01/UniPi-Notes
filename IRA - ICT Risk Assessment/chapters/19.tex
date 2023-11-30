@@ -95,3 +95,10 @@ resulting in multiple channels simulateneously open between an object \texttt{O}
 and in multiple rights owned by \texttt{S}.\\
 This may be the desired outcome in some situations,
 otherwise it results in the violation of the \textit{least privilege principle} and might be harmful.
+
+\section{Baiardi's takeaway message}
+The \textit{lack} of \textbf{identity} and \textbf{authentication} is the key issue.
+
+It leads, amongst other problems, to the impossibility to safely \textbf{delegate} operations, which is something that capabilities are very useful for;
+this impossibility arises because if $S$ sends a capability to $S'$ without encryption and authentication,
+any attacker can sniff the message and claim that they received the capability and thus are athourized to do perform the requested operation.

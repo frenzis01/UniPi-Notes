@@ -1,1 +1,39 @@
 \chapter{Challenge III}
+
+\section{Outline}
+\begin{enumerate}
+   \item A user can launch an instance of a compiler C
+   \item When launching the instance, the user specifies the name of the
+   source file
+   \item When the compilation is over, the user specifies the name of the
+   file to store the output code
+   \item The compiler updates a file log with the accounting information
+   so that users pay for using the compiler
+\end{enumerate}
+
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{c|c|c|c|c|}
+      & Compiler & \texttt{input} file & \texttt{output} file &\texttt{log} file\\
+      \hline
+      User & \texttt{execute} & \texttt{read} & \texttt{write} &\\
+      \hline
+      Compiler & & & & \texttt{write}\\
+      \hline
+      \textit{Instance} & & \texttt{read} & \texttt{write} & \texttt{write}\\
+   \end{tabular}
+   \caption{Outline schema}
+   \label{fig:challenge3}
+\end{table}
+\begin{center}
+   \textit{What happens if the user transmits as the name of the output file the one of the logfile?}
+\end{center}
+
+The key issue according to Baiardi is that the article asserts that ACLs and capabilities are not equivalent, because ACLs do not allow to prevent the attack while capabilities can.
+
+Solve the problem using ACLs.
+\underline{There is a \textit{very very very} simple solution.}
+
+A simple idea is to not grant the \texttt{write} right to the compiler but the \texttt{append} right,
+leading the compiler to simply append to the log file both the output of the compilation and the actual log.
+This is not a proper solution, but still is a nice countermeasure.

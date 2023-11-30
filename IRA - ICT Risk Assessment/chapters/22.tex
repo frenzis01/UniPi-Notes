@@ -614,27 +614,59 @@ $\Longrightarrow$ If ACLs failed to load, the assumed default ACL is \textit{"de
 Security-critical operations should not \textit{fail open} because an attacker would be able to degrade system security through simple DoS attacks(think of a firewall),
 but a controlled degradation of security-critical operations is possible.
 A lower-cost component could replace failing security controls apllying stronger (possibly simpler) controls, making attacks to the default security controls \textit{not} effective, enhancing \textbf{resilience}.
-
-TODO slide $[7...16]$ fatte velocemente
 \nl
 
 A strategy adopted by Google is to limit an attacker’s impact using the \textbf{location} hosting a service to prevent
 an adversary who has compromised a datacenter to read data in other ones:
 \textit{location-based} cryptographic compartments limit access to applications and
-their stored data to specific locations, containing the \textit{blast radius} of attacks.
+their stored data to specific locations, containing the \textit{blast radius} of attacks.\\
+Aside from databases, also service might also reject requests from locations it doesn’t expect to
+communicate with.
 
+However note that a known location must \textit{not} imply \textbf{trust}, authentication and authorization must be granted anyway.
 
+\subsection{Failure Domains}
+To address component failures, 
+system design must incorporate \textbf{redundancies} and distinct
+\textbf{failure domains},
+to prevent the failure in one domain from affecting components in other domains.
 
-\subsection{Continous Validation}
+Failure domains achieve functional isolation by partitioning a system into multiple,
+equivalent but completely independent copies.\\
+Operating failure domains and maintaining their isolation requires ongoing effort but
+these domains increase system \textbf{resilience} in ways other \textit{blast radius} controls \textit{can’t}.
 
-\subsection{Observations}
+Some \textbf{bad data} may be present at the data source or within individual failure domains,
+forcing each failure domain's own data to be functionally independent from other domains.\\
+To address these problem there are two main approaches, one is to restrict how data updates enter a domain through \textbf{validation checks},
+while the other is to enable systems to write the last known good data to disk to increase {--}long-term{--}resilience to losing access data, implementing \textit{defense in depth}.
+
+\subsection{Takeaway and Observations}
+
+Let's sum up and consider the takeaway messages:
+\begin{enumerate}
+   \item Even just two failure domains provide A/B testing capabilities and limit the blast
+   radius of changes to one domain acting as a canary with a policy that forbids
+   updates to both failure domains at the same time.
+   \item \textbf{Geographically} separated domains provide isolation for natural disasters.
+   \item Using different \textbf{software versions} in distinct domains reduces the chances of a
+   single bug breaking all servers or corrupting all data.
+   \item A failure domain may fail if even just one critical components fails, so using alternative components minimizes the probability that all domains fail due to a single flawed critical component.
+   \item High capacity components serve users and absorb spikes in requests or resource consumption due to new features.
+   \item The risk of a failure cam be mitigated by maintaining high availability copies with a probably lower probability of outages because of fewer dependencies and a limited rate of
+   changes, e.g.
+   \begin{enumerate}
+      \item data \textbf{cached} on local storage rather than in a remote one
+      \item \textbf{older} code and configs to avoid recent bugs in newer
+   \end{enumerate}
+\end{enumerate}
+
 All Google strategies are based on the fact that they have a huge number of resources all around the world.
-They neglect hardware faults,
+They \textit{neglect} \textbf{hardware faults},
 because they can easily fix by migrating software from a physical machine to another,
 making hardware failures not so critical.
 
 Amazon's approach instead is focuses also on physical aspects.
 
-A feature of almost any cloud application is the adoption of multiple copies of resources, each managed by a distinct server and with a load balancer that can also change the number of copies.
-
+A feature of almost any cloud application is the adoption of \textbf{multiple copies} of resources, each managed by a distinct server and with a \textbf{load balancer} that can also change the number of copies.
 
