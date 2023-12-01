@@ -134,3 +134,128 @@ IoT Nodes may be classified by performance or functionally
    gateway.
 \end{enumerate}
 }
+
+\subsection{Architecture}
+\textbf{Software productivity} requires 32 bit real time embedded processor to quickly
+develop and release software to handle connectivity, security and IoT
+applications while managing and controlling multiple sensors,
+and since one node design may be used to
+release products for multiple different markets,
+software productivity is essential.
+
+To optimize power consumption multiple processors may be required, each for a different task:
+\begin{enumerate}
+   \item handling radio stacks and connectivity, 
+   \item managing the sensors and actuators
+   \item running system and network stack
+\end{enumerate}
+\note{No need to wake up the main processor if the radio one may check for incoming messages}
+    
+TODO memory
+
+\section{Security in IoT}
+Bruce Schneier thinks that
+security even in a world where \textit{everything is connected}\footnote{(\st{connected car} $\longrightarrow$ \textit{computer with four wheels}, \st{connected refrigerator} $\longrightarrow$ \textit{computer that keeps things cold})} can be addressed as if there's \textit{"nothing new"} from standard ICT security processes.
+
+1. Most software is poorly written
+2. Internet was never been designed to be secure
+3. Extensibility is a problem = A computer is an universal Turing
+machine = If it is smart is vulnerable
+4. Complexity helps the attacker
+5. New vulnerabilities to interconnection
+6. Attacks always get faster, smarter and cheaper
+
+
+What changes does IoT world introduce?
+\begin{enumerate}
+   \item \textbf{Automation}, \textbf{autonomy}, \textbf{physical} agents
+   \item \textbf{Patching} becomes much more complex or impossible and
+   patches should be available for all the life of the things not of
+   the computer (you cannot replace the computer but the thing)
+   \item The same vulnerability and the same attack work both in ICT
+   and internet of things
+   \item \textbf{Integrity} and \textbf{availability} are more important than
+   confidentiality
+   \note{leaking health records vs hacking a body device}
+\end{enumerate}
+
+Schneier is not completely wrong,
+in fact most "old" vulnerabilities can strike also IoT devices, but there are three key points that are not negligible:
+\begin{enumerate}
+   \item the \textbf{physical} nature of IoT
+   \item the \textbf{number} of devices
+   \item the existence of \textbf{preloaded code}
+\end{enumerate}
+\nl
+
+There are two approaches to address the security of an IoT device:
+\begin{enumerate}
+   \item \textit{Attack the device}\\
+   Any smart device increases your system attack surface and its connection
+   can result in new attacks, making the device an intermediate step aka \textit{"stepping stone"}
+   \item \textit{Attack \textbf{from} the device}\\
+   Any smart device can store some malware to attack your system, making attacks
+   from the device possible even from simple smart nodes.
+   \nl
+
+   \item[]While most of security research has focused on the first issue, the \textit{second}
+   one is becoming more and more critical.
+\end{enumerate}
+
+In general, note that IoT includes a huge number of devices with code that cannot be
+easily accessed, tested or patched.\\
+According to \underline{\color{red}\textbf{Baiardi}}, \textbf{fuzzing} and \textbf{reverse engineering} will become more and more important to
+analyze devices and preserve \textit{confidentiality} and \textit{integrity}.
+
+\section{New perspective on Attacks}
+
+The interaction of an IoT device with the physical world enables to
+\textit{exploit physical properties} to attack an ICT system in new ways.
+An interesting example are attacks against a voice interface using frequency that the interface can hear but the human user cannot hear, also known as \textbf{DolphinAttack}s.
+
+\note{
+   The attack is effective on popular speech recognition systems, e.g. Siri,
+   Cortana and Alexa.
+}
+
+Countermeasures can either be hardware, e.g.microphone enhancements to drop frequencies above 20Khz, or software, e.g. classifying the signal to discover modulated voice.
+\nl
+
+A proposed taxonomy on attacks to IoT devices is based on how the attacker \textit{deviates} features from their "official" functionality,
+resulting in 4 different categories:
+\begin{enumerate}
+   \item \textbf{Ignoring} the functionality\\
+   The attacker \textit{ignores} any physical functionality of the IoT device, and considers it only as a standard connected computing device;
+   Since most IoT devices are cheap and with minimal security protections,
+   without the possibility to be upgraded or patched, they are the perfect target.\\
+   These attacks are a serious threat but the least interesting ones because they
+   are applicable to any networked device and are not unique to IoT devices.
+   Nothing new so far, but huge $\#devices$
+   \item \textbf{Reducing} the functionality\\
+   The attacker tries to kill or limit the designed functionality of the IoT device, e.g. the TV/refrigerator stops working.
+   Seems dull, but consider wide organizations or \textit{connected medical devices}:
+   attacks on such devices may be fatal.\\
+   An attacker may use \textbf{ransomware} to temporarily lock an
+   \textit{expensive physical device} and demand a large payment to restore its
+   functionality.
+   \item \textbf{Misusing} the functionality\\
+   These attacks use {--}rather than disabling{--} a functionality of the
+   physical device, but in an incorrect or an unauthorized way,
+   usually resulting in annoying pranks that do not violate integrity;
+   e.g.the attacker turns on heaters in august.
+   \item \textbf{Extending} the functionality\\
+   Extending a functionality requires imagination and sophistication,
+   but may result in harmful unexpected effects, like a Roomba opening the lock of a door.\\
+   A concrete example exploited LED dimmering to transmit information.
+\end{enumerate}
+
+\section{Privacy Concerns}
+When an IoT device is plugged into a home network it
+will start collecting data and doing its job sending data "home" to the companies servers,
+to provide the "smart" features.
+It is not trivial to understand which data is \textbf{collected} who is \textbf{responsible} for such data.
+Even if the timing of opening/closing the fridge seems useless,
+the synergy and interconnection in the massive data going outside your home network,
+may be used to infer important information,
+e.g. the presence or absence of people in a house.
+

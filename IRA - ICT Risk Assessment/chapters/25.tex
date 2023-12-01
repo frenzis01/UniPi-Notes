@@ -1,0 +1,17 @@
+\chapter{Stuxnet}
+
+In the summer of 2010 \textbf{Stuxnet}, a malware of unprecedented complexity made the
+news, by exploiting \textbf{multiple} (3) zero-day exploits.
+
+\textbf{Stuxnet} didn’t act like any previous malware before because its objective was \textbf{not} the theft or manipulation of data,
+but the \textit{\textbf{physical destruction} of gas centrifuges} in the Natanz fuel
+enrichment plant, the crown jewel of Iran’s nuclear program.\\
+So, Stuxnet was not implementing a strict ICT attack, because its purpose was to cause a physical effect.
+\note{Does IoT ring a bell?}
+
+In ICS most automated factory processes are ran by \texttt{PLC}s (Programmable Logic Controllers),
+which can be programmed (typically from Windows) using basic scripting or GUI-aided logic.
+However, they typically are not connected to the internet, thus creating an \textit{"air-gap"}.\\
+Stuxnet targetted a specific PLC control system, \texttt{SIMATIC PCS 7 Process Control System}, programmed using WinCC/STEP 7.
+
+Stuxnet distributed mostly through USB keys, bypassing the air gap.
