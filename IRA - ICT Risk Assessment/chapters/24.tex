@@ -259,3 +259,47 @@ the synergy and interconnection in the massive data going outside your home netw
 may be used to infer important information,
 e.g. the presence or absence of people in a house.
 
+
+
+\section{IoT Best Practices}
+On the $2^{nd}$ of November 2019,
+the \textit{IoT Security Foundation} published a few guidelines regarding security for IoT systems.
+Some of them are already discussed in the previous section, while in the following subsections we will address others.
+\subsection{Physical Security}
+
+\subsection{Secure Boot}
+Firstly it is advised to always use the ROM-based \textbf{secure boot} function, generally implying a multistage bootloader initiated by {--}a minimal amount of{--} \textbf{read-only code} stored in a \textit{one-time programmable} memory.\\
+Besides, a hardware-based tamper-resistant capability should be used to run the trusted authentication/cryptographic required for the boot process.
+
+There are some attacks in booting called "\textit{Time of Check} to \textit{Time of Use}", which can be strongly limited by \textbf{validating} boot code \underline{immediately} before use at \textit{each boot stage}.
+
+Lastly, any \textit{failure} in the boot sequence should \textbf{fail gracefully} in a safe and secure state.
+
+\subsection{Credential Management}
+Every device should be uniquely \textbf{identifiable} by means of a factory-set \textit{tamper-resistant hardware identifier}.
+
+Only non-trivial \textbf{passwords} should be allowed, and they should be managed and stored properly using \textit{industry standard} \textbf{encryption} mechanisms.
+
+Also \textbf{digital certificates} should be handled carefully, and a single certificate should not be used to identify more than one device.
+
+\subsection{Secure Software Update}
+Packages of new releases should be \textbf{encrypted} to hinder reverse engineering, and the
+updated routine should always validate integrity and authenticity of a package update before the installation begins.
+
+As for \textit{Secure Booting}, a \textbf{fail-safe} mechanism must be provided when performing updates.
+
+\subsection{Side Channel Attack}
+A \textbf{Side Channel} is an unintended/unanticipated capability to observe changes in the state
+of a system, where system could be at the chip, board, application, device or network
+level.
+
+Side Channel Attacks deduce information based on these changes and then use that
+information to exploit the system. 
+For example monitoring variations in temperature,
+timing of certain events, changes in power consumption, emissions of sound,
+electromagnetic radiation at any frequency etc. can \textit{leak information} about the system
+from which data may be inferred or deduced.
+
+Monitoring of a system’s behavioural symptoms may be further augmented by using \textbf{Fault
+Injection}, i.e. deliberately running a system under conditions outside those for which it was
+designed, possibly allowing to establish side channels \textit{not} available under normal operation.
