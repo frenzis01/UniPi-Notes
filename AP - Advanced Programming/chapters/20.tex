@@ -1,0 +1,52 @@
+\chapter{Python}
+Python is very concise and good for scripting.
+It is the most used general purpose language, and there are many nice Machine Learning libraries.
+
+Its two key aspects are that it is \textbf{interpreted} ($\neq compiled$) and \textbf{dynamically typed}.
+
+Aside from these two main aspects, we can discuss a few others:\\
+even if not as much as Java, it's \textbf{object} oriented;
+Python supports both \textbf{imperative} and \textbf{functional} paradigms.\\
+Python \textbf{Iterators} can be associated with \texttt{List}s in Haskell and \texttt{Stream}s in Java.
+Other Python features are:
+\begin{itemize}
+   \item Powerful subscripting (slicing)
+   \item Higher-order functions
+   \item Flexible signatures, which compensate the lack of complex polymorphism
+   \item Java-like exceptions
+   \item (bad) Multithreading support
+\end{itemize}
+
+Let's discuss how Python addresses \textbf{typing}:
+\begin{enumerate}
+   \item Variables come into existence when first assigned to
+   \item Variables are \textit{not} \textit{typed}, but \underline{Values are}!
+   \item A variable can refer to an object of any type
+   \item It is \textbf{Strongly typed} in the sense that the \textit{value type} does not change in unexpected ways
+   \item It is \textbf{Type-safe} since no conversion or operation can be applied to values of the \textbf{wrong} type
+\end{enumerate}
+
+
+Variables come into existence when first assigned and a variable can refer to an object of any type,
+besides all types are (almost) treated the same way.
+Even if this allows for concise syntax and intuitive code writing, it also implies a main drawback: \underline{\textbf{type errors} are only caught at \textit{runtime}}.
+
+\section{Some Python aspects}
+\begin{itemize}
+   \item \textbf{Indentation} matters, and is used opposed to brackets \texttt{\{\}}
+   \item A variable is created when some value is assigned to it
+   \item Assignments in Python \textbf{do not} create a copy
+   \note{Even for \texttt{Integer}s!}
+   \item Objects are deleted by the garbage collector once they become unreachable
+   \begin{itemize}
+      \item \texttt{CPython} uses \textit{reference counting} along with \texttt{Mark \& Sweep} for garbage collection
+   \end{itemize}
+   \item 
+   \end{itemize}
+
+\section{Data Types and operators}
+\textit{Integers} are \textbf{unbounded},
+while \texttt{Float}s are represented with 64 bits.\\
+There are no logical symbols, the operators are \texttt{and, or, not}.\\
+Strings can be enclosed in \texttt{''}, \texttt{""}, \texttt{""" """},
+with the third that allows multiline strings (\textit{cool!}).
