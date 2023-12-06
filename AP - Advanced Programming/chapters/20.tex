@@ -208,3 +208,224 @@ in its attribute \lstinline|__closure__|
    2
    2  # 'x' changed!
 \end{lstlisting}
+
+\section{Classes}
+
+A \textbf{class} is a \textit{blueprint} for a new data type with specific internal \textbf{attributes}
+(like a struct in C) and internal functions (\textbf{methods}).
+
+\begin{lstlisting}
+   class className:
+      <statement-1>
+      ...
+      <statement-n>
+\end{lstlisting}
+Where \lstinline|statements| are either assignments or function definitions
+
+Class instances introduce a new \textbf{namespace} nested in the class
+namespace; 
+Python's visibility rules make all names of the class \textit{visible}.
+
+An \textbf{instance method} is a class method which takes \lstinline|self| (\textit{"implicit parameter"}, similar to \lstinline|this| in Java) as first argument, and it  must access the object's attributes through the self reference
+(eg. \lstinline|self.x|) and the class attributes using \lstinline|className.<attrName>| (or
+\lstinline|self.__class__.<attrName>|)
+
+Since it is bound to the target object, the first parameter must not be passed when the method is called with
+dot-notation on an object, but it can be passed explicitly if using the \lstinline|className| alternative syntax.
+\begin{lstlisting}
+obj.methodname(args)
+className.methodname(obj,args)
+\end{lstlisting}
+\nl
+
+In Python a \textbf{constructor} is a special instance method with name \lstinline|__init__|, and since there is \textit{\underline{no overloading}} for constructors, there can be only \textit{one constructor} per class.
+
+Since instances are themselves namespaces, so we can add functions (and variables?) to them; and by applying the usual rules, they can hide \textit{"instance methods"}.
+
+\begin{paracol}{2}
+   
+\begin{lstlisting}
+   class Point:
+      def __init__(self, x, y):
+         self.x = x
+         self.y = y
+      def move(z,t):
+         self.x -= z
+         self.y -= t
+         self.move = move
+         def move(self,dx,dy):
+         self.x += dx
+         self.y += dy
+\end{lstlisting}
+\switchcolumn
+\begin{lstlisting}
+>>> p = Point(1,1)
+>>> p.x
+1
+>>> p.move(1,1)
+>>> p.x
+0
+>>> p.__class__.move(p,2,2)
+>>> p.x
+2
+\end{lstlisting}
+The two \lstinline|move()| invocations result in different behaviours
+\end{paracol}
+
+\subsection{Overloading and Inheritance}
+A class may overload the default python operators \lstinline|+,-,in, ...|,
+by defining methods like \lstinline|__sub__(self, other),__add__(self, other),...|
+
+
+A class can be defined as a derived class, resulting in its namespace to be nested in the one of \lstinline|baseClass|, which is used as the next scope for non-local resolutions:  
+\begin{lstlisting}
+   class derived(baseClass):
+      statements
+      statements
+\end{lstlisting}
+Python supports \textbf{multiple inheritance}, i.e.
+\begin{lstlisting}
+   class derived(baseClass1,baseClass2,...):
+\end{lstlisting}
+This induces the \textit{Diamond problem}, solved by an \href{https://www.python.org/download/releases/2.3/mro/}{algorithm that linearizes the set of all directly or indirectly inherited classes}.
+
+\subsection{Encapsulation and Name Mangling}
+Private instance variables do \textit{not} exist in Python,
+so there are two main workarounds for this:
+\begin{enumerate}
+   \item names prefixed with \textbf{underscore} (e.g. \lstinline|_spam|) are treated as
+   non-public part of the API and should be considered an implementation detail and subject to change without notice
+   \item \textbf{Name mangling}:
+   Any name with at least two leading underscores and at most one trailing
+   underscore like e.g. \lstinline|__spam| is textually replaced with \lstinline|_class__spam|,
+   where class is the current class name.
+\end{enumerate}
+
+\subsection{Class and Static methods}
+\textbf{Static} methods are simple functions defined in a class with no self
+argument, preceded by the \lstinline|@staticmethod| decorator.
+They are defined inside a class but they \textit{cannot} access instance attributes and methods.
+
+\textbf{Class methods} are similar to static methods but they have a first parameter which is the class name.
+Definition must be preceded by the \lstinline|@classmethod| decorator.
+
+\subsection{Iterators}
+An \textbf{iterator} is an object which allows a programmer to traverse through all the
+elements of a collection (iterable object), regardless of its specific implementation.
+\begin{enumerate}
+   \item \lstinline|__iter__| returns the iterator object itself
+   \item \lstinline|next| method returns the next value of the iterator or throws \lstinline|StopIteration| exception if not possible.
+\end{enumerate}
+
+\textbf{Generators} are a simple and powerful tool for creating iterators:
+they are written like regular functions but use the \lstinline|yield| statement whenever they want to return data.
+What makes generators so compact is that the \lstinline|__iter__()| and
+\lstinline|next()| methods are created automatically
+\begin{lstlisting}
+   def reverse(data):
+      for index in range(len(data)-1, -1, -1):
+         yield data[index]
+\end{lstlisting}
+
+\section{Typing}
+Python provides dynamic strong \textbf{duck} typing.
+\begin{lstlisting}[caption={Code can be annotated with types}]
+   def greetings(name: str) -> str:
+      return 'Hello ' + name
+\end{lstlisting}
+The module \lstinline|typing| provides runtime support for \textit{type hints} which can be checked statically by
+external tools, like \lstinline|mypy|, but are ignored by \textbf{CPython}.
+
+\subsection{Polymorphism}
+\begin{itemize}
+   \item \textbf{Overloading}\\
+   forbidden, but its absence
+   alleviated by
+   \begin{itemize}
+      \item Default parameters for functions
+      \item Dynamic typing
+      \item Duck typing
+   \end{itemize}
+   \item \textbf{Overriding}\\
+   ok, thanks to nesting of
+   namespaces
+   \item \textbf{Generics}\\
+   type hints (module \lstinline|typing| + \lstinline|mypy|
+   support generics)
+\end{itemize}
+
+\subsection{Multithreading and Garbage collection}
+CPython manages memory with a \textit{reference counting} and a
+\textit{mark\&sweep cycle} collector scheme;
+\note{
+   \textit{"Reference counting"} means that each object has a counter storing the
+   number of references to it. 
+   When it becomes 0, memory can be reclaimed.
+}
+
+Updating the \textit{refcount} of an object has to be done \textbf{atomically}, 
+in case of \textit{multi-threading} all refcount updates must be \textbf{synchronized} otherwise there may be wrong values.
+Since \textit{almost every operation} in CPython can cause a refcount to change somewhere,
+and since synchronization primitives are quite \textit{expensive} on
+contemporary hardware, handling refcounts with some kind of
+synchronization would cause \underline{spending almost all the time on synchronization}.
+
+\begin{paracol}{2}
+\colfill
+
+The CPython interpreter assures that \textit{only one thread} executes Python bytecode at a time, thanks to the \textbf{Global
+Interpreter Lock}:
+the current thread must hold the \textbf{GIL} before it can safely access Python objects.\\
+Locking the entire interpreter makes it easier for the
+interpreter to be multi-threaded, at the \textbf{expense} of much of
+the \textbf{parallelism} afforded by multi-processor machines.
+
+Besides the GIL can \textbf{degrade performance} even when it is
+not a bottleneck:
+the system call \textbf{overhead is significant},
+especially on multicore hardware.
+\note{
+   Two threads calling a function may take twice as much time as a single thread calling the function twice.
+}
+
+\colfill
+\switchcolumn
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.9\columnwidth]{images/python_concurrency.png}
+   \label{fig:python_concurrency}
+\end{figure}
+\end{paracol}
+
+\subsubsection{Alternatives}
+It is believed that overcoming the GIL performance issue would make the
+implementation much more complicated and therefore costlier to \textit{maintain}.
+\textbf{Jython} and \textbf{IronPython} have no GIT and fully exploit multiprocessor architecture capabilities.
+In Cython the GIL may be released temporarily using the \lstinline|with| statement.
+
+\section{Criticism}
+Tuples are made by the commas, not by \lstinline|( )| with the exception of the empty tuple…
+\begin{lstlisting}
+   >>> type((1,2,3))
+   <class 'tuple'>
+   >>> type(())
+   <class 'tuple'>
+   >>> type((1))
+   <class 'int'>
+   >>> type((1,))
+   <class 'tuple'>
+\end{lstlisting}
+
+\textbf{Lack of brackets} makes the syntax \textit{"weaker"} than
+in other languages:
+accidental changes of
+indentation may change the semantics, leaving
+the program syntactically correct.
+\begin{center}
+\textit{\underline{Will Python change on this matter?}}
+\end{center}
+\begin{lstlisting}
+   >>> from __future__ import braces
+      File "<stdin>", line 1
+   SyntaxError: not a chance
+\end{lstlisting}
