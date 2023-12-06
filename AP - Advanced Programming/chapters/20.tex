@@ -50,3 +50,60 @@ while \texttt{Float}s are represented with 64 bits.\\
 There are no logical symbols, the operators are \texttt{and, or, not}.\\
 Strings can be enclosed in \texttt{''}, \texttt{""}, \texttt{""" """},
 with the third that allows multiline strings (\textit{cool!}).
+
+\subsection{Sequence types}
+\texttt{Tuples}, \texttt{Strings} and \texttt{Lists} are the sequence types in Python, they are \textit{immutable} except for Lists.
+
+They all support \textbf{slicing}, concatenation (\lstinline|+|) and membership (\lstinline|in|).
+
+\textbf{Slicing} returns a subsequence of the original sequence, a \textbf{copy}.
+Start copying
+at the first index, and stop copying \textit{before} the second index.
+
+\lstset{language=python}
+\begin{lstlisting}
+   >>> t = (23, 'abc', 4.56, (2,3), 'def')
+   >>> t[1:4] # ('abc', 4.56, (2,3))
+   >>> t[1:-1] # negative indices ('abc', 4.56, (2,3))
+   >>> t[1:-1:2] # optional argument: step ('abc', (2,3))
+   >>> t[:2] # no first index: from beginning (23, 'abc')
+   >>> t[2:] # no second index: to end (4.56, (2,3), 'def')
+   >>> t[:] # no indexes: creates a copy (23, 'abc', 4.56, (2,3), 'def')
+\end{lstlisting}
+
+Lists, since they are \textbf{mutable}, support some specific operators \lstinline|append(),insert(),extend(),index(),count(),remove(),sort()...| 
+
+Lists also support \textbf{List Comprehension} pretty similarly to Haskell, allowing also filtered and nested comprehensions.
+\begin{lstlisting}
+   >>> li = [3, 2, 4, 1]
+   >>> [elem*2 for elem in
+      [item+1 for item in li] if elem > 1]
+   [8, 6, 10]
+\end{lstlisting}
+
+\subsection{Sets and Dictionaries}
+\textbf{Sets} support membership, and common set operations, but not indexing:
+\begin{lstlisting}
+   >>> a = set('abracadabra')
+   >>> b = set('alacazam')
+   >>> a # unique letters in a
+   {'a', 'r', 'b', 'c', 'd'}
+   >>> a - b # letters in a but not in b
+   {'r', 'd', 'b'}
+   >>> a | b # letters in a or b or both
+   {'a', 'c', 'r', 'd', 'b', 'm', 'z', 'l'}
+   >>> a & b # letters in both a and b
+   {'a', 'c'}
+   >>> a ^ b # letters in a or b but not both
+   {'r', 'd', 'b', 'm', 'z', 'l'}
+\end{lstlisting}
+
+\textbf{Dictionaries} are very similar to \lstinline|maps| in Java, and they map a key of an \underline{\textit{immutable hashable}} type,
+and support the following operations on the $\langle key,value \rangle$pairs:
+\begin{enumerate}
+   \item define
+   \item modify
+   \item view
+   \item lookup
+   \item delete
+\end{enumerate}
