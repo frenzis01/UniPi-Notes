@@ -1,2 +1,36 @@
 \chapter{Secure OS}
 
+\section{Rogue Firmware}
+An erroneous update or because of a malicious software developer, a device can store some malicious software that attacks the
+system or offers an hidden backdoor.
+
+Some run time attacks can be discovered by memory introspection or
+attestation, other ones can be discovered by an \textit{host-based} Intrusion Detection System called \textbf{Doppelganger}.
+
+A Doppelganger first analyzes the firmware of the \textit{embedded device} to detect
+live code regions\footnote{executable parts of the firmware} therein, where it randomly
+inserts its \textbf{symbiotes} (\textit{watchpoints}), and computes a CRC32 checksum of such randomly selected regions.
+
+During the firmware execution, every time the \textit{symbiote manager}\footnote{Software that the Doppelganger adds \textit{before} the firmware} detects
+a symbiote in memory,
+\begin{enumerate}
+   \item it stops the execution process (symbiote=breakpoint),
+   \item compares the current memory area checksum of the symbiote one,
+   \item Dopplganger considers a mismatch an evidence of a modification
+   attack and it prevents the processor from running the code.
+\end{enumerate}
+
+\note{
+   Doppelganger does not defend against attacks that load code in the dynamic memory
+}
+
+\section{Secure Management of a Device}
+The manifacturer must flash bootstrap credentials onto the device,
+which allow it to reach its "home" bootstrap sever.
+Then it can ask such bootstrap server for a DM server address and the respective credentials,
+to allow the DM server to manage the device.
+
+\section{Encryption in IoT}
+\textbf{Simon} and \textbf{Speck} are two families of block ciphers proposed by NSA,
+with \texttt{SIMON} being tuned for optimal hardware performance, while \texttt{SPECK} for software.
+

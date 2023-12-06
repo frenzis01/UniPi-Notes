@@ -43,5 +43,6 @@ A different idea would be to decompose the compiler in two components/modules:
 \begin{enumerate}
    \item \textit{Compiler} producing the output file
    \item \textit{Logger} which receives info to be logged from the compiler
+   \note{Using a pipe, a socket or a temporary file both processes can access}
 \end{enumerate}
 In this way we define the security policy according to the \textbf{Least Privilege} principle, negating the \texttt{log} file \texttt{write} right to the \textit{compiler} and granting it only to the \textit{logger}.
