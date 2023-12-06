@@ -107,3 +107,104 @@ and support the following operations on the $\langle key,value \rangle$pairs:
    \item lookup
    \item delete
 \end{enumerate}
+
+\section{Higher-order functions}
+Functions can be returned as result and passed as arguments to other functions, for example the predefined \lstinline|map| and \lstinline|filter| combinators.
+When handling higher-order functions there's a heavy use of iterators, which support laziness.
+
+Typically List comprehensions can replace the \lstinline|map| and \lstinline|filter| combinators.
+
+\begin{lstlisting}
+   map(func, *iterables) --> map object
+   Make an iterator that computes the function using
+   arguments from each of the iterables. Stops when the
+   shortest iterable is exhausted
+
+   >>> map(lambda x:x+1, range(4))  # lazyness: 
+   <map object at 0x10195b278>      # returns an iterator
+\end{lstlisting}
+
+\subsection{Decorators}
+A \textbf{decorator} is any callable Python object that is used
+to modify a function, method or class definition.
+A decorator is passed the original object being defined
+and returns a modified object, which is then bound to the name in the definition.
+The basic idea is to \textbf{wrap a function},
+and the use cases may vary a lot, 
+and may include \textit{measuring execution time}, caching \textit{intermediate results}, and so on.
+
+\begin{lstlisting}
+   def do_twice(func):
+   def wrapper_do_twice():
+      func() # the wrapper calls the
+      func() # argument twice
+      return wrapper_do_twice
+\end{lstlisting}
+
+\section{Namespaces and Scopes}
+A \textbf{namespace} is a mapping from \textit{names} to \textit{objects}, typically
+implemented as a dictionary.
+\begin{enumerate}
+   \item builtin names (predefined functions, exceptions,...)
+   \begin{enumerate}
+      \item Created at intepreter's start-up
+   \end{enumerate}
+   \item global names of imported modules
+   \begin{enumerate}
+      \item Created when the module definition is read
+      \item Note: names created in interpreter are in module \lstinline|__main__|
+   \end{enumerate}
+   \item local names of a function invocation
+   class names, object names,...
+\end{enumerate}
+\nl
+
+A \textbf{scope} is a textual region of a Python program where a
+namespace is directly accessible, i.e. reference to a name
+attempts to find the name in the namespace.
+
+Scopes are \textit{determined statically}, but are \textit{used \underline{dynamically}},
+at runtime at least three namespaces are directly accessible, searched in the following order:
+\begin{enumerate}
+   \item the scope containing the \textbf{local names}
+   \item the scopes of any \textit{enclosing functions}, containing both \textbf{non-local} and \textbf{non-global} names
+   \item the \textit{next-to-last} scope containing the current \textbf{module’s global names}
+   \item the outermost scope is the namespace containing \textbf{built-in names}
+\end{enumerate}
+
+Python supports \textbf{closures}: 
+even if the scope of the
+outer function is reclaimed on return, the non-local variables referred to by the nested function are saved
+in its attribute \lstinline|__closure__|
+
+\begin{lstlisting}
+   def counter_factory():
+      counter = 0
+      def counter_increaser():
+         nonlocal counter
+         counter = counter + 1
+         return counter
+      return counter_increaser
+   >>> f = counter_factory()
+   >>> f()
+   1
+   >>> f()
+   2
+   >>> f.__closure__
+   (<cell at 0x1033ace88: int object at 0x10096dce0>,)
+\end{lstlisting}
+
+\subsection{Scope issues}
+\begin{lstlisting}
+   def test(x):
+      print(x)
+      for x in range(3):
+         print(x)
+      print(x)
+   >>> test("Hello!")
+   Hello!
+   0
+   1
+   2
+   2  # 'x' changed!
+\end{lstlisting}
