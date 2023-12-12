@@ -1,0 +1,51 @@
+\chapter{AI - Discovering Vulnerabilities}
+\begin{enumerate}
+   \item \textit{If your data is poisoned or tampered, how would you know?}
+   \item \textit{Are you training from user-supplied inputs?}
+   \item \textit{If you train against online data stores, what steps do you take to ensure the security of the connection between your model and the data?}
+   \item ...
+\end{enumerate}
+
+The real question is \emph{"Can you discover whether your data has been \emph{"attacked"} in some way?}
+
+\section{Mitigation}
+How can we enrich the robustness against AI data attacks, and mitigate the eventual impact.
+\subsection{Poisoning - Sanitization}
+A method to mitigate data \textbf{poisoning} is \textbf{RONI} (\textit{Reject On Negative Impact}), which relies on identifying outliers by training the model with and without each (data) point and comparing the \textit{performance}.\\
+Due to frequently retraining its run-time \textbf{overhead} is significant,
+and as a result its performance is worse than later proposals.
+
+An alternative is \textbf{TRIM},
+which iteratively estimates the model parameters and trains on the
+subset of best-fitting input points at the same time, until convergence is reached.\\
+It is much better than RONI \smiley.
+However, TRIM is devised for \textbf{linear regression} only and thus \textit{not} applicable to (deep) neural networks.
+
+There are also \textbf{provenance-based} techniques, which use metadata about data provenance\footnote{the model assumes such provenance metadata is correct}
+to cluster data accordingly.\\
+Due to the additional information, it achieves \textbf{better results} than RONI and
+is \textbf{more efficient} by the average cluster size, since the model is \underline{not}
+retrained \underline{for each} individual point but only the \textit{cluster centroids}.\\
+The intuition is that the probability of poison for data points of common
+provenance is strongly correlated.
+
+\textbf{Keyed Non-parametric Hypothesis} Tests (\textit{KNHT}) assume a set of clean training data describing intended \textit{data distribution} and
+inspect newly-collected ones to compare the two sets and if their similarity
+is insufficient, the newly collected ones are further inspected.\\
+KNHT does comparison after mapping the distributions into another space
+via functions with secret keys.
+
+\subsection{Backdoors and Triggering}
+Backdoors attacks involve two steps:
+\begin{enumerate}
+   \item \textit{Backdoor embedding}
+   \item \textit{Triggering}
+\end{enumerate}
+
+In \textbf{development} stage, backdoors and triggers can be detected and
+even removed by modifying the addressed model;
+in \textbf{deployment} stage instead, backdoor detection aims at revealing potential
+weaknesses of the addressed model and trigger detection goal is to
+prevent backdoors from being triggered.
+
+\subsection{Evasion attacks}
