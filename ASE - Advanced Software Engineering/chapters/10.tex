@@ -108,7 +108,7 @@ which states that each service should do one thing only and should do it well.
 }
 
 Another way to determine how "big" should a microservice be is the \textit{"Rule of twos"}, stating that a Service can be developed, tested, and deployed in two weeks by a team which can be fed with two large pizzas (8-10 people).
-May people are required for a single service for various reasons {---}e.g. developing, decoupling, testing, etc.{---} but
+Many people are required for a single service for various reasons {---}e.g. developing, decoupling, testing, etc.{---} but
 the most groundbreaking one is that \emph{services should be \textbf{supported} and maintained \textbf{after} deployment}
 
 \section{Motivations}
@@ -226,7 +226,7 @@ in case such local transaction fails then the saga executes a series of \textbf{
 
 \subsection{Netflix Approach}
 
-Netflix eventual consistency is backed up by \textit{Apache Cassandra},
+Netflix eventual consistency is backed up by \textit{Apache Cassandra}:
 in a nutshell, to replicate data in $n$ nodes:
 "write to the ones you can get to, then fix it up afterwards";
 A quorum is used as threshold, e.g. $(n/2 + 1)$ of the replicas must respond.
