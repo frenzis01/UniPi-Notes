@@ -90,6 +90,12 @@ possibly by knowing partial information on the string to be generated.
    \end{enumerate}
 }
 
+Some services provide a \textbf{federated} authentication method e.g. \textit{"Login with Google"}, typically implemented using library \texttt{OAuth},
+which rely on a trusted third party authenticator;
+such method is widely used on mobile devices, where typing passwords is inconvenient,
+but in general can fit in many scenarios,
+with the downside of forcing the product provider to share some data with the (external) authenticator.
+
 \section{Authorization}
 \label{sec:authorization}
 \textbf{Authorization} involves checking that an authenticated user can \textit{access resources},
@@ -157,3 +163,73 @@ we can provide some tips based on this assumption:
    information, you should ensure that users understand how to control the
    information they share
 \end{itemize}
+
+\section{Microservices}
+In microservices there is much inter-service communication via remote calls and thus a large number of entry points, 
+considerably broadening the \textbf{attack surface}.
+Besides, each microservice requires carrying out an individual \textbf{security screening},
+to assess changes in time, given the mutable structure of this architetural style.
+\note{The most used approach is \textit{ZeroTrust} networks, which {--}sadly{--} have some impact on performance}
+
+\subsection{Communication}
+Service-to-service communication must take place on \textit{protected channels}, and typically exploits the use of \textbf{certificates}, \underline{one for each microservice.}
+Even though it's effective,
+revoking and rotating certificates on hundreds of microservices is a complex task, and thus should be automated.
+
+\subsection{Logging}
+A request to a microservices deployment may span multiple microservices, making correlating requests among microservices challenging.
+To this extent logs and traces help a lot:\\
+\textbf{Logs} can be aggregated to produce metrics that reflect system state (e.g.
+average invalid access requests per hour) and that may trigger alerts on security or performance;
+\textbf{Traces} instead help you tracking a request from the point where it enters the system to the point where it leaves the system.
+\note{
+   \begin{itemize}
+      \item \textbf{logging}: 
+      \textit{Prometheus} and \textit{Grafana} to monitor incoming requests
+      \item \textbf{Tracing}:
+      \textit{Jaeger} and \textit{Zipkin} for distributed tracing
+   \end{itemize}
+}
+
+\subsection{Containers against statefulness}
+Containers are \textit{\underline{immutable} servers}, they don’t change state after being spinned up;
+This is a great property which simplifies deployment and allows horizontal-scalability,
+but for each service we need to maintain a \textbf{dynamic list} of allowed clients and a dynamic set of access-control policies, which \textit{cannot} be stored inside the container.
+A solution is to use a \texttt{push/pull} model to get updated policies from some policy admin endpoint.\\
+Each service must also maintain its own \textbf{credentials}, which need to be rotated periodically,
+but this can be handlend by keeping credentials in container filesystem, by injecting them at \textit{boot time}.
+
+Since containers have no state, and requests span distributedly, \textbf{user context} has to be \textit{passed explicitly} from one microservice to another,
+so there must be a way to ensure trust between microservices so that receiving microservice accepts user context passed from calling microservice.
+\note{Typically implemented with \textit{JSON Web Tokens} (\texttt{JWT})}
+
+\note{
+   \paragraph*{Confused Deputy}
+   What is the “confused deputy problem“ in microservices?
+   \begin{enumerate}
+      \item application does not enact access control in some microservices, allowing the attacker to get data it shouldn’t be able to get
+      \item microservices trust the gateway based on its mere identity, leading to potential violation of authenticity
+   \end{enumerate} 
+}
+\subsection{Architetural smells}
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|c|}
+      \toprule
+      \textbf{Property} & \textbf{Smell} & \textbf{Solution}\\
+      \midrule
+      Confidentiality & Insufficient Access Control & \texttt{OAuth 2.0}\\
+      Confidentiality & Publicly accessible microservices & \texttt{API} gateway\\
+      \makecell{Confidentiality \\ Integrity} & Unnecessary privileges to microservices & \makecell{apply \\ \textit{Least Privilege}}\\
+      \makecell{Confidentiality \\ Integrity \\ Authenticity} & "Home-made" crypto code & \makecell{use \textit{known} \\\textit{encryption techniques}}\\
+      \makecell{Confidentiality \\ Integrity \\ Authenticity} & Data Exposure & \makecell{encrypt all \\ \textit{\textbf{at-rest data}}}\\
+      \makecell{Confidentiality \\ Integrity \\ Authenticity} & Hardcoded secrets & \makecell{encrypt all \\ \textit{\textbf{at-rest secrets}}}\\
+      \makecell{Confidentiality \\ Integrity \\ Authenticity} & \makecell{Non-secure service-to-service \\ communications} & \makecell{Mutual \texttt{TLS}}\\
+      Authenticity & Unathenticated traffic & \makecell{Mutual \texttt{TLS}\\ \texttt{OpenID Connect}}\\
+      Authenticity & Multiple user authentication & \makecell{\texttt{API} gateway \\ \texttt{OpenID Connect} \\ Single \textit{sign-on}\footnote{single entry point to handle user authentication and to enforce security for all user requests}}\\
+      Authenticity & Centralized authorization & \makecell{Decentralize authorization}\\
+      
+   \end{tabular}
+   \caption{Microservices security smells and refactorings}
+   \label{tab:microservices_sec_smells}
+\end{table}
