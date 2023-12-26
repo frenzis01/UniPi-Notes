@@ -151,7 +151,13 @@ To optimize power consumption multiple processors may be required, each for a di
 \end{enumerate}
 \note{No need to wake up the main processor if the radio one may check for incoming messages}
     
-TODO memory
+For what concerns \textbf{memory},
+most embedded systems include:
+\begin{itemize}
+   \item \textit{Flash} memory to store the program,
+   \item \textit{SRAM} to store code and data
+   \item \textit{ROM} to hold the basic system description
+\end{itemize}
 
 \section{Security in IoT}
 Bruce Schneier thinks that
@@ -219,6 +225,13 @@ An interesting example are attacks against a voice interface using frequency tha
 }
 
 Countermeasures can either be hardware, e.g.microphone enhancements to drop frequencies above 20Khz, or software, e.g. classifying the signal to discover modulated voice.
+
+In late 2016 the \textit{Mirai botnet} launched $~15k$ DDoS attacks, exploiting as nodes mainly embedded and IoT devices which exposed \texttt{SSH}/\texttt{Telnet} services;
+the attack infrastructure attempted to login to such devices\footnote{IP cameras, DVRs, consumer routers} using a set of \underline{\textbf{46}} hardcoded passwords, some traceable to a vendor,
+and then wait for commands from a C2 server.\\
+A couple of interesting aspects of Mirai are the hardcoded list of IPs{--}composed of adddresses belonging to \textit{US Postal Service}, \textit{Dept. of Defense}, \texttt{IANA}, \textit{HP} and \textit{General Electric}{--}which bots avoided when performing scans,
+and its \textit{"territorial"} nature:
+bots included scripts whose purpose was to eradicate other worms an trojans as well as prohibiting remote connections to the hijacked device.
 \nl
 
 A proposed taxonomy on attacks to IoT devices is based on how the attacker \textit{deviates} features from their "official" functionality,
@@ -259,13 +272,15 @@ the synergy and interconnection in the massive data going outside your home netw
 may be used to infer important information,
 e.g. the presence or absence of people in a house.
 
-
-
 \section{IoT Best Practices}
 On the $2^{nd}$ of November 2019,
 the \textit{IoT Security Foundation} published a few guidelines regarding security for IoT systems.
 Some of them are already discussed in the previous section, while in the following subsections we will address others.
 \subsection{Physical Security}
+
+Any interface used for administration  or testing should be (\textit{physically}) removed from the production device. 
+The device should also make its circuitry physically \textit{inaccessible} to avoid \textbf{tampering},
+and in general should be {--}along with its packaging{--} \textbf{tamper-evident}.  
 
 \subsection{Secure Boot}
 Firstly it is advised to always use the ROM-based \textbf{secure boot} function, generally implying a multistage bootloader initiated by {--}a minimal amount of{--} \textbf{read-only code} stored in a \textit{one-time programmable} memory.\\
