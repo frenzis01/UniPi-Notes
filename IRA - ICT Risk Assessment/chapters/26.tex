@@ -1,5 +1,48 @@
 \chapter{Secure OS}
 
+\section{TrustZone Hardware}
+
+The \textbf{TrustZone} hardware architecture aims to provide a security framework
+to enables a device to counter multiple threats, pursuing the following goal:
+\begin{center}
+   \textit{enable the construction of a programmable environment to protect
+   from attacks to confidentiality and integrity of almost any asset}
+\end{center}
+
+This architecture splits {--}both HW and SW{--} components into two categories, exploiting a strong hardware logic to ensure a well defined security perimeter between the two:
+\begin{enumerate}
+   \item \textbf{Secure world} - for the security subsystem
+   \item \textbf{Normal world} - for everything else
+\end{enumerate}
+
+Releavant features of the TrustZone architecture include:
+\begin{itemize}
+   \item Two \underline{virtual} cores for each physical CPU core, one for \textit{Secure} world and the other for \textit{Normal} world,
+   along with a robust \textbf{context switch};
+   this system allows sharing a physical core between the two worlds in a \textit{time-sliced} fashion.
+   \begin{itemize}
+      \item During the context switch the core goes through a \textit{monitor mode},
+      whose entry points are tightly defined,
+      especially the ones from the \textit{Normal} world.\\
+      The \textit{monitor} mode's purpose is to provide a robust gatekeeper between the two worlds. 
+      \item For each virtual core there is a separate MMU, 
+      and each world manages its own translation tables which include the \texttt{NS} bit {---}discussed in the following points{---}.\\
+      \texttt{TLB}s are tagged with the identity of the world which performed the walk, allowing for both world's entries to co-exist.
+   \end{itemize}
+   \item Security-aware \textit{debug infrastructure} which provides \textbf{\underline{control}} {--}instead of \textit{access}{--} to \textit{Secure} world debug.
+   \item \texttt{NS} \textit{Non-secure} bit for each \texttt{read}/\texttt{write} operation on the main system bus.\\
+   Every bus master sets the \texttt{NS} bit at the hardware level, inheriting it from the identity of the \textit{virtual CPU core} requesting the operation,
+   making it impossible for \textit{Non-secure} masters to access \textit{Secure} slaves.
+\end{itemize} 
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/TrustZone_secureOS.png}
+   \caption{\textit{TrustZone} - Secure OS}
+   \label{fig:trustzone_secureOS}
+\end{figure}
+
+\newpage
 \section{Rogue Firmware}
 An erroneous update or because of a malicious software developer, a device can store some malicious software that attacks the
 system or offers an hidden backdoor.

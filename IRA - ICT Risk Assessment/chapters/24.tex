@@ -290,6 +290,14 @@ There are some attacks in booting called "\textit{Time of Check} to \textit{Time
 
 Lastly, any \textit{failure} in the boot sequence should \textbf{fail gracefully} in a safe and secure state.
 
+\subsection{Secure OS}
+The OS should include only the components (libraries, modules, packages, etc.) required to provide the functions of the IoT device.
+
+The devices should be shipped with the latest stable OS release and should be configured with the most secure configuration available, e.g. disabling unused ports, protocols and services;
+OS components should be kept updated throughout time.
+
+The \textit{Least Privilege Principle} should be strictly applied to all directories and files, and the root file system should not be writeable by users and applications.
+
 \subsection{Credential Management}
 Every device should be uniquely \textbf{identifiable} by means of a factory-set \textit{tamper-resistant hardware identifier}.
 
