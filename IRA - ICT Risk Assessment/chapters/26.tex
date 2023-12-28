@@ -77,3 +77,14 @@ to allow the DM server to manage the device.
 \textbf{Simon} and \textbf{Speck} are two families of block ciphers proposed by NSA,
 with \texttt{SIMON} being tuned for optimal hardware performance, while \texttt{SPECK} for software.
 
+Depending on the security level requested, they have different implementations varying block sizes:
+e.g. \texttt{SIMON 64/128} refers to a \texttt{SIMON} variant of the cipher with a block size of \texttt{64 bits} and a key size of \texttt{128 bits}.
+
+Their aim are \textit{generality} and \textit{simplicity},
+to hopefully provide high performance even on future constrained platforms, whatever they may be.
+Currently they can exploit also the capabilities of specific-purpose ASIC/FPGA boards;
+furthermore, they provide low latency, ease of protection against side-channel attacks, and are efficient from a power consumption point-of-view,
+making them a perfect fit for the IoT device industry.
+
+Sadly, since NSA isn't completely trusted by many countries, \texttt{SIMON} and \texttt{SPECK} have not yet become an industry standard,
+even if they have been tested by both NSA and academical researchers since 2014.
