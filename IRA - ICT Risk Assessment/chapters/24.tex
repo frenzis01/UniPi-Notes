@@ -290,6 +290,44 @@ There are some attacks in booting called "\textit{Time of Check} to \textit{Time
 
 Lastly, any \textit{failure} in the boot sequence should \textbf{fail gracefully} in a safe and secure state.
 
+\subsection{LogoFAIL}
+A LogoFAIL attack consists three steps:
+\begin{enumerate}
+   \item The attacker prepares a malicious logo image and stores it into the ESP or inside an unsigned section of a firmware update, and it restarts the device.\\
+   \textit{No phyisical} access is required for this step.
+   It can be performed by exploiting unpatched vulnerabilities in browsers, media-players, etc. or by gaining brief access to a device while it is unlocked.   
+   \item During the boot process, vulnerable firmware will load the malicious logo from the ESP and parse it with a vulnerable image parser,
+   thus the attacker can hijack the execution
+   flow by exploiting a vulnerability in the parser itself.
+   \item The attacker achieves arbitrary code execution during the DXE\footnote{Driver Execution Environment} phase, which means complete game-over for platform security.
+\end{enumerate}
+
+Note that malicious code \textit{\underline{never} reaches} the hard drive,
+and that once the hijacked image is in place, reinstalling the OS or replacing the main drive, won't remove it,
+ensuring that the device remains infected.
+
+Attacks, such as LogoFAIL, starting from the firmware level can be leveraged to install
+a bootkit and subvert any OS-level security mechanism, while
+remaining completely \textit{undetectable} by security detection solutions.
+Modern "below-the-OS" such as \textit{Secure Boot} are useles against this threat.\\
+Note also that LogoFAIL, since it targets UEFI code and does not depend on a specific architecture, represents a \textbf{cross-silicon exploitation}.
+
+\nl
+LogoFAIL was discovered by researchers using \textbf{Fuzzing}:
+\textit{"When the campaign finished, we were overwhelmed by the amount of crashes we
+found, so much that triaging them manually was quite complicated"}
+the researchers wrote. 
+In all, they identified 24 unique root causes, 13 of which they believe were exploitable.
+
+The results raised a vexing question:
+\begin{center}
+   \textit{If fuzzers identified so many exploitable vulnerabilities, why the developers of
+   and the OEMs selling the devices hadn’t already used these tools and fixed
+   the underlying bugs?}
+\end{center}
+
+\note{\textit{Fuzzing} is \underline{fundamental} according to Baiardi}
+
 \subsection{Secure OS}
 The OS should include only the components (libraries, modules, packages, etc.) required to provide the functions of the IoT device.
 
