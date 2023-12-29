@@ -159,23 +159,114 @@ The question of securing AI systems can be simply stated as ensuring the \textit
       \toprule
       \textbf{Lifecycle Phase} & \textbf{Issues}\\
       \hline
-      Data acquisition & Integrity\\
+      Data acquisition & {\color{red}Integrity}\\
       \hline
-      Data curation & Integrity\\
+      Data curation & {\color{red}Integrity}\\
       \hline
       Model design & Generic issues only \\
       \hline
       Software Build & Generic issues only\\
       \hline
-      Train & Confidentiality, Integrity, Availability\\
+      Train & {\color{blue}Confidentiality}, {\color{red}Integrity}, {\color{green}Availability}\\
       \hline
-      Test & Availability\\
+      Test & {\color{green}Availability}\\
       \hline
-      Deployment & Confidentiality, Integrity, Availability\\
+      Deployment & {\color{blue}Confidentiality}, {\color{red}Integrity}, {\color{green}Availability}\\
       \hline
-      Updates & Integrity, Availability\\
+      Updates & {\color{red}Integrity}, {\color{green}Availability}\\
       \hline
    \end{tabular}
    \caption{AI Lifecycle and corresponding issues}
    \label{tab:ailifecycle_issues}
 \end{table}
+
+\subsection{Data Acquisition and Curation}
+Training data is collected by multiple sources and sensors, and may be in various formats.
+The data may become \textbf{poisoned} (or \textit{degraded}, in the latter case) due to a malicious poisoning attack but also due to insufficient care in collecting consistent and fit-for-purpose data.
+
+\begin{paracol}{2}
+   \colfill
+\labelitemize{Data Curation}{
+   \begin{enumerate}
+      \item Integrating data from multiple sources and formats,
+      \item Identifying missing components of the data,
+      \item Removing errors and noise (aka anomaly detection)
+      \item Format conversion
+      \item \textit{Labelling}
+   \end{enumerate}
+}
+\colfill
+\switchcolumn
+\colfill
+Data labelling should be accurate and complete to ensure that the labelling retains its \textbf{integrity} and is not compromised through poisoning attacks.
+It is also important to address the challenge of ensuring the data set is
+\textit{unbiased}.
+\note{
+   Data augmentation can impact on data integrity.
+}
+\colfill
+\end{paracol}
+
+\subsection{Training}
+The training phase is one of the most critical steps, since it establishes the baseline behaviour of the application.
+To biggest challenge in training is to provide a high quality training dataset and to ensure its integrity.
+\subsubsection{Confidentiality}
+The dataset confidentiality can be compromised by an attacker with some knowledge of the implementation (\textit{full} or \textit{partial knowledge attack}),
+or even with no knowledge of the internal algorithm (\textit{zero knowledge attack}.)
+
+Even with \textit{no knowledge} of the original dataset, an attacker might create an augmented training data set with malicious inputs designed to output labels containing information about
+the original training data.
+
+Instead, if knowing the dataset, unused bits in parameters may be exploited by an attacker to leak information.
+
+\subsubsection{Integrity}
+Three main points concerning integrity in training
+
+\begin{enumerate}
+   \item In \textbf{transfer learning} a pre-trained network is (incrementally) finely tuned each time with few new training samples.\\
+   An attacker might inject malicious samples in these phases.
+   
+   \item
+   As previosly discussed a \textbf{backdoor} vulnerability merges a \textit{special pattern} included during the training
+   phase, and a \textit{trigger} to generate an output during the inference phase.
+   
+   This type of attack can include poisoning during the training phase as a
+   component of its attack, but it is important to emphasize that
+   \begin{enumerate}
+      \item a backdoor attack requires action in \textit{both} the training and implementation
+      phases,
+      \item a poisoning attack requires action \textit{only} in the training phase
+   \end{enumerate}
+
+   \item The learning algorithm can be modified by an attacker with full or partial knowledge to ensure an incorrect inference for certain samples, whilst maintaining correct performance for the client test set.
+\end{enumerate}
+
+\subsubsection{Availability}
+The availability of the machine learning model can be compromised by
+\textbf{poisoning} attacks on the training data set, which result in the wrong
+inference result.
+
+Differently, for unsupervised learning, feature selection is an important step and strongly depends on the \textbf{weightings} associated to each feature.\\
+An attacker with full or partial knowledge of such weightings could
+modify them to perform an availability attack where the salient
+features are made unavailable by reversing the weights,
+implementing a \textbf{Denial of Features} attack.
+
+\subsection{Testing}
+Learnt models can be vulnerable to \textbf{adversarial} samples that result in the
+functionality not meeting the specification and therefore making function or service
+not available.\\
+To this extent \textit{Adversarial testing} should be performed which aims to quickly find testing samples that can cause failure
+and might also test unexpected or previously unseen inputs do not cause the
+system to malfunction or become unavailable.
+
+\subsection{Deployment}
+Deployment of machine learning systems has the same challenges as generic
+systems, including choices about architecture, hardware/software deployment
+and use of features such as \textit{Trusted Execution Environments} (\texttt{TEE}s),
+which are more secure but provide looser performance than generic processors.
+
+
+The main vulnerability in relation to the deployment of machine learning models
+is their susceptibility to a backdoor attack that can compromise the
+\textbf{confidentiality} of the training set.
