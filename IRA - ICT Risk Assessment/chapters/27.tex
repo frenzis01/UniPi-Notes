@@ -1,1 +1,181 @@
-\chapter{AI}
+\chapter{Artificial Intelligence}
+
+Cybersecurity attacks targeting AI have a \textbf{different nature} from the ones studied before, since vulnerabilities in AI cannot simply be identified and patched, 
+they are more \textit{intrinsic}:
+the algorithms themselves and their reliance on data are the problem.
+
+Despite this fundamental difference, the two are \textit{linked} in important ways:
+in fact, many AI attacks are aided by gaining \textbf{access to assets} such as datasets or model details.
+\textbf{Confidentiality} attacks  enable adversaries to obtain the assets needed to engineer \textit{input} attacks,
+while \textbf{integrity} attacks will enable adversaries to make the changes to a dataset or model needed to execute a \textit{poisoning} attack.\\
+More generally, while AI attacks can certainly be crafted \underline{without} accompanying cyberattacks,
+strong traditional cyber defenses will increase the difficulty of crafting certain attacks.
+
+\nl
+
+Since AI attacks are becoming popular only in the last few years,
+it is still unclear whether they can be sufficiently practical and effective to represent a relevant threat.\\
+However, even if some may say that AI attacks do not deserve equal consideration with
+their traditional cybersecurity attack counterparts, \underline{such point of view is \textbf{incorrect}}.
+
+\nl
+
+Most AI systems are \textbf{opaque}, meaning that the systems accepts inputs, and generates
+outputs without ever revealing the internal logic, algorithms or parameters.
+Also training data sets, which effectively contain all the knowledge of the
+trained system, are usually kept \textbf{confidential}.\\
+This makes it usually \underline{impossible} for an outside observer to apply reverse engineering techniques to determine exactly how a system works, or why it produces particular outputs.
+
+\section{Attack categorization}
+\subsection{Poisoning}
+\begin{enumerate}
+   \item \textbf{Dataset} poisoning is the most direct attack:
+   \begin{enumerate}
+      \item[] Introducing during data \textit{collection} or \textit{curation} incorrect, or incorrectly labelled, data into the set, may result in the entire learning to be disrupted.
+      \item \textbf{Label Poisoning} (\textit{Backdoor} Poisoning)\\
+      Adversaries inject mislabeled or malicious
+      data during the training phase to influence the model's behavior during inference,
+      eventually resulting in triggering an unexpected output by a designed input (called \textit{triggers}).
+      \item \textbf{Training Data Poisoning}\\
+      Adversaries modify a significant portion of the training data to influence the AI model's learning process.\\
+      The misleading or malicious examples
+      allow the attacker to \textit{bias} the model's decision-making towards a particular outcome.
+   \end{enumerate}
+   \item \textbf{Algorithm} poisoning occur when an attacker interferes with the learning algorithms.
+   \item \textbf{Model} poisoning occurs when the entire deployed model is simply replaced
+   by an alternative one.
+   \note{
+      This is similar to a traditional attack where the
+      electronic files comprising the model could be altered or replaced.
+   }
+\end{enumerate}
+
+\subsection{Input/Evasion attacks}
+In an \textbf{input attack} (aka \textit{evasion attack}) an attacker modifies the AI system input to cause the system to malfunction,
+acting on the \textit{communication channel} or directly on the \textit{input source}, which is the most interesting case.\\
+Data perturbations can be very small, making them very hard, if
+not impossible, to detect. 
+\note{
+   There is a famous example which highlighted how by changing just a few pixels of
+   an input, the system might be forced to wrongly identify an image.
+}
+
+\subsection{Microsoft "Failures" categorization}
+\labelitemize{\textit{Intentional} failures}{
+   \begin{itemize}
+      \item \textbf{Perturbation} attack\\
+      Attacker modifies the query to get appropriate response
+      \begin{itemize}
+         \item \textbf{Image}:
+         Noise is added to an X-ray image, which makes the predictions go from normal scan to abnormal.
+         \item \textbf{Text translation}:
+         Specific characters are manipulated to result in incorrect translation.
+         The attack can suppress specific word or can even remove the word completely
+         \item \textbf{Speech}:
+         Researchers showed how given a speech waveform,
+         another waveform can be exactly replicated transcribes into a totally different text
+      \end{itemize}
+      \item \textbf{Poisoning} attack\\
+      Attacker contaminates the training phase of ML systems
+      to get intended result
+      \begin{itemize}
+         \item \textbf{Targeted}:
+         the attacker wants to misclassify specific examples
+         \item \textbf{Indiscriminate}:
+         the aim here is to cause DoS like effect,
+         which makes the system unavailable.
+         \note{
+            In a medical dataset where the goal is to predict the dosage of anticoagulant drug Warfarin using demographic
+            information, etc. Researchers introduced malicious samples at $8\%$ poisoning rate, which \underline{changed dosage by $75.06\%$} for
+            half of patients.\nl
+            
+            In the Tay chatbot, future conversations were tainted because a fraction of the past conversations were used to
+            train the system via feedback.
+            }
+      \end{itemize}
+      \item \textbf{Model Inversion}\\
+      Attacker recovers the secret features used in the model by through careful queries
+      \item \textbf{Membership Inference}\\
+      Attacker can infer if a given data record was part of the model’s training dataset or not
+      \item \textbf{Model Stealing}\\
+      Attacker is able to recover the model through carefully-crafted queries
+      \item \textbf{Reprogramming ML system}\\
+      Repurpose the ML system to perform an activity it was not programmed for
+      \item \textbf{Adversarial Example in Physical Domain}\\
+      Attacker brings adversarial examples into
+      physical domain to subvertML system\\
+      e.g: 3d printing special eyewear to fool facial recognition system
+      \item \textbf{Malicious ML provider recovering training data}\\
+      Malicious ML provider can query the model used by
+      customer and recover customer’s training data
+      \item \textbf{Attacking the ML supply chain}\\
+      Attacker compromises the ML models as it is being downloaded for use
+      \item \textbf{Backdoor ML}\\
+      Malicious ML provider backdoors algorithm to activate with a specific trigger
+      \item \textbf{Exploit Software Dependencies}\\
+      Attacker uses traditional software exploits like buffer overflow to confuse/control ML systems
+   \end{itemize}
+}
+\labelitemize{\textit{Unintentional} failures}{
+   \begin{itemize}
+      \item \textbf{Reward Hacking}:\\
+      Training mismatch with reality
+      \item \textbf{Side Effects}
+      \item \textbf{Distribution Shift}:\\
+      Usage in environment different from test
+      \item \textbf{Natural Adversarial}:\\
+      Unexpected real data
+      \item \textbf{Common Corruption}:\\
+      Unable to manage perturbations
+      \item \textbf{Incomplete Testing}
+   \end{itemize}
+}
+
+\section{ETSI on Securing AI}
+\textit{European telecommunication Standard Institute} \textbf{ETSI} has produced
+interesting documents on AI security defining:
+\begin{itemize}
+   \item A threat ontology
+   \item An attack taxonomy
+   \item Attack mitigation
+\end{itemize}
+\note{
+   Currently there are other efforts by Google and others but not so well focused and detailed as the ETSI standard
+}
+
+They also provide a classification of learning methods
+\begin{itemize}
+   \item \textit{supervised}: training data labeled
+   \item \textit{semi-supervised}: training data partially labeled
+   \item \textit{unsupervised}: training data unlabeled
+   \item \textit{reinforcement}: a policy defining how to act is learned by agents through
+   experience to maximize their reward
+\end{itemize} 
+
+The question of securing AI systems can be simply stated as ensuring the \textit{confidentiality}, \textit{integrity} and \textit{availability} of those systems throughout their lifecycle.
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|}
+      \toprule
+      \textbf{Lifecycle Phase} & \textbf{Issues}\\
+      \hline
+      Data acquisition & Integrity\\
+      \hline
+      Data curation & Integrity\\
+      \hline
+      Model design & Generic issues only \\
+      \hline
+      Software Build & Generic issues only\\
+      \hline
+      Train & Confidentiality, Integrity, Availability\\
+      \hline
+      Test & Availability\\
+      \hline
+      Deployment & Confidentiality, Integrity, Availability\\
+      \hline
+      Updates & Integrity, Availability\\
+      \hline
+   \end{tabular}
+   \caption{AI Lifecycle and corresponding issues}
+   \label{tab:ailifecycle_issues}
+\end{table}
