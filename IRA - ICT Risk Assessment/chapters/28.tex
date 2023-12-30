@@ -1,15 +1,40 @@
 \chapter{AI - Discovering Vulnerabilities}
 \begin{enumerate}
+   \footnotesize
    \item \textit{If your data is poisoned or tampered, how would you know?}
    \item \textit{Are you training from user-supplied inputs?}
    \item \textit{If you train against online data stores, what steps do you take to ensure the security of the connection between your model and the data?}
-   \item ...
+   \item \textit{How sensitive is the data you train from?}
+   \item \textit{Can your model output sensitive data?}
+   \item \textit{Does the model only output results necessary to achieve its goal?}
+   \item \textit{Does your model return raw confidence scores or any other direct output which could be
+   recorded and duplicated?}
+   \item \textit{What is the impact of your training data being recovered by attacking/inverting your
+   model?}
+   \item \textit{If confidence levels of your model output suddenly drop, can you find out how/why, as well as the data that caused it?}
+   \item \textit{Have you defined a well-formed input for your model? What are you doing to ensure inputs meet this format and what do you do if they don’t?}
+   \item \textit{If your outputs are wrong but not causing errors to be reported, how would you know?}
+   \item \textit{Do you know if your training algorithms are resilient to adversarial inputs on a mathematical level? What about its goal?}
+   \item \textit{How do you recover from adversarial contamination of your training data}
+   \item \textit{Are you using Reinforcement Learning on uncurated public content?}
+   \item \textit{Start thinking about the lineage of your data: were you to find a problem, could you track it to its introduction into the dataset? If not, is that a problem?}
+   \item \textit{Know where your training data comes from and identify statistical norms in order to begin understanding what anomalies look like}
+   \begin{itemize}
+      \item What elements of your training data are vulnerable to outside
+      influence?
+      \item Who can contribute to the data sets you’re training from?
+      \item How would you attack your sources of training data to harm a
+      competitor?
+   \end{itemize}
 \end{enumerate}
 
-The real question is \emph{"Can you discover whether your data has been \emph{"attacked"} in some way?}
-
+\begin{center}
+   The real question is \emph{"Can you discover whether your data has been \emph{"attacked"} in some way?}
+\end{center}
+   
 \section{Mitigation}
-How can we enrich the robustness against AI data attacks, and mitigate the eventual impact.
+Mitigation addresses how can we enrich the \textbf{robustness} against AI data attacks, and mitigate the eventual impact;
+currently the key point in mitigation is improving the \textbf{quality} of data, not patching or adding security mechanisms (which should be used anyway).
 \subsection{Poisoning - Sanitization}
 A method to mitigate data \textbf{poisoning} is \textbf{RONI} (\textit{Reject On Negative Impact}), which relies on identifying outliers by training the model with and without each (data) point and comparing the \textit{performance}.\\
 Due to frequently retraining its run-time \textbf{overhead} is significant,
