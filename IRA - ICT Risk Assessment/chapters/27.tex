@@ -267,6 +267,52 @@ and use of features such as \textit{Trusted Execution Environments} (\texttt{TEE
 which are more secure but provide looser performance than generic processors.
 
 
-The main vulnerability in relation to the deployment of machine learning models
+The main vulnerability concerning \textit{Confidentiality} in the deployment of machine learning models
 is their susceptibility to a backdoor attack that can compromise the
-\textbf{confidentiality} of the training set.
+\textbf{confidentiality} of the training set;
+the attack may vary depending on the knowledge of the implementation of the model, whether it is zero, partial or full.
+Regarding confidentiality in ML systems there are two issues:
+\begin{itemize}
+   \item \textbf{Membership inference}: given a data sample and access to the model, infer whether this sample is included in the training dataset or not
+   \item \textbf{Model inversion}: given a prediction result and access to the model, infer the input
+\end{itemize}
+Aside from these ML-specific vulnerabilities, there also the common ones when deploying on \textit{untrusted devices}.
+\nl
+
+\textbf{Integrity} of an ML algorithm might be impacted by \textit{input attacks} performed directly while the system is operating, resulting in the algorithm behaving incorrectly.\\
+As seen before, also \textit{backdoor attacks}, carried out during training phase (\textit{malicious input injection}) and operating phase (\textit{triggers}).
+
+\textbf{Availability} instead can be targeted by several attacks, including evasion ones e.g. \textit{malware obfuscation}.
+
+\section{AI Design Challenges}
+Aside from aspects strictly related to security,
+it is relevant to briefly discuss also some notions regarding the design of an AI system, to whom the effectiveness of the system is strictly related.
+
+\begin{itemize}
+   \item \textbf{Confirmation bias}: data is selected or manipulated to produce outputs aligned to
+   predetermined assumptions
+   \item \textbf{Selection bias}: data is selected subjectively, resulting in a set that does not accurately
+   reflect the population. 
+   \note{
+      When data is gathered using a survey, people willing to participate
+      in the survey are not necessarily an accurate reflection of the entire population.
+   }
+   \item \textbf{Outliers}: data points which contain extreme values, and therefore can have a
+   disproportionate impact
+   \note{
+      When analysing customer spending habits, a single customer
+      who spends significantly more than all the others will impact heavily on the average.
+   }
+   \item \textbf{Underfitting} (model is too simple) and \textbf{overfitting} (model is overly
+   complex) can both lead to an inaccurate view of the real data.
+\end{itemize}
+It is important to distinguish between systems that display \textit{unintended bias}, and those
+whose design displays specific tendencies.\\
+In a safety-critical application, such as
+autonomous vehicles, it can be desirable for the system to exhibit behaviour which errs on
+the side of safety rather than risk.
+
+Bias does not necessarily represent a security issue, but can simply result in the system not meeting its functional requirement.
+\note{
+   Note that issues related to ethics, inclusivity, etc. in biases are not discussed here.
+}
