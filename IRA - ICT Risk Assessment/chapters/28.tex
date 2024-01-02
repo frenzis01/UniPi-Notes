@@ -31,11 +31,41 @@
 \begin{center}
    The real question is \emph{"Can you discover whether your data has been \emph{"attacked"} in some way?}
 \end{center}
-   
+\newpage   
 \section{Mitigation}
 Mitigation addresses how can we enrich the \textbf{robustness} against AI data attacks, and mitigate the eventual impact;
 currently the key point in mitigation is improving the \textbf{quality} of data, not patching or adding security mechanisms (which should be used anyway).
-\subsection{Poisoning - Sanitization}
+
+\begin{table}[]
+   \centering
+   \caption{Mitigation techniques summary}
+   \label{tab:mitigation_summary}
+   \begin{tabular}{@{}llll@{}}
+   \toprule
+   \multicolumn{2}{|l|}{Attack}                                                                                                      & \multicolumn{1}{l|}{Model enhancement approach} & \multicolumn{1}{l|}{Model-agnostic approach}        \\ \midrule
+   \multicolumn{1}{c}{}                           & & {Enhance data quality}     & {Output Restoration}           \\
+   \multicolumn{1}{c}{}                           & & {Data sanitazation}        & \\
+   \multicolumn{1}{c}{}                           & \multirow{-3}{*}{{Poisoning attack}} & {Block Poisoning}          & \\ \cmidrule(l){2-4} 
+   \multicolumn{1}{c}{}                           & & {Enhance data quality}     & {Trigger Detection}            \\
+   \multicolumn{1}{c}{}                           & & {Data sanitazation}        & {Trigger Deactivation}         \\
+   \multicolumn{1}{c}{}                           & & {Trigger Detection}        & {Backdoor Detection}           \\
+   \multicolumn{1}{c}{\multirow{-7}{*}{{Training}}} & \multirow{-4}{*}{{Backdoor}}         & {Model Restoration}        & \\ \midrule
+   & & {Data preprocessing}       & {AE detection}                 \\
+   & & {Model Hardening}          & {Input Restoration}            \\
+   & \multirow{-3}{*}{{Evasion attack}}   & {Robustness evaluation}    & {Output Restoration}           \\ \cmidrule(l){2-4} 
+   & & {IP management}            & {Queries number bound}         \\
+   & & & {Stealing detection}           \\
+   & & & {Output obfuscation}           \\
+   & \multirow{-4}{*}{{Model Stealing}}   & & {Fingerprint}                  \\ \cmidrule(l){2-4} 
+   & & {Embed data privacy}       & {Queries number bound}         \\
+   \multirow{-9}{*}{{Inference}}                    & \multirow{-2}{*}{{Data Extraction}}  & {Training with privacy}    & {Obfuscated confidence scores} \\ \bottomrule
+   \end{tabular}
+   \end{table}
+
+\subsection{Poisoning - Data Sanitization}
+\note{
+   We only focus on \textit{data sanitazation} for what concerns poisoning attacks.
+}
 A method to mitigate data \textbf{poisoning} is \textbf{RONI} (\textit{Reject On Negative Impact}), which relies on identifying outliers by training the model with and without each (data) point and comparing the \textit{performance}.\\
 Due to frequently retraining its run-time \textbf{overhead} is significant,
 and as a result its performance is worse than later proposals.
@@ -73,4 +103,78 @@ in \textbf{deployment} stage instead, backdoor detection aims at revealing poten
 weaknesses of the addressed model and trigger detection goal is to
 prevent backdoors from being triggered.
 
-\subsection{Evasion attacks}
+Enhancing \textbf{data quality} and \textbf{sanitazation} are effective also against backdoor attacks,
+since the backdoor embedding is a form of data poisoning.
+
+\textbf{Trigger detection} is usually based either on \textit{\underline{spectral signature}} of the covariance of a feature representation learned by the neural network,
+or on \textit{\underline{activation clustering}}, i.e. observing that triggers can be detected from the neuron
+activation in the \textit{final hidden layer} of a network.
+
+\textbf{Model restoration} methods {--}even if it sounds awkward{--} remove backdoors \textit{without} detecting them:
+\begin{enumerate}
+   \item \textbf{Retraining} the model with a small subset of clean training data
+   \item \textbf{Fine-pruning} a network by eliminating some less important neurons leads to less \textit{accuracy}, but counters backdoor embedding
+   \item \textbf{Neural-Cleanse}: 
+   small input perturbations are reverse engineered from the
+   model, so those that trigger backdoor behavior in the model can be identified and the model retrained with purified data.
+   \item \textbf{TABOR} backdoor detection is transformed into a non-convex optimization
+   problem with a new objective function to narrow down search space.
+   Triggers found can be efficiently reverse engineered.
+\end{enumerate}
+
+\subsection{Inference attacks}
+
+\subsubsection{Evasion}
+In \textbf{Evasion} attacks attackers manipulate input samples to evade a deployed model at \textbf{inference} time.
+\note{e.g. an attacker introduces crafted noise in a cat image such that the
+manipulated cat image is classified as a dog image by the deployed model}
+
+\labelitemize{\textit{Model Enhancement}}{
+   \begin{enumerate}
+      \item Data \textbf{preprocessing}
+      \item Data \textbf{trasformation} to diminish possible perturbations, i.e. JPEG compression
+      \item \textbf{NULL labelling} to label training examples resembling possible adversarial examples
+   \end{enumerate}
+}
+
+\labelitemize{\textit{Model Hardening}}{
+   \begin{enumerate}
+      \item \textbf{Adversarial training}: model is trained with a data set augmented with correctly labelled adversarial examples
+      \item \textbf{Regularization} prevents small input perturbations from changing model output
+      \item \textbf{Certifiable training} implies multiple training phases, with first involving a data set augmented with \textit{Gaussian noises}, where the output is a probability distribution over all classes;
+      the final model is trained via the augmented dataset with labels indicating the class with the highest probability.
+      \item \textbf{Gradient masking}: to defend against gradient-based attacks, shattered gradients introduce non-differentiable operations such that attackers cannot get correct gradients for crafting adversarial
+      examples.
+      \item \textbf{Distillation Network}: A distilled network using the output probabilities emitted by a teacher model trained early on.
+   \end{enumerate}
+}
+
+\subsubsection{Model stealing}
+In \textbf{model stealing} attacks attackers without knowledge of the addressed model
+try to steal model capabilities; 
+two approaches possible:
+\begin{enumerate}
+   \item stealing model parameters by various means, such as side channel attacks or simply reading out model parameters from the underlying device
+   \item generating a substitute model by exploiting the leaked information from a set of model input and output.
+\end{enumerate}
+
+To protect the copyright of DNN models, the \textbf{Watermarking} technique involves embedding watermarks in the training dataset that enable to verify the ownership of deployed DNN services.
+
+The method creates the watermarks in the training dataset, then assigns pre-defined labels to the different watermarks, and finally trains the watermarks with
+pre-defined labels to DNNs.
+
+\subsubsection{Data Extraction}
+In \textbf{data extraction} attacks attackers with ability of querying the
+addressed model attempt to infer the training dataset, violating data confidentiality.
+They include \textbf{Model inversion} and \textbf{Membership inference} attacks.
+
+Existing mitigations against data extraction attacks focus on embedding data
+privacy, training with privacy and limiting leaked information.
+
+\section{Robustness Evaluation}
+\textbf{Adversarial Testing} consists in testing the robustness of model with respect to adversarial examples crafted using various methods.\\
+To obtain \textit{\underline{certifiable} robustness} there are some \textbf{Model verification} techniques based on the \textit{distance} between crafted adversarial examples $\bar{x}$ and corresponding intact inputs $x$.
+
+\subsection{Google, OWASP, MITRE}
+
+For a summary on Google, OWASP and MITRE documentation onto AI vulnerabilities refer to the last $~20$ slides of the course. 
