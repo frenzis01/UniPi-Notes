@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+git clone \PYGZlt{}repository\PYGZus{}url\PYGZgt{}
+git clone \PYGZlt{}repository\PYGZus{}url\PYGZgt{} \PYGZlt{}local\PYGZus{} directory\PYGZgt{}
+\end{Verbatim}

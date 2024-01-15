@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{EXPOSE}\PYG{+w}{ }\PYG{l+s}{\PYGZlt{}port\PYGZgt{} [\PYGZlt{}port\PYGZgt{}/\PYGZlt{}protocol\PYGZgt{}...]}
+\end{Verbatim}

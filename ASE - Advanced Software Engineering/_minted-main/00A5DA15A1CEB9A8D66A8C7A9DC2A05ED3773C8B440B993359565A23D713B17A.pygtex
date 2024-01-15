@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+git checkout \PYGZlt{}branch\PYGZus{}name\PYGZgt{}                 //to switch branch
+git checkout \PYGZlt{}commit\PYGZus{}hash\PYGZgt{} \PYGZhy{}\PYGZhy{} \PYGZlt{}file\PYGZgt{}       //to restore a file from prev commit
+git checkout \PYGZlt{}branch\PYGZus{}name\PYGZgt{} \PYGZhy{}\PYGZhy{} \PYGZlt{}file\PYGZgt{}       //to \PYG{n+nb}{exec} a partial merge
+\end{Verbatim}

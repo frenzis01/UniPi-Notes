@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+pip install bandit
+bandit \PYGZhy{}r \PYGZlt{}path\PYGZus{}to\PYGZus{}code\PYGZgt{}
+\end{Verbatim}

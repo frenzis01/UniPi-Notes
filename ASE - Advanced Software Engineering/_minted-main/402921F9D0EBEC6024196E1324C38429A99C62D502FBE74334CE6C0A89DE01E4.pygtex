@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{ADD}\PYG{+w}{ }\PYG{o}{[}\PYGZhy{}\PYGZhy{}chown\PYG{o}{=}\PYGZlt{}user\PYGZgt{}:\PYGZlt{}group\PYGZgt{}\PYG{o}{]} \PYG{o}{[}\PYGZhy{}\PYGZhy{}chmod\PYG{o}{=}\PYGZlt{}perms\PYGZgt{}\PYG{o}{]} \PYG{o}{[}\PYGZhy{}\PYGZhy{}checksum\PYG{o}{=}\PYGZlt{}checksum\PYGZgt{}\PYG{o}{]} \PYGZlt{}src\PYGZgt{}... \PYGZlt{}dest\PYGZgt{}
+\end{Verbatim}

@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+git add \PYGZlt{}file\PYGZgt{}              //to stage a file
+git add .                   //to stage all changes
+\end{Verbatim}

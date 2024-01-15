@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+git branch \PYGZlt{}branch\PYGZus{}name\PYGZgt{}  //to create a new branch
+git branch                  //to list \PYG{n+nb}{local} branches
+\end{Verbatim}

@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+kubectl describe \PYGZlt{}resource\PYGZhy{}type\PYGZgt{} \PYGZlt{}resource\PYGZhy{}name\PYGZgt{} \PYGZhy{}n \PYGZlt{}namespace\PYGZgt{}
+\end{Verbatim}

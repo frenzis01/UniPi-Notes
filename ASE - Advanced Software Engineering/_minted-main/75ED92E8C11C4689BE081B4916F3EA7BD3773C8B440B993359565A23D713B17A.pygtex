@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+kubectl get \PYGZlt{}resource\PYGZhy{}type\PYGZgt{} \PYGZhy{}n \PYGZlt{}namespace\PYGZgt{}
+kubectl get \PYGZlt{}resource\PYGZhy{}type\PYGZgt{} \PYGZhy{}A
+\end{Verbatim}

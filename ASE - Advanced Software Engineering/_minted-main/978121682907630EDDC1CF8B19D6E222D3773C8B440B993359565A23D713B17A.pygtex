@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+docker build \PYGZhy{}t \PYGZlt{}image\PYGZus{}name\PYGZgt{} .
+docker build \PYGZhy{}t \PYGZlt{}image\PYGZus{}name\PYGZgt{} . \PYGZhy{}\PYGZhy{}no\PYGZhy{}cache
+docker build \PYGZhy{}t \PYGZlt{}image\PYGZus{}name\PYGZgt{} \PYGZhy{}f \PYGZlt{}file\PYGZus{}name\PYGZgt{} .
+\end{Verbatim}
