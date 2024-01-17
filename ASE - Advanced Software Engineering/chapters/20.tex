@@ -1,3 +1,5 @@
+\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+
 \chapter{Exam Questions}
 
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
@@ -425,30 +427,13 @@ The last \textit{architectural smell} is the \textcolor{red}{single-layer teams}
 \subsection{Authentication in software product}
 We can feature authentication in a software product with one of this approaches:
 \begin{itemize}
-   \item \textbf{Knowledge-based authentication}: it relies on users providing secret, personal information at registering time;
+   \item \textbf{Knowledge-based authentication}: it relies on users providing secret and personal information at registering time;  often employed for products delivered as
+   cloud services.
+   \note{Insecure and recycled passwords}
    \item \textbf{Possession-based authentication}: it relies on users having a physical device that can be connected to the authentication system and that generates/displays information known to the authentication system (e.g. system sends code to user’s phone number, or special-purpose device that generates one-time codes);
    \item \textbf{Attribute-based authentication}: it relies on a unique biometric attribute of the user (e.g. fingerprint, face).
 \end{itemize}
 Nowadays many systems now use multi-factor authentication, which is the combination of two or more of the types shown above (e.g. password, then code received on mobile phone).
-
-Knowledge-based authentication often employed for products delivered as
-cloud services.
-
-\note{Some services provide a \textbf{federated} authentication method e.g. \textit{"Login with Google"}, typically implemented using library \texttt{OAuth},
-   which rely on a trusted third party authenticator;}
-
-Weaknesses of password-based authentication
-\begin{itemize}
-   \item Users choose insecure passwords that are easy to remember
-   \item Users click on email link pointing to fake site that collects login and password → phishing attack
-   \item Users use the same password for several sites (if there is a security breach at one site …)
-   \item Users regularly forget passwords → password recovery mechanism needed → potential vulnerability if credentials have been stolen.
-\end{itemize}
-defenses
-\begin{itemize}
-   \item Force users to set strong passwords
-   \item Add personal questions
-\end{itemize}
 
 The level of authentication that you need depends on your product
 \begin{itemize}
@@ -456,27 +441,25 @@ The level of authentication that you need depends on your product
    \item Need to store confidential user information → use two-stage authentication
 \end{itemize}
 
-Implementing a secure and reliable authentication system is expensive and time-consuming
-\begin{itemize}
-   \item Even if using available toolkits and libraries (e.g. OAuth), there is still a lot of programming effort involved
-   \item Authentication often outsourced with a \textbf{federated identity system}
-\end{itemize}
-Sometimes websites offer the opportunity to “Login with Google” or “Login with Facebook.” These sites rely on what is called a “federated identity” approach, where an external service is used for authentication.
+Some services provide a \textbf{federated} authentication method e.g. \textit{"Login with Google"}, typically implemented using library \texttt{OAuth},
+which rely on a trusted third party authenticator;
+this techniques saves the developer from implementing a robust authentication system, which is costful and time consuming.\\
+The main \textbf{disadvantage} is that product provider must share user information with external services, but there are some advantages of this approach:
+\labelitemize{\textit{Advantages}}{
+   \begin{itemize}
+      \item user has single set of credentials, stored by a trusted identity service
+      \item product provider doesn’t have to maintain own database of passwords/secrets
+      \item product provider can get additional user information (if user agrees)
+   \end{itemize}
+}
+\note{
+   Federated identity verification is ok for products aimed at individual customers and for business products, connecting to business' own identity management system.
+}
 
-the advantages of this approach are:
-\begin{itemize}
-   \item user has single set of credentials, stored by a trusted identity service
-   \item product provider doesn’t have to maintain own database of passwords/secrets
-   \item product provider can get additional user information (if user agrees)
-\end{itemize}
-disadvantages: product provider must share user information with external services.
-
-Federated identity verification is ok for products aimed at individual customers and for business products, connecting to business' own identity management system.
-
-There are various ways to implement federated authentication, but most of the major companies that offer federated authentication services use the OAuth protocol. This standard authentication protocol has been designed to support distributed authentication and the return of authentication tokens to the calling system.
+There are various ways to implement federated authentication, but most of the major companies that offer federated authentication services use the \texttt{OAuth} protocol. This standard authentication protocol has been designed to support distributed authentication and the return of authentication tokens to the calling system.
 (bonus part from the book)
 
-However, OAuth tokens do not include information about the authenticated user. They only indicate that access should be granted. This means it is not possible to use OAuth authentication tokens to make decisions on user privileges (for example, what resources of the system they should have access to). To get around this problem, an authentication protocol called OpenID Connect has been developed that provides user information from the authenticating system. Most of the major authentication services now use this, except Facebook, which has developed its own protocol on top of OAuth.
+However, \texttt{OAuth} tokens do not include information about the authenticated user. They only indicate that access should be granted. This means it is not possible to use \texttt{OAuth} authentication tokens to make decisions on user privileges (for example, what resources of the system they should have access to). To get around this problem, an authentication protocol called \texttt{OpenID Connect} has been developed that provides user information from the authenticating system. Most of the major authentication services now use this, except Facebook, which has developed its own protocol on top of \texttt{OAuth}.
 
 \subsection{Authorization in software product}
 We can feature authorization by using an \textbf{access control policy} that reflects data protection rules that limit access to personal data. \textbf{Access Control Lists (ACLs)} are widely used to implement acces control policies. ACLs classify individuals into groups dramatically reducing ACLs size. Different groups can have different rights on different resources. Hierarchies of groups allow to assign rights to subgroups/individuals. ACLs are often realized by relying on ACL of underlying file or database system.
