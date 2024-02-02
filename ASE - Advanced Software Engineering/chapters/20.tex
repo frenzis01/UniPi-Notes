@@ -1,9 +1,9 @@
-\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+% \addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
 
 \chapter{Exam Questions}
 
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
-
+\setlist[itemize]{topsep=0em}
 
 \section{What is product-based software engineering?}
 
@@ -373,6 +373,12 @@ The CAP theorem says that "It is impossible for a web service to provide Consist
    \item \textbf{Availability}: each request eventually receives a response,
    \item \textbf{Partition-tolerance}: services can be partitioned into multiple groups, and network can delay/lose arbitrarily many messages among services.
 \end{itemize}
+\noindent Some practical approaches addressing this problem are:
+\begin{itemize}
+    \item Guarantee \textit{availability}, and provide best effort \textit{consistency} (general solution).
+    \item Guarantee strong \textit{consistency}, and provide best effort \textit{availability} (this solution is implemented when strong \textit{consistency} is required (e.g. finantial application)).
+    \item  Trade-off \textit{consistency} and \textit{availability} (e.g. tolerate one hour out of date but not one day out of date).
+\end{itemize}
 \subsection{Architectural smell}
 An architectural smell is a commonly used architectural decision that negatively impacts system lifecycle qualities. An architectural smell is a threat to one or more of these {---}microservices{---} design principles:
 \begin{itemize}
@@ -392,11 +398,11 @@ There are several ways to resolve a smell by refactoring a microservice. During 
    \caption{Smells and corresponding solutions}
 \end{figure}
 \note{\begin{itemize}
-   \item \textbf{Message broker}:  between services. This helps decouple services, improve fault tolerance, and enable event-driven architecture
+   \item \textbf{Message broker}:  "TaskQueue" between services. This helps decouple services, improve fault tolerance, and enable event-driven architecture.
    \item \textbf{Message router}:  route messages based on content, headers, or other criteria.
-   \item \textbf{Bulkhead}: pattern indicating t use separate resources (e.g., databases, thread pools) for different microservices, preventing failures in one area from affecting others.
+   \item \textbf{Bulkhead}: pattern indicating to use separate resources (e.g., databases, thread pools) for different microservices, preventing failures in one area from affecting others.
    \item \textbf{rightsize ESB}:
-   \\textit{"ESB"} stands for Enterprise Service Bus, i.e. an architectural pattern whereby a centralized software component performs integrations between applications.\\
+   \textit{"ESB"} stands for Enterprise Service Bus, i.e. an architectural pattern whereby a centralized software component performs integrations between applications.\\
    An ESB designed for a monolithic architecture may become a bottleneck, $\longrightarrow$  break down its components into more lightweight and focused communication mechanisms. Consider replacing the monolithic ESB with more decentralized and targeted communication patterns, such as direct HTTP/REST calls or message brokering.
 \end{itemize}}
 
@@ -433,13 +439,17 @@ We can feature authentication in a software product with one of this approaches:
    \item \textbf{Possession-based authentication}: it relies on users having a physical device that can be connected to the authentication system and that generates/displays information known to the authentication system (e.g. system sends code to user’s phone number, or special-purpose device that generates one-time codes);
    \item \textbf{Attribute-based authentication}: it relies on a unique biometric attribute of the user (e.g. fingerprint, face).
 \end{itemize}
-Nowadays many systems now use multi-factor authentication, which is the combination of two or more of the types shown above (e.g. password, then code received on mobile phone).
 
-The level of authentication that you need depends on your product
-\begin{itemize}
-   \item No need to store confidential user information → knowledge-based authentication enough
-   \item Need to store confidential user information → use two-stage authentication
-\end{itemize}
+\note{
+   Nowadays many systems now use multi-factor authentication, which is the combination of two or more of the types shown above (e.g. password, then code received on mobile phone).
+   
+   \parskip = \baselineskip
+   The level of authentication that you need depends on your product
+   \begin{itemize}
+      \item No need to store confidential user information → knowledge-based authentication enough
+      \item Need to store confidential user information → use two-stage authentication
+   \end{itemize}
+}
 
 Some services provide a \textbf{federated} authentication method e.g. \textit{"Login with Google"}, typically implemented using library \texttt{OAuth},
 which rely on a trusted third party authenticator;
@@ -461,6 +471,7 @@ There are various ways to implement federated authentication, but most of the ma
 
 However, \texttt{OAuth} tokens do not include information about the authenticated user. They only indicate that access should be granted. This means it is not possible to use \texttt{OAuth} authentication tokens to make decisions on user privileges (for example, what resources of the system they should have access to). To get around this problem, an authentication protocol called \texttt{OpenID Connect} has been developed that provides user information from the authenticating system. Most of the major authentication services now use this, except Facebook, which has developed its own protocol on top of \texttt{OAuth}.
 
+
 \subsection{Authorization in software product}
 We can feature authorization by using an \textbf{access control policy} that reflects data protection rules that limit access to personal data. \textbf{Access Control Lists (ACLs)} are widely used to implement acces control policies. ACLs classify individuals into groups dramatically reducing ACLs size. Different groups can have different rights on different resources. Hierarchies of groups allow to assign rights to subgroups/individuals. ACLs are often realized by relying on ACL of underlying file or database system.
 
@@ -469,13 +480,13 @@ We can feature authorization by using an \textbf{access control policy} that ref
 \subsection{Main challenges securing microservices}
 The main challenges of securing the microservices are the following:
 \begin{itemize}
-   \item Reduce risk by reducing the attack surface, because the broader the attack surface, the higher the risk;
-   \item Find the right balance between security and performance, because distributed security screening affects performance;
-   \item Bootstrapping trust among microservices needs automation. It involves setting up mechanisms and procedures to ensure that the different components (microservices) can securely communicate and interact with each other.
-   \item Tracing requests spanning multiple microservices;
-   \item Containers complicate credentials/policies handling;
-   \item Distribution makes sharing user context harder;
-   \item Security responsibilities distributed among different teams;
+   \item Reduce risk by reducing the \textbf{attack surface}, because the broader the attack surface, the higher the risk;
+   \item Find the right \textbf{balance} between security and performance, because distributed security screening affects performance;
+   \item Bootstrapping \textbf{trust} among microservices needs automation. It involves setting up mechanisms and procedures to ensure that the different components (microservices) can securely communicate and interact with each other.
+   \item \textbf{Tracing} requests spanning multiple microservices;
+   \item \textbf{Containers} complicate credentials/policies handling;
+   \item \textbf{Distribution} makes sharing user context harder;
+   \item Security \textbf{responsibilities} distributed among different teams;
 \end{itemize}
 
 \section{What is a parallel/exclusive/inclusive gateway in BPMN? What is a workflow net? What is a sound/live/bounded net?}
@@ -540,7 +551,8 @@ Functional testing is used to test the overall system's functionality to discove
 \begin{enumerate}
    \item \textbf{unit testing}: the aim of unit testing is to test program units in isolation. Tests should be designed to execute all of the code in a unit at least once. Individual code units are tested by the programmer as they are developed. A code unit is typically a function or class method but can also be a module that includes a small number of other functions.
    \item \textbf{feature testing}:
-         Code units are integrated to create features. Feature tests should test all aspects of a feature. All of the programmers who contribute code units to a feature should be involved in its testing. Feature testing aims at showing that functionalities are implemented as expected and meet the real needs of users. It uses interaction {---}between units{---} tests and usefulness tests. There must be a translation from scenarios/user stories to description of feature tests.
+         Code units are integrated to create features. Feature tests should test all aspects of a feature. All of the programmers who contribute code units to a feature should be involved in its testing. Feature testing aims at showing that functionalities are implemented as expected and meet the real needs of users. It uses \textit{interaction} {---}between units{---} tests and \textit{usefulness} tests.\\
+         There must be a translation from scenarios/user stories to description of feature tests.
    \item \textbf{system testing}: Code units are integrated to create a working (perhaps incomplete) version of a system.
          \begin{itemize}
             \item To discover unexpected/unwanted interactions between features
@@ -622,7 +634,7 @@ This is done using:
          \textbf{Containers} are the simplest way to create a replica of a production environment
 
          To deliver:
-         \begin{itemize}
+         \begin{itemize}[topsep=-\parskip,noitemsep]
             \item after initial integration testing, configure staged test environment (replica of production environment)
             \item run system acceptance tests (functionality, load, performance)
          \end{itemize}

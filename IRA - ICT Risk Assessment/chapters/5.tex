@@ -13,7 +13,7 @@ It is possible to consider where the vulnerability resides to provide some sort 
 \end{enumerate}
 
 About \textbf{tool vulnerabilities}, it is important to pay attention to \textbf{code reuse}.
-It must be considerend that reusing code may mean re-enable a vulnerability in such code.
+It must be considerend that reusing code may mean re-enabling a vulnerability in such code.
 Code reuse is ok, but only along with \textbf{code Hardening}, which means, removing instructions and libraries which are not needed.
 
 About the implementation, it is relevant to avoid missing controls on stuff like user input, function parameters, confused program-flow...
@@ -43,7 +43,7 @@ Considering the point of view of an \textbf{owner} who wants to search for vulne
 
 In order to search for vulnerabilities, an inventory of \textbf{all} the system modules is required.
 This is not a trivial task, but it is necessary. 
-\note{\textit{You cannot protect what you don't know.}}
+\note{\textit{"You cannot protect what you don't know."}}
 
 
 The opposite view is the \textbf{attacker}'s one.
@@ -62,8 +62,7 @@ given a range of IP addresses, it sends packets on each port and analyzes the re
 The \textit{owner} might want to run the tool on the entire network, while an attacker may target single (or a few) hosts at a time.
 
 
-\textit{Active fingerprinting} is noisy and might considerably slow down the network performance, which in some systems, e.g. \textit{ICS} (\textit{Industrial Control System}), must be avoided.\\
-(TODO - CAPIRE MEGLIO)\nl
+\textit{Active fingerprinting} is noisy and might considerably slow down the network performance, which in some systems, e.g. \textit{ICS} (\textit{Industrial Control System}), must be avoided.
 
 A \textbf{Passive fingerprinting} does not imply direct interaction with modules, but acts as a \textbf{sniffer}, analyzing packets the modules exchange in a transparent way.
 It exploits info in TCP and IP headers to fingerprint modules.
@@ -87,10 +86,10 @@ An attacker may configure message frequency and the number of nodes to scan, to 
 \subsection{More on scanning}
 An owner may combine:
 \begin{itemize}
-    \item External vulnerabilities scan: Try to access the sytem from outside, to understand what can an attacker discover before starting an intrusion.
-    \item Internal vulnerabilities scan: Aims to test and fingerprint devices and modules inside a network.
+    \item \textit{External vulnerabilities} scan: Try to access the sytem from outside, to understand what can an attacker discover before starting an intrusion.
+    \item \textit{Internal vulnerabilities} scan: Aims to test and fingerprint devices and modules inside a network.
     It might be ran by either owner or attacker after the initial access.
-    \item Intrusive scans: i.e. breach and simulation. These are the most stringent scans, but may be disruptive.
+    \item \textit{Intrusive scans}: i.e. breach and simulation. These are the most stringent scans, but may be disruptive.
 \end{itemize}
 
 Anyway note that it is crucial to \textbf{periodically scan} a system, due to its eventually mutable nature but way more importantly, because about 20 new vulnerabilities get published every day, 
@@ -100,7 +99,7 @@ along with new potential attackers and attack techniques.
 Vulnerabilities can be searched and assessed when designing the system.
 Modules can be standard (e.g. OS), and thus be affected by public vulnerabilities, or specialized modules, whose vulnerabilities are unknown.
 
-\section*{2 - Ottobre}
+% \section*{2 - Ottobre}
 
 \textit{Static Application Security Testing} (SAST) indicates tools of static analysis, which has advantages like scalability and easy patching,
 but is limited on other aspects, such as:
@@ -133,9 +132,14 @@ A fuzzing tool results from the composition of three modules:
 
 Before executing a fuzz test, a \textbf{tainting analysis} is perfomed.
 Its aim is to computer for each input the set of variables that could be affected by the input.
-Usually this is done along with a coloring analysis, i.e. \textit{TODO}.
+Usually this is done along with a coloring analysis, i.e. 
+\begin{itemize}
+    \item Pair a color with each input and with each variable that is assigned that input
+    \item If a variable X is assigned a value that depends upon the one of Y and if
+    Y has a color C then X is assigned the color C too
+\end{itemize}
 
-(...)
+In \textbf{Evolutionary} (\textit{feedback-based}) fuzzing the generation of fuzzed input is driven by the output of the fuzzing.
 
 \textbf{Black-box} fuzzing makes no assumptions on the implementation details of modules.
 It has grown a lot in popularity since it is faster and, more importantly, nowdays many modules, especially in IoT sector, do not provide open source code.
@@ -157,7 +161,3 @@ Such scanners work much more like to \textit{breach and simulation} then to regu
     \item XSS: inserting a malware on a website to be later downloaded and executed by the end user (\textit{cross site scripting})
     \item CSRF: forces an end user to perform unwanted actions on a website he is authenticated. (\textit{cross site request forgering}) 
 \end{itemize}
-
-\section*{3 - Ottobre}
-
-\section*{5 - Ottobre}

@@ -1,8 +1,5 @@
 \chapter{Patching}
-\section*{3 - Ottobre}
 
-\section*{5 - Ottobre}
-\section{Patching}
 Patching is \textbf{slow} and \textbf{expensive}.
 This is due to many factors:
 first of all there's the need to run \textbf{regression} tests, to check correctness of standard behaviour and of he bug to be corrected;
@@ -14,7 +11,7 @@ in general is advised to patch using an automated process exploiting patching ag
 \subsection{Common Vulnerability Scoring System}
 
 Note that, for instance, \textit{Industrial Control Systems} \textbf{cannot be patched}, because it would imply for the production to be \textit{suspended} and for the whole system to be \textit{certified} again.\\
-This forces an admin to decide whether \textit{"to-patch or not to-patch}.\\
+This forces an admin to decide whether \textit{"to-patch or not to-patch"}.\\
 About this matter a \textbf{Common Vulnerability Scoring System} (\textit{CVSS}) has been developed.
 Its aim is to consider the main features of a vulnerability and compute a score based upon them;
 in the initial idea such score should have allowed to define a score threshold to decide whether to patch or not.
@@ -31,9 +28,14 @@ The CVSS provides three \textit{metrics} to evaluate vulnerabilities risks:
     Such metric aims to provide an intuitive and clear vulnerability representation.
     \item \textbf{Temporal} the characteristics that change over time but not among user environments
     \item \textbf{Metric} the characteristics relevant and unique to a particular user environment
+    \begin{itemize}
+        \item \textit{Access Vector} (network/adjacent/local/physical)
+        \item \textit{Attack complexity}
+        \item Required \textit{privileges} and \textit{user interaction}
+        \item \textit{Scope}: whether the attack enables to reach resouces that are controlled by another entity, i.e. beyond the scope of the vulnerable component
+        \item \textit{Temporal Score}: whether the exploit exists, only a proof-of-concept exists, or if is unknown.
+    \end{itemize}
 \end{itemize}
-
-\note{...Specs on metrics...}
 
 \subsection{CVSS revisions}
 \textit{Dragos} in 2022 proposed a revision of scores in the CVSS considering the attacker point of view, claiming to have better ones,
@@ -44,7 +46,7 @@ it is a \textit{Neural-Network} based system which estimates the probability tha
 It is unclear on which data the AI has been trained, accuracy, tuning, etc...
 EPSS does not consider risk, context or whatsoever, it's just a probability estimator.
 
-\textbf{SSVC} \textit{Stakeholder-Specific Vulnerability Categorization} aims specifically to produce an \textbf{action}. 
+\textbf{SSVC} \textit{Stakeholder-Specific Vulnerability Categorization} aims specifically to produce an \textbf{action} for the defendant to perform regarding a vulnerability. 
 Imagine a decision tree 5 levels deep. An admin must make 5 "decisions"\footnote{In the sense of answering 5 questions} about a vulnerability, and then a leaf of the tree can be one among 4:
 \begin{enumerate}
     \item {\color{green}Track}

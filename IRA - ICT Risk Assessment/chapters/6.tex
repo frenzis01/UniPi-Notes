@@ -1,5 +1,5 @@
 \chapter{Attacks}
-\section*{3 - Ottobre}
+% \section*{3 - Ottobre}
 \section{Attacks and Vulnerabilities}
 Following the discovery of a vulnerability $v$ there's an analysis to evaluate which attacks are enabled by $v$.
 \textbf{Attacks} can be described as a set of attributes:
@@ -46,7 +46,7 @@ The actions need to implement an attack may be used to define a \textbf{taxonomy
 \section{Examining attacks}
 \subsection*{Replay attack}
 Suppose a user asks the bank to transfer some money to $Y$ account with an $M$ message.
-$Y$ may sniff and record $M$, and before the secure channel $S$ gets deleted, $Y$ sends $M$ several time.\\
+$Y$ may sniff and record $M$, and before the secure channel $S$ gets deleted, $Y$ sends $M$ several times.\\
 Note that the attack may work even if encryption is used.
 
 \subsection*{Man-in-the-middle}
@@ -83,4 +83,4 @@ Thus, attacking a low-level VM may grant access rights to higher ones.\\
 Besides, an attacker may insert a new VM in the hierarchy:
 this is called \textit{Blue Pill} attack, it's hard to discover and has a high impact.
 A new VM may return to higher VMs fake information on the status of the underlying machines and/or send malicious commands to the underlying machines.\\
-Stuxnet was a malware which used to send commands to uranium enrichment centrifuges to destroy them, and meanwhile told the operator that everything was going well.  
+\texttt{Stuxnet} was a malware which used to send commands to uranium enrichment centrifuges to destroy them, and meanwhile told the operator that everything was going well.  
