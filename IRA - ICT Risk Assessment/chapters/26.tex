@@ -59,7 +59,7 @@ a symbiote in memory,
 \begin{enumerate}
    \item it stops the execution process (symbiote=breakpoint),
    \item compares the current memory area checksum of the symbiote one,
-   \item Dopplganger considers a mismatch an evidence of a modification
+   \item Doppelganger considers a mismatch an evidence of a modification
    attack and it prevents the processor from running the code.
 \end{enumerate}
 
@@ -70,7 +70,7 @@ a symbiote in memory,
 \section{Secure Management of a Device}
 The manifacturer must flash bootstrap credentials onto the device,
 which allow it to reach its "home" bootstrap sever.
-Then it can ask such bootstrap server for a DM server address and the respective credentials,
+Then it can ask such bootstrap server for a \textit{DM server}\footnote{Device Management Server} address and the respective credentials,
 to allow the DM server to manage the device.
 
 \section{Encryption in IoT}
@@ -88,3 +88,5 @@ making them a perfect fit for the IoT device industry.
 
 Sadly, since NSA isn't completely trusted by many countries, \texttt{SIMON} and \texttt{SPECK} have not yet become an industry standard,
 even if they have been tested by both NSA and academical researchers since 2014.
+
+\note{\href{https://ieeexplore.ieee.org/document/9872666}{This article by Yustiarini et al.} even if may be considered not completely accurate, provides a comparison of \texttt{AES} vs \texttt{SIMON/SPECK} ciphers, with the latters outperforming the first.}

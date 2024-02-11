@@ -1,9 +1,10 @@
 \chapter{System Design View}
 
-
-\section{Thesis = Fuzzing Hardware}
-Baiardi is interested in \textit{Fuzzing Hardware},
-he would like to do a thesis on such topic.
+\note{
+   \subsection*{Thesis = Fuzzing Hardware}
+   Baiardi is interested in \textit{Fuzzing Hardware},
+   he would like to do a thesis on such topic.
+}
 
 \section{System View}
 \textbf{System view} is a perspective aiming to consider \textit{design rules} and consequentently \textit{vulnerabilities},
@@ -101,11 +102,11 @@ control in another one.
    }
 \end{center}
 
-\textbf{Simple} implies that less things can go wrong and when bugs occur, they are easier to find, understand and fix.
+"\textbf{Simple}" implies that less things can go wrong and when bugs occur, they are easier to find, understand and fix.
 Vulns are proportional to the complexity of a mechanism and the code implementing it.
 % = cyclomatic number to predict software bugs
-When needed, complexity can be achieved by \textbf{composition} of simpler modules, and might be preferreable to building a single more comprehensive yet complex module.\\
-\subsection{Designing Operating Systems}
+When needed, complexity can be achieved by \textbf{composition} of simpler modules, and might be preferreable to building a single more comprehensive yet complex module.
+\subsubsection{Designing Operating Systems}
 \textbf{OS Hardening} is an approach embodying this principle:
 it consists in removing useless OS functionalities for applications
 of interest.\\
@@ -124,7 +125,7 @@ With respect to kernel, there are two approaches which aim to reduce complexity:
    but helps the spreading of errors.
 \end{itemize}
 
-\subsection{Wrapping Up}
+\subsubsection{Wrapping Up}
 \begin{itemize}
    \color{darkgreen}
    \item \textbf{Simplify} the interface
@@ -145,8 +146,8 @@ With respect to kernel, there are two approaches which aim to reduce complexity:
 
 \subsection{Fail-safe and Intel \texttt{CSME}}
 \begin{center}
-   \textit{Base access decisions on permission rather than
-   exclusion}
+   \textit{\ul{Base access decisions on permission rather than
+   exclusion}}
 \end{center}
 Fail-safe related vulnerabilities are fascinating, and may be \textit{non-trivial} to abuse.
 Some aspects cannot be fixed without replacing the \textit{silicon}, but only \textit{mitigated}.
@@ -171,7 +172,7 @@ The \texttt{CSME} is digital janitor, working behind the scenes, below
 operating system, hypervisor, and firmware, performing lots of
 crucial low-level tasks.
 \begin{itemize}
-   \item Bringing up the computer, controlling power levels,
+   \item Bringing up the computer, controlling power levels
    \item Starting the main processor chips
    \item Verifying and booting motherboard firmware, and providing
    cryptographic functions.
@@ -194,7 +195,7 @@ Clearly this a strong \textbf{race condition}, but still possible.
 
 \subsection{Complete Mediation}
 \begin{center}
-   \textit{Every access to every object must be checked for authority}
+   \textit{\ul{Every access to every object must be checked for authority}}
 \end{center}
 
 This is the most crucial principle when considering performance,
@@ -209,7 +210,7 @@ to avoid the above mentioned unpleasant situation.
 Every uncontrolled operation that is a potential vulnerability as it may be invoked without proper rights.
 
 \subsubsection{Fail-safe integration}
-If \textbf{both} principles are \textbf{satisfied} the system starts in a secure state and,
+If \textbf{both} \textit{fail-safe} and \textit{complete mediation} principles are \textbf{satisfied} the system starts in a secure state and,
 provided that the security kernel is correct, further on only secure transictions are enabled.
 In other words, it is possible to prove security correctness using an induction approach to determine reachable states.\\
 \textit{Fail-safe} plays a key role since it makes valid the base case for the induction, it acts as a "starting point".
@@ -219,12 +220,12 @@ there is no base case for the induction.
 \subsection{Open Design}
 \begin{center}
    
-   The design should not be secret\\
+   \textit{The design should \textbf{not} be secret}\\
    or\\
-   Security should not depend on the secrecy of
-   the design or of the implementation
+   \textit{Security should \textbf{not} depend on the secrecy of
+   the design or of the implementation}
 \end{center}
-Popularly misunderstood as
+Popularly \ul{misunderstood} as
 \textit{"source code should be public"} or \textit{"open-source is safer than proprietary"}.
 
 A system \textbf{peer review} is fundamental to discover vulns in
@@ -261,8 +262,8 @@ each enabled by a proper access rights,
 both the complex and the simple ones.\\
 In this way we can check that the subject owns both
 \begin{enumerate}
-   \item The right of invoking the complex op (if it still exists)
-   \item The right of invoking each simple op
+   \item The right of invoking the complex $op$ (if it still exists)
+   \item The right of invoking each simple $op$
 \end{enumerate}
 
 \subsection{Least Privilege}
@@ -271,16 +272,19 @@ Every subject should operate using the least set of privileges
 necessary to complete its job
 or
 A subject should be given only those privileges it needs to complete
-its task and only for the time to complete it
+its task and only for the time to complete it.
+\note{According to prof. Baiardi, this is the most crucial principle to be kept in mind.
+Many intrusion have succeed due to the violation of this principle.}
 
-According to Baiardi, this is the most crucial principle to be kept in mind.
-Many intrusion have succeed due to the violation of this principle. 
 \labelitemize{\textit{Key Points}}{
    \begin{itemize}
       \item Owning a useless access right is a \textit{vulnerability}
       \item Rights \textit{granted as needed}, \textit{revoked} after being used
       \item The \texttt{AC} matrix is a \textit{highly dynamic} data structure
       \item Rights are \textit{assigned} and \textit{revoked} as the \textit{computation evolves}
+      \note{
+         \footnotesize
+         \item Implicitly,  \textit{Defence-in-depth}; see Fig. \ref{fig:leastprivilege_networkseg}}
    \end{itemize}
 }
 
@@ -318,7 +322,7 @@ rights when not needed and grant them again when needed, as described before.
 
 \nl
 Notice the strong relation between the two last principles
-because segmented networks force the reduction of protection
+because \ul{segmented networks} force the reduction of protection
 domain and separation of duties enables the implementation of
 the least privilege.
 
@@ -359,7 +363,7 @@ invoke the operation {---}{can access the service}{---};
 then process is \textbf{disconnected} from the channel when it can no
 longer invoke the operation.
 
-The adoption of dynamic channels \textit{reduces} the \textbf{overhead} to reject a request by implementing in the OS kernel a mechanism to ope and close ports.\\
+The adoption of dynamic channels \textit{reduces} the \textbf{overhead} to reject a request by implementing in the OS kernel a mechanism to open and close ports.\\
 The overhead \textit{on the server} can be further reduced by \textit{"spreding the news"}
 that a message from a given node to a given port of a receiver
 can be \textit{dropped} by routers or firewall;
@@ -442,7 +446,7 @@ better satisfy the separation of privilege and least
 privilege principles,
 since simpler operations allow to assign to each subject \textit{only} the rights it \textit{needs}, and it is entitled to.
 
-\subsubsection{Cover Channels}
+\subsubsection{Covert Channels}
 
 \textbf{Covert Channels} are a means of communication between two processes that do not explicitly provide interaction mechanisms.
 One process is a \textit{Trojan}, which transmits data covertly
@@ -481,7 +485,7 @@ Security mechanisms should allow ease of installation, configuration and use,
 and in general should not increase the complexity of
 accessing a resource: such complexity should be hidden.
 
-\subsection{Salter \& Schroeder considerations}
+\subsection{Saltzer \& Schroeder considerations}
 After defining the first 8 principles, \textit{S\&S} admit that
 \begin{center}
    Analysis of traditional physical security systems have suggested

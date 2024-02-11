@@ -3,7 +3,7 @@
 \section{Classification}
 Do understand how to protect data several security policies \textbf{classify data} into \textit{four }categories according the need for
 \textbf{confidentiality} and the resulting risk profile:
-\labelitemize{\textit{Security needs classification}}{
+\labelitemize{\textit{Security needs} classification}{
    \begin{enumerate}
       \item \textbf{Public Data}\\
       Data can be disclosed without restriction.
@@ -27,7 +27,7 @@ Do understand how to protect data several security policies \textbf{classify dat
 }
 
 Another classification is the one based on the availability needed for data:
-\labelitemize{Availability needs classification}{
+\labelitemize{\textit{Availability needs} classification}{
    \begin{enumerate}
       \item \textbf{Supportive Data}\\
       Data that is necessary for day-to-day operations, but
@@ -79,7 +79,7 @@ Having classified the data, we can discuss how to protect it:
 \begin{itemize}[left=0pt, align=left]
 
    \item \textbf{RAID 0: Striping}\\
-      Data is striped across multiple disks to improve performance, but there is no redundancy. If one disk fails, all data is lost.
+      Data is striped across multiple disks to improve performance, but there is no redundancy. If one disk fails, (all) data is lost.
 
    \item \textbf{RAID 1-4: Mirroring}\\
       Data is mirrored on two or more disks for redundancy. If one disk fails, the data is still available on the mirrored disk(s).
@@ -113,13 +113,13 @@ Having classified the data, we can discuss how to protect it:
       reversed with the right encryption key. Encryption makes data unreadable, protecting it from
       unauthorized access even if stolen.
       \item \textbf{Data erasure}\\
-      Eraruse limits liability by deleting data that is no longer needed.
+      Erasure limits liability by deleting data that is no longer needed.
       This can be done after data is processed and analyzed or periodically when data
       is no longer relevant.
-      Erasing unnecessary data is a \textit{requirement} of many compliance regulations, \footnote{such as GDPR}.
+      Erasing unnecessary data is a \textit{requirement} of many compliance regulations\footnote{such as GDPR}.
       \note{\textbf{Effectively} erasing data is not as trivial as it may seem}
       \item \textbf{Disaster recovery}\\
-      \textit{Disaster recovery} is A set of practices and technologies that determine how to
+      \textit{Disaster recovery} is a set of practices and technologies that determine how to
       deal with a disaster, such as a cyber attacks, natural disasters, or large-scale
       equipment failures.
       \textit{Disaster recovery} typically involves setting up a remote
@@ -241,9 +241,9 @@ A \textbf{testing infrastructure} monitoring a deployed system may be adopted bu
    \item Metadata about \textbf{geolocation} of the device, \textbf{security status} of the device
 \end{enumerate}
 
-For both \textit{MultiParty authorization} (\texttt{MPAuto}) and \textit{3-Factor Auth/Auto} (\texttt{3F}), 
+For both \textit{MultiParty authorization} (\texttt{MPAuto}) and \textit{3-Factor Auth/Auto} (\texttt{3FA}), 
 request authorization is confirmed by \textbf{another node},
-beloging to a subset of more robust and secure node with the role of confirming choices of less robust.\\
+beloging to a subset of more robust and secure node with the role of confirming choices of less robust ones.\\
 An interesting case is when the "more robust node" is a \textit{smartphone},
 which makes \texttt{3FA} very useful when a malware on a \textbf{workstation} tries to implement an attack,
 but useless against \textbf{insiders} because they can freely use their smartphones.
@@ -279,7 +279,7 @@ To sum up, let's discuss what we need to design a system according to the least 
 \end{enumerate}
 
 \section{Design for Robustness}
-We can integrate the features for \textbf{system robustness} (i.e. \textit{S\&S}) we have already seen with rules for understandability, for several reasons:
+We can \ul{integrate the} -discussed earlier- \ul{features for \textbf{system robustness}} (i.e. \textit{S\&S}) \ul{with rules for \textbf{understandability}}, for several reasons:
 \begin{enumerate}
    \item \textit{Decreases the likelihood of security vulnerabilities or resilience failures.}\\
    Any system change might introduce a new vulnerability or compromise the resilience.
@@ -313,13 +313,14 @@ that result in random crashes (\textit{"chaos engineering"}).
 \labelitemize{Invariant examples}{
    \begin{itemize}
       \item Only authenticated and authorized users can access the persistent data store.
-      \item ll operations on sensitive data in the persistent data store are recorded in an
+      \item All operations on sensitive data in the persistent data store are recorded in an
       audit log in accordance with the auditing policy
       \item The number of queries to a back-end scales with those the front end receives.
       \item The system can only receive RPCs from a set of designated systems and can only
       send RPCs to a set of designated systems.
    \end{itemize}
-   Natural language can be \textbf{formalized} by pairing a user with state variables denoting properties indicating whether the user has been authenticated and authorized.
+   
+   \hspace{1em} Natural language can be \textbf{formalized} by pairing a user with state variables denoting properties indicating whether the user has been authenticated and authorized.
 }
 
 \subsection{Analyzing Invariants and Understandability}
@@ -389,7 +390,7 @@ Recall that the \textbf{Trusted Computing Base} is the set of components (hardwa
 is \textbf{enforced}, or, conversely,
 whose \textit{failure} could cause a \textbf{breach} of the \underline{security policy}.
 
-The TCB must handle also misbehaving by component outside it.
+The TCB must handle also misbehaving by components outside it.
 The interface between the TCB and “everything else” is referred to as a
 \textbf{security boundary},
 allowing the TCB to treat anything that crosses the security boundary with
@@ -427,15 +428,15 @@ we can first consider which attributes should \textit{changes} {---}in a system{
    \item Tested
    \item Isolated
    \item Qualified
-   \item Staged i.e. check the benefit of the n-th change before applying the
-   n+1-th change
+   \item Staged i.e. check the benefit of the $n^{th}$ change before applying the
+   $n+1^{th}$ change
 \end{enumerate}
 
 Note that Zero-day are not the only critical vulnerabilities;
 important questions are:
 \begin{itemize}
-   \item "is this vulnerability currently exploited?"
-   \item "is this vulnerability in the attack surface or can it be reached from the surface = an attack chain from the surface?"
+   \item \textit{"is this vulnerability currently exploited?"}
+   \item \textit{"is this vulnerability in the attack surface or can it be reached from the surface $\longrightarrow$ i.e. an attack chain from the surface?"}
 \end{itemize}
 Based on the answers to the previous questions, a \textbf{patching policy} chosen;
 Generally patches are distributed using two distribution channels
@@ -446,7 +447,7 @@ Generally patches are distributed using two distribution channels
 
 \section{Design for Resilience}
 
-Each system layer should be designed to be \textbf{independently resilient}, implementing defense in depth among the
+Each system \ul{layer} should be designed to be \textbf{independently resilient}, implementing defense in depth among the
 layers.
 
 Compute the cost of prioritizing each feature, in order to understand which features are critical
@@ -493,8 +494,8 @@ security breach or traffic overload in one compartment should not jeopardize all
 To this extent, when designing for resilience, there should be \textbf{compartmental barriers} that constrain both attackers and accidental failures, creating \textbf{failure domains} and 
 allowing to better tailoring and automation of responses.
 
-The principle behind compartmentalization is to isolate system elements and enable and control the
-interactions essential for their intended purpose.
+\ul{The principle behind compartmentalization is to isolate system elements and enable and control the
+interactions essential for their intended purpose}.
 Compartmentalization can happen in two ways:
 \begin{enumerate}
    \item Parallel decomposition
@@ -517,10 +518,10 @@ Compartmentalization can happen in two ways:
 Usually this protected chips are used to perform the \textbf{hash} of software running on nodes,
 to ensure that the software has not been manipulated,
 allowing a system to \textbf{trust} another one.
-More generally , \textit{Remote Attestation Procedures} (\texttt{RAT}s) forsee one an \textit{Attester} peer which produces
+More generally, \textit{Remote Attestation Procedures} (\texttt{RAT}s) forsee an \textit{Attester} peer which produces
 believable information {--}\textit{Evidence}{--} about itself to enable a remote \textit{Challenger}\footnote{aka "Relying Party"} peer to decide whether the \textit{Attester} is a trustworthy peer
 or not;
-\texttt{RAT}S are facilitated by an additional vital party, the \textit{Verifier}.
+\texttt{RAT}s are facilitated by an additional vital party, the \textit{Verifier}.
 
 
 \subsection{AWS Nitro System}
@@ -611,7 +612,7 @@ $\Longrightarrow$ If ACLs failed to load, the assumed default ACL is \textit{"de
    "Emergency exit doors" need \textit{fail safe} rather than \textit{fail secure} ones.
 \end{center}
 
-Security-critical operations should not \textit{fail open} because an attacker would be able to degrade system security through simple DoS attacks(think of a firewall),
+Security-critical operations should not \textit{fail open} because an attacker would be able to degrade system security through simple DoS attacks (think of a firewall),
 but a controlled degradation of security-critical operations is possible.
 A lower-cost component could replace failing security controls apllying stronger (possibly simpler) controls, making attacks to the default security controls \textit{not} effective, enhancing \textbf{resilience}.
 \nl
@@ -638,7 +639,7 @@ these domains increase system \textbf{resilience} in ways other \textit{blast ra
 
 Some \textbf{bad data} may be present at the data source or within individual failure domains,
 forcing each failure domain's own data to be functionally independent from other domains.\\
-To address these problem there are two main approaches, one is to restrict how data updates enter a domain through \textbf{validation checks},
+To address these problems there are two main approaches, one is to restrict how data updates enter a domain through \textbf{validation checks},
 while the other is to enable systems to write the last known good data to disk to increase {--}long-term{--}resilience to losing access data, implementing \textit{defense in depth}.
 
 \subsection{Takeaway and Observations}
@@ -653,7 +654,7 @@ Let's sum up and consider the takeaway messages:
    single bug breaking all servers or corrupting all data.
    \item A failure domain may fail if even just one critical components fails, so using alternative components minimizes the probability that all domains fail due to a single flawed critical component.
    \item High capacity components serve users and absorb spikes in requests or resource consumption due to new features.
-   \item The risk of a failure cam be mitigated by maintaining high availability copies with a probably lower probability of outages because of fewer dependencies and a limited rate of
+   \item The risk of a failure can be mitigated by maintaining high availability copies with a probably lower probability of outages because of fewer dependencies and a limited rate of
    changes, e.g.
    \begin{enumerate}
       \item data \textbf{cached} on local storage rather than in a remote one
@@ -666,7 +667,7 @@ They \textit{neglect} \textbf{hardware faults},
 because they can easily fix by migrating software from a physical machine to another,
 making hardware failures not so critical.
 
-Amazon's approach instead is focuses also on physical aspects.
+Amazon's approach instead is focused also on physical aspects.
 
 A feature of almost any cloud application is the adoption of \textbf{multiple copies} of resources, each managed by a distinct server and with a \textbf{load balancer} that can also change the number of copies.
 

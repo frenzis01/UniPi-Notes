@@ -1,5 +1,5 @@
 \chapter{Countermeasures}
-\section*{20 - Ottobre}
+% \section*{20 - Ottobre}
 \section{Robust Programming}
 Ideally it indicates a programming style focused on minimizing vulnerabilities and the impact of any vulnerability still exploitable.
 
@@ -58,7 +58,7 @@ based on data provided by \textit{NIST}.
 The scoring formula to calculate a ranked order of weaknesses
 considers the \textbf{frequency} a CWE is the root cause of a vulnerability
 with the \textbf{severity} of its exploitation. Both frequency and severity are
-\textit{normalized} relative to the minimum and maximum values seen.
+\textit{normalized} relatively to the minimum and maximum values seen.
 \textbf{Frequency} is obtained by counting weaknesses occurences in the \textit{National Vulnerabilities Database} (NVD),
 while \textbf{severity} is the average computed on the Vulnerabilities score in the \textit{CVSS}\footnote{\textit{Common Vulnerabilities Scoring System}} a given weakness is mapped to.\\
 The \textbf{final weakness score} is computed by multiplying frequency and severity scores.
@@ -76,8 +76,8 @@ which somehow negatively affect how valid CWE's scores are:
    \end{enumerate}
    \item \textbf{Data bias}
    \item \begin{enumerate}
-      \item Only uses NVD data based on publicly-reported CVE Records
-      \item Many CVEs do not have sufficient details to assign a CWE
+      \item Only uses NVD data based on publicly-reported CVE\footnote{\textit{Common Vulnerabilities and Exposures}, a publicly released list of known computer security threats} Records
+      \item Many CVEs vulnerabilities do not have sufficient details to assign a CWE
       mapping, omitting them from ranking
       \item There may be an over-representation of certain programming
       languages, frameworks, or weakness-detection techniques
@@ -88,8 +88,8 @@ There also a few aspects which this scoring system cannot represent and should b
 First of all,
 weaknesses that are rarely discovered will not receive a high score,
 regardless of the consequence of an exploitation.
-Weaknesses that begin with a root cause of a mistake leading to
-other mistakes, create a chain relationship.
+Furthermore, weaknesses that begin with a root cause of a mistake leading to
+other mistakes, create a \ul{chain relationship}.
 As we have seen, chains of mistakes/vulnerabilities/attacks are a key point in security,
 but CWE's scoring system treats any $\langle V_1, V_2 \rangle \wedge V_1 \rightarrow V_2$ as if $V_1$ and $V_2$ were independent i.e. $V_1 \not\rightarrow V_2$.
 
@@ -99,7 +99,8 @@ A \textbf{firewall} is a module to filter all the messages exchanged by \textit{
 \textit{all and only} the messages travelling on the wires
 connecting the two networks cross the firewall and therefore get filtered.
 A firewall works correctly under the assumption that a network has been split (\textit{segmented}) into two \textbf{subnets}, 
-and that it \textit{correctly implements} a security policy, which should \textit{\textbf{not}} define the policy by itself.
+and that it \textit{correctly implements} a security policy.
+\ul{The policy must \textit{\textbf{not}} be defined by the firewall}.
 Firewalls are usually \textbf{classified} on the known and manageable \textbf{protocols} and on their \textbf{implementation}.
 
 \subsection{Segmenting}
@@ -120,10 +121,10 @@ Firewall may operate on different levels of the TCP/IP stack and in different wa
    \item Next-generation firewall (NGFW)
 \end{itemize} 
 
-At level 3 (IP Packet Inspection) the firewall can check only the header of IP packets,
-while at level 4 (circuit level firewall) ...\nl
+% At level 3 (IP Packet Inspection) the firewall can check only the header of IP packets,
+% while at level 4 (circuit level firewall) ...\nl
 
-TODO\nl
+% TODO\nl
 
 \subsection{Pros \& Cons analysis}
 
@@ -222,7 +223,7 @@ TODO\nl
    \vspace{\fill}
 \end{paracol}
 Most popular firewall as it acts as a gateway between computers and other assets
-within the firewall and resources beyond the enterprise
+within the firewall and resources beyond the enterprise\nl
 
 \subsubsection{Application-level}
 \begin{paracol}{2}
@@ -258,8 +259,6 @@ within the firewall and resources beyond the enterprise
    }
    \vspace{\fill}
 \end{paracol}
-NGFWs are an essential safeguard for organizations in heavily
-regulated industries, such as healthcare or finance
 
 \subsubsection{NGFW}
 \begin{paracol}{2}
@@ -295,9 +294,16 @@ NGFWs are an essential safeguard for organizations in heavily
 regulated industries, such as healthcare or finance
 
 \subsection*{Proxies}
-\textbf{Proxies} protect clients from attacks from an external server,
+(Forward) \textbf{Proxies} protect clients from attacks from an external server,
 while \textbf{reverse proxies} protect internal servers from attacks by external agents, 
 besides they can also act as a load balancer.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/proxies.png}
+   \caption{Forward vs Reverse proxies architecture}
+   \label{fig:proxies}
+\end{figure}
 
 \subsection{Wrapping Up}
 \textbf{Stateful inspection} is the most common technology:
@@ -439,7 +445,7 @@ Besides, each of them can be used in two modes:
 
 Each connection between nodes is protected using symmetric encryption while
 the endpoints of the VPN may own a pair of public/private keys;
-rhere is a protocol for the initial exchange that uses asymmetric encryption to
+there is a protocol for the initial exchange that uses asymmetric encryption to
 determine the shared key to create a secure connection between two nodes
 that is protected through symmetric encryption.
 In general symmetric encryption is better than asymmetric in terms of performance,
@@ -449,7 +455,7 @@ IPSEC defines 4 new protocols:
 \begin{enumerate}
    \item \textbf{AH} \textit{Authentication header }- mutual authentication and message integrity
    \item \textbf{ESP} \textit{Encapsulating Security Payload }- it guarantees confidentiality by protecting all the content that is exchanged
-   \item \textbf{IKE} \textit{Internet Key Exchange }- two partners reach a consensus on the key to be used to protect their communications and on how long such key is valid
+   \item \textbf{IKE} \textit{Internet Key Exchange }- two partners reach a consensus on the key to be used to protect their communications and on how long such key is valid\\
    4 messages needed.
    \item \textbf{ISAKMP} \textit{Internet Security Association and Key Management Protocol }- to agree on the \textit{“Security Association (SA)”} to be established and on its attributes.\\
    6 messages needed, or 3 in case of \textit{ISAKMP-AGGRESSIVE}, which is usually preferred.

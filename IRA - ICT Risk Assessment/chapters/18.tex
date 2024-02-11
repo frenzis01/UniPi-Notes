@@ -1,27 +1,25 @@
 \chapter{Automating Simple Intrusions}
 
-.There are several way to automate an intrusion that cover
+There are several ways to automate an intrusion that covers
 simple or sofisticated strategies,
-but currently there are no complete solutions for a targeted intrusion; only
-partial solutions which are handled by a human to convey a full intrusion.\nl
+but currently there are \textbf{no} complete solutions for a targeted intrusion, but only
+partial solutions which when handled by a human may convey a full intrusion.\nl
 
 One of the simplest strategy to automate an intrusion is a \textbf{worm} which spreads in Internet, attacks nodes
 and deploys some payload on each one,
 to allow further spreading.\\
-It is very simple since it does not require an attack infrastructure
-\footnote{sometimes it is used to build one instead}.
-Currently, worms one of the few cases that are fully automated.
+It is very simple since it does not require an attack infrastructure\footnote{sometimes it is used to build one instead}.
+Currently, worms are one of the few cases that are fully automated.
 
 \section{Worms}
 A worm is a kind of malware that replicates itself onto other nodes
 without human intervention.
 There are several kinds of worms, depending on the way the worms spreads itself:
 \begin{itemize}
-   \item 
    \item Email: hide in a message or in an attachment
    \item IRC
-   \item Istant Messages
-   \item File sharing: hide in file that a user download
+   \item Instant Messages
+   \item File sharing: hide in file that a user has downloaded
    \item Internet or network worm: attack a node through a wormable   vulnerability that affects the node
 \end{itemize}
 A vulnerability is \textit{wormable} if it enables a remote attack that enables remote code execution;
@@ -50,17 +48,17 @@ indirect call is made using the register.
 A \textit{fake} \textbf{payload} is uploaded if a sandbox is detected, while the \textit{real} \textbf{payload} is a tor client.
 
 \subsection{Domain Flux and DGA}
-Most botnets use the DNS protocol to localize their C\&C servers, and some
+Most botnets use the DNS protocol to localize their \texttt{C\&C} servers, and some
 use the \textbf{domain-flux} technique to evade blacklists.\\
 Such technique implies generating a large set of pseudo-random domain names (\texttt{PDN}s) automatically.
-The infected machine may contact the bot-master using a \textit{domain generation
-algorithm} (\textbf{DGA}) to produce a list of candidate C\&C domains.
+The infected machine may contact the \textit{bot-master}\footnote{The botnet's originator (aka \textit{"bot herder"}) controlling the botnet remotely. This is known as the \texttt{C\&C} server} using a \textit{domain generation
+algorithm} (\textbf{DGA}) to produce a list of candidate \texttt{C\&C} domains.
 Then the infected machine attempts to resolve these domain names by sending
 DNS queries until it obtains a successful answer from the malicious domain name reserved in advance by the bot-master.
 
 This strategy is an \textit{effective technique} to evade detection by a monitoring system.
-If one or more C\&C domain names are identified and taken down, the bots will
-relocate C\&C domain name via DNS queries to the next set of automatically
+If one or more \texttt{C\&C} domain names are identified and taken down, the bots will
+relocate \texttt{C\&C} domain name via DNS queries to the next set of automatically
 generated domains.
 \nl
 
@@ -164,6 +162,7 @@ a larger number of connections is preferred:
       \item a huge number of \textit{nodes} with a few connections
    \end{itemize}
 }
+
 This structure is \textbf{robust} against random node attacks and faults,
 since most nodes only have a few connections (hence low spreading capabilities),
 but is very \textbf{fragile} against targeted attacks towards highly connected hubs.

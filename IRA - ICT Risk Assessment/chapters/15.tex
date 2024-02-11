@@ -136,7 +136,7 @@ There is a dedicated snort plugin to detect such actions.
    \item \texttt{drop}: log and block the packet (not only a sniffer but also a filter)
    \item \texttt{reject}: block and log the packet and then send
    \begin{enumerate}
-      \item TCP reset if TCP
+      \item TCP \texttt{RST} reset if TCP
       \item ICMP port unreacheable if UDP
    \end{enumerate}
    \item \texttt{sdrop}: block the packet but do not log it
@@ -210,7 +210,7 @@ The \textbf{main tasks} of an ETDR include:
 
 Looks like gold, but in fact, there is \textbf{not} much \textbf{correlation} happening in the central node,
 and EDR agents are not so powerful defenders,
-even if more advanced than legacy antiviruses,
+but they are still more advanced than legacy antiviruses,
 since they monitor the ongoing operation, scan images as they are
 run or the node memory, covering a much larger number of
 attacks.
@@ -294,8 +294,8 @@ which is both a strength and a possible point-of-failure.
 \label{fig:chain_of_trust}
 \end{figure}
 
-Considering Fig \ref{fig:chain_of_trust} I want to be sure that A runs the code I want, so
+Considering Fig \ref{fig:chain_of_trust}, I want to be sure that A runs the code I want, so
 B computes the hash of the code and shows it to me.
-I trust B because C computes the hash code and shows it to me.
+I trust B because C computes its hash code and shows it to me.
 Clearly, we can endlessly chain multiple checks,
 but such chain is valid only if in the root there is \textit{hardware} which can be \textit{trusted}.

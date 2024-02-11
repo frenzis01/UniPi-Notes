@@ -48,7 +48,7 @@ Trustzone aims to partition hardware and software resources into two zones:
    \label{fig:TrustZone_architecture}
 \end{figure}
 
-\section{Truszone - System architecture}
+\section{TrustZone - System architecture}
 \subsection{System Bus}
 
 The most significant feature of the \textbf{extended bus} design is the addition of an
@@ -199,7 +199,7 @@ Each virtual processor runs a standalone operating system, and each world uses
 hardware interrupts to preempt the currently running world and acquire
 processor time.
 
-A tightly integrated design may uses a communications protocol that associates Secure world tasks with the Normal world thread that requested them. 
+A tightly integrated design may use a communications protocol that associates Secure world tasks with the Normal world thread that requested them. 
 This provides many benefits of a Symmetric Multi-Processing (SMP).
 
 In these designs a Secure world application could, for example, inherit the priority of the Normal world task that it is assisting. This would enable some form of soft real-time response for media applications.
@@ -216,7 +216,7 @@ In these designs a Secure world application could, for example, inherit the prio
 
 
 
-SGX introduces notion of enclave Hypervisor:
+SGX introduces notion of \textbf{enclave}:
 \begin{itemize}
    \item Isolated memory region for code and data
    \item New CPU instructions to manipulate enclaves
@@ -240,6 +240,7 @@ Application has ability to defend secrets
    \item Compromised software cannot steal application secrets
 \end{itemize}
 
-\subsection{Construction}
-\subsection{Measurement}
-\subsection{Attestation}
+% TODO Missing notes on such topics
+% \subsection{Construction}
+% \subsection{Measurement}
+% \subsection{Attestation}

@@ -1,8 +1,7 @@
 \chapter{Intrusion Analysis}
 
-Discover possible intrusions
 A critical point in improving the robustness of a system and resist to intrusions
-is to know all the intrusions of one or some threat agents aka attackers;
+is to \ul{know all the intrusions of one or some threat agents} aka attackers;
 the reason is that we are sure that our changes improve the robustness and
 resilience of a system only if we know all the intrusions.
 
@@ -10,7 +9,7 @@ resilience of a system only if we know all the intrusions.
    \color{gray}
    \textit{If we know just a \textbf{proper subset} $Sub$ of the possible intrusions $Int$ against a system
    $S$ and if we change $S$ to stop intrusion in $Sub$ only, then this may increase the
-   success probability of some intrusions against $S$ in $Int-Sub$}
+   success probability of some intrusions against $S$ in $Int / Sub$}
 \end{center}
 There is also a formal proof of the above \textit{theorem},
 which is a consequence of \textbf{Bayes theorem} and shows the holistic nature of
@@ -86,10 +85,10 @@ We can simplify the attack graph and represent intrusions with trees:
 \end{enumerate}
 
 \begin{itemize}
-   \item Each node that cannnot be mapped into an elementary attack should be then
+   \item Each node that cannot be mapped into an elementary attack should be then
    decomposed into a sequence of attack
    \item The leaves of the tree represents the sequence of attacks in an intrusion
-   \item We can have an AND/OR trees where a not leaf node may have AND or OR sons:
+   \item We can have an AND/OR trees where a not-leaf node may have AND or OR sons:
    \begin{itemize}
       \item AND = All the attacks that are sons of the node have to be executed
       \item OR = One attack sufficies
@@ -190,7 +189,7 @@ Instead of using the standard previously described attack graph, a more realisti
    \item \textbf{Emulate} the behavior of the various attackers
    \item Record each action in a graph
    \item Merge the graphs
-   \item Analyze the graph describing their intrusions (a posteriori graph)
+   \item Analyze the graph describing their intrusions (\textit{"a-posteriori graph"})
    \item Compute a \textbf{cut} of the graph
 \end{enumerate}
 
@@ -206,7 +205,7 @@ how they are handled by an attacker, which can be done in various ways:
 
 \subsection{Possible attacker's actions}
 \subsubsection{Persistence}
-An attacker aiming to steal information or to attack later is interested in persisting in a system, i.e. acquiring permanent access to a system.
+An attacker aiming to steal information or to attack later is interested in \textbf{persisting} in a system, i.e. acquiring permanent access to a system.
 \note{
    This can be achieved by, for instance, installing a backdoor or some trojan
 }
@@ -215,7 +214,7 @@ The modules the intrusion installs onto the system interact with the \textit{com
 and control} infrastructure the attacker has created before starting the
 intrusion.
 To avoid easy detection and blacklisting,
-some attackers store the address of the nodes of the \textbf{C2}\footnote{\textit{Command \& Control}} Infrastructure in a public blockchain.
+some attackers store the address of the nodes of the \textbf{C2}\footnote{\textit{Command \& Control}} infrastructure in a public blockchain.
 
 \subsubsection{Evasion}
 This class of actions aims to defeat IDS and EDR tools.
@@ -241,25 +240,29 @@ monitor activity inside the virtual instance.
 
 \subsection{Mitre att\&ck matrix}
 
-Mitre att\&ck matrix is {---}a public knowledge database{---} the de facto standard to describe possible behaviors of attackers,
+\texttt{Mitre att\&ck matrix} is {---}a public knowledge database{---} the de facto standard to describe possible behaviors of attackers,
 intended as
 the \textit{steps} of an intrusion but not the intrusion \textit{itself}.
 
 The matrix format slightly changes according to the type of attack discussed
-\begin{enumerate}
-   \item Pre-Attack
-   \item Enterprise
-   \item Cloud
-   \item ICS
-   \item Mobile
-\end{enumerate}
+\labelitemize{
+   \textit{Attack types}
+}{
+   \begin{enumerate}
+      \item Pre-Attack
+      \item Enterprise
+      \item Cloud
+      \item ICS
+      \item Mobile
+   \end{enumerate}
+}
 
 
 Provides a hierarchical definition of behaviours:
 \begin{enumerate}
    \item \textbf{Tactics}: \textit{\color{gray}{--}why{--}}\\
    short term goal in an intrusion 
-   \item \textbf{Technques}:  \textit{\color{gray}{--}how{--}}\\
+   \item \textbf{Techniques}:  \textit{\color{gray}{--}how{--}}\\
    how the short term goal is reached 
    \item \textbf{Procedure}:  \textit{\color{gray}{--}more detailed how{--}}\\
    detailed implementation of a technique 
@@ -267,7 +270,7 @@ Provides a hierarchical definition of behaviours:
 
 
 \labelitemize{
-   \textit{Enterprise (?) Tactics}
+   \textit{Enterprise Tactics}
 }{
 \begin{enumerate}
    \item \textbf{Reconnaissance}:
@@ -313,7 +316,6 @@ Provides a hierarchical definition of behaviours:
 When considering attacks to ICSs,
 there are two other tactics that are \textit{not} present in \textit{Enterprise}:
 \begin{enumerate}
-   \item 
    \item \textbf{Inhibit Response Function}:
    techniques that adversaries use to hinder the
    safeguards put in place for processes and products.
@@ -341,18 +343,16 @@ Instead, a typical way of attacking and exfiltration,
 is for attackers to have a cloud account and transfer information from other accounts to theirs,
 resulting in stolen information.
 
-\subsection{Exam Project Ideas}
-Looks for slides of $7^{th}$ \textit{November}.
-Slides $10...14$ provide a list of more specific examples of several tactics.
+% \subsection{Exam Project Ideas}
+% Looks for slides of $7^{th}$ \textit{November}.
+% Slides $10...14$ provide a list of more specific examples of several tactics.
 
-\section{9 Novembre}
-Didn't take any notes today.
 \section{Caldera}
 \textbf{Caldera} is an open-source framework developed by MITRE for the
 creation of automated adversary emulation plans.
 It is designed to help security teams assess their
-organization’s defences by simulating real-world attacks
-using a techniques and tactics mapped to the MITRE ATT\&CK framework.
+organization’s defences by \ul{simulating real-world attacks}
+using techniques and tactics mapped to the \texttt{MITRE ATT\&CK} framework.
 This automated solution includes a graphical user interface
 (\texttt{GUI}) that allows users to easily create and manage custom
 attack plans, as well as a range of plugins and modules for
@@ -388,7 +388,7 @@ it is designed to enable red teams to quickly and
 easily create and manage C2 infrastructure, allowing them to
 more effectively simulate the actions of a real-world adversary.
 
-Like \textit{Caldera}, \textit{Cascade} is based on the \textit{MITRE ATT\&CK}
+Like \textit{Caldera}, \textit{Cascade} is based on the \texttt{MITRE ATT\&CK}
 framework, and it is designed to support a wide range of different attack techniques and tactics by being highly modular.
 It can be integrated with other tools and platforms to provide a
 comprehensive adversary emulation solution for red teams and security practitioners.

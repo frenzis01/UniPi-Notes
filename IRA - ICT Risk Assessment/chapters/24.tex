@@ -26,10 +26,13 @@ hardware and the outside world.
 For simpler resource-constrained devices the firmware may be \textbf{embedded}.
 More advanced devises instead nowdays have an entire \textbf{OS} as firmware, providing an
 \textit{abstraction layer} between the hardware and other software on the device.
-\note{A popular OS choice is \href{https://busybox.net/}{\textbf{Busybox}}}
+
+A popular choice is \href{https://busybox.net/}{\textbf{Busybox}}, which however is not a proper OS, but rather a small executable wrapping some key unix utilities, which for Desktop distributions are commonly found in the \texttt{coreutils} package.
+
+\note{A whole OS is instead \href{https://github.com/contiki-ng/contiki-ng/wiki}{Contiki-NG}, an OS specifically designed for IoT constrained devices which, even if providing multitasking features and a -simple- GUI, needs only $\thicksim 10$KB RAM and its code footprint is about $\thicksim 100$KB}
 
 \section{IoT Attacks}
-\textbf{Security} is usually an \textit{\underline{afterthought}} in IoT because it is difficult to create a cheap reliable, resource-constrained device that can connect to a wireless network, having very little power consumption.
+\textbf{Security} is usually an \textit{\underline{afterthought}} in IoT because it is difficult to create a cheap, reliable, resource-constrained device that can connect to a wireless network, having \texttt{very little power consumption}.
 
 \labelitemize{Attack Vectors}{
 \begin{enumerate}
@@ -73,7 +76,7 @@ More advanced devises instead nowdays have an entire \textbf{OS} as firmware, pr
 \subsection{Shodan}
 \href{https://www.shodan.io/}{\textbf{Shodan}} is a \textit{search engine} for finding specific devices, and
 device types, that exist online.\\
-The most popular searches are for things like webcam, linksys, cisco, netgear, SCADA, Default password.
+The most popular searches are for things like webcam, linksys, cisco, netgear, SCADA, default passwords.
 
 It uses a specialized scanner to \underline{scan the \textbf{entire Internet}} and parse the banners that are returned by various devices.
 \note{
@@ -161,18 +164,21 @@ most embedded systems include:
 
 \section{Security in IoT}
 Bruce Schneier thinks that
-security even in a world where \textit{everything is connected}\footnote{(\st{connected car} $\longrightarrow$ \textit{computer with four wheels}, \st{connected refrigerator} $\longrightarrow$ \textit{computer that keeps things cold})} can be addressed as if there's \textit{"nothing new"} from standard ICT security processes.
+security even in a world where \textit{everything is connected}\footnote{(\st{connected car} $\longrightarrow$ \textit{computer with four wheels}, \st{connected refrigerator} $\longrightarrow$ \textit{computer that keeps things cold})} can be addressed as if there's \textit{"nothing new"} from standard ICT security processes.\\
+Let's break down its point of view:
 
-1. Most software is poorly written
-2. Internet was never been designed to be secure
-3. Extensibility is a problem = A computer is an universal Turing
-machine = If it is smart is vulnerable
-4. Complexity helps the attacker
-5. New vulnerabilities to interconnection
-6. Attacks always get faster, smarter and cheaper
+Schneier first consider some (common) issues concerning security, which are particularly relevant for the IoT world.
+\begin{enumerate}
+   \item Most software is poorly written
+   \item Internet was never been designed to be secure
+   \item Extensibility is a problem, because a computer is a universal Turing machine $\Longrightarrow$ \textit{\ul{if it is smart is vulnerable}}
+   \item Complexity helps the attacker
+   \item New vulnerabilities to interconnection
+   \item Attacks always get faster, smarter and cheaper
+\end{enumerate}
 
 
-What changes does IoT world introduce?
+But what \textbf{changes} does IoT world introduce?
 \begin{enumerate}
    \item \textbf{Automation}, \textbf{autonomy}, \textbf{physical} agents
    \item \textbf{Patching} becomes much more complex or impossible and
@@ -194,7 +200,7 @@ in fact most "old" vulnerabilities can strike also IoT devices, but there are th
 \end{enumerate}
 \nl
 
-There are two approaches to address the security of an IoT device:
+There are two kind of attacks regarding the security of an IoT device:
 \begin{enumerate}
    \item \textit{Attack the device}\\
    Any smart device increases your system attack surface and its connection
@@ -210,7 +216,7 @@ There are two approaches to address the security of an IoT device:
 
 In general, note that IoT includes a huge number of devices with code that cannot be
 easily accessed, tested or patched.\\
-According to \underline{\color{red}\textbf{Baiardi}}, \textbf{fuzzing} and \textbf{reverse engineering} will become more and more important to
+According to prof. \textbf{Baiardi}, \textbf{fuzzing} and \textbf{reverse engineering} will become more and more important to
 analyze devices and preserve \textit{confidentiality} and \textit{integrity}.
 
 \section{New perspective on Attacks}
@@ -224,12 +230,12 @@ An interesting example are attacks against a voice interface using frequency tha
    Cortana and Alexa.
 }
 
-Countermeasures can either be hardware, e.g.microphone enhancements to drop frequencies above 20Khz, or software, e.g. classifying the signal to discover modulated voice.
+Countermeasures can either be hardware ---e.g. microphone enhancements to drop frequencies above 20Khz---, or software, ---e.g. classifying the signal to discover modulated voice---.
 
-In late 2016 the \textit{Mirai botnet} launched $~15k$ DDoS attacks, exploiting as nodes mainly embedded and IoT devices which exposed \texttt{SSH}/\texttt{Telnet} services;
+In late 2016 the \textit{Mirai botnet} launched $\sim 15k$ DDoS attacks, exploiting as nodes mainly embedded and IoT devices which exposed \texttt{SSH}/\texttt{Telnet} services;
 the attack infrastructure attempted to login to such devices\footnote{IP cameras, DVRs, consumer routers} using a set of \underline{\textbf{46}} hardcoded passwords, some traceable to a vendor,
 and then wait for commands from a C2 server.\\
-A couple of interesting aspects of Mirai are the hardcoded list of IPs{--}composed of adddresses belonging to \textit{US Postal Service}, \textit{Dept. of Defense}, \texttt{IANA}, \textit{HP} and \textit{General Electric}{--}which bots avoided when performing scans,
+A couple of interesting aspects of Mirai are the hardcoded list of IPs{--}composed of addresses belonging to \textit{US Postal Service}, \textit{Dept. of Defense}, \texttt{IANA}, \textit{HP} and \textit{General Electric}{--}which bots avoided when performing scans,
 and its \textit{"territorial"} nature:
 bots included scripts whose purpose was to eradicate other worms an trojans as well as prohibiting remote connections to the hijacked device.
 \nl
@@ -290,10 +296,10 @@ There are some attacks in booting called "\textit{Time of Check} to \textit{Time
 
 Lastly, any \textit{failure} in the boot sequence should \textbf{fail gracefully} in a safe and secure state.
 
-\subsection{LogoFAIL}
+\subsubsection{LogoFAIL}
 A LogoFAIL attack consists three steps:
 \begin{enumerate}
-   \item The attacker prepares a malicious logo image and stores it into the ESP or inside an unsigned section of a firmware update, and it restarts the device.\\
+   \item The attacker prepares a malicious logo image and stores it into the ESP\footnote{EFI System Partition} or inside an unsigned section of a firmware update, and it restarts the device.\\
    \textit{No phyisical} access is required for this step.
    It can be performed by exploiting unpatched vulnerabilities in browsers, media-players, etc. or by gaining brief access to a device while it is unlocked.   
    \item During the boot process, vulnerable firmware will load the malicious logo from the ESP and parse it with a vulnerable image parser,
@@ -326,7 +332,7 @@ The results raised a vexing question:
    the underlying bugs?}
 \end{center}
 
-\note{\textit{Fuzzing} is \underline{fundamental} according to Baiardi}
+\note{\textit{Fuzzing} is \underline{fundamental} according to prof. Baiardi}
 
 \subsection{Secure OS}
 The OS should include only the components (libraries, modules, packages, etc.) required to provide the functions of the IoT device.
@@ -338,6 +344,7 @@ The \textit{Least Privilege Principle} should be strictly applied to all directo
 
 \subsection{Credential Management}
 Every device should be uniquely \textbf{identifiable} by means of a factory-set \textit{tamper-resistant hardware identifier}.
+\note{Recall \textit{ZeroTrust}, where authentication depends also on the device itself}
 
 Only non-trivial \textbf{passwords} should be allowed, and they should be managed and stored properly using \textit{industry standard} \textbf{encryption} mechanisms.
 

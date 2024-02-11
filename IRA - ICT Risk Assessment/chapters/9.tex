@@ -28,16 +28,16 @@ the process implementing LSA), but with an access token which represents it.
 Aside from access tokens, there is another secury level in Windows:
 security \textit{principals} and securable \textit{objects} are assigned \textbf{integrity} levels that determine their levels of protection or
 access.
-MIC is a mechanism for controlling access to securable objects in addition to discretionary access control and evaluates "integrity" access before evaluating access checks via an object's DACL\footnote{D? Access Control List}.
+MIC is a mechanism for controlling access to securable objects in addition to discretionary access control and evaluates "integrity" access before evaluating access checks via an object's DACL\footnote{Discretionary Access Control List}.
 For instance, a principal with a low integrity level cannot write to an object with a medium
 integrity level, even if the DACL of the object allows write access to the principal.
 
-\subsection{Access Control List(s)}
+\subsection{(D/S) Access Control List(s)}
 \textit{ACLs} are the lists in a \textbf{security descriptor} with information on actions
 users, groups, or objects can perform on the file or folder to which the descriptor is applied.\\
 A security descriptor may contain different two types of lists:
 \begin{enumerate}
-   \item \textbf{DACLs} Discrestionary ACL -
+   \item \textbf{DACLs} Discretionary ACL -
    the list of SIDS for the users, groups, and computer objects allowed or denied access to perform actions on files or folders
    \item \textbf{SACLs} System ACL -
    the list of SIDS for the users, groups, and computer objects for which successful or failed auditing events are logged
@@ -47,7 +47,7 @@ A security descriptor may contain different two types of lists:
 
 \subsection{Sandboxing Tokens}
 Applications e.g. browsers, have historically been victims of attacks.
-An attacker who successfully exploits a browser,
+If an attacker successfully exploits a browser,
 then the attacker's \textit{payload} shares the same \textit{access token} of the browser,
 allowing it to perform any action the browser is allowed to do.
 
@@ -62,7 +62,7 @@ Thus, the user needs to \textbf{re-authenticate} and establish a new session on 
 
 In order to establish a new logon session, the \textbf{SMB} server has to authenticate the client over the network.
 In Windows domains, network authentication is
-performed via \textbf{Kerberos} or the \textbf{NTLM} challenge-response protocol.
+performed via \textbf{Kerberos} (Sec. \ref{subsec:kerberos}) or the \textbf{NTLM} challenge-response protocol.
 Regardless of the auth method, network logins do not cache credentials and this token cannot be used to
 authenticate to another remote host. This is the \textit{"double hop"} problem.
 
@@ -83,7 +83,7 @@ In this way the user's security access token in the application-specific data fi
 \section{Impersonation/Delegation}
 In multi-threaded applications, complex race conditions may arise if different threads start enabling/disabling different privileges or modifying default token DACLs.
 By default all threads will inherit the same security context as their process’s primary token.
-However, impersonation allows a thread to switch to a different security context.
+However, \textit{impersonation} allows a thread to switch to a different security context.
 Impersonation enables threads to have their own local copy of a token: an \textbf{impersonational token}.
 Such process allows, for instance, an SMB server to handle each incoming request in a separate thread and \textit{impersonate}
 the access token representing the \textit{remote client}.

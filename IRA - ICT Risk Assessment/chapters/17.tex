@@ -37,11 +37,11 @@ Following an intrusion {---}theoretically{---} two things may happen:
    to their previous state while minimizing data loss.
    It should remove
    malicious content and ensure the affected systems are completely
-   clean but preserve evidence for later prosecution
+   clean but preserve evidence for later prosecution.
    \item \textbf{Recovery}
    
    Testing, monitoring, and validating systems before
-   putting them back into production to assure they are not re-infected or compromised (backup fundamentals, 3-2-1 rule )
+   putting them back into production to assure they are not re-infected or compromised (backup fundamentals, 3-2-1 rule).
    \item \textbf{Lessons Learned}
    
    It gives organizations the opportunity to update
@@ -114,6 +114,8 @@ and they still are a key point to achieve \textit{resilience}\footnote{i.e. put 
 there is still the problem that the stolen data may contain sensitive or personal information,
 which should not be made public.
 
+A solution is to use immutable storage memory or \texttt{WORM} \textit{Write Once Read Many} memories.
+
 \subsection{Security vs Debugging logging}
 When logging for \textbf{security} defending the \textbf{integrity} of the log
 from malicious manipulation is \textit{fundamental}.
@@ -122,7 +124,7 @@ If the integrity of a log for security is not assured, then the log is useless.
 If logging is performed for debugging {---} or more generally to improve performance, correctness, etc.{---} instead,
 integrity is not so crucial. 
 
-The difference between a sequence of blocks and a blockchain is a good example of the difference between collect for debugging and collect for security.
+The difference between a sequence of blocks and a blockchain is a good example of the difference between collecting for debugging and collecting for security.
 
 \section{Attribution}
 \textbf{Attribution}, i.e. tracking and identifying the perpetrator of an intrusion results in a

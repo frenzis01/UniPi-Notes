@@ -43,7 +43,7 @@ A \textit{Slow Denial of Service}, instead, exploits collisions in a hash table 
 
 \section{Security Partial Views}
 \subsection{Encryption}
-According to Baiardi, \textbf{Encryption} \textit{simplifies} some \textbf{security} problems, but does \textbf{not} \textit{solve} them.
+According to prof. Baiardi, \textbf{Encryption} \textit{simplifies} some \textbf{security} problems, but does \textbf{not} \textit{solve} them.
 Encryption guarantees \textit{Confidentiality}, and sometimes \textit{Integrity}, but \textbf{not} \textit{Availability}.
 Some claim that encryption solves security, but it must be taken into account that the operating system of a module may not provide a way to protect the encryption keys properly.
 
@@ -63,3 +63,11 @@ To provide authentication three classes are considered, and the well known two-f
     \item \textit{Something you \textbf{have}}: biometric features, i.e. fingerprint, voice, retina
 \end{enumerate}
 
+\subsection{Attack infrastructure}
+Any serious attacker does not launch attacks from its own
+system, but they usually build first a botnet to be used as a stepping
+stone to attack other system.
+A \textbf{botnet} is an overlay network that includes resources of other
+system that the attacker has previously attacked.
+
+\ul{\textbf{Offensive security} or \textbf{defence forward} consists in tearing down the attacker's botnet.}
