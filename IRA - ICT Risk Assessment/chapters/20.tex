@@ -550,3 +550,49 @@ collect for debugging and collect for security
 Remember that tools do not solve security problems.
 Buying a firewall doens't make a network secure, and it's not the key point.
 The real problem is to understand and define the policy rules to be applied.
+
+\section{Google System Design Strategies}
+
+\subsection{Least Privilege}
+Users should have the minimum amount of access to accomplish a task,
+regardless of whether the access is performed by humans or systems.\\
+Besides, since accounts may be compromised, systems should limit user access to the data and services required to do the \textbf{task at hand}.
+
+These restrictions are most effective when you add them at the beginning of the development lifecycle,
+during the design phase of new features
+\note{
+   security by design, as required by GDPR
+}
+Unnecessary privileges lead to a growing surface area for possible mistakes, bugs, or compromises, i.e. creating security and reliability risks that are expensive to contain or minimize in a running system.
+
+In other terms:
+\begin{itemize}
+   \item it is better to reduce the attack surface in the \textbf{design} because this
+   reduces the cost more than an update after deploying a system.
+   \item the cost of security mechanisms depends upon the time when they
+   are adopted, i.e. \textit{the later the more expensive}
+\end{itemize}
+
+
+\labelitemize{
+   \textit{You should}
+}{
+   \begin{itemize}
+      \item limit the cost of controls by prioritizing what to protect.
+      Not all data or actions are created equal, and the makeup of your access may differ dramatically depending on the nature of your system.
+      \item not protect all access to the same degree
+      \item apply the most appropriate controls and avoid an \textit{"all-or-nothing"} mentality
+   \end{itemize}
+}
+
+\labelitemize{
+   \textit{You need}
+}{
+   \begin{itemize}
+      \item to classify access based on impact, security risk, and/or criticality.
+      \item to handle access to different types of data (public versus company
+      versus user versus cryptographic secrets) differently
+      \item to treat administrative APIs that can delete data differently than
+      service-specific read APIs.
+   \end{itemize}
+}
