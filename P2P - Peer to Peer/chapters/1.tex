@@ -1,3 +1,109 @@
 \chapter{Introduction}
 
-Client-server architectures
+Opposed to Client-server architectures where there are end-hosts and dedicated-hosts (servers),
+in P2P Systems there only end-nodes which directly communicate with each other;
+they have an ``on/off" behaviour, and they handle \textbf{churn}\footnote{\textit{``churn"} will be a recurring term. In italian it means ``rimescolare'' }.
+However, in P2P systems servers are still needed, but only as \textit{bootstrap servers}, typically allowing for new nodes to easily join the P2P network.
+
+Peers' connection in P2P is called \textit{transient}, meaning that connections and disconnections to the network are very frequent.\\
+Notice that since each time a peers connects to the P2P network it may have a different IP address, resources cannot be located using IP, but a different method at application layer must be used.
+
+\begin{definition} [P2P System]
+   A peer to peer system is a set of autonomous entities (peers) able to auto-organize and sharing a set of distributed resources in a computer network.\\
+   The system exploits such resources to give a service in a complete or partial
+   decentralized way
+\end{definition}
+
+\begin{definition}[P2P System - Alternative definition]
+   A P2P system is a distributed system defined by a set on nodes interconnected
+   able to auto-organize and to build different topologies with the goal of sharing
+   resources like CPU cycles, memory, bandwidth. The system is able to adapt to
+   a continous churn of the nodes maintaining connectivity and reasonable
+   performances without a centralized entity (like a server)
+\end{definition}
+
+\section{Blockchain concepts}
+\begin{definition}[Blockchain]
+\begin{itemize}
+   \item a write-only, decentralized, state machine that is maintained by untrusted
+   actors, secured by economic incentive
+   \item cannot delete data
+   \item cannot be shut down or censored
+   \item supports defined operations agreed upon by participants
+   \item participants may not know each other (public)
+   \item in actors best interest is to play by the rules
+\end{itemize}
+\end{definition}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/blockchain_process.png}
+   \caption{Blockchain process}
+   \label{fig:blockchain_process}
+\end{figure}
+
+\textit{Bitcoin} were developed as an alternative way to exchange money which wouldn't need intermediaries such as banks.\\
+Today, \textit{Ethereum} is becoming more and more popular.\\
+\textit{NFT}\footnote{Non Fungible Tokens} allow to establish the owner of a digital artwork, by generating a token using a blockchain.
+
+\subsection{TriLemma}
+The Blockchain \textbf{trilemma} states that a blockchain \textbf{cannot} simultaneously provide \textit{Decentralization}, \textit{Security} and \textit{Scalability}.
+
+\section{P2P Systems}
+\subsection{Semi-Decentralized systems}
+An example is \textbf{Napster}, released in 2001.
+Napster used servers only to allow users to locate peers which could provide the desired file, delegating the actual file exchange to peers, allowing for a very few server needed.
+
+\note{For the first time users are called \textit{peers}, and the systems implemented in this way \textit{peer-to-peer systems}}
+
+Napster had many strengths common to many P2P systems, from whose emerges the ability of peers to act both as server and a client, but also suffered from weaknesses derived from its centralization, at least for ``node discovery".
+Napster centralized server represents a design bottleneck, and also made it target of legal attacks.
+
+\subsection{Fully decentralized systems}
+\textbf{Gnutella} is similar to Napster, but here no centralized server exists.
+Peers establish \textit{non-transient} direct connections to search files, not to actually transfer them.
+
+\labelitemize{\color{darkred}\textit{Cons}}{\color{darkred}\begin{enumerate}
+   \item High network traffic
+   \item No structured search
+   \item Free-riding
+\end{enumerate}}
+
+
+\section{P2P Overlay network}
+In P2P systems there is an overlay network at application level operating on top of the underlying (IP) network.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/P2Poverlay.png}
+   \caption{P2P Overlay networks}
+   \label{fig:P2Poverlay}
+\end{figure}
+
+A P2P \textbf{protocol} ---defined over the P2P overlay--- defines the set of messages that the peers exchange.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/overlayClassification.png}
+   \caption{P2P Overlay Network classification}
+   \label{fig:overlayClassification}
+\end{figure}
+
+\subsection{Unstructured overlay}
+\begin{paracol}{2}
+   \colfill
+   The two key issues here are:
+   \begin{itemize}
+   \item
+   how to \textbf{bootstrap} on the network?
+   \item
+   how to \textbf{find content} without a central index?
+\end{itemize}
+\colfill
+\switchcolumn
+Possible lookup algorithms are the following, but they all are not very scalable, and are costful in terms of performance:
+\begin{itemize}
+   \item Flooding
+   \item Expanding ring
+   \item Random walk
+\end{itemize}
+\end{paracol}
+\note{\texttt{Gnutella}, \texttt{BitTorrent}, \texttt{BitCoin}}
