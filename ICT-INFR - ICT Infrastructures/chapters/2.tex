@@ -1,0 +1,38 @@
+\chapter{Datacenter}
+10 years ago datacenters were no more than a room with some computers, air conditioners and some plugs to power up the devices.
+Later on, customers started asking server vendors to include in the servers utilities to allow an \textit{automated datacenter management}.
+Thus the trend moved towards \textbf{\ul{Software Defined Datacenter}}, which currently is the only possible way to deploy a Datacenter.
+
+An \textbf{Active Datacenter} allows for internet storage (?)
+
+A Datacenter should be \textbf{future-proof}: servers may be replaced, but updating a whole datacenter is at least a 1-year project.
+
+\section{Structure}
+\textit{Racks} are made of ---$\sim 42$--- \textit{units}.
+
+Besides server theirselves, there is a \textbf{cooling system}.
+The first issue is the how to provide cool air. Then there is also how to define an evacuation plan, which must take into account dust.
+
+However also the \textbf{floor} is not to be negliged.
+\begin{itemize}
+   \item \textit{Floating} floor or Ground floor
+   \begin{itemize}
+      \item 
+      \note{
+         \textit{``A “floating floor” in a data center, also known as a “raised floor”, is a type of construction used in data centers to create a void between the actual concrete floor and the floor tiles where the servers and other equipment are located12. This space is typically used for routing cables and for air circulation, which helps with cooling the equipment1."}\footnote{ChatGPT 4.0 - Generated}
+      }
+   \end{itemize}
+   \item \textit{Resistance} usually around $1 \frac{ton}{m^2}$  
+\end{itemize}
+
+For example, in San Piero A Grado, there was a power cabin receiveing current from three lines.
+Now the whole power management components are in a container outside the building placed close to the facility.
+
+Cables are not super-resistant to current. A lot of current passing through a copper wire will \textit{exhaust} both the wire and the components receiving such current;
+hence the current should also be balanced among different cables, to avoid exhausting some components before the others.
+
+
+A UPS ---first of all--- stabilizes the output current.
+
+In theory $1V * 1A = 1W$, but in reality, performing such conversion \ul{something gets lost}, so we have
+\[I * V * cos \phi = W\]

@@ -56,6 +56,7 @@
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes.geometric}
 \usepackage{parskip}
+\usepackage{changepage}
 
 \usepackage{soul}
 
@@ -70,6 +71,7 @@
 
 \setlist[description]{itemsep=0em,topsep=0.5em,parsep=0em}
 \setlist[itemize]{itemsep=0em,topsep=0pt}
+\setlist[enumerate]{itemsep=0em,topsep=0pt}
 
 \hypersetup{
     colorlinks=true,
@@ -97,6 +99,7 @@
 \newcommand{\nl}[0]{\parskip = \baselineskip}
 \newcommand{\lst}[1]{\lstinline{#1}}
 \newcommand{\ra}{\xrightarrow{\hspace*{2em}}}
+\newcommand{\ns}{\setlength{\parskip}{0em}}
 
 \newlength{\currentparindent}
 \newcommand{\labelitemize}[2]{
@@ -133,10 +136,13 @@
 
 \maketitle
 \tableofcontents
-
 \include{chapters/0}
-\include{chapters/1}
-\include{chapters/2}
+\part{Stefano Chessa}
+\include{chapters/A/1}
+\include{chapters/A/2}
+
+\part{Federica Paganelli}
+\include{chapters/B/1}
 
 
 \end{document}
