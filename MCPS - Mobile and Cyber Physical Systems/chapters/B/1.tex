@@ -63,6 +63,7 @@ to better understand this point, look at the following figure, consider that at 
    \label{fig:exposedterminal}
 \end{figure}
 
+\newpage
 \subsection{MACA}
 \begin{figure}[htbp]
    \centering
@@ -80,3 +81,22 @@ to better understand this point, look at the following figure, consider that at 
    transmitting during the transmission of the
    subsequent data frame
 \end{enumerate}
+
+Basically, a transmitting node sends a \textit{Request to Send} \texttt{RTS} and a receiving node answers with \textit{Clear to Send} \texttt{CTS}.
+Other nodes which hear \texttt{RTS} or \texttt{CTS} \ul{must stay silent until the transmission is over}.
+
+\note{Further details and examples on how the protocol works are on the slides.}
+\nl
+
+\textbf{MACAW} implements some improvements to MACA:
+\begin{itemize}
+   \item ACK frame to acknowledge a
+   successful data frame
+   \item added Carrier Sensing to keep a station from
+   transmitting RTS when a nearby station is also
+   transmitting an RTS to the same destination
+   \item mechanisms to exchange information among
+   stations and recognize temporary congestion
+   problems
+   \item[] \note{CSMA/CA used in IEEE 802.11 is based on MACAW}
+\end{itemize}
