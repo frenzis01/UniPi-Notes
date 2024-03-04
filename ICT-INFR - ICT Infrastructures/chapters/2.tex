@@ -67,7 +67,7 @@ Also the oceans have a very stable temperature; not on the surface, but deep dow
 
 \section{Cooling}
 Note that racks are always placed back-to-back, because the front requires cool air, and the back outputs hot air.
-\section{CRAC}
+\subsection{CRAC}
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/CRAC.jpg}
@@ -88,7 +88,7 @@ The racks suck the cool air in front and output hot air from the back.
 }
 
 \newpage
-\section{Inrow Cooling}
+\subsection{Inrow Cooling}
 \begin{paracol}{2}
    \colfill
    The fan ``towers'' are called \textit{inrow cooling}.
@@ -106,3 +106,85 @@ The racks suck the cool air in front and output hot air from the back.
    \label{fig:inrow_cooling}
 \end{figure}
 \end{paracol}
+
+\subsection{Chilling water outside}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/outside_chillers.jpeg}
+   \includegraphics[width=0.405\columnwidth]{images/outside_chillers_2.jpeg}
+   \caption{Outside chillers}
+   \label{fig:outside_chillers}
+\end{figure}
+\textbf{Outside} of a datacenter there are chillers which cool down water which is then pumped into the datacenter, where it is used by CRAC/InRow chillers to cool down air.
+
+It is important to ensure that the \ul{temperature does not heat up while travelling} from the outside chillers to the datacenter, because it would mean wasting energy. 
+
+In SPG the outside chillers cool the water down to $18^{\circ}$, which \ul{seems high temperature, but in fact it is not}: the datacenter is designed to work up to $26^{\circ}$.
+\begin{center}
+   \ul{The higher the ``allowed'' temperature is, the more is the energy saved.}
+\end{center}
+Besides, \textbf{adiabatic} chillers ---such as the ones in SPG--- can use \textit{\textbf{free cooling}} in case the outside temperature is lower than $18^{\circ}$\footnote{common case in winter and autumn}, 
+which basically exploits the lower outside temperature to \textit{passively} chill water, without involving the compressor used in the standard cooling way.
+   
+\nl
+
+Also \textbf{humidity} must be managed. An environment which is too dry leads to water condensation onto racks and plugs, possibly resulting in damage to devices and humans.
+
+\section{Redundancy for Resilience}
+\textbf{Passive-Active} means that aside from the active system, there is a mirrored one which is shut down waiting for failure and boots up \textit{``just in case''}.
+This approach is usually not the ideal one, because the second system is very unlikely to be used and is costful.
+
+\textbf{Active-active} systems are usually better, bust cost even more.
+
+TODO
+
+\section{Cooling CPU}
+\begin{center}
+   \ul{High-end CPUs \textit{heat up so much} that it has became \textit{unreasonable} to cool them using air.}
+\end{center}
+
+However, note that water conducts electricity, so a flaw in a waterpowered cooling system may lead to consistent damange and possible fires.
+
+\textbf{Oil} instead doesn't conduct electricity, and there are some systems which are \textit{submerged} in oil, but there are two drawbacks:
+\begin{enumerate}
+   \item \textbf{Price}: oil is way more expensive than water
+   \item \textbf{Servicing}: it is impossible to maintain the system's hardware.
+\end{enumerate}
+
+\textbf{Distilled water} is not conductive, but even not considering that distilling it is expensive, it is impossible to guarantee that is stays pure when travelling in pipes, chillers, and so on.
+
+\nl
+
+Most datacenters tend to have an hybrid approach to cooling, called \textbf{air-to-liquid}.
+The idea is simple:
+It is acceptable to use cool air to chill water, which is then used to chill the air by InRow coolers, which chills the liquid which chills the CPUs.
+\note{(Woa! We need a schema...) }
+
+\ul{This is \textit{not} the most efficient approach.}
+
+A nice question would be, \textit{``Can\'t we simply chill the liquid and send it directly onto the CPUs?''} \textbf{No} \smiley.
+\begin{itemize}
+   \item Required pressure is different
+   \item Required temperatures do not match
+   \item ... TODO 
+\end{itemize}
+
+\subsection{Spilling Pipes}
+Liquid cooling systems manufacturers allow customers to ensure that their pipes are not spilling by injecting in the pipes a known gas at a known pressure.
+The customer can measure the pressure when the product is shipped and check whether it is the expected one, and if not, send back the device.
+
+\subsubsection*{Handling spills}
+Handling spills is an \textbf{open problem}. 
+Theorically, the idea would be to check for pressure variations, but this is \ul{currently \textit{impossible} to be done on each entrance of each rack.}
+Too much actuaction and sensoring would be required.
+
+Besides, in case a pipe is spilling, the operators must act \textit{quickly}, before the water spills onto other racks and cause critical damage. 
+
+\subsection{Chassis}
+\textbf{Chassis} are needed for various reasons:
+\begin{itemize}
+   \item 2.4GHz is the frequency at which water in our cells resonates, and circuits generate electromagnetic fields, so it may be unsafe to directly expose humans to circuitry
+   \item Act as Faraday cages
+   \item TODO
+\end{itemize}

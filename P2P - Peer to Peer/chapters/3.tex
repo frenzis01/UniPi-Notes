@@ -34,16 +34,19 @@ It has three key charateristics which are not offered by other DHTs
    \end{figure}
 \end{paracol}
 
+\newpage
 \subsection{Assigning keys to leaves}
 The rule to partition the keys (content) among the nodes must respect the rules of \textit{consistent hashing}.
 
 \begin{paracol}{2}
+   \colfill
    \begin{definition}[Partitioning rule]
       A key is assigned to the node with the
       \textit{``\ul{lowest} common ancestor''}:\\
       Find the longest prefix between the
       key and the node identifier, and then assign the key to such node.
    \end{definition}
+   \colfill
    \switchcolumn
    \begin{figure}[htbp]
       \centering
@@ -53,9 +56,10 @@ The rule to partition the keys (content) among the nodes must respect the rules 
    \end{figure}
 \end{paracol}
 
-\section{XOR Metric}
-
-TODO
+\section{Distance - XOR Metric}
+\begin{center}
+   \textit{\ul{How to compute the \textbf{distance} between two nodes?}}
+\end{center}
 
 \section{Routing Table}
 In order to look for data, Kademlia's key idea is to \ul{store a logarithmic number of node IDs and their corresponding IP} addresses and some contact taken from the identifier trie.
