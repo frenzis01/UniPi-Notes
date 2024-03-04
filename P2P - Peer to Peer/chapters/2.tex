@@ -99,4 +99,35 @@ Data Lookup can be sped up even more, by computing the hash $h(x)$ of the search
    \label{fig:dht_chordsearch}
 \end{figure}
 
-TODO integrate notes from February $28^th$
+\subsection{Addressing data}
+Data was usually addressed by \textbf{location}, a \texttt{http://} link to locate resources;
+Such link is an identifier that points to a particular location on the web.\\
+This approach forces us all to \ul{pretend that the data are in only one location}.
+
+IPFS instead uses \textbf{content addressing}, which exploits the cryptographic hash of the content to identify it.
+
+\subsection{API, Lookup and Various Properties}
+Most DHT provide a simple inferface \texttt{PUT,GET,Value}, usually without the possibility to move keys.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/DHT_lookupcomplexity.png}
+   \caption{Lookup time complexity comparison}
+   \label{fig:DHT_lookupcomplexity}
+\end{figure}
+
+\labelitemize{\textit{DHT}}{
+   \begin{itemize}
+      \item Routing is based on key (unique identifier)
+      \item Key are uniformly distributed to the DHT nodes
+      \begin{enumerate}
+         \item Bottleneck avoidance
+         \item Incremental insertion of the keys
+         \item Fault tolerance
+      \end{enumerate}
+      \item Auto organizing system
+      \item Simplex and efficient organization
+      \item The terms “Structured Peer-to-Peer“ and “DHT“ are often used as
+      synonyms
+   \end{itemize}
+}
