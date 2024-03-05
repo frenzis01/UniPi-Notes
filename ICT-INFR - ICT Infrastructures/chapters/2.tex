@@ -132,12 +132,18 @@ which basically exploits the lower outside temperature to \textit{passively} chi
 Also \textbf{humidity} must be managed. An environment which is too dry leads to water condensation onto racks and plugs, possibly resulting in damage to devices and humans.
 
 \section{Redundancy for Resilience}
-\textbf{Passive-Active} means that aside from the active system, there is a mirrored one which is shut down waiting for failure and boots up \textit{``just in case''}.
+\textbf{Active-Passive} means that aside from the active system, there is a mirrored one which is shut down waiting for failure and boots up \textit{``just in case''}.
 This approach is usually not the ideal one, because the second system is very unlikely to be used and is costful.
+Besides, there are two critical issues with Active-Passive:
+\labelitemize{\textit{Cons}}{
+   \begin{enumerate}
+      \item There is a non-negligible time interval where the switch from the active broken system and the passive one has to happen.
+      \item If when booted the backup system reveals itself to be flawed and not working, well... \textit{very sad} \frownie
+   \end{enumerate}
+}
 
-\textbf{Active-active} systems are usually better, bust cost even more.
-
-TODO
+\textbf{Active-active} systems are usually better, because they also allow for load balancing. In case of SPG there are three cooling systems, and in case one breaks, the other two can keep working.
+Active-active costs even more, but it is the standard way to go.
 
 \section{Cooling CPU}
 \begin{center}
