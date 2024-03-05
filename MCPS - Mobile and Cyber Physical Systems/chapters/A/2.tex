@@ -126,10 +126,38 @@ message. Since such message may be lost, the broker answers with a \texttt{CONNE
       \item Client ID
       \begin{itemize}
          \item A string that uniquely identifies the client at the broker.\\
-         If empty: the broker assigns a \texttt{clientID} and does not keep a status for the client
-         \note{In this case \textit{Clean Session} must be TRUE}
+         If empty: the broker assigns a unique \texttt{clientID} and does not keep a status for the client.
+         \note{In this case \textit{Clean Session} must be TRUE.
+         
+         Note also that in \ul{version 3.1.1} the servers replies with a \ul{CONNECTACK with \textit{no} payload}, so the assigned ID is not known to the client.\\
+         This has changed in version 5.0}
       \end{itemize}
-   \end{itemize}
+      \nl
+
+      \begin{center}
+         \fbox{
+
+            \begin{minipage}{0.7\columnwidth}
+               \subsubsection*{ClientID Uniqueness - Digression}
+               \begin{center}
+                  \ul{How can a client know if its Client ID is \textbf{unique}?}\\
+               \end{center}
+               \nl
+               The answers is not completely addressed by the standard, and the scenario of a new client who wants to connect and have a persistent session is not clearly discussed.\\
+               ClientIDs may be assigned beforehand, but this is possible only if the admin controls \textit{entirely} the system, it is not possible if the broker is \textit{public}, thus an owner of MQTT clients doesn't know whether there are other clients.
+               
+               In reality, you can ``take your chance'', because the ClientID is 23 byte long, so the chance of an overlap between multiple devices is low.
+               
+               \vspace*{1.5em}
+               
+               In general, standard specifications tend to omit everything that can be omitted, to avoid posing constraints which are not strictly necessary, by leaving room for personal implementations and needs.
+            \end{minipage}
+            }
+   \end{center}
+\end{itemize}
+
+\nl
+\nl
    \labelitemize{\textit{optional}}{
       \begin{itemize}
          \item Clean Session
@@ -280,10 +308,10 @@ Persistent sessions keep the state between a client and the broker:
 if a subscriber disconnects, when it connects again, it does not need to subscribe again the topics.\\
 The session is associated to the clientId defined with the \texttt{CONNECT} message, and stores:
 \begin{itemize}
-   \item All subscriptions
-   \item All QoS 1\&2 messages that are not confirmed yet
-   \item All QoS 1\&2 messages that arrived when the client was
-   offline
+   \item All \textbf{subscriptions}
+   \item All QoS 1\&2 messages that are \textbf{not confirmed} yet
+   \item All QoS 1\&2 messages that arrived when the \textbf{client was
+   offline}
 \end{itemize}
 
 Note that \ul{with \texttt{QoS = 0} persistent sessions are useless overhead}.
@@ -307,3 +335,30 @@ Last Will \& testament is used to notify other clients about the \textbf{ungrace
 The broker stores the \textbf{last will message} attached to the \texttt{CONNECT} message, but if the client gracefully closes the connection by sending \texttt{DISCONNECT}, then the stored \textit{last will message} gets discarded.
 
 Often the \ul{Last Will message is used along with retained messages}.
+
+\section{Packet Format}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/mqtt_packetformat1.png}
+   \includegraphics[width=0.45\columnwidth]{images/mqtt_packetformat2.png}\\
+   \includegraphics[width=0.45\columnwidth]{images/mqtt_packetformat3.png}
+   \caption{MQTT Packet headers}
+   \label{fig:mqtt_packetformat}
+\end{figure}
+
+The ---not displayed in Fig. \ref{fig:mqtt_packetformat}--- \textbf{Variable header}:
+\begin{itemize}
+   \item Contains the packet identifier (encoded with two
+   bytes)
+   \begin{itemize}
+      \item Only CONNECT and CONNACK control packets do not
+      include this information
+      \item The PUBLISH packet contains this information only if $\texttt{QoS}>0$
+   \end{itemize}
+   \item Contains other information depending on the control
+   packet type
+   \begin{itemize}
+      \item For example, CONNECT packets include the protocol name and version, plus a number of flags (see CONNECT)
+   \end{itemize}
+\end{itemize}
+
