@@ -132,6 +132,28 @@
 }
 \newcommand{\colfill}{\vspace{\fill}}
 
+\newcommand{\framed}[1]{
+\begin{center}
+\fbox{
+    \begin{minipage}{0.8\columnwidth}
+        #1
+    \end{minipage}
+}
+\end{center}}
+
+\newcommand{\framedt}[2]{
+\begin{center}
+\fbox{
+    \begin{minipage}{0.8\columnwidth}
+        \vspace*{1em}
+        \begin{center}
+            \textbf{\ul{#1}}
+        \end{center}
+        \nl
+        #2
+    \end{minipage}
+}
+\end{center}}
 
 \lstset{frame=false,
  showstringspaces=false,
