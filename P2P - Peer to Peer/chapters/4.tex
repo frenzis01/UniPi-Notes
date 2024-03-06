@@ -1,0 +1,102 @@
+\chapter{BitTorrent}
+
+The goal of \textit{Content Distribution Networks} is to distribute web contents to hundreds of thousands or millions
+of simultaneous users, \ul{exploiting data and/or service \textbf{replication} on different \textbf{mirror servers}}.
+
+In \textbf{P2P CDN} the initial file request are served by a centralized server, and further requests served by peers which have already received and replicated the files (\textbf{\textit{seeders}}), without involving the initial server.
+
+\begin{center}
+\fbox{
+   \begin{minipage}{0.8\columnwidth}
+      \nl
+      \begin{center}
+         \ul{\textbf{BitTorrent} in a nutshell}
+      \end{center}
+      \nl
+
+      \begin{itemize}
+         \item Basically a \textit{Content Distribution Network} (\texttt{CDN})
+         \item A distributed set of hosts cooperating to distribute large data set to end users.
+         \item Efficient content distribution systems using \textit{file swarming}
+         \item Does \textit{not} perform all the functions of a typical P2P system, like searching
+         \item Rather than providing a search protocol itself, was designed to integrate seamlessly with the Web and made file descriptors available via Web, which could be searched with standard Web search
+         \item \textit{File swarming}: a peer makes whatever portion of the file that is downloaded immediately available for sharing
+      \end{itemize}
+   \end{minipage}  
+   }
+\end{center}
+
+\section{Deeper into BitTorrent}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/bit_swarmschema.png}
+   \caption{Swarm schema}
+   \label{fig:bit_swarmschema}
+\end{figure}
+\subsection{Glossary}
+\begin{itemize}
+   \item \textbf{tracker}: active entity which coordinates
+   the peers sharing the file, taking trace of who is currently providing the content
+   \note{\begin{itemize}
+      \item Joe connects to the tracker announcing the content
+      \item the tracker now knows Joe is providing the file
+   \end{itemize}}
+   \item \texttt{.torrent} a descriptor of the file to be published on a server, which includes a reference to a tracker
+   \item \textbf{swarm} set of peers collaborating to the distribution of the same file coordinated by the same tracker
+   \item \textbf{seeder} peer which owns all the parts of the file
+   \item \textbf{leecher} peer which has some part or no part of the file and downloads the file from the seeders and/or from other lechers.
+\end{itemize}
+
+\subsection{Protocol Overview}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/bit_overview.png}
+   \caption{BitTorrent protocol overview}
+   \label{fig:bit_overview}
+   BitTorrent protocol is built on top of HTTP
+\end{figure}
+\labelitemize{\textit{Seeder}}{
+   \begin{enumerate}
+      \item Upload the .torrent on a Torrent Server
+      \item Opens a connection to the Tracker and informs it of its own existence: for the moment, it is the only peer which owns the file
+   \end{enumerate}
+}
+\labelitemize{\textit{Peers}}{
+   \begin{enumerate}
+      \setcounter{enumi}{2}
+      \item Retrieves the file descriptor (.torrent) and opens it through the BitTorrent
+      client
+      \item Opens a connection to the tracker and informs it of its own existence and
+      receives from the tracker a list of peers of the swarm
+      \item Opens a set of connections with other peers of the swarm.
+   \end{enumerate}
+}
+
+Objects are serialized in \textbf{Bencode}, which is ---not popular as \texttt{JSON}--- used only in torrent; provides 4 data types: String, Integer, Lists and Dictionaries.\\
+Content is split into chunks called pieces (256KB - 2MB):
+when a peer receives a piece, it becomes the seeder of that piece.
+\note{
+   \ns
+      There is a SHA-1 hash per piece stored in the .torrent file, used to check the piece once it is fully downloaded, 
+      allowing to require retransmission in case the check fails.\\
+      Pieces size got adapted to have a reasonably small .torrent file
+}
+Pieces are then split in \textbf{subpieces} (\textit{\textbf{blocks}}) of 16KB, with each one downloadable from a different peer, optimizing the bandwith and allowing \textit{pipelining}, decreasing the overall download time.
+
+Trackers keep a database of swarms identified by torrent hash, and knows also the state of each peer in each swarm.
+In the last versions, \textbf{trackerless} BitTorrent uses \textit{Kademlia DHT} to avoid the centralization point of the tracker.
+
+\section{Pieces selection}
+The order in which pieces are selected by different peers is critical for good performance, to avoid making peers end up stuck with the same pieces.
+\labelitemize{\textit{Policies}}{
+   \begin{itemize}
+      \item \textbf{Strict Priority}\\
+      Complete the ``assembling'' of a piece before asking for another piece
+      \item \textbf{Rarest First}\\
+      Download the rarest pieces first
+      \item \textbf{Random First Piece}\\
+      Choose a random piece in the bootstrap phase
+      \item \textbf{Endgame}\\
+      Broadcast the remaining blocks when the file download is going to terminate
+   \end{itemize}
+}

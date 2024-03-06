@@ -64,3 +64,50 @@ The rule to partition the keys (content) among the nodes must respect the rules 
 \section{Routing Table}
 In order to look for data, Kademlia's key idea is to \ul{store a logarithmic number of node IDs and their corresponding IP} addresses and some contact taken from the identifier trie.
 
+TODO
+
+\section{Key Lookup}
+
+TODO
+
+\section{Protocol Messages}
+TODO reformat this
+\begin{enumerate}
+   \item \texttt{FIND\_NODE $v\longrightarrow w$} (T) (v,w nodes, T target of the look up)\\
+   the recipient of the message (w) returns k (IP address, UDP port, Node
+   ID) triples for the k nodes it knows about closest to the target T.
+   
+   these triples can come from a single k-bucket, or they may come from multiple
+   k-buckets if the closest k-bucket is not full.
+   
+   in any case, the recipient must return k items, unless there are fewer than k
+   nodes in all its k-buckets combined, in which case it returns every node it
+   knows about 
+
+
+
+   
+   \item \texttt{FIND\_VALUE} $v \longrightarrow w(T)(v,w \textit{ nodes}, T \textit{ value looked up})$\\
+   in: T, 160-bit ID representing a value
+   
+   out:
+   if a value corresponding to T is present in the queried node (w), the
+   associated data is returned
+   otherwise it is equivalent to \texttt{FIND\_NODE} and w returns a set of k triples
+   
+   If \texttt{FIND\_VALUE} returns a list of other peers, it is up to the requester to continue
+   searching for the desired value from that list
+   
+   \item \texttt{PING} $v \longrightarrow w$
+   
+   probe node w to see if its online
+   \item \texttt{STORE} $v \longrightarrow w$ $(Key, Value)$
+   
+   instructs node w to store a $\langle key, value \rangle$ pair
+   
+   the node has been retrieved through a
+\end{enumerate}
+The actual \textbf{Lookup algorithm} is based on \texttt{FIND\_NODE}.
+many \texttt{FIND\_NODE} can be executed in parallel, according to $\alpha$ that is a system-wide concurrency parameter.
+\note{With $\alpha = 1$, the lookup algorithm is similar to \textit{Chord}, one step progress each time}
+\note{Lookup procedure is the same for \texttt{FIND\_VALUE} and \texttt{FIND\_NODE}}
