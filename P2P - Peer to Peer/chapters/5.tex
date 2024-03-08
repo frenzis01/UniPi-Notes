@@ -1,0 +1,23 @@
+\chapter{Blockchain}
+The basic concepts concerning Blockchains are
+\begin{itemize}
+   \item \textit{Ledger}
+   \item \textit{Consensus} in a distributed environment
+   \item Tamper freeness
+   \item Proof of ownership
+   \item Permissioned and permissionless blockchains
+\end{itemize}
+
+Each \textbf{block} is made up of \textit{Data}, \textit{Hash} and the \textit{Hash of the previous block}.
+
+\textbf{Tamper freeness} refers to changing one hash causes changing the hash of the following blocks, implying not only to recompute some hashes, but also to find a value that combined with the new hash solves the \textit{Proof of Work}.
+
+A \textbf{ledger} acts like a notary, and is replicated on each node of a P2P network, it is immutable and benefits of the tamper freeness property.\\
+The ledger is like a bullettin storing operations and their order. It must be an \textbf{append-only} list of events, and also \textbf{tamper-proof}.
+
+\begin{center}
+   \ul{If a ledger is organized as a list of blocks, we call it a \textbf{blockchain}}.
+\end{center}
+\nl
+
+\textbf{Consensus} is the mechanism which defines who decides which operation will be added to the blockchain, and which operation among those to be confirmed will be added.

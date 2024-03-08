@@ -95,8 +95,50 @@ The order in which pieces are selected by different peers is critical for good p
       \item \textbf{Rarest First}\\
       Download the rarest pieces first
       \item \textbf{Random First Piece}\\
-      Choose a random piece in the bootstrap phase
+      Choose a random piece ---only--- in the bootstrap phase
       \item \textbf{Endgame}\\
-      Broadcast the remaining blocks when the file download is going to terminate
+      When the file download is almost terminated, the remaining pieces are required in \textit{parallel} to all peers who own them.
+      This policy is executed for a small period of time
    \end{itemize}
 }
+
+\subsection{Free Riders}
+Free riders in BitTorrent are peers that do not put their bandwidth at disposal of the community.\\
+Several non official BitTorrent clients enable the user to limit the upload bandwidth as they like.
+
+However, an approach to solve this problem is based on \textbf{reciprocity}, allowing a client to obtain a good service if and only if it gives a good service to the community, by exploiting a dynamic strategy based on connection monitoring called ``Tit for Tat'', implemented using \textbf{choking}:\\
+choking means \textit{temporarily} refusing to upload to another peer, but still downloading from them;  
+the principle is to upload to peers who have uploaded to us.
+
+\labelitemize{\textit{Choking}}{
+\begin{center}
+   \textit{The local peer can receive data from a remote peer if}
+   \begin{itemize}
+      \item The local peer is \textit{interested} in the remote peer
+      \item The remote peer \textit{unchoked} the local peer
+   \end{itemize}
+\end{center}
+   }
+
+Choking only peers that upload the most to the local peers would lead to ignoring peers that recently join the network
+and to the lack of discovery of connections actually better than the used ones.\\
+To avoid this, BitTorrent uses \textbf{optimistic unchoking}, i.e. \ul{one random peer is being unchoked}.\\
+Then, every 30s an interested and choked peer is selected at random \textbf{planned optimistic unchoke} (\texttt{POU}), and if this new connection turns out to be better than one of the existing
+unchoked connections, it will replace it.
+
+In case a peer is chocked by everyone, it follows an \textbf{anti-snubbing} policy, by increasing the number of simultaneous optimistic
+unchocke to more than one.
+
+For \textit{seeders} this schema does clearly not apply, since they do not have to download anything; hence they use a different choking algorithm:
+\ul{unchoke peers with the highest upload rate}, ensuring that pieces get uploaded and replicated faster.
+
+\section{DHT and BitTorrent}
+Kademlia is the protocol used by the largest public DHTs.
+Bittorrent Inc. introduces its own DHT, called \textit{Mainline DHT}.
+With respect to Kademlia there are some improvements concerning 
+\begin{itemize}
+   \item Routing table management
+   \item Look-up
+\end{itemize}
+
+The main purpose of Mainline DHT is to provide a “trackerless” peer discovery mechanism to locate peers belonging to a swarm.
