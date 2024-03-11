@@ -8,5 +8,100 @@ Cabling is of paramount importance.
       \item Cables may heat up
       \item Cables may obstruct air flow
    \end{enumerate}
-   \item Determines which machines interact with each other
+   \item Determines which machines interact with each other (\textit{fabric})
+   \item Bandwidth
+   \item Not neglectable cost
 \end{enumerate}
+
+\section{Bandwidth}
+
+\subsection{Storage implications}
+A standard datacenter has servers connected with 25Gbit links in both directories, summing up to 50Gbit total bandwidth.
+Current SSDs provide much more. \ul{4 drives are enough to saturate a 100Gbit/s link.}\\
+We moved from a situation where the \textbf{bottleneck} were slow Hard Drives, to the current one where the bottleneck is the ---network--- \textbf{bandwidth}.\\
+Recently the PCI 3.0, which lasted very long ---providing $\sim 1000\texttt{Gbit/s}$---, suddenly become unsufficient to handle the needed traffic.
+
+Considering this, \ul{datacenters must be designed to allow \textit{Terabytes} of data to be moved in east-west traffic.}
+
+\begin{center}
+   \ul{\textit{The \textbf{fabric} is the glue that makes the datacenter possible.}}
+\end{center}
+
+Besides, a single server is \textit{unable} to handle 10TBs of data and handling requests from 3000 users simultaneously. It is necessary to \textbf{distribute} the requests.
+
+HDDs are still currently used for \textbf{cold storage};
+CPUs will access data exclusively from SSDs, and sometimes the server is shipped with on board \textbf{full-flash storage}.\\
+The difference in price between SSDs and HDDs becomes negligible since you pay for top CPU, top GPU, top RAM;
+furthermore, you can't waste ---the high amount of--- energy ---consumed by such components--- by waiting for a slow drive.
+
+SSDs have a known write limit, but today, the usually last enough time: if you write the whole disk every day it will last for 5 years. Most-likely after five years you'd have to renew some components anyway, besides the failure is a predictable event.
+
+\subsection{Fabric and Cables}
+\subsubsection*{Optical}
+Electric current propagates at a speed $s = {\sim}0.6c$.
+Hence \textbf{optical fiber} is ---at least in theory?--- faster.
+
+\textbf{Lasers} are a coherent beam of equal fotons. It is possible to transfer energy through such fotons. Something resembling a laser is used for optical fibers.
+
+Blu-Ray came out when scientists managed to create light using frequencies in the Blu area, which are the higher ones.
+Currently, the best and most expensive optical fibers exploit blu-lasers as source of light.
+
+Note that with optical you always need 2 fibers, one sending and the other receiving. The two possible connectors are \texttt{SC} and \texttt{LC}.
+Sometimes the two ends of the cable are detachable so that the cables may be switched; this is useful because sometimes you may want to attach the TX cable on the RX plug and viceversa. 
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.25\columnwidth]{images/SC.png}
+   \includegraphics[width=0.25\columnwidth]{images/LC.png}
+   \includegraphics[width=0.25\columnwidth]{images/LC_coupled.JPG}
+   \caption{\texttt{SC} and \texttt{LC} connectors}
+   \label{fig:sc_lc_connectors}
+\end{figure}
+
+\subsubsection*{Copper wires}
+In case of electricity there are many aspects to be considered. Interferences, cable diameter/size, length, and also the fact that if a \texttt{1} has been transmitted for some time, it takes longer to transmit a \texttt{0}, due to the \textit{commutation} that must happen.
+\nl
+
+\begin{paracol}{2}
+   \colfill
+   \textbf{RJ45} is a standard physical interfaced for copper wires, which allows up to 1Gbit regularly.
+   The \texttt{Cat 7} cables still use the RJ45 as connector and provide instead 10Gbit/s, but are very uncomfortable, they are so thick that they are difficult to bend.
+   
+   It is estimated that there have been installed $70 \times 10^9m$ of Ethernet cables, making them the most used.
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/RJ45_T568B.jpg}
+      \caption{RJ45 - T568B}
+      \label{fig:RJ45_T568B}
+   \end{figure}
+\end{paracol}
+
+\begin{paracol}{2}
+   
+   The aim of SFP is to decouple the optical transceivers from the server modules.
+   \note{Is this correct?}
+   They allow to go \textit{optic-copper}, \textit{copper-optic}, \textit{optic-optic} and \textit{copper-copper}.\\
+   SFP and GBIC (oldest one, now dead) pluggable modules acting as active transceivers for optical wiring using RJ45 connector.\\
+   \ul{A single cable having SFP ends costs about 100€}.
+   The cost ain't neglectable \smiley.
+   \note{\begin{itemize}
+      \item[\texttt{SFP}] $\longrightarrow$ 1Gbit 
+      \item[\texttt{SFP+}] $\longrightarrow$ 10Gbit 
+      \item[\texttt{SFP28}] $\longrightarrow$ 25Gbit
+   \end{itemize}}
+
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/sfp.jpeg}
+      \caption{SFP transceivers form factors}
+      \label{fig:sfp}
+   \end{figure}
+\end{paracol}
+
+\note{Fun fact: ci sono 9 cavi USB-C e solo due portano informazioni video.}
