@@ -24,3 +24,34 @@ In \textbf{4G} also the voice traffic uses \textit{packet switching}, instead of
 }
 
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/mobility.png}
+   \caption{Mobility}
+   \label{fig:mobility}
+\end{figure}
+To handle devices' mobility there must be home network to rely onto.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/homenetwork.png}
+   \includegraphics[width=0.45\columnwidth]{images/homenetwork2.png}\\
+   \includegraphics[width=0.45\columnwidth]{images/homenetwork3.png}
+   \caption{Home and visited Networks}
+   \label{fig:homenetwork}
+\end{figure}
+
+With respect to the questions posed in the third image in Fig. \ref{fig:homenetwork}, data being send from a device to a mobile one may be routed in three ways.
+\begin{enumerate}
+   \item 
+   The first is the canonical routing, using IP addresses and routing tables, but it is not a feasible scenario for billions of devices.
+   \item The other possibility is to rely on the edge of home and visited networks instead.
+   \begin{enumerate}
+      \item \textbf{Direct routing}\\
+      Sender gets foreign address of mobile, send directly to mobile
+      \item \textbf{Indirect routing}\\
+      Communication from sender to mobile goes through home network, then forwarded to remote mobile
+   \end{enumerate}
+\end{enumerate}
+
+
+\note{Many things are missing here. Refer to the slides or to chapter 7 of the course book (Kurose) for more information.}
