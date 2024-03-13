@@ -250,3 +250,161 @@ The \textbf{group management} provides services to build and maintain groups of 
 
 \note{MAC addresses in ZigBee contexts are meant to be permanent, even if in recent years FFDs provide functionalities to randomly generate MAC addresses in order to enforce privacy.
 This in general is not performed on low-end RFD devices.}
+
+\section{Binding}
+Addresses are indirect, allowing to implicitly specify the destination of messages, which are no longer routed based on a pair $\langle destination endpoint, destination network address \rangle$ (\textit{direct addressing}), but binding tables and address maps are used instead.
+
+This is one of the key functions of the ZigBee Transport Layer, and is performed by the \textit{APS}.
+
+\subsection{APS - Address Map}
+The APS layer contains the address map table, which associates the 16 bit NWK address with the 64 bit IEEE
+MAC address.\\
+Zigbee end devices (ZED) may change their 16 bit NWK
+address (e.g. they leave and join again). In that case an
+announcement is sent on the network and every node
+updates its internal tables to preserve the bindings.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/zigbee_addressmap.png}
+   \caption{Address Map}
+   \label{fig:zigbee_addressmap}
+\end{figure}
+
+\subsection{APS - Binding}
+We assume that typically the binding is performed by an admin who is ---physically--- deploying network nodes. 
+\labelitemize{\textit{Primitives}}{
+   \begin{itemize}
+      \item \texttt{BIND.request}\\
+      Creates a new entry in the local binding table taking as input $\langle \textit{source address, source endpoint, cluster identifier, destination address, destination endpoint}\rangle$
+      \item \texttt{UNBIND.request}\\
+      deletes an entry from the local
+      binding table.
+   \end{itemize}
+}
+The binding table associates sources and destinations based on MAC addresses, and is stored in the APS of the ZigBee coordinator (and/or of the routers); it gets updated on explicit request of the ZDO in the routers or in the
+coordinator, and is usually initialised at the network deployment.
+In general, it is \textit{static}.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/zigbee_bindingtable.png}
+   \caption{Binding table}
+   \label{fig:zigbee_bindingtable}
+\end{figure}
+
+Indirect addressing is implemented exploiting the binding table and the address map:
+\begin{itemize}
+   \item 
+   matches \textit{source address} $\langle \textit{network addr, endpoint addr}\rangle$ and the
+   \textit{cluster identifier} into the pair:
+   $\langle \textit{destination endpoint, destination network addr}\rangle$
+\end{itemize}
+
+\section{ZDO - ZigBee Device Object}
+ZDO is a special application attached to endpoint 0 and  implements ZigBee End Devices, ZigBee Routers and
+ZigBee Coordinators.
+
+It is specified by a special profile, the ZigBee Device
+Profile, which describes the clusters that must be supported by any ZigBee device; it defines also how the ZDO implements the services of discovery and binding and how it manages network and security.
+
+\labelitemize{
+   \textit{ZDO services}
+}{
+   \begin{itemize}
+      \item Device and service discovery
+      \item Binding management
+      \item Network management
+      \item Node management
+   \end{itemize}
+}
+\subsection{Device and service discovery}
+The ZigBee Device Profile (ZDP) specifies the device and
+service discovery mechanisms.
+\textbf{Device discovery} allows a device to obtain the (network or MAC) address of other devices in the network:
+\begin{itemize}
+   \item \textbf{Unicast} $\longrightarrow$ directed to an individual device
+   \item \textbf{Broadcast} $\longrightarrow$ hierarchical implementation based on a tree and subtrees topology: a router returns to its parent its address and the address of all the
+   end devices associated to itself and then the coordinator returns the address of its associated devices
+\end{itemize}
+
+\textbf{Service discovery} exploits queries based on profiles ID, cluster IDs, addresses, or device
+descriptors. Again may either be unicast or broadcast.
+\begin{itemize}
+   \item \textbf{Unicast} $\longrightarrow$ if directed to a single end device then the coordinator or the router to which it is connected respond on its behalf
+   \item \textbf{broadcast}$\longrightarrow$
+   The coordinator responds to service discovery queries returning lists of endpoint addresses matching with the query;
+   It exploits a hierarchical implementation: each router collects information from
+   its associated devices and forwards it to its parent
+\end{itemize}
+   
+\subsection{Binding management}
+The ZDO processes the binding requests received from local or remote EP To \textit{add} or \textit{delete} entries in the APS binding table.
+
+\subsection{Network and Node Management}
+\begin{itemize}
+   \item \textbf{Network management}
+   \begin{itemize}
+      \item Implements the protocols of the coordinator, a router or an
+      end device according to the configuration settings established
+      either via a programmed application or at installation.
+   \end{itemize}
+   \item \textbf{Node management}
+   \begin{itemize}
+      \item The ZDO serves incoming requests aimed at performing
+      network discovery, retrieving the routing and binding tables of
+      the device and managing joins/leaves of nodes to the
+      network.
+   \end{itemize}
+\end{itemize}
+
+\section{ZigBee Cluster Library}
+ZCL is a repository for cluster functionalities, a “working library” with regular updates and new functionalities.
+ZigBee developers are expected to use the ZCL to find relevant cluster functionalities to use for their applications, in order to 
+\begin{itemize}
+   \item Avoid re-inventing the wheel
+   \item Support interoperability
+   \item Facilitate maintainability
+\end{itemize}
+
+A cluster is a collection of commands and attributes, which define an
+interface to a specific functionality of a device.
+Clusters refer to functional domains within the respective profile.\\
+The ZCL forsees a Client-Server model.
+\begin{itemize}
+   \item The device that \textit{stores} the attributes is the \textit{server} of the cluster
+   \item The device that \textit{manipulates} the attributes is the \textit{client} of the cluster
+\end{itemize}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/zigbee_functionaldomains.png}
+   \caption{Functional domains}
+   \label{fig:zigbee_functionaldomains}
+\end{figure}
+
+TODO integrate some slides
+
+ZCL is built to allow combining simpler clusters into more complex ones, providing a hierarchical approach to define device functionalities.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/zigbee_zclcombining.png}
+   \caption{ZCL Hierarchical approach}
+   \label{fig:zigbee_zclcombining}
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \begin{tikzpicture}
+      \node[draw=white,align=left] (S) at (1.5,3) {Sensor};
+      \node[draw=white,align=left] (T) at (0,0) {Thermostat};
+      \node[draw=white,align=left] (H) at (3,0) {Heating};
+      \node[draw=white,align=left] (E) at (5,1.5) {Heating};
+      
+      \path [->] (S) edge node[left] {\tiny \textit{Temp/Humidity}} (T);
+      \path [->] (T) edge node[left] {\tiny \textit{Set Attributes}} (H);
+      % \path [->] (H) edge node[left] {} (S);
+   \end{tikzpicture}
+   
+   \caption{Heating System - exercise 2 Schema}
+   \label{fig:zigbee_heatingsystem}
+\end{figure}
