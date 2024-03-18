@@ -105,3 +105,19 @@ In case of electricity there are many aspects to be considered. Interferences, c
 \end{paracol}
 
 \note{Fun fact: ci sono 9 cavi USB-C e solo due portano informazioni video.}
+
+\section{Cabling Issues}
+The key point is that it would be desirable for cabling to be reconfigurable.
+
+There are things called \textit{``Muffole''}, which are used for joining optical fiber cables, allowing for longer distances to be covered.
+They are designed to be underground.
+
+Data traffic is always at least SFP+.
+Current standard is SFP28. Various SFP are typically compatible, the shape of the plug should stay the same.
+On switches there also some ports which are \texttt{QSFP+} or \texttt{QSFP28}, which allow up to \texttt{40} and \texttt{100Gbit/s} respecitively, and are used for north-south traffic.
+\note{The \texttt{Q} letter stands for \textit{Quality}}
+
+Switches for datacenters should be \textbf{non-blocking}, meaning that no port has to wait for other ones ---or any other thing--- before transmitting, they can also transmit simultaneously.
+
+
+\ul{In every datacenter it is \textit{MANDATORY} to document the cabling.}
