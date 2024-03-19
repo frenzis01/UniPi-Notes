@@ -1,0 +1,57 @@
+\chapter{IoT Design Aspects}
+Each device is usually low power and low cost small and autonomous system, equipped with processor, memory and radio transceiver along with sensing and/or actuating elements, with everything being powered a battery (or something equivalent such as solar cells).
+
+The main limitations in the design of IoT devices are due to the abovementioned components ---aside from the sensors/actuators--- and is not clear whether technology improvements will overcome such constraints.  
+
+\section{Issues}
+\begin{enumerate}
+   \item Energy efficiency
+   \begin{enumerate}
+      \item sensors are battery-powered or use energy
+      harvesting
+      \item need for HW/SW energy efficient solutions
+   \end{enumerate}
+   \item Adaptatability to changing conditions
+   \begin{enumerate}
+      \item need for dynamic network management &
+      programming
+   \end{enumerate}
+   \item Low-complexity, low overhead protocols
+   \begin{enumerate}
+      \item need at any level of the protocol stack due
+      to limitation of nodes’ resources
+   \end{enumerate}
+   \item Security
+   \begin{enumerate}
+      \item at all layers ot the stack
+   \end{enumerate}
+   \item Multihop communications
+   \begin{enumerate}
+      \item need for protocol stacks & routing
+      protocols
+   \end{enumerate}
+   \item Mobility
+   \begin{enumerate}
+      \item Need for dynamic routing protocols
+      Data storage & (pre-)processing
+   \end{enumerate}
+\end{enumerate}
+
+\subsection{Moore's law}
+\begin{center}
+   
+   \textit{``The number of transistors that can be (inexpensively) embedded in a chip grows exponentially''}
+   
+   In other words, \textit{``it doubles every two years''}
+\end{center}
+
+Three different ---but equally true--- interpretations may be given to such law:
+\begin{enumerate}
+   \item The performance doubles every two years at the same cost
+   \note{Up to now this is true for processors of servers/desktops}
+   \item The chip’s size halves every two years at the same cost
+   \note{Consequently also the energy consumption is reduced}
+   \item The size and the processing power remain the same but the cost
+   halves every two years
+\end{enumerate}
+
