@@ -1,9 +1,10 @@
-\chapter{Cryptographic Tools}
+\chapter{Tools for DHT and Blockchains}
+\section{Cryptographic Tools}
 \begin{definition}[Hash Function]
    An hash function converts a binary string of arbitrary length to a binary string of fixed length
 \end{definition}
 
-\section{Hash functions and collisions}
+\subsection{Hash functions and collisions}
 Non-crypto hash functions have low collision probability, but still for an adversary specifically looking to produce one, it may be easy to succeed.\\
 For example, the \textit{Cyclic Redundancy Check} (\texttt{CRC}) ---which essentially is the remainder in a long division calculation--- was long mistakenly used where instead crypto integrity was required.
 Even if it is unlinkely to generate a collision using random errors, it is reasonably easy for an adversary to find one. 
@@ -12,7 +13,7 @@ Note that \ul{collisions \textit{always} exist}, because the codomain is always 
 The term \textbf{hash security} refers to how hard is to \textit{find} a collision for a given hash function.
 
 
-\section{Cryptographic Hash functions}
+\subsection{Cryptographic Hash functions}
 Two main properties must hold for an HF to be cryptographic:
 \begin{enumerate}
    \item \textbf{Adversarial collision resistance}
@@ -60,3 +61,17 @@ Bitcoin \textit{Proof of Work} (\textbf{PoW}) is based on a hash/search puzzle.
 \end{definition}
 Puzzle-friendly property implies that
 \textit{no} solving strategy to solve a search puzzle is much better than \textit{trying exaustively} all the values $x \in X$.
+
+TODO
+Complete lecture on Cryptographic Tools
+
+\section{Data Structures}
+
+\textbf{Bloom Filters} answers queries like \textit{``is $k$ an element of $S$''}. Bloom filters are fast and lightweight but provide a proabilistic answer
+\begin{equation}
+   BF(k) = 
+   \begin{cases*}
+      $0$ & $k \notin S$\\
+      $1$ & $k \textit{ \ul{may be} in } S$  
+   \end{cases*}   
+\end{equation}
