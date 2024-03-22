@@ -73,4 +73,12 @@ Spine-leaf allows \textit{scale-out} opposed to \textit{scale-up}, by adding add
 
 \subsection{Full fat tree}
 In a ---full?--- \textbf{fat tree}, branches nearer the top of the hierarchy are "fatter" (thicker) than branches further down the hierarchy. In a telecommunications network, the branches are data links; the varied thickness (bandwidth) of the data links allows for more efficient and technology-specific use.
+
+Full-fat tree is rarely needed.
+
 \section{Virtualization}
+
+With VLAN frames are extended by 4 bytes. Every switch nowdays automatically sets the \texttt{VLAN\_ID} to \texttt{1}; if the field is not existent, it is appended, making an \textbf{tagged} an \textit{untagged} frame.
+
+Switches ensure that data cannot spill/leak from a VLAN to another.
+VLAN became largely of use when 10Gbit connection came out, because only 1Gbit was a too constrained bandwidth to be splitted into multiple VLANs. 
