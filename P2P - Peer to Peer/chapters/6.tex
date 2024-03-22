@@ -67,7 +67,8 @@ Complete lecture on Cryptographic Tools
 
 \section{Data Structures}
 
-\textbf{Bloom Filters} answers queries like \textit{``is $k$ an element of $S$''}. Bloom filters are fast and lightweight but provide a proabilistic answer
+\subsection{Bloom Filters}
+\textbf{Bloom Filters} answers queries like \textit{``is $k$ an element of $S$''}; they assess the \textit{Set Membership} problem. Bloom filters are fast and lightweight but provide a proabilistic answer
 \begin{equation}
    BF(k) = 
    \begin{cases*}
@@ -75,3 +76,29 @@ Complete lecture on Cryptographic Tools
       $1$ & $k \textit{ \ul{may be} in } S$  
    \end{cases*}   
 \end{equation}
+The probability of false positives is
+\begin{equation*}
+   p' = \left( 1 - \frac{1}{m}\right) ^{kn} \approx e^{-kn/m}
+\end{equation*}
+
+A common use of BFs is to perform the \textbf{intersection} between them.
+They are used by Ethereum, Google, and Bitcoin.
+
+\subsection{Merkle Hash Table}
+It is a data structure summarizing a big quantity of data, with the goal of verifying the correctness of the content.
+A \textbf{Merkle Hash Table} consists of a complete binary tree of hashes built starting from an initial set of data:
+\begin{itemize}
+   \item $i^{th}$ leaf stores the hash $h_i$ of $f_i$ 
+   \item An internal node contains the concatenation of the hashes of the sons of the node
+   \item The last hash stored in the root is called \textit{Merkle Root Hash}
+\end{itemize}
+
+A \ul{collision-resistant hash function \textit{Merkle Hash Tree} (\texttt{MHT}) takes $n$ inputs $(x_1,\dots,x_n)$ and outputs a Merkle root hash $h=MHT(x_1,\dots,x_n)$}. Such function has an important property:
+has an important property: 
+\begin{center}
+   Imagine Alice (\textit{verifier}) knows only the Merkle root hash $h$;\\
+   Bob (\textit{prover}) can give Alice one of the values $x_i$ and convince Alice that it was the $i^{th}$ input used to compute $h$.
+   To convince her, Bob gives Alice an associated Merkle proof without
+   showing all the other inputs;
+   if a Merkle proof says that $x_i$ was the $i^{th}$ input used to computed $h$, no attacker can come up with another Merkle proof that says a different $x'_i\neq x_i$ was the $i^{th}$ input uses in MHT
+\end{center}
