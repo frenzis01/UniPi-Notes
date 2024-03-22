@@ -54,3 +54,50 @@ Three different ---but equally true--- interpretations may be given to such law:
    halves every two years
 \end{enumerate}
 
+\section{Battery consumption}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/iot_laptop_consumption.png}
+   \includegraphics[width=0.45\columnwidth]{images/iot_sensor_consumption.png}
+   \caption{Laptop and IoT Sensor battery consumption percentages}
+   \label{fig:iot_sensor_consumption}
+\end{figure}
+
+In the previous decades the focus was on minimizing the number of bytes sent to optimize network performance.
+For IoT instead, the focus is to \ul{keep the radio off most of the time}, since it consumes about 40\% of the battery.
+
+\subsection{Duty Cycle}
+Also turning off CPU and radio is battery consuming, so it must be done according to some criteria.\\
+Since the activity of an IoT device is (mostly) repetitive, it may define a \textbf{duty cycle} by alternating periods of activity to periods of inactivity.
+\begin{paracol}{2}
+   
+   The duty cycle of a system (or a component / device) is defined as the fraction of one period in which the system is active.
+   \note{100\% means always active, while 1\% means active only 1\% of its period}
+
+   Note that even if the duty cycle of the whole device may be defined at application level, \ul{each component has its own duty cycle}, adding some "unpredictability" to the power consumption equation. 
+   \switchcolumn
+
+   \begin{lstlisting}[language=C,otherkeywords = {turnOn,turnOff,idle,Serial}]
+void loop() {
+   // reads the input from analog pin 0:
+   turnOn(analogSensor);
+   int sensorValue = analogRead(A0);
+   turnOff(analogSensor);
+   // converts value into a voltage (0-5V):
+   float voltage = sensorValue * (5.0 / 1023.0);
+   // transmits voltage over the radio
+   turnOn(radioInterface);
+   Serial.println(voltage);
+   turnOff(radioInterface);
+   // waits for next loop
+   idle(380);
+}
+   \end{lstlisting}
+   
+\end{paracol}
+
+
+Sometimes the specification of an IoT device indicates the power consumption expressed in $mA$ for each component in each state it may be (idle/read/write/etc.).
+Even if not completely precise, the specification may provide a good approximation of the consumption.\\
+It is also important to note that there should be a record in the specs indicating how much capacity the battery loses over time. Most batteries lose a low percentage (e.g. 3\%) capacity each year.
