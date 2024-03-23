@@ -12,7 +12,7 @@ Each \textbf{block} is made up of \textit{Data}, \textit{Hash} and the \textit{H
 
 \textbf{Tamper freeness} refers to changing one hash causes changing the hash of the following blocks, implying not only to recompute some hashes, but also to find a value that combined with the new hash solves the \textit{Proof of Work}.
 
-A \textbf{ledger} acts like a notary, and is replicated on each node of a P2P network, it is immutable and benefits of the tamper freeness property.\\
+A \textbf{ledger}\footnote{\textit{``Libro mastro''} in italiano} acts like a notary, and is replicated on each node of a P2P network, it is immutable and benefits of the tamper freeness property.\\
 The ledger is like a bullettin storing operations and their order. It must be an \textbf{append-only} list of events, and also \textbf{tamper-proof}.
 
 \begin{center}
@@ -21,3 +21,7 @@ The ledger is like a bullettin storing operations and their order. It must be an
 \nl
 
 \textbf{Consensus} is the mechanism which defines who decides which operation will be added to the blockchain, and which operation among those to be confirmed will be added.
+
+
+The two main challenges for the ledger are keeping consistency in case of network jitter and possible delays, and avoid nodes to fake results.
+An idea is to establish \textit{consensus} using a \textbf{Proof of Work}, which requires the voting system to be hardly fakeable, i.e. resolving a difficult computational problem.

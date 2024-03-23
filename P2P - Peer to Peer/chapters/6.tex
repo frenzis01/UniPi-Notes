@@ -85,16 +85,26 @@ A common use of BFs is to perform the \textbf{intersection} between them.
 They are used by Ethereum, Google, and Bitcoin.
 
 \subsection{Merkle Hash Table}
-It is a data structure summarizing a big quantity of data, with the goal of verifying the correctness of the content.
-A \textbf{Merkle Hash Table} consists of a complete binary tree of hashes built starting from an initial set of data:
-\begin{itemize}
-   \item $i^{th}$ leaf stores the hash $h_i$ of $f_i$ 
-   \item An internal node contains the concatenation of the hashes of the sons of the node
-   \item The last hash stored in the root is called \textit{Merkle Root Hash}
-\end{itemize}
+\begin{paracol}{2}
+   It is a data structure summarizing a big quantity of data, with the goal of verifying the correctness of the content.
+   A \textbf{Merkle Hash Table} consists of a complete binary tree of hashes built starting from an initial set of data:
+   \begin{itemize}
+      \item $i^{th}$ leaf stores the hash $h_i$ of $f_i$ 
+      \item An internal node contains the concatenation of the hashes of the sons of the node
+      \item The last hash stored in the root is called \textit{Merkle Root Hash}
+   \end{itemize}
+   
+\switchcolumn
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/merkle.png}
+   \caption{Merkle}
+   \label{fig:merkle}
+\end{figure}
+\end{paracol}
 
 A \ul{collision-resistant hash function \textit{Merkle Hash Tree} (\texttt{MHT}) takes $n$ inputs $(x_1,\dots,x_n)$ and outputs a Merkle root hash $h=MHT(x_1,\dots,x_n)$}. Such function has an important property:
-has an important property: 
 \begin{center}
    Imagine Alice (\textit{verifier}) knows only the Merkle root hash $h$;\\
    Bob (\textit{prover}) can give Alice one of the values $x_i$ and convince Alice that it was the $i^{th}$ input used to compute $h$.
@@ -102,3 +112,51 @@ has an important property:
    showing all the other inputs;
    if a Merkle proof says that $x_i$ was the $i^{th}$ input used to computed $h$, no attacker can come up with another Merkle proof that says a different $x'_i\neq x_i$ was the $i^{th}$ input uses in MHT
 \end{center}
+\begin{definition}[Merkle Proof Consistency Theorem]
+   It is unfeasible to output a Merkle root $h$ and two \textit{inconsistent} proofs $\pi_i$ and
+   $\pi'_i$ for two different inputs $x_i$ and $x'_i$ at the $i^{th}$ leaf in the tree of size n
+\end{definition}
+This can be proved by intuition as follows:
+if the proof verification had yielded the same hash but with a different \st{file} leaf
+$f'_i\neq f_i$ as the $i^{th}$ input, this would yield a collision in the underlying hash function
+$H$ used to build the tree; but such a collision is not possible if $H$ is collision resistant.
+
+\subsubsection*{Enlightening Example - Cloud File Integrity}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/merkle_example.png}
+   \caption{Cloud file integrity use case}
+   \label{fig:merkle_example}
+\end{figure}
+Suppose that the user downloads the file f3 ---which was earlier on stored on the user's PC--- and wants to check that Dropbox hasn't tampered/corrupted it.
+The user must keep only the \textbf{hash root} of the file they had uploaded on Dropbox, not the whole Merkle Tree.\\
+Dropbox can provide ---along with the file--- a portion of the original Merkle Tree (the \textit{Merkle Proof} or \textit{Membership proof}), only the nodes needed for the user to compute the Merkle proof, i.e. computing the sequence of hashes ``filling the blanks'' up to the root and check that the resulting root matches the one stored on the user's PC.
+\note{I think that the Dropbox cannot fake a Merkle tree by choosing fake $h_4,h_{1,2}, h_{5,8}$ such that the root is the one expected by the user, due to the \textit{collision resistant} property of $H$}
+
+\section{Tries and Patricia Tries}
+\begin{paracol}{2}
+   \colfill
+   \labelitemize{\textbf{\textit{Trie}}}{
+      \begin{itemize}
+      \item The root node stores nothing.
+      \item Edges are labeled with letters and a path from the root to the node
+      represents a string.
+      \item The nodes come with an indicator, which indicates whether that node
+      represents the end of a string.
+      \end{itemize}
+   }
+   
+   This is very space consuming since every node stores a label. 
+   The trie may be compressed by storing only the first different prefixes\footnotemark[1]  in the nodes, resulting in an equivalent \textbf{Patricia Trie}.
+   \colfill
+   \switchcolumn
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.60\columnwidth]{images/trie.png}\\
+      \includegraphics{images/patriciatrie2.png}
+      \caption{Trie and corresponding Patricia Trie}
+      \label{fig:trie}
+   \end{figure}
+\end{paracol}
+\footnotetext[1]{Actually also only the first different character should be ok, if I recall corecctly from Algorithm Engineering course}
