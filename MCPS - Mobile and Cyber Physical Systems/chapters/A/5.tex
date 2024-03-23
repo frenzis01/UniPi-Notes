@@ -101,3 +101,15 @@ void loop() {
 Sometimes the specification of an IoT device indicates the power consumption expressed in $mA$ for each component in each state it may be (idle/read/write/etc.).
 Even if not completely precise, the specification may provide a good approximation of the consumption.\\
 It is also important to note that there should be a record in the specs indicating how much capacity the battery loses over time. Most batteries lose a low percentage (e.g. 3\%) capacity each year.
+
+   For what concerns the exercise, these are the calculations
+   \begin{table}[htbp]
+      \centering
+      \begin{tabular}{|c|c|c|c|c|}
+         CPU & 5 &				0.05 * 8 	& 0.95 * 0.015	&	 0.41425\\
+         Radio & 3,75 &		0.0375 * 20 	& 0.9625 * 0.020 &	 0.9425\\
+         Sensor & 1 &			0.01 * 5		& 	0.99 * 0.005	&	 0.05495\\
+      \end{tabular}
+      \caption{Exercise calculations and solutions}
+      \label{tab:battery_consumption}
+   \end{table}
