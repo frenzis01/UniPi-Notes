@@ -64,14 +64,48 @@ The rule to partition the keys (content) among the nodes must respect the rules 
 \section{Routing Table}
 In order to look for data, Kademlia's key idea is to \ul{store a logarithmic number of node IDs and their corresponding IP} addresses and some contact taken from the identifier trie.
 
-TODO
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/kademlia_routingtable.png}
+   \caption{Neighbours and buckets}
+   \label{fig:kademlia_routingtable.png}
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/kademlia_routing_table1.png}
+   \includegraphics[width=0.45\columnwidth]{images/kademlia_routing_table2.png}
+   \label{fig:kademlia_routing_table}
+\end{figure}
+
+Each k-bucket corresponds to a prefix and covers a subset of the identifier space: the set of all the k-buckets cover the whole identifier space.
+The first entries of the routing table correspond to peers sharing a long prefix
+with the owner of the routing table; the last entries instead of the routing table correspond to peers sharing a smaller prefix, and cover a larger set of identifiers.
+The value of K is defined such that the probability that a crash of more of K
+nodes is a rare event.
+\ul{Nodes in each bucket are maintained ordered such that \textit{least recently contacted nodes are in the first positions of the list}}.
 
 \section{Key Lookup}
 
-TODO
+The idea for key lookup is:
+\begin{enumerate}
+   \item Find the closest node to the key in your routing table via the XOR distance
+   \item While the closest node you know of does not have the key and has not already responded
+   \begin{enumerate}
+      \item Ask the closest node you know of, for the key or a closer node
+      \item If the closest node responds with a closer node, update your closest nodes set.
+   \end{enumerate}
+\end{enumerate}
+At each iteration, the XOR metric is reduced by $\sfrac{1}{2}$ and results in smaller size k-buckets
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/kademlia_lookup.png}
+   \caption{Kademlia Lookup at a glance}
+   \label{fig:kademlia_lookup}
+\end{figure}
 
 \section{Protocol Messages}
-TODO reformat this
 \begin{enumerate}
    \item \texttt{FIND\_NODE $v\longrightarrow w$} (T) (v,w nodes, T target of the look up)\\
    the recipient of the message (w) returns k (IP address, UDP port, Node

@@ -62,8 +62,22 @@ Bitcoin \textit{Proof of Work} (\textbf{PoW}) is based on a hash/search puzzle.
 Puzzle-friendly property implies that
 \textit{no} solving strategy to solve a search puzzle is much better than \textit{trying exaustively} all the values $x \in X$.
 
-TODO
-Complete lecture on Cryptographic Tools
+\subsection{Use cases}
+\begin{itemize}
+   \item \textbf{Data fingerprinting}\\
+   In general $H(x) = H(y) \Rightarrow x = y$, so $H$ allows us to avoid comparing the whole files
+   \item \textbf{Message Integrity}\\
+   $H(x)$ may be used as a checksum value
+   \item \textbf{DHT}s
+   \item \textbf{Digital Signature}\\
+   Hash functions are widely used for public-key aymmetric algorithms, for ensuring both confidentaliaty and message integrity, by appending a \textbf{digest} to the message.
+   \note{Recall that without a \textit{digital certificate} proving the identity of the sender, only ``weak authentication'' is provided;
+   without one, a third party may impersonate someone else.} 
+   The major challenge for digital signatures is to prevent adversaries from learning how to sign messages by analysing the verification-key.
+   
+\end{itemize}
+
+
 
 \section{Data Structures}
 
