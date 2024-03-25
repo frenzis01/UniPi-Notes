@@ -82,3 +82,21 @@ With VLAN frames are extended by 4 bytes. Every switch nowdays automatically set
 
 Switches ensure that data cannot spill/leak from a VLAN to another.
 VLAN became largely of use when 10Gbit connection came out, because only 1Gbit was a too constrained bandwidth to be splitted into multiple VLANs. 
+
+VLAN are used to partition the traffic at data link layer without having to redo the fabric. They are particularly useful in cloud environments.
+
+\section{Network Administrator POV}
+The switch is split in two planes:
+\begin{itemize}
+   \item \textbf{Control Plane}\\
+   This plane is necessary to configure the data plane to make it behave according to our needs.
+   Here there is an \textit{OS}, which used to be proprietary with a functioning fitting a specific network configuration, but nowdays they are usually more configurable and may even be \textit{open} OS.
+   \note{\textit{Dell}'s switches now have an \textit{open} OS on board.}
+   
+   \item \textbf{Data Plane}\\
+   Here lies the chip responsible to perform all the data link operations required, runs protocols, handles VLANs, etc.
+
+   \textbf{OpenFlow} allows us to manage the flow table inside of a switch.
+\end{itemize}
+
+The two planes are linked by a low-bandwidth PCIe.
