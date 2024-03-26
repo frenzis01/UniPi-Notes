@@ -102,14 +102,88 @@ Sometimes the specification of an IoT device indicates the power consumption exp
 Even if not completely precise, the specification may provide a good approximation of the consumption.\\
 It is also important to note that there should be a record in the specs indicating how much capacity the battery loses over time. Most batteries lose a low percentage (e.g. 3\%) capacity each year.
 
-   For what concerns the exercise, these are the calculations
-   \begin{table}[htbp]
-      \centering
-      \begin{tabular}{|c|c|c|c|c|}
-         CPU & 5 &				0.05 * 8 	& 0.95 * 0.015	&	 0.41425\\
-         Radio & 3,75 &		0.0375 * 20 	& 0.9625 * 0.020 &	 0.9425\\
-         Sensor & 1 &			0.01 * 5		& 	0.99 * 0.005	&	 0.05495\\
-      \end{tabular}
-      \caption{Exercise calculations and solutions}
-      \label{tab:battery_consumption}
-   \end{table}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/energy_exercise.png}
+   \caption{Exercise on energy consumption and duty cycling}
+   \label{fig:energy_exercise}
+\end{figure}
+For what concerns the exercise, these are the calculations
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|c|c|c|}
+      CPU & 5 &				0.05 * 8 	& 0.95 * 0.015	&	 0.41425\\
+      Radio & 3,75 &		0.0375 * 20 	& 0.9625 * 0.020 &	 0.9425\\
+      Sensor & 1 &			0.01 * 5		& 	0.99 * 0.005	&	 0.05495\\
+   \end{tabular}
+   \caption{Exercise calculations and solutions}
+   \label{tab:battery_consumption}
+\end{table}
+
+\subsection{MAC Protocols}
+In general they are Low-level communication protocols to send/receive packets to/from in-range sensors, but in IoT  they also implement strategies for energy efficiency, by synchronize devices and turning off the radio when it is not needed\footnote{Equivalent to excluding a device from the network}.
+
+\subsection*{Exercise 1}
+% Sampling time = 0.5ms * 5 = 2.5ms\\
+% Periodo = 1/20 = 0.05s = 50ms\\
+% Inactive time = 50ms*4 - 0.5ms * 4 = 198ms\\
+% Energy sleeping = 198ms * (15 + 5)uA + (20uA)*200ms = 0.00792mA\\
+% Energy active = 0.5ms * (8 + 5)mA = 6.5mA
+% \nl
+
+% Transmit time = 2ms * 5 = 10ms\\
+% Energy sleeping = already computed\\
+% Energy active = 10ms * (8 + 20)mA = 280mA
+% \nl
+
+% Total energy = 0.00792 + 6.5 + 0.00792 + 280 = 286.51592mA\\
+% Total energy available = 2000mAh\\
+% Expected lifetime = 2000 / 286.51592 = 6.98 hours
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/energy_exercise1.png}
+   \label{fig:energy_exercise1}
+\end{figure}
+
+Duty cycle sensor = 0.01\\
+Duty cycle radio = 0.008\\
+Duty cycle CPU = $(0.5 * 5 + 2)/250ms = 0.018 = 0.01 + 0.008$
+\nl
+\begin{align*}
+   &\textbf{Radio energy} \texttt{ON} &=& 20mA * 0.008 &= 0.16mA\\ 
+   &\textbf{Radio energy} \texttt{IDLE} &=& 20\mu A *0.992 &= 0.01984mA\\
+   &\textbf{Sensor energy} \texttt{ON} &=& 5mA *0.01 &= 0.05mA\\
+   &\textbf{Sensor energy} \texttt{IDLE} &=& 5\mu A *0.99 &= 0.00495mA\\
+   &\textbf{CPU energy} \texttt{ON} &=& 8mA * 0.018 &= 0.144mA\\
+   &\textbf{CPU energy} \texttt{IDLE} &=& 15\mu A * 0.982 &= 0.0147mA
+\end{align*}
+
+\textbf{Total energy} per hour =\\
+$0.16 + 0.01984 + 0.05 + 0.00495 + 0.144 + 0.0147 = 0.39349mA$\\
+Total energy available = 2000mAh\\
+Expected lifetime = $2000 / 0.39349 = 5084.5h = 212d$
+
+\subsection*{Exercise 2}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/energy_exercise2.png}
+   \label{fig:energy_exercise2}
+\end{figure}
+
+Duty cycle sensor = 0.01\\
+Duty cycle radio = $2 / 10000ms = 0.0002$\\
+Duty cycle processor = $(0.5 * 200 + 2 + 5*5)/10000 = 0.0127$
+\begin{align*}
+   &\textbf{Radio energy} \texttt{ON} &=& 20mA * 0.0002 &= 0.004mA\\ 
+   &\textbf{Radio energy} \texttt{IDLE} &=& 20\mu A * 0.9998 &= 0.01998mA\\
+   &\textbf{Sensor energy} \texttt{ON} &=& 5mA *0.01 &= 0.05mA\\
+   &\textbf{Sensor energy} \texttt{IDLE} &=& 5\mu A *0.99 &= 0.00495mA\\
+   &\textbf{CPU energy} \texttt{ON} &=& 8mA * 0.0127 &= 0.1016mA\\
+   &\textbf{CPU energy} \texttt{IDLE} &=& 15\mu A * 0.9873 &= 0.0148mA
+\end{align*}
+
+\textbf{Total energy} per hour =\\
+$0.004 + 0.01998 + 0.05 + 0.00495 + 0.1016 + 0.0148 = 0.19533mA$\\
+Total energy available = 2000mAh\\
+Expected lifetime = $2000 / 0.19533 = 10238.5h = 426d$
