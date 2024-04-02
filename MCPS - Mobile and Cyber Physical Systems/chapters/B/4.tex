@@ -70,3 +70,142 @@ These are the two key tasks. In Fig. a comparison between the tradional and the 
       \label{fig:sdn_planes3}
    \end{figure}
 \end{paracol}
+
+\newpage
+\section{Data Plane}
+Resource or infrastructure layer providing a \textit{Forwarding Abstraction} made up of \textbf{forwarding devices} ---without embedded software to make autonomous decisions--- which perform the transport and processing of data according to decisions made by the SDN control plane.
+
+Inside the routers there is an \textbf{OpenFlow} \textbf{flow\footnotemark[1] table}.
+\begin{paracol}{2}
+   Some simple forwarding rules are defined:
+   \begin{itemize}
+      \item \textit{Match}:
+      Pattern values to be matched in packet header fields
+      \item \textit{Actions}:
+      Actions to be performed for matched packet: \texttt{drop, forward, modify} 
+      \item \textit{Priority}:
+      Used to disambiguate overlapping matching patterns
+      \item \textit{Counters}:
+      Typically used for \texttt{\#bytes} and \texttt{\#packets}   
+   \end{itemize}
+
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/openflow_rulesexamples.png}\\
+      \includegraphics{images/openflow_rulesexamples1.png}
+      \caption{OpenFlow rules examples}
+      \label{fig:openflow_rulesexamples}
+   \end{figure}
+\end{paracol}
+
+\footnotetext[1]{Defined by \textit{link}, \textit{network} and \textit{transport} layer fields}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/openflow_matchaction.png}
+   \label{fig:openflow_matchaction}
+\end{figure}
+The abstraction of \texttt{match+action} unifies different kinds of devices
+
+\subsection{OpenFlow to control the Network Device}
+Data Plane Network devices support, alongside the abovementioned rule-based formwarding capabilities, interaction with the SDN controller for management of forwarding rules, through OpenFlow switch protocol.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/openflow_switch.png}
+   \caption{OpenFlow switch}
+   \label{fig:openflow_switch}
+\end{figure}
+Through OpenFlow, the controller can add, update, and delete flow
+entries in tables, both reactively (in response to packets) and
+proactively.
+
+A switch is made up of one or multiple pipelined flow tables, possibly allowing for considerable flexibility.
+Instructions performed on a packet may explicitly direct it to another flow table (\texttt{Goto} instruction) and so on, until it is formwarded to an output port.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/openflow_switchtables.png}
+   \caption{Multiple tables inside switch}
+   \label{fig:openflow_switchtables}
+\end{figure}
+
+
+\section{Control Plane}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/openflow_controllerinside.png}
+   \caption{Inside an OpenFlow controller}
+   \label{fig:openflow_controllerinside}
+\end{figure}
+The Openflow protocol operates between acontroller and switches using TCP (optional encryption). There are three classes of OpenFlow messages:
+\begin{enumerate}
+   \item Controller-to-switch
+   \begin{enumerate}
+      \item \textit{Features}:
+      controller queries switch features, switch replies
+      \item \textit{Configure}:
+      controller queries/sets switch configuration parameters
+      \item \textit{Modify-state (FlowMod)}:
+      add, delete, modify flow entries in the OpenFlow
+      tables
+      \item \textit{Packet-out}:
+      controller can send this packet out of specific switch port
+   \end{enumerate}
+   \item Asynchronous (switch to controller) 
+   \begin{enumerate}
+      \item \textit{Packet-in}:
+      transfer packet (and its control) to controller. See packet-out message from controller
+      \item \textit{Flow-removed}:
+      flow table entry deleted at switch
+      \item \textit{Port status}:
+      inform controller of a change on a port.
+   \end{enumerate}
+   \item Symmetric (misc.)
+\end{enumerate} 
+\note{ortunately, network operators don’t “program” switches by creating/sending OpenFlow messages directly; they use instead use higher-level abstraction at controller.}
+
+\section{Topology discovery and forwarding in the SDNs}
+\subsection{Routing}
+While traditionally the routing function is \textit{distributed} among the routers in a network, in an SDN controlled network, it makes sense to \ul{\textbf{centralize} the routing function within the SDN controller}, allowing it develop a consistent view of the network state for calculating shortest paths and implementing application-aware routing policies.\\
+Thus, data plane switches are relieved of the processing and storage burden associated with routing, leading to improved performance.
+
+The centralized routing application performes two tasks
+\begin{itemize}
+   \item \textbf{Link/Topology discovery}
+   \begin{itemize}
+      \item The routing function needs to be aware of links between data plane switches
+      \item The topology discovery in OpenFlow domains currently is not standardized
+   \end{itemize}
+   \item \textbf{Topology manager}
+   \begin{itemize}
+      \item Maintains the topology information for the network
+      \item calculates routes in the network (the shortest path between two data plane
+      nodes or between a data plane node and a hos
+   \end{itemize}
+\end{itemize}
+
+Every OF switch has initially set the IP address and TCP port of a controller to establish a connection as soon as the device is turned on; it also has preinstalled flow rules to route directly to the controller via a Packet-In message any message of the \textbf{Link Layer Discovery Protocol (LLDP)}, which is a neighbor discovery protocol of a single jump, i.e. it advertises its identity and capabilities and receives the same information from the adjacent switches.
+\note{
+   LLDP is vendor neutral and works at layer 2, using \textit{Ethernet} as ``transport'' protocol.
+}
+
+Switches send the LLDP messages (\textit{``frames''}) ---periodically at a given interval of time--- to discover the underlying topology by request of the controller.
+
+
+\section{Google B4 WAN}
+There are two \textbf{backend backbones}, \texttt{B2} carrying internet facing traffic, and \texttt{B4} moving inter-datacenter traffic; the latter has grown a lot in the recent years.
+
+B4 was needed for various reasons:
+\begin{itemize}
+   \item Not on the public Internet
+   \item Cost effective network for high volume traffic
+   \item Bursty/bulk traffic\footnote{\textit{``Burst''}: a group of packets with shorter interpacket gaps than packets arriving before or after that burst}
+\end{itemize}
+
+Flow types traversing backend backbones are:
+\begin{itemize}
+   \item User data copies
+   \item Remote storage access
+   \item Large-Scale data push synchronizing state across multiple data centers
+\end{itemize}
