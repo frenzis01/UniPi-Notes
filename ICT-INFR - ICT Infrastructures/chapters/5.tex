@@ -16,5 +16,21 @@
       \caption{Storage types comparison}
       \label{fig:storage_intel}
    \end{figure}
-
 \end{paracol}
+
+SSDs were invented by Toshiba back in 1980, but they were not popular for almost 30 years, until they eventually became cost-effective. Sometimes extra size in SSDs is used for redundancy, to increase the lifespan of the disk e.g. on a 30TB disk, only 10TB are used, the rest is used for redundancy, extending x3 the lifespan of the disk.
+
+\begin{center}
+   \textit{Why would a 15TB disk be better than a 27TB disk?}\\
+   \note{Assume the same performance, and the same price.}
+\end{center}
+It would be preferrable because \ul{it would take less time to extract all the data from the disk}\footnote{i.e. taking advantage of the space provided}, since it is smaller.
+
+However, large capacity drives are used for \textit{cold storage}, where the data is not accessed frequently, speed is not a priority, and even if the data is accessed, only a portion of the disk is needed at a time; in case of failure and thus needing to retrieve an entire backup, the time taken to retrieve the data is not a priority, since this ---hopefully--- happens only ``once''.
+
+\section{SSDs - QLC and TLC}
+
+TLC stands for \textit{Triple Level Cell}, and QLC stands for \textit{Quad Level Cell}. The difference between the two is the number of bits stored in each cell. The more bits stored in each cell, the cheaper the disk is, but the slower it is. The more bits stored in each cell, the more difficult it is to read and write the data, and the more difficult it is to keep the data stored in the cell.
+
+Generally QLC disks are used for cold storage, while TLC disks are used for hot storage.
+TLC in general is more reliable than QLC, has a longer lifespan and better performance, however they cost more.
