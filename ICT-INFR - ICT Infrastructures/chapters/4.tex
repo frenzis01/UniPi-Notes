@@ -100,3 +100,26 @@ The switch is split in two planes:
 \end{itemize}
 
 The two planes are linked by a low-bandwidth PCIe.
+
+
+It is possible to use a very fast and simple ---reduced number of keystroke down to the strict necessary ones (e.g. \texttt{en} instead of \texttt{enable})--- CLI to program a switch. It is also possible to create a script file to be automatically executed by the switch at boot time.
+\note{Prof. Cisternino performed a demo of this in class.}
+
+Interestingly, the behaviour of the \texttt{netsh} command in Windows is very similar to the one of a switch.
+
+\section{SDN}
+\textbf{Software Defined Networking} is a new approach to networking that uses software-based controllers or application programming interfaces (APIs) to communicate with the underlying hardware infrastructure and direct traffic on the network.
+
+The problem was that the network infrastructure was ``ossified'' and not programmable. SDN allows to program the network, and to make it more flexible and adaptable to the needs of the applications, without having to disrupt the existing infrastructure.
+
+The key idea proposed in the OpenFlow article, which eventually became a standard, is to separate the control plane from the data plane, and to have a controller that can program through an API the data plane, where the \textbf{Flow Table} resides.
+
+An interesting use of OpenFlow was implemented by a University and called Sandwich firewall, which consisted in routing the first part of the stream through a firewall and if the stream was not malicious, it was routed directly to the destination, otherwise it was dropped.
+
+\subsection*{Latency-sensitive}
+Some workloads are called \textit{latency-sensitive}, making the latency introduced by TCP-IP stack a problem.\\
+Inside a datacenter nowadays the typical latency is sub microsecond.
+
+\textit{InfiniBand} is a fabric technology that allows to have a very low latency, and is used in HPC\footnote{High performance computing} environments. \textit{OmniPath} is a technology that is similar to InfiniBand, but is more scalable.
+
+\textit{Fibre Channel} switches are used in storage area networks, and are used to connect storage to servers CPUs. They are used in datacenters, but not for networking.

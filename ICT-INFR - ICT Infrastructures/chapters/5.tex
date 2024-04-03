@@ -1,0 +1,20 @@
+\section{Storage}
+
+\begin{paracol}{2}
+   
+   Historically the storage was the slowest part of the system, \textit{ms} against \textit{ns} of the CPU.
+   Today, with SSDs, the gap is considerably reduced to \textit{us}.
+   
+   \ul{NVMe stands for \textit{Non-Volatile Memory Express}, and is a protocol (\textit{not a HW component!})} that allows to access the storage directly from the PCIe bus, without having to go through the SATA controller. This allows to have a much higher throughput, and a much lower latency.
+
+   \note{Optane was a technology developed by intel which is now end of life}
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/storage_intel.jpg}
+      \caption{Storage types comparison}
+      \label{fig:storage_intel}
+   \end{figure}
+
+\end{paracol}
