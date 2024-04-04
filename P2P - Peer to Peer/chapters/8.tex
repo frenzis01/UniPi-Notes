@@ -1,0 +1,111 @@
+\chapter{Bitcoin Mining}
+
+Recall that the \textbf{distributed consesus} is a procedure to reach a common agreement in a distributed or decentralized multi-agent system;
+it must ensure correct results even in presence of faulty nodes, network partitioning and byzantine faults\footnote{Nodes behaving maliciously}.
+
+\note{Even though it is difficult to classify the method used by Bitcoin to achieve decentralization from a theoretical point of view, it works in practice.
+
+\textit{``...is not purely technical, but it’s a combination of technical methods and clever incentive engineering.''}
+}
+
+\section{Competing}
+Every node holds a \texttt{MemPool} containing all Bitcoin transactions awaiting confirmation.
+Conflicts may happen there, not in the ledger.
+In case a node receives a double-spending transaction, it will keep the first one and discard the second one.\\
+Nodes try to get transactions into the ledger, and \textbf{compete} to do so.
+Nakamoto consesus is implemented like a ``lottery'' where the winner gets to add a block ---of valid transactions--- to the blockchain, and to send its neighbours the updated ledger. The process of competing to add transactions to the blockchain is called \textbf{mining}.
+
+\subsection{Mining}
+Mining process starts with filling a candidate block with transactions taken
+from the memory pool, and then building a block header (1000 times smaller than the block);
+finally the node performs the Proof of Work.\\
+So, while a single transaction may be built by anyone, blocks are built by miners, and include multiple transactions and the header.
+
+The block header contains:
+\begin{itemize}
+   \item Version
+   \item Timestamp
+   \item \texttt{mhash} The Merkle root of the transactions in the block
+   \note{Merkle tree is not explicitly represented in the block, it is built on demand}
+   \item \texttt{hashprev} The hash of the previous block
+   \item PoW related fields:
+   \begin{itemize}
+      \item Target
+      \item Nonce
+   \end{itemize}
+\end{itemize}
+
+\framedt{Mining}{
+   \begin{enumerate}
+      \item Set \texttt{nonce = 0}
+      \item Hash the block header including the \texttt{nonce}
+      \item \texttt{while (\texttt{hash} > \texttt{target})}
+      \begin{enumerate}
+         \item Increment \texttt{nonce}
+         \item Hash the block header including the \texttt{nonce}
+      \end{enumerate}
+   \end{enumerate}
+   Target acts as threshold, and represents the number of leading zeros the hash must have.
+   The nonce is 32 bit long, and even a slight increment on it changes the whole hash result.
+}
+
+\subsection{Consesus}
+Node is selected to propose the next block in proportion to a resource that it is hard to
+monopolize: in Bitcoin this resource is \textbf{computational power} and the selection is done on the basis of the Proof of Work.
+
+The Consensus is \textbf{implicit}:
+\begin{itemize}
+   \item No collective distributed algorithm executed by the nodes
+   \item No voting
+   \item Selection of malicious nodes is also implicitily handled by the system
+\end{itemize}
+
+Even if the nodes may have occasionally an inconsistent view of the ledger (blockchain forks) consensus will eventually occur, the consistent ledger will eventually be the longest chain.
+\note{This is true if the majority of the nodes are honest.}
+
+\subsection{Proof of Work}
+\begin{itemize}
+   \item \texttt{d} - \textit{difficulty}: a positive number which is used to adjust the time to execute the proof
+   \item \texttt{c} - \textit{challange}: a given string (the block header minus the nonce)
+   \item \texttt{x} - \textit{nonce}: an unknown string
+\end{itemize}
+
+\begin{definition}[Proof of Work]
+   A proof of work is a function $F_d(c,x) \rightarrow {\texttt{True,False}}$ satisfying:
+   \begin{enumerate}
+      \item \texttt{d} and \texttt{c} are \textit{fixed}
+      \item $F_d(c,x)$ is \textit{fast to compute}, if \texttt{d}, \texttt{c}, and \texttt{x} are known
+      \item instead, finding \texttt{x} so that $F_d(c,x) = \texttt{True}$ is computationally difficult, but feasible.
+   \end{enumerate}
+\end{definition}
+
+The PoW is hard to solve because the computing output looks like a random 256-bit string where each bit is equally likely to be \texttt{0} or \texttt{1} independently of the other bits, so each output bit looks like coin flips (\texttt{0/1}).
+There is no better way of finding the correct output than trying by \textbf{brute force}.\\
+The probability $p$ that the block hash is below the target $T$ and average number of attempts $a$ to find a solution are:
+\begin{align*}
+   p=\frac{T+1}{2^{256}} & & a=\frac{1}{p}
+\end{align*}
+
+The system is resistant to Sybil attacks because the PoW is a scarce resource, and the cost of the attack is proportional to the whole computational power of the attacker, not to the number of identities they have.
+
+\note{The Proof of Work is also used in other contexts to prevent spam, like in Hashcash, and to counter DoS attacks, by allowing users to access a service only after solving a PoW.
+
+Email spam may be prevented through a PoW by adding a post stamp to each email message, and the receiver may decide to accept the message only if the PoW is valid.}
+
+\subsection{Block propagation and incentives}
+\paragraph*{Block propagation}
+The mined block is broadcasted on the network, and each node receiving the block verifies that the PoW has been solved by hashing the block header and checking that the hash is less than the target.
+It is easy to verify, without centralization points.\\
+After the verification, the node adds the block to the blockchain and kicks out any conflicting transaction from \texttt{MemPool}.
+
+\paragraph{Incentives}
+There are two mechanisms to incentivize the miners to be honest:
+\begin{enumerate}
+   \item \textbf{Block reward}:
+   a payment to the miner in exchange for the service of creating a block.\\
+   Bitcoin mints new coins when a new block is mined, and is the only way to create new bitcoins.\\
+   The reward is halved every 210K blocks ($\sim 4 \textit{ years}$), and the last block reward will be mined in 2140.
+   \item \textbf{Transaction fees}:
+   for each transaction in the block the miner gets the difference between transaction inputs and outputs.\\
+   It was voluntarily inserted to obtain a good ``quality of service'' from the miners.
+\end{enumerate}
