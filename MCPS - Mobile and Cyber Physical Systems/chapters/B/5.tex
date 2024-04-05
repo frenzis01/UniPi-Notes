@@ -127,6 +127,15 @@ Placing a chain of VNFs is hard, and consists of maximing a utility function, wh
 \end{itemize}
 
 \section{NFV MANO}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/NFV_mano.png}
+   \caption{NFV Reference - Architectural Framework}
+   Here VNF1,2,3 are VNF instances, EMS1,2,3 are Element Management Systems, and OSS/BSS is the traditional network management,
+   \label{fig:NFV_mano}
+\end{figure}
+
 \begin{itemize}
    \item Oversees the provisioning of the VNFs,
    and related operations
@@ -143,11 +152,13 @@ Placing a chain of VNFs is hard, and consists of maximing a utility function, wh
 Management}
 VIM comprises the functions that are used to control and manage the interaction of a VNF with computing, storage, and network resources under its authority, as well as their virtualization.
 
-A VIM is responsible for controlling and managing the NFVI compute, storage, and network resources. A MANO may orchestrate multiple VIMs.
+A VIM is responsible for controlling and managing the NFVI compute, storage, and network resources. 
+\note{A ---whole--- MANO may orchestrate multiple VIMs.}
 
 \subsection*{Virtual Network Function
 Manager - VNFM}
 Oversees lifecycle management (e.g. instantiation, update, query, scaling, termination) of VNF instances.
 
 \subsection*{NFV Orchestrator - NFVO}
-Responsible for installing and configuring new network services (NS) and virtual network function (VNF) packages, NS lifecycle management and global resource management.
+Responsible for installing and configuring new network services (NS) and virtual network function (VNF) packages, NS lifecycle management and global resource management.\\
+Acts also as network service orchestrator, managing/coordinating the creation of an end-to-end service that involves VNFs.

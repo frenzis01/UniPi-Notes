@@ -109,3 +109,104 @@ There are two mechanisms to incentivize the miners to be honest:
    for each transaction in the block the miner gets the difference between transaction inputs and outputs.\\
    It was voluntarily inserted to obtain a good ``quality of service'' from the miners.
 \end{enumerate}
+
+The first transaction in each block is called \ul{\textbf{coinbase transaction}, and is the one that mints new coins}: it includes the reward plus the transaction fees to the miner, and is not linked to any previous UTXO, but to a single ``dummy'' input.
+
+\framedt{Mining Difficulty}{
+   \begin{center}
+      \textit{``To compensate for increasing hardware speed and varying interest in running nodes over time, the proof-of-work difficulty is determined by a moving average targeting an average number of blocks per hour. If they’re generated too fast, the difficulty increases.''}\\
+      -Satoshi Nakamoto
+   \end{center}
+   The difficulty is adjusted every 2016 blocks (about 2 weeks) to keep the block time around \textbf{10 minutes}.
+   The difficulty is adjusted by changing the target, which is inversely proportional to the difficulty.
+}
+
+\framedt{Why 10 Minutes?}{
+   \begin{center}
+      \textit{``If broadcasts turn out to be slower in practice than expected, the target time between blocks may have to be increased to avoid wasting resources. 
+      We want blocks to usually propagate in much less time than it takes to generate them, otherwise nodes would spend too much time working on obsolete blocks.''}\\
+      -Satoshi Nakamoto
+   \end{center}
+
+   The 10 minutes target time is a trade-off between the time to propagate a block and the time to generate a new one.\\
+   The goal was to allow time to propagate across the whole network before the next block gets mined, to avoid wasting resources.
+}
+
+Note that 10 minutes mining time means that no instantaneous transactions are possible, but the system is designed to be secure, not fast.
+\note{e.g. you can't pay for an ice cream using bitcoin.}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/bitcoin_targetcycle.png}
+   \caption{Bitcoin target cycle}
+   \label{fig:bitcoin_targetcycle}
+   \note{A node can't avoid decreasing the target, since the other nodes would not validate its Proof of Work.}
+\end{figure}
+
+\note{Blocks are preferred over single transactions, because verification is faster and mining single transactions would overall require more mining work.}
+
+\subsection{Tamper-freeness}
+The blockchain is tamper-free because:
+\begin{itemize}
+   \item The PoW is hard to solve
+   \item The PoW is easy to verify
+   \item The PoW is a scarce resource
+\end{itemize}
+
+It would take an \ul{unfeasible amount of power for an attacker to change a transaction in a block}, since it would imply that: 
+\begin{enumerate}
+   \item The root of the Merkle tree changes and so the block header
+   \item The nonce of the block is no more valid
+   \item Re-execute PoW to re-compute the right nonce for the new block
+   \item In the next block the hash pointer to the previous block changes as well
+   \item Nonce of the next block is no more valid
+   \item Need to re-execute also on next block...
+   \item ...and so on
+\end{enumerate}
+
+\section{Temporary Forks}
+
+\begin{paracol}{2}
+   
+   \colfill
+   \ul{Temporary forks may happen when two miners find a valid block at the same time}, and broadcast it to the network.
+   The state of the blockchain is seen by the nework consists of two branches both
+   originating from the same parent block.
+   In this case both branches are legitimate, and is different from the double spending case, but still, \textit{which bitcoin are really spent?}
+   \colfill
+
+   \switchcolumn
+
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/bitcoin_forks.png}
+      \caption{Bitcoin temporary forks}
+      \label{fig:bitcoin_forks}
+   \end{figure}
+   \colfill
+\end{paracol}
+   
+
+Each miner node either receives block A or block C first, which are both valid, but different,
+and then starts mining on the branch of the fork with the block it received first;
+note that the two forks may grow indipendently, and the network may have multiple branches.
+If a \ul{miner receives a block that makes the other fork longer, it \textit{abandons} the
+shorter fork};
+the transactions of the ``abandoned'' fork that were not approved in the winning fork are returned to the pool of ``not-yet-approved'' transactions.
+\begin{definition}[6 Confirmation Rule]
+   Bitcoin approves a transaction finally only once there are at least \textbf{five} following blocks in the chain 
+\end{definition}
+
+\framedt{May the two chains extended perfectly in parallel, to equal height?}{
+   It may be possible, but extremely unlikely in practice.
+   The probability that this happens recursively, for a long period is very low,
+   besides mining and the block propagation delay introduce randomness in the protocol that typically prevents this.
+
+   Recall that each miner switches to mine on the longest branch it becomes aware of.
+}
+
+\begin{definition}[Nakamoto Consesus]
+   Forks are \textit{eventually} resolved and all nodes eventually agree on which is the longest
+   blockchain. The system therefore guarantees \textbf{eventual consistency}.
+\end{definition}
