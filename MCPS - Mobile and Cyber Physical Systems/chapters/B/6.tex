@@ -1,0 +1,35 @@
+\chapter{NFV/SDN Emulation tools}
+
+\section{Mininet}
+\href{http://mininet.org/}{Mininet} is a network emulator, it runs a collection of end-hosts, switches, routers, and links on a single Linux kernel.
+It supports OpenFlow for SDN network emulation.
+
+\note{
+A Mininet host behaves just like a real machine, 
+e.g can send packets with a given link speed and delay, or may ping or iperf another hosts}
+
+\lstinline|sudo mn| initializes a default topology and launches the CLI\\
+Overriding \lstinline|build()| of the \lstinline|mininet.topo.Topo| class to create a custom topology.
+
+\begin{itemize}
+   \item Topo: the base class for Mininet topologies
+   \begin{itemize}
+      \item \lstinline|addSwitch()|: adds a switch to a Topo and returns the switch name
+      \item \lstinline|addHost()|: adds a host to a Topo and returns the host name
+      \item \lstinline|addLink()|: adds a bidirectional link to Topo (and returns a link key, but this is not important).
+      \ul{Links in Mininet are bidirectional unless noted otherwise.}
+   \end{itemize}
+   \item Mininet: main class to create and manage a network
+   \begin{itemize}
+      \item \lstinline|start()|: starts your network
+      \item \lstinline|pingAll()|: tests connectivity by trying to have all nodes ping each other
+      \item \lstinline|stop()|: stops your network
+      \item \lstinline|net.hosts|: all the hosts in a network
+   \end{itemize}
+
+   \item[] Documentation: \href{http://mininet.org/api/annotated.html}{http://mininet.org/api/annotated.html}
+\end{itemize}
+
+\lstinline|veth| \textit{pairs} is a full-duplex link between two interfaces in same o separate namespace:
+packets transmitted from one interface are directly forwarded to the other interface in the pair, so each inteface behaves like an ethernet interface.\\
+\lstinline|ip link show type veth| or \lstinline|Mininet> links|
