@@ -1,5 +1,12 @@
 \section{Storage}
 
+\framedt{Data Loss}{
+   \textit{``Storage is crucial because, if a switch fails, or a server fails, the service will be interrupted, but the data will still be there. \ul{If the storage fails, the \textbf{data will be lost}}.''}
+   -Prof. Cisternino\\
+
+   \textbf{Data} is the most important of a system. Since data loss is \textbf{permanent}, the storage is completely different from computing or networking.
+}
+
 \begin{paracol}{2}
    
    Historically the storage was the slowest part of the system, \textit{ms} against \textit{ns} of the CPU.
@@ -34,3 +41,43 @@ TLC stands for \textit{Triple Level Cell}, and QLC stands for \textit{Quad Level
 
 Generally QLC disks are used for cold storage, while TLC disks are used for hot storage.
 TLC in general is more reliable than QLC, has a longer lifespan and better performance, however they cost more.
+
+\section{Latency}
+A mechanical hard drive introduces 2.71\% of latency when reading, for instance, 40MB of data.  Optane can perform 416 accesses in the same time needed by a mechanical hard drive to perform 1 access. It looks like the latency in this latter case is neglegtible. Someone may be tempted to reduce the size of read/write operations and perform multiple smaller ones, since ``it's free''. 
+
+\section{Checkpoints}
+It's unpractical for a system to go down after 5 months. For this reason it is necessary to have checkpoints, which are points in time where the system can be restored to. The system can be restored to the last checkpoint, and the data that was written after the checkpoint can be re-applied. This is similar to what happens to applications on smartphones are closed and then re-opened, the application is restored to the last checkpoint.
+
+\section{RAID}
+\textbf{RAID} stands for \textit{Redundant Array of Independent Disks}. It is a technology that allows to combine multiple disks into a single logical unit, in order to increase the performance, the reliability, or both. There are different levels of RAID, each with different characteristics.
+
+Historically \textit{Redundant Array of Inexpensive Disks}, because it was more common for disks to eventually fail, so RAID was the only countermeasure to this. Today, disks are more reliable, so RAID is used more for performance reasons.
+
+In RAID, \textbf{XOR} is used to calculate the parity of the data. The parity is used to recover the data in case of a disk failure. The parity is calculated by XORing the data of the disks. The parity is stored on a separate disk, called the parity disk. The parity disk is used to recover the data in case of a disk failure.
+
+\section{Network sharing}
+\textbf{SMB/CIFS} is a protocol that allows to share files over the network. It is used by Windows, but it is also supported by Linux and MacOS. NFS is a protocol that allows to share files over the network, it is used by Linux and MacOS, but it is also supported by Windows.\\
+NFS is faster than SMB, but it is also less secure. SMB is slower than NFS, but it is also more secure.
+
+\textbf{NAS} instead are devices that are connected to the network, and that are used to store files. They are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices. NAS devices are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices. NAS devices are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices.
+
+\note{HBA stands for \textit{Host Bus Adapter}, and is a device that allows to connect a computer to a storage device. It is used to connect a computer to a storage device, and to allow the computer to access the storage device.}
+
+When we talk about \textbf{capacity}, there are two measures which we can refer to:
+\begin{enumerate}
+   \item \textit{Scale-\textbf{up}}:
+   adding more disks to the same server
+   \item \textit{Scale-\textbf{out}}:
+   adding more servers to the same network
+\end{enumerate}
+
+SAN stands for \textit{Storage Area Network}, and is a network that is used to connect multiple storage devices to multiple servers. It is used to connect multiple storage devices to multiple servers, and to allow the servers to access the storage devices. It is used to connect multiple storage devices to multiple servers, and to allow the servers to access the storage devices.\\
+SAN was, before SSDs, one of the datacenter pillars.
+Its architecture included a ``Head'' to which drives were attached, and the head was connected to the network. The head was used to manage the drives, and to allow the servers to access the drives.\\
+When SSDs became popular, the head became a bottleneck, because it was not able to keep up with the speed of the SSDs(Recall that 4 SSDs are enough to saturate a 10Gbit link, See Sec. \ref{sec:bandwidth_storage}). For this reason, the head was removed, and the drives were connected directly to the network. This is called \textbf{DAS}. 
+
+
+\section{Hyperconverged Infrastructure}
+\textbf{Hyperconverged Infrastructure} is a technology that allows to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both. It is used to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both.
+
+\note{We will discuss this on wednesday}
