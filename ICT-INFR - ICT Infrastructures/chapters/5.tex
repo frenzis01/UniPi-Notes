@@ -76,8 +76,35 @@ SAN was, before SSDs, one of the datacenter pillars.
 Its architecture included a ``Head'' to which drives were attached, and the head was connected to the network. The head was used to manage the drives, and to allow the servers to access the drives.\\
 When SSDs became popular, the head became a bottleneck, because it was not able to keep up with the speed of the SSDs(Recall that 4 SSDs are enough to saturate a 10Gbit link, See Sec. \ref{sec:bandwidth_storage}). For this reason, the head was removed, and the drives were connected directly to the network. This is called \textbf{DAS}. 
 
+\subsection{Synchronization Software and its Price}
+
+The ``storage guy'' must ensure that there is no condition under which can happen data loss, because it is never an option. It is also important to have powerful \textbf{synchronization algorithms}, which must allow data to be copied and synchronized in multiple locations without disrupting performance and handling concurrency;
+such software is typically \textit{costful}.
+
+It is difficult nowdays to establish what is the ``right'' price for software. The shift from highly specialized and costful hardware to general hardware-plus-software, gave the software, which still a non-physical entity, increasingly more value, perhaps even too much.
+
+\section{Snapshots, Compression and other features}
+\subsection{Storage Provisioning}
+Storage provisioning is the process of assigning storage to a server. It is used to assign storage to a server, and to allow the server to access the storage.
+To decide how much storage to assign to a server, usually the architect overbooks the storage, even beyond an estimation of how much storage it will need in the future.
+
+Besides, \ul{available space may \textit{decrease} over time.}
+\textbf{Snapshots} are to blame in this case. Snapshots consists in saving the differences between the current state of the data and the previous state of the data. This allows to recover the \textit{overwritten} data in case of a failure, but it also takes up space. The more snapshots are taken, the more space is taken up. The more space is taken up, the less space is available for the data.
+
+\subsection{Compression}
+Compression grants less space to be used, but it also requires more CPU power. However note that also allows to save some \textbf{bandwidth}, which we know to be critical.
+\textit{Searching} in compressed data is not trivial, but there are tools to do it, such as the \href{https://en.wikipedia.org/wiki/FM-index}{\texttt{FM-index}}.
+
+\subsection{Pools and LUNs}
+
+\textbf{Storage pools} 
+are used to combine multiple storage devices into a single logical unit, in order to increase performance and reliability. 
+\textbf{Storage LUNs} define a storage partition and are used to assign storage ---a portion of the pool--- to a server, and to allow the server to access the storage, using ACLs.
+
+\texttt{SCSI} is a protocol whose idea is to create a BUS of drives to be accessed together. It is an old protocol, designed in 1979 for small computers, but it is still used today, because it is very reliable.
+The key idea was for \ul{mutiple drives to share the same physical flat cable}.\\
+It had been ``deprecated'' in favor of \texttt{NVMe}, but it is still used today, because it is very reliable.
+
 
 \section{Hyperconverged Infrastructure}
 \textbf{Hyperconverged Infrastructure} is a technology that allows to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both. It is used to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both.
-
-\note{We will discuss this on wednesday}
