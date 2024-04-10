@@ -210,3 +210,64 @@ the transactions of the ``abandoned'' fork that were not approved in the winning
    Forks are \textit{eventually} resolved and all nodes eventually agree on which is the longest
    blockchain. The system therefore guarantees \textbf{eventual consistency}.
 \end{definition}
+
+\section{Mining technologies}
+The main Bitcoin actors are:
+\begin{enumerate}
+   \item Reference client (Bitcoin Core)
+   \item Full block chain mode
+   \item Solo miner
+   \item Lightweight (SPV) wallet
+\end{enumerate}
+
+Basically, the mining process is SHA computation which can be summarized as follows:
+\begin{lstlisting}
+   while (1)
+      HDR[kNoncePos]++;
+      if (SHA256(SHA256(HDR)) < (65535 << 208)/ DIFFICULTY)
+         return;
+\end{lstlisting}
+To compute such hash, CPUs were initially used, then GPUs,GPU pools, FPGAs ---Verilog programmable hardware--- and now ASICs are used.
+It is unclear what will ASICs successor be.
+ASICs stands for Application Specific Integrated Circuits, and are hardware devices specifically designed to perform a task, e.g. mining.
+For this task, they are faster and more efficient than CPUs and GPUs.
+
+\subsection{Centralized Mining pools}
+\ul{Mining is a very risky task}, since it is very likely to spend a lot for mining hardware and eletricity without
+obtaining a reward for a long time.
+\textbf{Mining pools} are a way to share the risk and the reward among the participants. 
+
+The \textbf{Pool Manager} sends blocks to miners and distributes the reward among the participants, based on the work they have performed; it must be trusted by anyone.
+\labelitemize{\textit{Challenges}}{
+\begin{itemize}
+   \item How does a pool manager know how much work each member of the pool is actually performing?
+   \note{Also miners that have not been able to solve the PoW have to be rewarded for their work.}
+   \item How can the pool manager divide the revenue proportional to the amount of work each miner is doing?
+   \note{Partecipants to the pool may cheat claim that they've done more than they actually did.\\
+   It is in general hard to prove how much work a node has performed. Generally some ``near-valid blocks'' are sent to the pool manager, to indicate that the miner is actually working.}
+\end{itemize}   
+}
+
+\textit{Pay-per-share} (PPS) is a common reward system used by mining pools, where the pool manager pays a fixed amount for each share submitted by the miner.
+Miner's are payed from pool's existing balance, and there is no special reward for the miner who actually mines the block.
+
+\textit{Pay-proportional} is instead a reward system where the pool manager enacts a reward proportional to the amount of work done by the miner, making miners more incentivized to present valid blocks.
+This is less riskful for the pool manager, since payment is enacted only when a block is mined.
+
+\subsection{Decentralized Mining pools}
+\begin{paracol}{2}
+   
+   The basic idea behind decentralized mining pools is to build a separate, private chain including \textit{``weak blocks''} mined with lower difficulty, store in the private chain called \textit{``sharechain''}transactions rewarding for mining weak blocks
+   until a valid block is found;
+   at that point reward is distributed through a side blockchain which is then merged to the main chain, hence obtaining a transparent and fair payout scheme with efficiency minimal performance overhead.
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/bitcoin_decentralized_pool.png}
+      \caption{Sharechain and main bitcoin chain}
+      \label{fig:bitcoin_decentralized_pool}
+   \end{figure}
+
+\end{paracol}

@@ -26,4 +26,20 @@ However, there are more sophisticated attacks that can be performed on the Bitco
 
 This attack requires for the attacker to control more than 50\% of the whole network's mining power, which is a \textit{very difficult} task. It is pretty unlikely that an attacker succeeds.
 
-In 2014 GHash.io, a mining pool, reached 51\% of the network's mining power. The pool was asked to reduce its power, and it did.\\
+In 2014 GHash.io, a mining pool, reached 51\% of the network's mining power. The pool was asked to reduce its power, and it did.
+
+\section{Transaction Malleability}
+A subtle attack on the Bitcoin network is the transaction malleability. This attack does not allow to double spend, but it can be used to confuse the network and the users.
+
+Recall that the transaction inputs are signed with the private key of the owners of the funds, allowing to verify the ownership of the funds.
+All the nodes receiving a transaction verify that the sender(s) are really the owners of the transaction.
+
+A node can change the unlocking script in such a way that the transaction has the same effect and the signature is still valid, but the \textit{TXID changes!}
+The transaction ID is computed by hashing a set of data that is a superset of the fields covered by the signature.
+Adding a \texttt{NO\_OP} operation in the unlocking script, or changing the order of the operations, will change the TXID, but the signature and the unlocking script will still be valid.
+
+\section{Segregated Witness}
+Segregated Witness (SegWit) is a soft fork that was activated in August 2017. It was introduced to solve the transaction malleability problem, and to increase the block size limit.
+
+The main idea is to separate the signature data from the transaction data. The signature data is moved to a new structure, the witness, that is not included in the transaction hash. This way, the signature data can be changed without changing the transaction ID.
+
