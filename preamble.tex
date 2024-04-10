@@ -157,6 +157,20 @@
 }
 \end{center}}
 
+\newcommand{\proscons}[4]{
+    \begin{paracol}{2}
+        \labelitemize{\color{darkgreen}\ul{\textit{#1}}}{
+           \color{darkgreen}
+           #3
+        }
+        \switchcolumn
+        \labelitemize{\color{darkred}\ul{\textit{#2}}}{
+           \color{darkred}
+           #4
+        }
+     \end{paracol}
+}
+
 \lstset{frame=false,
  showstringspaces=false,
  breaklines=true;
