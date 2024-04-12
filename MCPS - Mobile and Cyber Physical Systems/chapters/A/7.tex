@@ -1,0 +1,121 @@
+\chapter{MAC Protocols}
+
+MAC protocols for IoT devices have some challenges, such as:
+\begin{itemize}
+   \item \textbf{Energy efficiency}: the protocol should be able to save energy, as the devices are battery-powered;
+   \begin{itemize}
+      \item Reduce duty cycle
+      \item Maintain network connectivity
+   \end{itemize}
+   \item Find a \textbf{tradeoff} between Energy and Latency \& Bandwidth;
+\end{itemize}
+Three approaches are possible:
+\begin{enumerate}
+   \item \textbf{Synchronous MAC protocols} (\texttt{S-MAC}): nodes are synchronized and they know when to transmit and when to sleep;
+   \item \textbf{Preamble sampling} (\texttt{B-MAC}): nodes wake up periodically to listen to the channel, and if they hear a preamble, they wake up completely to receive the packet;
+   \item \textbf{Polling} (as in 802.15.4): a node is designated as the coordinator and it polls the other nodes to check if they have data to send.
+\end{enumerate}
+
+\section{Synchronization}
+S-MAC is a protocol which implements only \textbf{local} synchronization.
+It is based on the concept of \textit{periodic listening} and \textit{sleeping}; in fact, nodes alternate synchronized listen and sleep periods, i.e. they are all simultaneously active only for a short time. 
+
+Synchronization is achieved by means of periodical (local)
+broadcasts of SYNC frames containing the wake/sleep schedule of the node.
+If a node detects adjacent nodes with a predefined schedule, it can synchronize with them, otherwise it chooses its own period, and broadcasts it with SYNC frames.
+A node may revert its schedule to the one of other nodes in case it is not aligned with them
+
+\subsection{Issues}
+\begin{itemize}
+   \item \textbf{Clock drift}: nodes may drift from their schedule, and they need to resynchronize;
+   \note{Cheap IoT devices may have a clock drift of 1\% per day, and in general are considered to have an unreliable clock.}
+   \item \textbf{Hidden terminal problem}: if a node is not synchronized with the others, it may transmit when it should not, causing collisions;
+   \item \textbf{Overhead}: the SYNC frames may cause overhead, and they may not be received by all the nodes.
+\end{itemize}
+
+S-MAC has \textit{never} been used as a standard, it relies on toom any assumptions, and it is not suitable for large networks.
+
+\section{Preamble Sampling}
+In general we can measure the complexity of a solution to a problem in terms of how many parameters have to be tuned in order to make it work.
+The more parameters, the more complex is to make it work, and the more likely it is to fail.
+\begin{paracol}{2}
+   
+   B-MAC is extremely simple, and relies on the setup of a single parameter: the \textbf{wake-up interval}.
+   A sender sends a packet \textbf{whenever} they want, but not \textit{whatever} they want:
+   packets are sent with a \textit{long preamble} ---in other words, they start shouting before telling the actual information---, which is a sequence of bits that is sent before the actual packet, and it is used to wake up the receiver.\\
+   Nodes activate their radio only for a short time to listen to a preamble, and if they hear one, they wake up completely to receive the subsequent packet.
+
+   \switchcolumn
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/BMAC.png}
+      \caption{BMAC TX-RX schema}
+      \label{fig:BMAC}
+   \end{figure}
+\end{paracol}
+
+\begin{center}
+   The key point is that \ul{the \textbf{preamble} should be longer than the \textbf{wake-up interval} (sleep period)}.
+\end{center}
+\note{This ensures that the receiver will not miss any packet preamble}
+
+The idea is to waste some energy on the sender node in order to save energy on receiver ones.
+Even though it appears slightly counterintuitive, it is a good tradeoff, because often there are more receivers than senders.
+
+
+X-MAC is an improvement of B-MAC, which uses a \textbf{short preamble} to wake up the receiver, and then sends a \textbf{longer preamble} to synchronize with the receiver.
+
+TODO
+
+\section{Polling}
+
+TODO
+
+\section{IEEE 802.15.4}
+
+IEEE 802.15.4 is a standard specifying physical and MAC layers for low-rate wireless personal area networks (LR-WPANs).
+
+It is infrastructure-less, short range and its Physical layer may coexist with IEEE 802.11 (Wi-Fi) and IEEE 802.15.1 (Bluetooth). 
+
+\subsection{Physical Layer}
+
+TODO
+
+\subsection{MAC Layer}
+
+MAC layer provides various services:
+\begin{itemize}
+   \item \textbf{Data services}
+   \begin{itemize}
+      \item transmission and reception of MAC frames (MPDU)
+      across the physical layer.
+   \end{itemize}
+   \item \textbf{Management services}
+   \begin{itemize}
+      \item Synchronization of the communications
+      \item Channel access
+      \item Management of guaranteed time slots
+      \item Association and disassociation of devices.
+   \end{itemize}
+   \item \textbf{Security services}
+   \begin{itemize}
+      \item Data encryption
+      \item Access control
+      \item Frame integrity
+      \item Sequential freshness
+   \end{itemize}
+\end{itemize}
+
+This layer defined two types of devices:
+\begin{itemize}
+   \item \textbf{Full-function device} (FFD): can act as a coordinator;
+   \item \textbf{Reduced-function device} (RFD): cannot act as a coordinator.
+\end{itemize}
+
+
+At the MAC layer there may be different network topologies:
+\begin{itemize}
+   \item \textbf{Star}: a central FFD PAN coordinator communicates with all the other nodes, which may be either FFDs or RFDs;
+   \item \textbf{Peer-to-peer}: again there is a PAN coordinator, FFDs are routers and RFDs are end devices;
+   \item \textbf{Cluster-tree}: a coordinator communicates with other coordinators, which in turn communicate with other nodes.
