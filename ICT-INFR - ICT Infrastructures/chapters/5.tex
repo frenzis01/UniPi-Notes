@@ -106,5 +106,23 @@ The key idea was for \ul{mutiple drives to share the same physical flat cable}.\
 It had been ``deprecated'' in favor of \texttt{NVMe}, but it is still used today, because it is very reliable.
 
 
+
 \section{Hyperconverged Infrastructure}
-\textbf{Hyperconverged Infrastructure} is a technology that allows to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both. It is used to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both.
+SAN started to create a sensible bottleneck, so designers started to ``move drives towards the servers''.
+\textbf{DAS} stands for \textit{Direct Attached Storage}, and is a technology that allows to connect multiple storage devices to a single server, in order to increase the performance, the reliability, or both.
+The limitations is that you can only attach up to 2 or 3 drives to a server.
+
+An idea came out to use the servers' internal drive to build a Storage Area Network, and this is called \textbf{VSAN}.
+
+\textbf{HCI} stands for \textit{Hyperconverged Infrastructure}, and is a technology that allows to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both. 
+The idea was born to allow a scale-out architecture, where you can add more servers to the network.
+
+The \textbf{Hypervisor} is the software that allows to run multiple virtual machines on a single server. There should be some locality between the VM and the storage, because the VM should be able to access the storage quickly.
+\texttt{read} operations are always performed locally on local drives; \texttt{write} operations instead sometimes require to retrieve a remote piece of data.
+
+\subsection{Riak}
+Riak is a distributed database that is used to store data in multiple locations. 
+
+Recently it has been recognized that \ul{using general purpose hardware is no longer a feasible option.}
+
+
