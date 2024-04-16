@@ -1,11 +1,11 @@
 
-\section{IEEE 802.15.4}
+\chapter{IEEE 802.15.4}
 
-IEEE 802.15.4 is a standard specifying physical and MAC layers for low-rate wireless personal area networks (LR-WPANs).
+IEEE 802.15.4 is a standard specifying \textbf{physical} and \textbf{MAC} layers for low-rate wireless personal area networks (LR-WPANs).
 
 It is infrastructure-less, short range and its Physical layer may coexist with IEEE 802.11 (Wi-Fi) and IEEE 802.15.1 (Bluetooth). 
 
-\subsection{Physical Layer}
+\section*{Physical Layer}
 
 The Physical layer may operate in three possible frequency bands:
 \begin{itemize}
@@ -31,9 +31,9 @@ In other words, it is less likely to misread a packet.
       \item Radio transceiver activation/deactivation (to
       implement policies of energy efficiency)
       \item Energy Detection - ED
-      \item Link Quality Indicator – LQI
+      \item Link Quality Indicator - LQI
       \item Channel Selection
-      \item Clear Channel Assessment – CCA
+      \item Clear Channel Assessment - CCA
       \item PHY-PIB (PHY PAN Information Base) Configuration
    \end{itemize}
 \end{itemize}}
@@ -51,7 +51,7 @@ In other words, it is less likely to misread a packet.
    \end{itemize}
 \end{figure}
    
-\subsection{MAC Layer}
+\section*{MAC Layer}
 
 MAC layer provides various services:
 \begin{itemize}
@@ -98,6 +98,7 @@ At the MAC layer there may be different network topologies:
       \label{fig:802_p2p}
    \end{figure}
    \item \textbf{Cluster-tree}: a coordinator communicates with other coordinators, which in turn communicate with other nodes.
+\end{itemize}
    
 \section{Channel Access}
 There are two options for channel access:
@@ -253,7 +254,7 @@ Data transfer may be of three types, and have different implementations for beac
    \end{enumerate}
 \end{enumerate}
 
-\subsection{Services}
+\section{Services - MAC Layer}
 
 The MAC layer provides \textbf{Data services} by exploiting only three primitives
 \begin{enumerate} 
@@ -283,5 +284,4 @@ The protocol is fairly simple:
    \end{enumerate}
    Such request message is sent during the CAP using the slotted CSMA-CA protocol.\\
    Since the device has not yet joined the network, it uses its MAC to send the message.
-   \item 
 \end{enumerate}

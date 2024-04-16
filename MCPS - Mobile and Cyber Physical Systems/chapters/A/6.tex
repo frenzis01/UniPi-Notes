@@ -1,4 +1,4 @@
-\section{Case Study - Biologging}
+\chapter{Case Study - Biologging}
 Biologging involves the direct observation of animals (and humans). 
 By using sensors, such as accelerometers, GPS, and cameras, biologists can collect data on the behavior and physiology of animals in almost all the aspects of their life.
 
@@ -9,18 +9,6 @@ By using sensors, such as accelerometers, GPS, and cameras, biologists can colle
    \label{fig:biologging_processing}
    Biologging provides raw data which is later processed and classificated.
 \end{figure}
-
-% \begin{paracol}{2}
-   
-%    \labelitemize{\color{darkgreen}\ul{\textit{Strengths}}}{
-%       \color{darkgreen}
-%    }
-%    \switchcolumn
-%    \labelitemize{\color{darkred}\ul{\textit{Strengths}}}{
-%       \color{darkred}
-%    }
-
-% \end{paracol}
 
 \proscons{Strengths}{Weaknesses}{
    \begin{itemize}
@@ -52,12 +40,12 @@ The \textbf{motivation} for the study was that Protection programs of tortoises 
 
 The study aimed to localize the nests of tortoises by using a neural network classifier, which was trained on the data collected by a device attached to the tortoises. The device was equipped with a GPS and an accelerometer, and was able to collect data on the tortoise's movements. The classifier was trained to recognize the patterns of movement associated with the construction of a nest, and was able to accurately predict the location of the nest based on the data collected by the device.
 
-\textit{Tortoise@} ---the designed classifier's name--- is structured as depicted in the Fig \ref{fig:tortoise@_architecture} below.
+\textit{Tortoise@} ---the designed classifier's name--- is structured as depicted in the Fig \ref{fig:tortoise_architecture} below.
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/tortoise@_architecture.png}
    \caption{Tortoise@ architecture}
-   \label{fig:tortoise@_architecture}
+   \label{fig:tortoise_architecture}
 \end{figure}
 
 \subsection{What about tortoise nests?}
@@ -84,7 +72,7 @@ The study aimed to localize the nests of tortoises by using a neural network cla
       \centering
       \includegraphics{images/tortoise@_accelerometer.png}
       \caption{Tortoise activities and accelerometer data}
-      \label{fig:tortoise@_accelerometer}
+      \label{fig:tortoise_accelerometer}
    \end{figure}
 
 \begin{paracol}{2}
@@ -104,7 +92,7 @@ The study aimed to localize the nests of tortoises by using a neural network cla
       \centering
       \includegraphics{images/tortoise@_modelcomparison.png}
       \caption{Models comparison for \textit{Asynchronous tasks}}
-      \label{fig:tortoise@_modelcomparison}
+      \label{fig:tortoise_modelcomparison}
       The hardware used was an Arduino equivalent, with a 16 MHz clock and \textbf{4 KB} of RAM, which made some of the displayed model completely unfeasible.
    \end{figure}
 \end{paracol}

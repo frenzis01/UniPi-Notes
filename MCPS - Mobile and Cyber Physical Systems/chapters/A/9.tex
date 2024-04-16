@@ -1,2 +1,17 @@
 \chapter{Embedded Programming}
 The learning objectes of this chapter are embedded systems in general, and the Arduino case study.
+
+Embedded systems are systems that are designed to perform a specific task, and they are usually part of a larger system.
+Hardware and software are often designed together, aka ``hardware-software co-design''.
+They are typically based on microcontrollers, optimized for controlling I/O.
+They are often used in \ul{\textbf{real-time} systems, where timing is crucial}.
+
+Many types of microcontrollers are availble on the market:
+\begin{itemize}
+   \item ``General purpose'', meaning that can be adapted to several embedded applications
+   \item ``Application specific integrated circuit''(\texttt{ASIC}s) which are very efficient and performative, but tightly bound to a specific task
+   \item ``System on a chip''(\texttt{SoC}s) which are a combination of a microcontroller and other components, like a radio module. 
+   \note{The term is very broad, and it can refer to a wide range of devices.}
+\end{itemize}
+
+When programming on microcontrollers it must be taken into account the \textbf{small memory footprint}.  
