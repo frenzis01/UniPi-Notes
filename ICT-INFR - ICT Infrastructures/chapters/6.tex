@@ -1,0 +1,44 @@
+\chapter{Computing}
+\begin{center}
+   ``In a server how many OSs are ran at the same time?''
+\end{center}
+2 in general, one is \ul{``Base Management Console''}\footnote{May have other names, but this is a common one, used by \texttt{Supermicro}}.
+
+The BMC is a full OS running in a board which executes also when the server is off, but attached to a power supply. It is a component which allows you to manage the server as if you were phyisically handling the server.
+
+Prof. Cisternino display iDRAC (Dell's BMC) in class. It is a web interface which allows you to manage the server, check its status, and even turn it on and off. \\
+It is also possible to access a console, which is a virtual console, which allows you to interact with the server as if you were physically there with keyboard and mouse attached;
+such console also allows to install a new OS by uploading an \texttt{iso} and make the server boot from it as if it was attached to it.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/monitoring_servers.png}
+   \caption{DEMO Interface displayed by prof cisternino in class}
+   \label{fig:monitoring_servers}
+   It is possible to remotely control and check the server's status.
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/monitoring_servers2.png}
+   \caption{Monitoring storage}
+   \label{fig:monitoring_servers2}
+   SAS bus protocol is used for storage devices.
+\end{figure}
+
+
+\framedt{Measuring Bus Speed}{
+   PCIe speed, as well as CPU speed is measured in GT/s, which stands for \textit{Giga Transfers per second}. It is a measure of how many transfers can be performed in a second.
+}
+
+\section{Knights Landing and high performance computing}
+\textbf{Knights Landing} processor architecture is a multi core architecture which is designed to be used in supercomputers. The memory had a super high bandwidth, to avoid bottlenecking the many cores inside, since such memory is shared among them.
+
+\textit{NUMA} is a technique used to avoid bottlenecking in multi core architectures. It is a technique which allows to have multiple memory banks, each one connected to a subset of the cores. This way, each core can access its own memory bank without having to wait for the others to finish accessing the shared memory.
+
+\section{Rings}
+Bachelor's professors fooled us into thinking that CPUs have two operating modes, \textit{user} and \textit{kernel} mode. Sadly, this ain't true, it is an abstraction. In reality,\ul{ CPUs have 4 \textbf{rings}}, which are used to separate the different levels of privilege. The higher the ring, the higher the privilege level.
+The kernel runs in ring 0, while the user runs in ring 3.
+
+Nowdays there are multiple units in the CPU, which are used to execute instructions, and there is a head unit which decides which instruction to execute next and on which unit.
+
+Chiplets are a way to increase the number of cores in a CPU. They are small chips which are connected to the main CPU.
