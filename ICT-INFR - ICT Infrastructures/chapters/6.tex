@@ -25,15 +25,34 @@ such console also allows to install a new OS by uploading an \texttt{iso} and ma
    SAS bus protocol is used for storage devices.
 \end{figure}
 
+\note{CPU Affinity of a RAM bank indicates which CPU is connected to that bank.}
+
+The BMC typically has a dedicated network interface, which is used to connect to the server, separated from the standard network interface.
+Redfish is a standard which is used to manage servers. It is a RESTful API which allows to manage servers and automate some tasks.
+
+\framedt{Predict Storage failure}{
+   A disk may fail without any prior notice, at any time, just like a heart attack.
+   However there are some signs which may indicate that a disk is about to fail;
+   these are detected by the \textit{Smart} technology.
+   Also AI may be used to predict disk failure.
+}
+
+\begin{center}
+   \textit{No phyisical security means no security at all}
+\end{center}
+The BMC is very useful because allows for administrators to manage server remotely, without having to physically access the server.
+This is not only ``handy'', but often necessary, since the \ul{\textit{physical} security of the datacenter must be high}, and not everyone should be allowed to access the server room.
 
 \framedt{Measuring Bus Speed}{
    PCIe speed, as well as CPU speed is measured in GT/s, which stands for \textit{Giga Transfers per second}. It is a measure of how many transfers can be performed in a second.
 }
 
 \section{Knights Landing and high performance computing}
-\textbf{Knights Landing} processor architecture is a multi core architecture which is designed to be used in supercomputers. The memory had a super high bandwidth, to avoid bottlenecking the many cores inside, since such memory is shared among them.
+\textbf{Knights Landing} is an old multi ---up to 72--- core architecture is designed to be used in supercomputers. The memory had a super high bandwidth, to avoid bottlenecking the many cores inside, since such memory is shared among them.
 
 \textit{NUMA} is a technique used to avoid bottlenecking in multi core architectures. It is a technique which allows to have multiple memory banks, each one connected to a subset of the cores. This way, each core can access its own memory bank without having to wait for the others to finish accessing the shared memory.
+
+
 
 \section{Rings}
 Bachelor's professors fooled us into thinking that CPUs have two operating modes, \textit{user} and \textit{kernel} mode. Sadly, this ain't true, it is an abstraction. In reality,\ul{ CPUs have 4 \textbf{rings}}, which are used to separate the different levels of privilege. The higher the ring, the higher the privilege level.
@@ -42,3 +61,4 @@ The kernel runs in ring 0, while the user runs in ring 3.
 Nowdays there are multiple units in the CPU, which are used to execute instructions, and there is a head unit which decides which instruction to execute next and on which unit.
 
 Chiplets are a way to increase the number of cores in a CPU. They are small chips which are connected to the main CPU.
+Even at CPU the ``general-purpose'' methodology is not feasible anymore, and the CPU is divided into multiple units, each one specialized in a specific task.
