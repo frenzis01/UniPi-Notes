@@ -56,8 +56,11 @@ In case of an I/O operation, the program waits for the operation to complete, an
 TinyOS offers functions (\textbf{commands}) to program and activate the hardware, it abstracts interrupts in form of \textit{events}.
 It defines non-preemptive tasks that are executed sequentially, to manage different activities.
 
-With this approach a task never waits. However interrupts should be handled as soon
-as they arrive by means of an event handler, which should be as short as possible; tasks can be pre-empted (only) by events.
+With this approach a task never waits, and can be pre-empted (only) by events. However interrupts should be handled as soon
+as they arrive by means of an event handler, which should be as short as possible because other simultaneous interrupts would result in serious concurrency problems;
+this is the case of the \texttt{read handler} in the figure \ref{fig:tinyos_model}, which instead of processing the data, it yields them to the ``upper-level'' task by means of a \texttt{post} command. 
+
+\texttt{init} defines a timer which periodically triggers the \texttt{timer handler}, whose code may involve the operations to be performed periodically.
 
 \begin{figure}[htbp]
    \centering
@@ -68,9 +71,13 @@ as they arrive by means of an event handler, which should be as short as possibl
 
 \section{Arduino}
 
-TODO \dots
+Arduino is an open-source electronics prototyping platform based on flexible, easy-to-use hardware and software. Its concept comprises the actual Device, the IDE, and the online Forum.
+
+It is now considered part of the IoT world, even though in its original design it was not meant to be connected to the internet, it was more \textsl{Internet-of-}``Things''.
+
 
 \subsection{Interrupts}
+Despite the main role of Arduino sketches is syncronous reading of sensors, it is possible to handle \textbf{interrupts}, allowing for asynchronous access to sensor data and actuators.
 There are three types of interrupts in Arduino:
 \begin{itemize}
    \item \textbf{External}:
@@ -84,18 +91,24 @@ There are three types of interrupts in Arduino:
 Internal interrupts (either Timer or Device) are managed by
 the run time support of Arduino, external ones instead may be managed with an \lstinline|attachInterrupt(interrupt#, func-name,mode);| instruction.
 
+There are only two external interrupts available on the Arduino Uno, \texttt{INT0} and \texttt{INT1}, which are mapped to pins 2 and 3.
+They can be set to trigger on \texttt{RISING}, \texttt{FALLING}, \texttt{CHANGE}, \texttt{HIGH} or \texttt{LOW} level.
+The trigger is interpreted by the hardware, and the interrupt is very fast.
 
-\subsection{Question on the slides}
+\subsubsection*{Question on the slides}
 \begin{lstlisting}
    void setup(){
       pinMode(2, INPUT);
       attachInterrupt(0, handler, CHANGE);
       return;
    }
-   
    void handler(){}
-   
    void loop(){
       return;
    }
 \end{lstlisting}
+
+\section{Energy Management}
+\textit{Arduino Sleep Modes} to limit power consumption (aka \textit{Arduino Power Save} mode) can be activated by means of additional libraries, for example the \texttt{Low power} library.
+The actual sleep mode mechanisms depend on the version of the device, and of the processor.
+\lstinline|LowPower.idle()| is a function from the \texttt{Low power} library that puts the device in idle mode, which is the lowest power consumption mode available.
