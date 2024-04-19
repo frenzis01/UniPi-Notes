@@ -1,0 +1,70 @@
+\chapter{Ethereum}
+
+Ethereum is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, fraud or third party interference.
+\section{Key Concepts}
+Ethereum is a blockchain platform for building decentralized applications, not only cryptocurrencies, but also:
+\begin{itemize}
+   \item Crowdfunding
+   \item Tokens
+   \item Self-sovereign identity (SSI)
+   \item Supply chains
+   \item Voting
+   \item etc.
+\end{itemize}
+
+\subsection{Smart Contract}
+
+\framedt{Smart Contract}{
+   A \textbf{smart contract} is a computerized transaction protocol that executes the terms of a contract.
+   The general objectives are to satisfy common contractual conditions (such as payment terms, liens, confidentiality, and even enforcement), minimize exceptions both malicious and accidental, and minimize the need for trusted intermediaries.
+   Related economic goals include lowering fraud loss, arbitrations and enforcement costs, and other transaction costs.
+}
+
+The smart contract is a piece of code automating the ``if this happens then do that'' part of
+traditional contracts. It aims to reduce the need for trusted intermediaries.\\
+Ethereum extends to a blockchain supporting distributed data storange and computations.\\
+Compared to Bitcoin's scripting language, Ethereum's language results different on many points:
+\begin{itemize}
+   \item \textbf{Turing completeness}: Ethereum's language is Turing complete, meaning that it can solve any computational problem.
+   \item \textbf{State}: Ethereum's language has a state, meaning that it can remember the past.
+   \item \textbf{Blockchain-blindness}: Ethereum's language is aware of the blockchain, meaning that it can read the blockchain's state, e.g. values in block headers.
+\end{itemize} 
+
+Smart contracts must be both \textbf{transparent} and \textbf{flexible}.
+\labelitemize{Transparency}{
+
+   \begin{itemize}
+      \item All participants in a blockchain run the same code, each verifying the other
+      \item Smart contract must be deterministic
+      \item The logic of the smart contract is visible to all
+      \item Privacy may be an issue
+      \note{solutions based on zero-knowledge proofs may be used in some cases}
+   \end{itemize}
+   }
+
+\labelitemize{Flexibility}{
+\begin{itemize}
+   \item Smart contract are written in a “ Turing complete” language
+   \item Can do anything that a normal computer can do
+   \item But you need to pay for all nodes on the network to run the code in parallel.
+   \item Nodes must be rewarded for executing smart contracts
+   \item Pay for the execution cost
+\end{itemize}
+}
+
+\subsection{State machine}
+Bitcoin's state is held in UTXOs, while Ethereum's state is held in \textbf{accounts}, which keep track of balance.\\
+Ethereum has a transaction-based deterministic state machine, and everyone can create its own state transition functions which trigger a state change.
+
+
+\textbf{Ether} is official cryptocurrency of Ethereum, and is used to pay for transaction fees and computational services on the network.
+
+EOAs (Externally Owned Accounts) are controlled by private keys, and can send transactions to other accounts. They are a bridhe from the external world to the internal state of Ethereum.\\
+
+EVM (Ethereum Virtual Machine) is the runtime environment for smart contracts in Ethereum. It is completely isolated from the network, filesystem or other processes.\\
+An infinite loop maliciously injected in the EVM would result in a denial of service, so Ethereum has a \textbf{gas} mechanism to prevent this.
+The idea is to pay in \textit{gas} for the contract's execution.
+
+Gas' price is variable, low price means that the transaction will be processed slowly, while high price means that the transaction will be processed quickly; it is up to the sender to decide how much to spend on gas.\\
+The gas \textbf{limit} is the maximum amount of gas that can be spent on a transaction, and is set by the sender.
+If $gas_{limit} \times gas_{price} \geq balance$, the transaction halts.
