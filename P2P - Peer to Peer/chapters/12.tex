@@ -1,7 +1,6 @@
 \chapter{Ethereum}
 
-Ethereum is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, fraud or third party interference.
-\section{Key Concepts}
+Ethereum is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, fraud or third party interference.\\
 Ethereum is a blockchain platform for building decentralized applications, not only cryptocurrencies, but also:
 \begin{itemize}
    \item Crowdfunding
@@ -12,7 +11,7 @@ Ethereum is a blockchain platform for building decentralized applications, not o
    \item etc.
 \end{itemize}
 
-\subsection{Smart Contract}
+\section{Smart Contract}
 
 \framedt{Smart Contract}{
    A \textbf{smart contract} is a computerized transaction protocol that executes the terms of a contract.
@@ -20,7 +19,7 @@ Ethereum is a blockchain platform for building decentralized applications, not o
    Related economic goals include lowering fraud loss, arbitrations and enforcement costs, and other transaction costs.
 }
 
-The smart contract is a piece of code automating the ``if this happens then do that'' part of
+The smart contract is a piece of code written in \texttt{Solidity} automating the ``if this happens then do that'' part of
 traditional contracts. It aims to reduce the need for trusted intermediaries.\\
 Ethereum extends to a blockchain supporting distributed data storange and computations.\\
 Compared to Bitcoin's scripting language, Ethereum's language results different on many points:
@@ -52,7 +51,7 @@ Smart contracts must be both \textbf{transparent} and \textbf{flexible}.
 \end{itemize}
 }
 
-\subsection{State machine}
+\section{State machine}
 Bitcoin's state is held in UTXOs, while Ethereum's state is held in \textbf{accounts}, which keep track of balance.\\
 Ethereum has a transaction-based deterministic state machine, and everyone can create its own state transition functions which trigger a state change.
 
@@ -61,10 +60,89 @@ Ethereum has a transaction-based deterministic state machine, and everyone can c
 
 EOAs (Externally Owned Accounts) are controlled by private keys, and can send transactions to other accounts. They are a bridhe from the external world to the internal state of Ethereum.\\
 
-EVM (Ethereum Virtual Machine) is the runtime environment for smart contracts in Ethereum. It is completely isolated from the network, filesystem or other processes.\\
+EVM (Ethereum Virtual Machine) is the ---``quasi-Turing-complete-machine''---runtime environment for smart contracts in Ethereum. It is completely isolated from the network, filesystem or other processes.\\
 An infinite loop maliciously injected in the EVM would result in a denial of service, so Ethereum has a \textbf{gas} mechanism to prevent this.
 The idea is to pay in \textit{gas} for the contract's execution.
 
 Gas' price is variable, low price means that the transaction will be processed slowly, while high price means that the transaction will be processed quickly; it is up to the sender to decide how much to spend on gas.\\
-The gas \textbf{limit} is the maximum amount of gas that can be spent on a transaction, and is set by the sender.
+The gas \textbf{limit} is the maximum amount of gas that the sender is willing to spend on a transaction.
 If $gas_{limit} \times gas_{price} \geq balance$, the transaction halts.
+\note{gas is measured in \textit{gwei}, where $1 gwei = 10^{-9} ether$.}
+
+
+\subsection*{Fees and rewards}
+The transaction fee is calculated as $gas_{price} \times gas_{limit}$, and is paid to the miners, who are more likely to include transactions with higher gas price, as they get more money.\\
+
+\ul{Every operation in the EVM has a fixed gas cost}, and if at some point in the execution the gas runs out, the state is reverted, and the sender loses the gas spent, and still pays the fee, which goes to the miners.\\
+
+\section{The Merge}
+On 15th of September 2022, Ethereum Mainnet merged with Beacon Chain, resulting in Ethereum 2.0, differentianting from the first version for the consensus mechanism, which is now PoS (Proof of Stake) instead of PoW (Proof of Work).\\
+Proof of Stake is a consensus mechanism that allows the network to reach consensus on the state of the blockchain by allowing the users to vote on the next block, based on the amount of coins they hold, it is different from PoW, where the users have to solve a complex mathematical problem to validate the block.
+
+\section{Accounts and Transactions}
+Ethereum accounts have a 20 bytes address and a state, and there may two types:
+\begin{enumerate}
+   \item \textbf{Externally Owned Accounts (EOAs)}: controlled by private keys, can send transactions to other accounts.
+   \item \textbf{Contract Accounts}: controlled by their contract code, can send transactions to other accounts or create contracts.
+\end{enumerate} 
+
+\section{Externally Owned Accounts (EOAs)}
+EOAs are owned by an external entity, such as a human, and hold:
+\begin{itemize}
+   \item \textit{Address}
+   \item \textit{Ether balance}
+   \item \textit{Nonce}, which is the number of transactions sent from the account\footnote{Different from the \textit{nonce} in Bitcoin blocks!}
+   \item \texttt{storageRoot}: a digest of Ethereum's state, more precisely it is the hash of the root node of a Merkle Patricia tree
+   \item \texttt{codeHash}: the hash of "" for EOAs, otherwise hash of the contract account code
+\end{itemize}
+The Nonce ---somehow--- records the order of transactions, and is used to prevent replay attacks and to avoid double-spending; it is incremented every time a transaction is sent from the account.
+\note{The \textit{block nonce} is a different thing and it is needed for the PoW (Which actually became a PoS)}
+
+\framedt{Replay attack}{
+   Alice signs a transaction ---with nonce 22--- to send 1 Ether to Bob, and sends it to the network.
+   Bob may intend to \textit{replay} the same transaction to the network and repeatedly submit it to drain Alice's account.
+
+   To prevent this, the network checks the nonce of the transaction, and once a transaction with nonce 22 is included in a block, the network will reject any other transaction with nonce 22 coming from Alice.
+   Bob cannot modify the nonce in the replayed transaction, as the signature would be invalid.
+}
+
+EOAs can send transactions to other EOAs to directly send Ether, or may send transaction to trigger a smart contract.
+
+\subsection{EOA to EOA Transaction}
+This is the fairly easy case.
+\begin{enumerate}
+   \item The sender creates a transaction, signs it with its private key, and sends it to the network.
+   \item The transaction is broadcasted to the network, and miners include it in a block.
+   \item The transaction is executed, and the state is updated.
+\end{enumerate}
+The transaction consists of:
+\begin{itemize}
+   \item Sender's \textit{signature} (\texttt{v,r,s})
+   \item \textit{Amount}
+   \item \textit{Receiver} (field \texttt{TO})
+   \item Other metadata fields, such as \textit{gas price} and \textit{gas limit}
+\end{itemize}
+Transactions are serialized using RLP (Recursive Length Prefix).
+
+\section{Contract Accounts}
+These accounts contain:
+\begin{itemize}
+   \item \textit{Contract code}
+   \item Persistent storage of \textit{constant variables}
+   \item \textit{Ether balance}
+   \item \textit{Nonce}, which is the number of \ul{messages}\footnote{Are these transactions?} sent from the account
+   \item They \ul{DO NOT} have a private key
+\end{itemize}
+
+You need an EOA to create a smart contract, and the contract code is immutable once deployed.\\
+The transaction to do so is the same as the EOA to EOA transaction, but with the \texttt{data} field containing the contract code, and with \textit{Receiver} address empty.\\
+Transaction to \textit{interact} with a contract, instead, has the \textit{Receiver} field containing the contract address, and the \texttt{data} field containing the method to call and its parameters.
+
+When a contract account receives a message, the code is executed in the EVM, which may perform the following operations:
+\begin{itemize}
+   \item Computation
+   \item Write to internal storage\footnote{Internal to who?}
+   \item Send messages to other contracts
+   \item Create new contracts
+\end{itemize}
+
