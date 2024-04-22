@@ -1,0 +1,20 @@
+\chapter{Virtualization}
+
+Virtualization consists in virtualizing hardware resources, such as CPU, memory, storage, and network interfaces. This allows to run multiple operating systems on the same physical machine, which is called \textit{host}.
+
+It is not equal to \textit{emulation} which consists in simulating hardware, and is much slower than virtualization.
+
+TODO more on this
+
+\ul{Virtualization is a strong way of isolating things.}
+
+There are two kind of virtualization systems:
+\begin{enumerate}
+   \item VirtualPC (Microsoft), VirtualBox (Oracle), VMware Workstation (VMware), Parallels (Apple) : these are desktop virtualization systems, which are used to run multiple operating systems on the same physical machine.\\
+   These solutions aim to provide ``interactive'' computers, with a GUI, peripheral support, etc. 
+   \item VMware ESXi, Microsoft Hyper-V, KVM, Xen : these are server virtualization systems, which are used to run multiple servers, typically GUI-less, on the same physical machine.\\
+   Hypervisors introduce a \textbf{crucial} piece of software called \textbf{Virtual Switch}, which is responsible for managing the network of the virtual machines.
+   The virtual switch's uplink is the host's physical network interface.
+\end{enumerate}
+
+Similar to the ones in storage systems, there are \textbf{checkpoints}, which are used to save the state of a virtual machine at a certain point in time. This is useful to revert to a previous state in case of problems.
