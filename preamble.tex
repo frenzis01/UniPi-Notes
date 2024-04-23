@@ -77,6 +77,7 @@
 \usepackage{changepage}
 
 \usepackage{soul}
+\usepackage{cancel}
 
 % This are needed because the correct double quotes would be ``'' or ``",
 % but i've always written "text"
@@ -170,6 +171,10 @@
         }
      \end{paracol}
 }
+
+\newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
+\rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2} 
+
 
 \lstset{frame=false,
  showstringspaces=false,
