@@ -139,7 +139,7 @@ However, sampling and quantization introduce a further distortion of the analog 
    High resolution and high sampling rate $Rightarrow$ small quantization error, but also a larger number of symbols to transmit
 \end{itemize}
 
-\section{Fourier series}
+\section{Periodicity and Fourier series}
 
 \begin{definition}[Periodic continuous signals]
    
@@ -216,3 +216,143 @@ It is rather complicate to assess the conditions under which an arbitrary $s(t)$
 A \textit{piecewise continuous} function is made up of a finite number of continuous pieces on each finite subinterval $[0,T]$. Also the
 limit of $f(t)$ as $t$ tends to each point of discontinuity is finite.
 
+\section{Energy and Power signals}
+\begin{definition}[Energy]
+   The \textbf{energy} $E$ of a signal $s(t)$ is given by:
+   \begin{equation}
+      E(T) \stackrel{\triangle}{=} \int_{-\frac{T}{2}}^{+\frac{T}{2}} |s(t)|^2 dt
+   \end{equation}
+\end{definition}
+
+The signal has \textit{finite energy} (is an \textbf{energy signal}) if the limit of $E(T)$ as $T$ tends to infinity is finite:
+
+\begin{align}
+0 & < & \lim_{T \to \infty} E(T) &< & +\infty\\
+0 & < & E_s = \int_{-\infty}^{+\infty} |s(t)|^2 dt &< & +\infty
+\end{align}
+
+Even infinite signals may have finite energy. In the physical world, all signals have finite energy.
+
+\nl
+
+\begin{definition}[Power]
+   The \textbf{power} $P_f$ of a signal $s(t)$ is given by:
+   \begin{equation}
+   P_f(T) \stackrel{\triangle}{=} \frac{1}{T} \int_{-\frac{T}{2}}^{+\frac{T}{2}} |s(t)|^2 dt = \frac{E_s(T)}{T}
+   \end{equation}
+\end{definition}
+
+The signal has \textit{finite power} (is a \textbf{power signal}) if the limit of $P(T)$ as $T$ tends to infinity is finite:
+
+\begin{align}
+   0 & < & P_s = \lim_{T \to \infty} \frac{1}{T} \int_{-\frac{T}{2}}^{+\frac{T}{2}} |s(t)|^2 dt & < & +\infty
+\end{align}
+
+\textbf{Periodic signals} have some peculiarities in terms of power and energy:
+\begin{itemize}
+   \item They have infinite energy
+   \begin{itemize}
+      \item They are \textit{power signals}, \ul{not} energy signals
+   \end{itemize}
+   \item Their average power equals the average power computed in a single period 
+\end{itemize} 
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/powerenergy_signals.png}
+   \caption{Power and energy signals classes}
+   \begin{enumerate}
+      \item 
+      A signal may be an energy signal, a power signal, or none
+      \item A signal cannot be both an energy signal and a power signal
+   \end{enumerate}
+      \label{fig:powerenergy_signals}
+\end{figure}
+
+\section{Fourier Transform}
+\subsection{Preliminaries}
+\begin{definition}[Complex numbers]
+   A complex number $\bar{x}$ is a number of the form $x = a + jb$, where $a$ and $b$ are real numbers and $j$ is the imaginary unit, the square root of $-1$.
+
+   It may be represented in the imaginary plane as a vector with modulus $|x| = \sqrt{a^2 + b^2}$ and phase $\Phi$
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/complex_vector.png}
+      \caption{Complex number in the imaginary plane}
+      \label{fig:complex_vector}
+   \end{figure}
+\end{definition}
+
+\begin{definition}
+   [Euler's exponential]
+   The exponential $e^{j\theta}$ is a complex number that can be represented in the imaginary plane as a vector of modulus 1 and phase $\theta$. It is defined as:
+   \begin{equation}
+      e^{j\theta} = \cos(\theta) + j\sin(\theta)
+   \end{equation}
+   From which we can derive Euler's formulas:
+   \begin{align}
+      \cos(\theta) & = \frac{e^{j\theta} + e^{-j\theta}}{2}\\
+      \sin(\theta) & = \frac{e^{j\theta} - e^{-j\theta}}{2j}
+   \end{align}
+\end{definition}
+
+A complex number may also be written as $x = |x|e^{j\Phi}$, where $|x|$ is the modulus and $\Phi$ is the phase.
+The conjugate of $\bar{x}$ may also be written as $\bar{x} = |x|e^{-j\Phi}$
+
+The Fourier series is usually expressed in the complex number domain, to represent signals $s(t): \mathbb{R} \rightarrow \mathbb{C}$
+
+The \textbf{base of Fourier} is the set of functions:
+\begin{equation}
+   % \phi_n(t) = e^{j\frac{2\pi n}{T}t}
+   e^{j2\pi n F t} \forall n \in \mathbb{Z}
+\end{equation}
+Considering also the definition of the exponential $e^{x + jy}$, we get the last equation:
+\begin{align}
+   e^{x + jy} & = & e^x e^{jy} =e^x(\cos(y) + j\sin(y))\\
+   e^{j2\pi n F t} & = & \cos(2\pi n F t) + j\sin(2\pi n F t)
+\end{align}
+\nl
+
+
+\newpage
+\begin{definition}
+   [Fourier series with exponential base]
+   Given a periodic signal $s(t)$ with frequency $F = 1/T$, we can represent it as a linear combination
+   \begin{equation}
+      s(t) = \sum_{n=-\infty}^{+\infty} S_n e^{j2\pi n F t}
+   \end{equation} 
+   Where $S_n$ is the ---Fourier--- series:
+   \begin{equation}
+      S_n = \frac{1}{T} \int_0^T s(t) e^{-j2\pi n F t} dt
+   \end{equation}
+\end{definition}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/fourier_geometric.png}
+   \caption{Fourier Geometrical interpretation}
+   \label{fig:fourier_geometric}
+\end{figure}
+
+\begin{definition}
+   [Signal Spectrum]
+   The \textbf{spectrum} of a signal is the ordered set of its Fourier coefficients $S_n$ from $n = -\infty$ to $n = +\infty$.
+   \note{The spectrum may be seen as a discrete signal}
+\end{definition}
+
+\begin{definition}
+   [Fourier Transform]
+   The transition from the continuous signal $s(t)$ to its spectrum i.e. to its discrete signal $S_n$ is called the \textbf{Fourier Transform}, denoted in the following ways
+
+   \begin{align}
+      s(t) & \xLeftrightarrow{\text{FT}} S_n\\
+      S_n & = \mathcal{F}(s(t)) & \textit{transform}\\
+      s(t) & = \mathcal{F}^{-1}(S_n) & \textit{inverse transform}
+   \end{align}
+\end{definition}
+
+$S_n$ may be also represented using the Euler's exponential, with the first term being the \textit{amplitude} of the harmonics, and the $e$ the \textit{phase} of harmonics:
+\begin{equation}
+   S_n=|S_n|e^{j\theta_n}
+\end{equation}
