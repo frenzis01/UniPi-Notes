@@ -356,3 +356,30 @@ $S_n$ may be also represented using the Euler's exponential, with the first term
 \begin{equation}
    S_n=|S_n|e^{j\theta_n}
 \end{equation}
+
+\section{From FT to Discrete FT}
+\note{Non ho capito molto di questa cosa}
+In the field of digital signal processing, signals and spectra are processed only in sampled form.
+\begin{itemize}
+   \item We have a signal s known only at a finite number instants separated by sample times (i.e. a finite sequence of data)
+   \item We want to compute a finite number of samples of the Fourier Transform so that\dots
+   \item Discrete-time data sets are converted into a finite discrete-frequency representation
+\end{itemize}
+
+Discrete time signals are typically obtained from continuous signals with a domain restriction from $\mathbb{R}$ into $\mathbb{Z}(T)$.
+This operation, called \textbf{sampling}, is stated by the simple relationship
+\(
+   sc(nT) = s(nT) , nT \in \mathbb{Z}(T)
+\)
+Where $s(t) , t \in \mathbb{R}$, is the reference continuous signal, while $s(nT)$ is the corresponding sampled discrete signal.
+
+\begin{definition}
+   [Discrete signal]
+   A discrete signal is a complex function of a discrete variable:
+   \[
+      f(t)= \mathbb{Z}(T) \rightarrow \mathcal{C}
+   \]
+   Where $\mathbb{Z}(T)$ is the subset of $\mathbb{Z}$ made up only of $T>0$ multiples ${\dots -T,0,T,2T}$
+\end{definition}
+
+\note{TODO altre equazioni complicate}
