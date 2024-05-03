@@ -233,3 +233,191 @@ There are some wind turbines for IoT applications, which are:
       \label{fig:windturbines}
    \end{figure}
 \end{paracol}
+
+\subsection{Solar energy}
+\begin{paracol}{2}
+   \colfill
+   The energy production of a panel depends on several factors:
+   \begin{itemize}
+      \item \textbf{Solar radiation}\\
+      \note{Depends on the angle drawn by the Sun with, respect to the vertical axis of the Earth surface,that depends on the geographical position of the panel, and on the day in the year; besides it also depends on the weather conditions.}
+      \item \textbf{Size of the panel}
+      \item \textbf{Charging efficiency}
+   \end{itemize}
+   The typical countermeasure to such variations is to \textit{oversize} the harvesting subsystem and battery capacity to match with the worst conditions. 
+   \colfill
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/solarharvesting.png}
+      \label{fig:solarharvesting.png}
+   \end{figure}
+\end{paracol}
+
+
+\subsection{Considerations}
+\begin{center}
+   \textit{\ul{Energy harvesting does not mean that a device is always operational!}}
+\end{center}
+
+If the device is harvesting solar and wind energy, the residual battery may not last for a whole windless night, so the device may turn off during the night and back on in the morning. 
+
+\section{Storage technologies}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/batterycomparison.png}
+   \caption{Comparison amongst different battery cell types}
+   \label{fig:batterycomparison}
+\end{figure}
+There are for main battery cell types, listed below and compared in Fig. \ref{fig:batterycomparison}:
+\begin{enumerate}
+   \item Sealed Lead Acid (\texttt{SLA})
+   \item Nickel Cadmium (\texttt{NiCd})
+   \item Nickel Metal Hydride (\texttt{NiMH})
+   \item Lithium Ion (\texttt{Li-ion})
+\end{enumerate}
+
+\begin{paracol}{2}
+   \colfill
+   \textbf{Supercapacitors} are a new highly efficient technology, but with high discharge rate and low power density.
+   They can be used to buffer energy if energy source is jittery: when no-load, allows to charge at the same rate of discharge to keep the capacitor at full charge level (\textit{trickle charging}). 
+   \colfill
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/supercacitors.png}
+      \caption{Supercapacitors specs}
+      \label{fig:supercacitors}
+   \end{figure}
+\end{paracol}
+
+\section{Measuring discharge}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/charge_discharge.png}
+   \label{fig:chargedischarge}
+\end{figure}
+
+In order to decide which storage to adopt, it is crucial to measure its discharge, to properly choose a solution which fits the requirements.
+
+\framed{
+   We may measure the battery discharge using mathematical theorems and equations:\\
+   assume ---an \textit{ideal energy buffer} and that--- we have a method for measuring the battery
+   charge $E_b(t)$ at time $t$, and that the power consumption $p_c(t)$ in a time frame $[t_1,t_2]$ is known,
+   then the energy $E_e$ produced in the same time frame is
+   given by the following equation
+   \[
+      E_e = \left[\int_{t_1}^{t_2}p_c(t)dt + E_b(t_2) - E_b(t_1)\right]^+   
+      \]
+}
+      
+A better way is to \ul{use electronic circuits to measure the current flowing out} of the harvesting source and its voltage.
+Using a $d$-bits ADC and assuming minimum and maximum voltage values ($v_{min}$ and $v_{max}$, corresponding to $x_{min}$ and $x_{max}$, the "$d$-bits" values read by the ADC) the battery charge may be obtained with this equation
+\[B = B_{min} + \frac{B_{max} - B_{min}}{x_{max} - x_{min}}(x - x_{min})\]
+
+\section{Modulating the load}
+
+An IoT device has several components, each
+characterized by a power consumption (cost)
+per unit of time,
+in fact components can be turned on/off by the
+processor when not in use, and even the processor can be put in low-power mode.
+
+\textit{Load modulation} means reducing the amount of work
+to reduce the energy consumption.
+\note{
+   For example, a device may vary the sampling frequency of its sensor:
+   \parskip = \baselineskip
+   \begin{itemize}
+   \item High sampling frequency implies high
+   energy cost (but also high utility)
+   \item Low sampling frequency implies low
+   energy cost and low utility
+\end{itemize}
+}
+
+Earlier on the goal was to maximize the device lifetime, but nowdays the standard approach is to obtain \ul{\textbf{energy neutrality},which is the ability of a device to keep the desired performance level ``forever''.} 
+
+\section{Energy neutrality}
+\begin{enumerate}
+   \item \textbf{Energy-Neutral Operation}:\\
+   \textit{How to operate such that, in any give time frame,
+   the energy used is always less than the energy harvested?}
+   \item \textbf{Maximum Performance:}\\
+   While ensuring energy-neutral operation, what is the maximum performance level that can be supported in a given harvesting environment?
+\end{enumerate}
+
+The key elements are
+\begin{itemize}
+   \item The amount of harvested energy from (each) source
+   \item The current charge of the battery
+   \item The power consumption of the device (the load), which is modulated to ensure energy neutrality
+   \item The future energy production estimation
+   \begin{itemize}
+      \item By means of weather forecasts or other
+      methods
+      \item Subject to errors
+      \item Usually under pessimistic assumptions: errors maximized and expected production minimized
+   \end{itemize}
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/harveststoreuse_revisited.png}
+   \caption{Revisited harvest-store-use diagram}
+   \label{fig:harveststoreuse_revisited}
+   Energy is stored for ``future use'' and is used later when either there are no harvesting opportunities, or the sensor tasks require more energy
+\end{figure}
+
+\subsection{Kansal's algorithm for Power Management}
+Kansal considers the case of \ul{\textit{predictable} but \textit{uncontrollable} sources}.
+
+The objectives are three:
+\begin{enumerate}
+   \item keep the system energy neutral
+   \item ensure the system never fails due to energy depletion
+   \item maximize the node's performance
+\end{enumerate}
+and the approach to do so is to take current end expected battery charge into account and dynamically tune the device’s performance (and thus the load),
+so that the device \textit{neither} operates below minimum performance levels nor switches OFF before the next recharge cycle.
+
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/kansal_1.png}
+      \caption{Kansal $1^{st}$ condition: \textit{energy production}}
+      \label{fig:kansal_1}
+   \end{figure}
+   \switchcolumn
+   \[E_T = \int_{T}P_S(t)dt\]
+   $E_T$ is the amount of energy produced in a $[0,T]$ interval.
+   By looking at the graph, we note/assume that for some $\rho_S,\sigma \in \mathbb{R}$
+   \[\rho_S T - \sigma < E_T \leq \rho_S T + \sigma\] 
+
+\end{paracol}
+
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/kansal_2.png}
+      \caption{Kansal $2^{nd}$ condition: \textit{load}}
+      \label{fig:kansal_2}
+   \end{figure}
+   \switchcolumn
+   \[L_T = \int_{T}P_C(t)dt\]
+   $E_T$ is the amount of energy produced in a $[0,T]$ interval.
+   By looking at the graph, we note/assume that for some $\rho_S,\sigma \in \mathbb{R}$
+   \[0 < L_T \leq \rho_C T + \Sigma\] 
+
+\end{paracol}
+
+\framedt{Kansal's theorem}{
+   if the previous assumptions on $E_T$ and $L_T$ \textit{hold},
+   and the energy buffer is characterized by charging efficiency $\eta$ and leakage $\rho_{leak}$,
+   then \ul{a sufficient condition for energy neutrality of the system} is:
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/kansal_theorem.png}
+      \label{fig:kansal_theorem}
+   \end{figure}
+   }
