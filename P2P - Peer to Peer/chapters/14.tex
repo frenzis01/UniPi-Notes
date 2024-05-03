@@ -1,2 +1,25 @@
 \chapter{Solidity Attacks}
 Solidity is a high-level language whose syntax is similar to that of JavaScript. It is designed to target the Ethereum Virtual Machine (EVM). Solidity is statically typed, supports inheritance, libraries and complex user-defined types among other features. It is used to implement smart contracts on various blockchain platforms, the most popular of which is Ethereum.
+
+\section{DAO attack}
+The DAO (Decentralized Autonomous Organization) was a smart contract that was created to act as a venture capital fund for the Ethereum ecosystem. It was launched in April 2016 and raised over \$150 million in Ether, making it the largest crowdfunding campaign in history at the time. The DAO was designed to allow investors to vote on which projects to fund and to receive a share of the profits from those projects.
+
+The DAO was implemented as a smart contract on the Ethereum blockchain using Solidity. The contract was designed to allow investors to deposit Ether into the contract in exchange for DAO tokens, which could be used to vote on proposals for funding. The contract also contained a function that allowed investors to withdraw their Ether at any time.
+
+In June 2016, an attacker exploited a vulnerability in the DAO contract that allowed them to drain funds from the contract. The attacker used a recursive call attack to repeatedly call the withdraw function on the contract, draining over \$50 million in Ether before the attack was stopped.
+
+\subsection{Reentrancy attack}
+The reentrancy attack is a type of attack that exploits a vulnerability in a smart contract that allows an attacker to repeatedly call a function on the contract before the previous call has completed. This can allow the attacker to drain funds from the contract or perform other malicious actions.
+
+The DAO attack was a reentrancy attack that exploited a vulnerability in the DAO contract that allowed the attacker to repeatedly call the withdraw function on the contract before the previous call had completed. This allowed the attacker to drain funds from the contract by repeatedly withdrawing Ether from the contract.
+
+To prevent it from happening, the contract should be designed in such a way that it is not possible for an external contract to call the withdraw function before the previous call has completed. This can be done by using the \texttt{require} statement to check that the contract is in a valid state before allowing the function to proceed, or using \texttt{send()} or \texttt{transfer()} instead of \texttt{call.value()}.
+
+\section{Arithmetic overflow and underflow}
+Arithmetic overflow and underflow are common vulnerabilities in smart contracts that can lead to unexpected behavior and security issues. An overflow occurs when the result of an arithmetic operation exceeds the maximum value that can be stored in the data type used to represent the result. An underflow occurs when the result of an arithmetic operation is less than the minimum value that can be stored in the data type used to represent the result.
+
+A good prevention strategy is to use the SafeMath library, which provides functions for performing arithmetic operations that check for overflows and underflows and revert the transaction if an overflow or underflow is detected.
+\ul{Never use Solidity arithmetic operators directly, always use SafeMath functions.}
+
+\section{Phishing}
+Phishing is a type of attack where an attacker tries to trick a user into revealing sensitive information, such as passwords or private keys, by impersonating a legitimate entity. Phishing attacks are common in the cryptocurrency space, where attackers try to steal funds by tricking users into revealing their private keys or other sensitive information.
