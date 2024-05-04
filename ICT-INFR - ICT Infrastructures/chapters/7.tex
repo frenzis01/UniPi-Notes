@@ -18,3 +18,32 @@ There are two kind of virtualization systems:
 \end{enumerate}
 
 Similar to the ones in storage systems, there are \textbf{checkpoints}, which are used to save the state of a virtual machine at a certain point in time. This is useful to revert to a previous state in case of problems.
+
+\section{Network}
+VMware is the leader in virtualization, but lately they have been changing pricings and licensing, which has made some customers unhappy.\\
+Broadcom is chip manufacturer, and we might end up with virtualization software already inside the chip. 
+
+VMware virtual switch is called \textbf{vSwitch}. It is a software-based switch that is responsible for managing the network of the virtual machines.\\
+Every network interface of a virtual machine has its own MAC address, and may be connected to a vSwitch.
+\note{An hypervisor may handle multiple vSwitches.}
+From a network point of view, a virtual machine is just like a physical machine, assuming that the network card is in \textbf{promiscuous} mode, it can see all the traffic that is going through the vSwitch.
+
+\section{Live Migration}
+Hypervisors provide also the migration of virtual machines from one host to another, which is called \textbf{vMotion} in VMware. This is useful for load balancing, maintenance, etc. In Windows Hyper-V, this primitive is called \textbf{Live Migration}.\\
+The migration is performed \textit{without any service interruption}, only some degradation in performance and network latency.
+This also allows to move virtual machines from one host to another in case of hardware failure or phyisical maintenance.
+Besides, by redunding VMs we may also live switch from an older to a newer version of the software, without users noticing.
+
+Live migration can performed like a context switch, by saving the state of the virtual machine and restoring it on the other host. This is possible because the virtual machine is not aware of the underlying hardware, and the hypervisor is responsible for managing the hardware resources.\\
+Assuming that the disk is shared, the migration is performed like so:
+\begin{enumerate}
+   \item The memory (and the registries) of the virtual machine is copied to the other host
+   \item If the copied memory is sufficient, the new VM starts to run on the other host
+   \item When data from the older memory host is requested, the virtual machine is paused, and the memory is copied again to the other host
+\end{enumerate}
+
+vSwitches are also migrated, so that the network configuration is preserved. The old vSwitch may communicate with the new one, and if needed forward packets, until ARP tables are updated.
+
+\subsection{Replication}
+Replication is the process of copying data from one host to another, in order to have a backup in case of failure.\\
+Happens the same way as live migration, but the virtual machine is not running on the other host.
