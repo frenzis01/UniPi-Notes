@@ -38,7 +38,7 @@ this is an aspect typically out of the control of the designer.
    [Harvesting System]
 
    \begin{itemize}
-      \item a system that supports a variable load from a variable energy-harvesting source
+      \item A system that supports a variable load from a variable energy-harvesting source
       \item \dots also when the instantaneous power supply levels from the harvesting source do not match the load.
    \end{itemize}
 \end{definition}
@@ -381,6 +381,9 @@ The objectives are three:
 and the approach to do so is to take current end expected battery charge into account and dynamically tune the device’s performance (and thus the load),
 so that the device \textit{neither} operates below minimum performance levels nor switches OFF before the next recharge cycle.
 
+% \newpage
+% \newpage
+
 \begin{paracol}{2}
    \begin{figure}[htbp]
       \centering
@@ -415,9 +418,63 @@ so that the device \textit{neither} operates below minimum performance levels no
    if the previous assumptions on $E_T$ and $L_T$ \textit{hold},
    and the energy buffer is characterized by charging efficiency $\eta$ and leakage $\rho_{leak}$,
    then \ul{a sufficient condition for energy neutrality of the system} is:
-   \begin{figure}[htbp]
-      \centering
+
+   % \begin{figure}[htbp]
+   \begin{center}
       \includegraphics{images/kansal_theorem.png}
-      \label{fig:kansal_theorem}
-   \end{figure}
-   }
+   \end{center}
+   %    \label{fig:kansal_theorem}
+   % \end{figure}
+}
+
+Kansal's model of utility and duty cycle enables a modulation of the load on the energy harvesting device.
+Consider a system designed to detect the presence of intruders in a room.
+\begin{itemize}
+   \item The minimum and the maximum duty cycles imply a range of possible sampling frequencies
+   \item The higher the frequency the better the ability to detect intruders and the higher is thus the
+   utility
+   \item The lower the frequency the lower is the ability to detect the intruders and thus the utility
+   \item Below $dc_{min}$ the detection ability is impaired
+   \item Above $dc_{max}$ it is useless to sample (the intruder is not that fast\dots)
+\end{itemize}
+
+This leads to an optimization problem where:
+\begin{itemize}
+   \item The production varies over time (uncontrolled), but it is predictable (by assumption)
+   \item The load varies over time according to the duty cycle (controlled)
+   \item The battery charge varies over time accordingly
+\end{itemize}
+\framed{
+   Since the energy source is \textit{predictable} we have to find the load so that the \textit{system is energy \textbf{neutral}} and the overall \textit{\textbf{utility} is maximized}
+}
+
+Kansal's approach to assign a duty cycle at each time slot (assuming time is slotted), does not requires the knowledge of the future production\footnote{However it may be available in some cases, such as weather forecasting}, but just an estimation, an it builds the cycle over three components:
+\begin{enumerate}
+   \item forecasts future power production based on past power production, using a \texttt{EWMA} (Exponentially Weighted Moving Average) filter (i.e. assumes the future production to be similar to the past day)
+   \begin{equation}
+      \tilde{p}^{j+1}_S(i) = \alpha \cdot\tilde{p}^j_S(i) + (1-\alpha)\cdot\tilde{p}^j_S(i)
+   \end{equation}
+   \item uses a simple polynomial-time algorithm (suitable for low-power processors) to solve the
+   optimization problem
+   \item performs a reoptimization (dynamic adaptation) if the actual power production deviates
+   significantly from the expected one
+\end{enumerate}
+
+\framed{
+   $k$ number of time slots
+   $B(i)$ battery charge at the beginning of slot $i$
+   $B(k+1)$ battery level at the end of slot $k$ (i.e. at the end of the day)
+   
+   Based on the expected power production $\tilde{p}_S(i)$ at each slot $i \in [1,k]$, the algorithm assigns a duty cycle $dc(i)$ and hence a utility $u(i)$to each slot $i$,
+   while requiring that $B(k+1)\geq B(1)$ i.e. that the system must be \textit{energy neutral}.
+}
+
+
+\textit{\ul{What about the number of time slots $k$?}} There is not a fixed number and there is not a method to determine the best one; three considerations may be done in regards to:
+
+\begin{enumerate}
+   \item Too small implies a simpler model, but higher risk of error. Too large implies a possibly (not necessarily)more accurate model, but higher computational cost
+   \item It time slots are too small ($k$ is large) the signal output may present too many oscillations
+   \note{Consider a device which every minute changes the sample rate: this may lead to a lot of oscillations in the signal output, resulting in more complicate data analysis}
+   \item If time slots are too small, you may not be able to properly feed the estimation model, e.g. 1-minute slotting may not be significant to estimate the production of a solar panel
+\end{enumerate}
