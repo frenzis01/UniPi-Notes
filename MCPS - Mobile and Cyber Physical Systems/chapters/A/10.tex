@@ -478,3 +478,79 @@ Kansal's approach to assign a duty cycle at each time slot (assuming time is slo
    \note{Consider a device which every minute changes the sample rate: this may lead to a lot of oscillations in the signal output, resulting in more complicate data analysis}
    \item If time slots are too small, you may not be able to properly feed the estimation model, e.g. 1-minute slotting may not be significant to estimate the production of a solar panel
 \end{enumerate}
+
+\section{Task-based model for Energy Neutrality}
+Usually, an application for an IoT device implements 4 steps in a cycle, each one with a potentially different implementation:
+\begin{enumerate}
+   \item Sensing
+   \item Storing
+   \item Processing
+   \item Transmitting
+\end{enumerate}
+
+Different implementations may imply a different
+behaviour of the server (either in the gateway or in the
+cloud).
+Even though the system functionality does not change, the implementation may change indeed.
+\begin{itemize}
+   \item 
+   Example 1:\\
+   If the application process all data and transmits only the
+   results, the server may just store the received data.
+   \item Example 2:\\
+   If the application just transmits all the sensed data, then the server has to process and then store the
+   data.
+\end{itemize}
+
+\newpage
+\begin{paracol}{2}
+
+
+   We call \ul{\textbf{task} an implementation of the application in the IoT device.}
+   We may achieve \textit{load modulation} by scheduling the tasks in execution; clearly, the server needs to know which task is running to behave accordingly.
+   
+   To each task we may associate a \textit{power consumption} and a \textit{utility}, allowing a dedicated \textit{task scheduler} component to properly choose the task to run in each \textbf{time slot}.
+   
+   \note{Kansal's time slotting goes nicely along with this architecture}
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/taskmodel.png}
+      \caption{Task based model architecture}
+      \label{fig:taskmodel}
+   \end{figure}
+\end{paracol}
+
+The scheduler must solve an \textbf{optimization problem} by means of linear programming, which is to maximize the utility of the tasks assigned to the slots:
+\begin{equation}
+   max \sum_{i=1}^{k}u(i) \sum_{j=0}^{n}x_{i,j}\cdot u_{j}
+\end{equation}
+
+Given:
+\begin{align}
+   \sum_{j=1}^{n}x_{i,j}=1 \forall i \in [1,k] & \quad & \textit{exactly one task per slot}\\
+   B(1) \leq B(k+1) & \quad & \textit{energy neutrality}\\
+   B_{min} \leq B(i) \forall i \in [1,k] & \quad & \textit{Battery may never go below the minimum}\\
+   B(i+1) = min\left\{B_{max}, B(i) + \eta\cdot p_S^+(i) - p_C^-(i) \forall i \in [1,k]\right\} & \quad & \begin{aligned}\textit{$i^{th}$ slot charge depends on initial charge,} \\ \textit{production, and consumption in the slot}\end{aligned}
+\end{align}
+
+The described problem may be reduced to the famous \textit{knapsack problem}, which --sadly--- is \textbf{NP-hard}, thus hardly solvable for most commodity PCs, let alone for IoT devices.
+
+The knapsack problem is solvable by means of a \textit{dynamic programming} approach, exploiting is a \textit{polynomial-time} algorithm.\\
+Assuming that the system state is defined by $(i,b)$, where
+\begin{itemize}
+   \item $i$ is the time slot up to which the system is optimized
+   \item $b$ is the battery charge at the beginning of the slot
+\end{itemize}
+Then the optimal utility $opt(i,b)$ can be computed exploiting a backware recursive rule:
+\begin{align}
+   opt(k,b) = max_{j=1,\dots,n} \left\{u_j : b + \eta\cdot p_S^+(k) - p_C^-(k) \geq B(1)\right\}\\
+   opt(i,b) = max_{j=1,\dots,n} \left\{u_j : opt\left(i+1, B^j(i+1)\right):B^j(i+1) \geq B_{min}\right\}
+\end{align}
+\note{
+   \begin{itemize}
+      \item 
+      Where in $opt(k,b)$ results from assuming task j is assigned to slot k
+      \item Where $B (i+1)$ is the residual battery at the end of slot $i$ if task $T$ is assigned to that slot
+   \end{itemize}
+   }
