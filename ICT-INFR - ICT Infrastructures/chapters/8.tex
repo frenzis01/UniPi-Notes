@@ -1,0 +1,31 @@
+\chapter{Containers}
+\label{chap:containers}
+
+A VM is better than a process because it provides \textbf{isolation}:
+a typical problem in cybersec is that if an attacker cracks a process, he may access the whole system;
+with a VM, the attacker can only access the VM, not the host.
+However, a VM introduces overhead due both to the hypervisor and to the OS (cache, kernel, storage management\dots).
+
+\note{The idea is to tell a process that a process that its root is a subdirectory of the host's root, resulting in a strong isolation.}
+
+\textbf{Docker} provides a \textit{differential filesystem}, which is a filesystem that is a diff of the host's filesystem.
+
+Docker has become the de facto standard for containers, but there are other solutions like \textbf{LXC} (Linux Containers) and \textbf{rkt}.
+A Dockerfile contains the information to build a container.
+
+One of the key differences between a VM and a container is that containers \textbf{do \textit{not} have a virtual switch}.
+A container uses the same MAC address of the host.\\
+Docker containers are processes, and only see a portion of the host's filesystem.
+
+Inside a Dockerfile you may create temporary containers by exploiting multiple images and lastly build the resulting slimmed image.
+
+
+\section{Docker compose}
+Docker compose is a tool to define and run multi-container Docker applications. It uses a YAML file to configure the application's services, networks and volumes. With a single command, you can create and start all the services from your configuration.
+
+Kubernetes is a more advanced tool for container orchestration, way more complex than Docker compose, it allows to manage thousands of containers, providing fundamental scalability features.
+
+\section{Docker security}
+An attack is to put the machine under heavy workload and observe from the container the performance to infer what other processes may be. This is called \textbf{side channel attack}.
+
+Google has thousands of VMs and each runs a \textit{container for each query}.
