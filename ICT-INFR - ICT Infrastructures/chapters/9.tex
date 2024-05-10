@@ -4,3 +4,92 @@ It was needed to handle peak of requests and to allow scalability, without overs
 \note{e.g. Amazon needs to handle way more requests on Christmas than on a normal day.}
 So, Cloud was a mean to reduce the cost of the ICT infrastructure.
 
+\textbf{Resource pooling} is the key concept of Cloud. It means that the services are provided to users using a multi-tenant model, with physical and virtual resources being dynamically allocated and deallocated according to the demand.\\
+Cloud was needed also to provide rapid elasticity, meaning that capabilities may be elastically provisioned and released, in some cases automatically, to scale rapidly outward and inward commensurate with demand. To the customer it means that the capabilities available for provisioning often appear to be unlimited and can be appropriated in any quantity at any time.
+
+Benefits of Cloud:
+\begin{itemize}
+   \item \textbf{Business agility}
+   \begin{itemize}
+      \item Quick resource provisioning
+      \item Facilitates innovation
+      \item Reduces time to market
+   \end{itemize}
+   \item \textbf{Reduces IT costs}
+   \begin{itemize}
+      \item Reduces up-front capital expenditure (CAPEX)
+      \item Improves resource utilization
+      \item Reduces operational expenditure (OPEX)
+   \end{itemize}
+   \item \textbf{High availability}
+   \begin{itemize}
+      \item Ensure resource availability based on customer's requirements
+      \note{In RAI, prof. Cisternino experienced people complaining because their servers' CPUs were running at 98\% of their capability, and they wanted to exploit also the remaining 2\%, because ``they paid for it''.}
+      \item Enables fault tolerance
+      \note{Recall active-active, active-passive, etc. configurations.}
+   \end{itemize}
+   \item \textbf{Business continuity}
+   \item \textbf{Flexible Scaling}
+   \item \textbf{Flexibility of Access}
+   \item \textbf{Application Dev and Testing}
+   \item \textbf{Simplified infrastructure management}
+   \item \textbf{Increased collaboration}
+   \item \textbf{Masked complexity}
+\end{itemize}
+Cloud has the magic power of decoupling the software from the hardware.
+
+Disadvantages of Cloud:
+\begin{itemize}
+   \item Vendor lock-in
+   \item Privacy
+   \item Your software depends on someone else
+   \item Legislation is complicated
+   \note{In EU public administration data, must be stored in the EU.}
+   \item \dots TODO
+\end{itemize}
+
+\section{Cloud Service Models}
+\begin{itemize}
+   \item \textbf{IaaS} (Infrastructure as a Service)
+   \begin{itemize}
+      \item Provides virtualized computing resources over the Internet
+      \item Examples: Amazon EC2, Google Compute Engine, Microsoft Azure
+   \end{itemize}
+   \item \textbf{PaaS} (Platform as a Service)
+   \begin{itemize}
+      \item Provides a platform allowing customers to develop, run, and manage applications without the complexity of building and maintaining the infrastructure
+      \item Examples: Google App Engine, Microsoft Azure, Heroku
+   \end{itemize}
+   \item \textbf{SaaS} (Software as a Service)
+   \begin{itemize}
+      \item Provides software applications over the Internet
+      \item Examples: Google Apps, Microsoft Office 365, Salesforce
+   \end{itemize}
+
+\section{Cloud Deployment Models}
+\begin{itemize}
+   \item \textbf{Public Cloud}
+   \begin{itemize}
+      \item Owned and operated by third-party cloud service providers
+      \item Deliver computing resources over the Internet
+      \item Examples: Amazon Web Services (AWS), Microsoft Azure, Google Cloud Platform
+   \end{itemize}
+   \note{It does \textbf{not} mean that the data is public. It means that the cloud services are accessible to the public.}
+   \item \textbf{Private Cloud}
+   \begin{itemize}
+      \item Operated solely for a single organization
+      \item Managed by the organization or a third party
+      \item \textit{On-premise} or \textit{off-premise}
+   \end{itemize}
+   \note{It does \textbf{not} mean that the data is private. It means that the cloud services are accessible only to the organization e.g. \textit{UniPi}.}
+   \item \textbf{Hybrid Cloud}
+   \begin{itemize}
+      \item Composition of two or more clouds (private, community, or public) that remain unique entities but are bound together, and resources may be moved from one cloud to another (with some performance cost obviously) 
+      \item By standardized or proprietary technology that enables data and application portability
+   \end{itemize}
+   \item \textbf{Community Cloud}
+   \begin{itemize}
+      \item Shared infrastructure for specific community
+      \item Managed by organizations or third party
+      \item On-premises or off-premises
+   \end{itemize}
