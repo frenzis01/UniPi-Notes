@@ -79,3 +79,107 @@ This is an approach designed and presented by \textbf{Deborah Estrin} and her te
    \note{Along the gradients, following multiple paths}
    \item The sink \textit{reinforces} one or some of these paths.
 \end{itemize}
+
+% Interest ::= <name, attribute-value pairs>
+% Data ::= <name, attribute-value pairs>
+% Gradient ::= <name, attribute-value pairs>
+\begin{lstlisting}
+   type        = four-legged animal // type of animal seen
+   instance    = elephant           // instance of this type
+   location    = [125, 220]         // node location
+   intensity   = 0.6                // signal amplitude
+   confidence  = 0.85               // confidence in the match
+   timestamp   = 01:20:40           // event generation time
+\end{lstlisting}
+
+An interest is associated to a duty cycle, which is the time interval between two consecutive transmissions of the same interest.
+
+\section{TODO}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/ddiff_FSM.png}
+   \caption{Direct Diffusion Finite State Machine}
+   \label{fig:ddiff_FSM}
+\end{figure}
+TODO slides from 12 to 23
+
+\newpage
+
+
+\section{Topologies}
+
+\begin{paracol}{2}
+   Trees provide scalability but sink nodes (two corners of the figure) have larger power consumption, just as nodes close to them, which act as bottlenecks.
+   Note that the position in the tree resembles the phyisical position of the nodes in the field, which is often not arbitrary, but is dictated by various factors instead.   
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/ddiff_trees.png}
+      \caption{WSN Tree topology issue}
+      \label{fig:ddiff_trees}
+   \end{figure}
+\end{paracol}
+
+\section{GPSR}
+The desire was to provide internet-like routing, but without the resource overhead of traditional routing algorithms.
+This problem was addressed in 2003 by \textbf{Brad Karp} and \textbf{H. T. Kung} with the \textbf{Greedy Perimeter Stateless Routing} algorithm, which exploits the GPS information of the nodes to route the packets.
+
+The protocol works under three assumptions:
+\begin{itemize}
+   \item The network is \textbf{connected}\\
+   Source knows the coordinate of the destination.
+   \note{This is kind of odd, since nodes only have a local view of the network, not of the whole network.
+   So\dots \textit{how does the source know the destination's coordinates?}
+   
+   }
+   \item The network is \textbf{planar}\\
+   Nodes are deployed in a 2D plane, and the network is planar if no two nodes overlap.
+   \item The network is \textbf{localized}\\
+   Nodes are aware of their own position and of the position of the neighbors
+\end{itemize}
+The protocol completely removes the need for route discovery and consequent route caches and routing tables.
+
+\begin{paracol}{2}
+   
+   GSPR comprises two modes:
+   \begin{itemize}
+      \item \textbf{Greedy forwarding}\\
+      The packet is forwarded to the neighbor that is closest to the destination.\\
+      More formally,
+      The forwarding node $x$ select as next hop a neighbor $y$ such that $y$ is closer to Destination D than $x$ and that $y$ is the closes to D among all the neighbors of $x$.\\
+      Greepy forwarding fails if it encounters a \textit{void} region.
+      \item \textbf{Perimeter forwarding}\\
+      The packet is forwarded to the neighbor that moves it along the perimeter of the void region.\\
+      It is based on the \texttt{LHL} (Left Hand on the Left) rule, or the \texttt{RHR} (Right Hand on the Right) rule; i.e. When arriving from y to x selects the first
+      counterclockwise edge from $(x,y)$.\\
+      In other words, the packet traverses the interior of a closed polygonal region (face) in clockwise ---or counterclockwise--- order.
+   \end{itemize}
+   \switchcolumn
+   
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/GPSR_modes.png}
+      \caption{GPSR Greedy and Perimeter forwarding}
+      \label{fig:GPSR_modes}
+   \end{figure}
+   \colfill
+
+\end{paracol}
+
+\framedt{Switching from the two modes}{
+   The switch from Greedy to Perimeter mode is triggered when the Greedy mode fails, i.e. when the node finds a void region.\\
+   The switch back to Greedy mode cannot be triggered as the node exits the void region, since this may lead to fallback loops.
+   The switch is instead performed when a node closer to D than $\tilde{x}$ ---the node from which the perimeter mode started--- is found.
+}
+
+\subsection{More on Perimeter mode}
+RHR applied to a non-planar graph may lead to a degenerate tour that does not trace the boundary of a closed polygon.
+For this reason, given the non-planar graph $G$, the algorithm constructs a planar ---sub---graph $P$ of $G$, and applies RHR to $P$; 
+$P$ may either be the
+\begin{itemize}
+   \item \textit{Relative Neighborhood Graph} of $G$
+   \item \textit{Gabriel Graph} of $G$
+\end{itemize}
+
+Greedy mode exploits the whole graph $G$, while Perimeter mode exploits only the links in the planar graph $P$.
