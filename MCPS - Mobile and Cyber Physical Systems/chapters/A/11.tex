@@ -183,3 +183,20 @@ $P$ may either be the
 \end{itemize}
 
 Greedy mode exploits the whole graph $G$, while Perimeter mode exploits only the links in the planar graph $P$.
+\nl
+
+\framedt{Mobility}{
+   The problem with GPSR is \textbf{mobility}, mostly due to the need for a planar graph for perimeter mode to work correctly.
+   It needs a freshly planarized graph, using ``stale'' planarized graph may result in performance degradation;
+   On the other side, planarizing the graph at each topology change is not good either, since it may lead to link instability, because nodes may move within a node’s transmission range, which may continuously change the selection of links by GG or RNG.
+   
+   To solve the problem, a proactive approach is used, where nodes periodically communicate their position to their neighbors (beaconing), and beacons are used to keep the neighbor’s list.
+   When the changes are excessive, planarization is performed.
+}
+\note{
+There are three possible configurations for GPSR responsible for possible loops.
+The most problematic is the umbrella-shaped one.
+Since the configuration may be complex and made up of multiple nodes, it is not easy to detect, and doing would required the whole view of the network.
+\\
+TODO
+figures are missing}
