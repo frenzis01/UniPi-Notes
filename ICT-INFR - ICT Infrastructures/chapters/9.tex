@@ -93,3 +93,24 @@ Disadvantages of Cloud:
       \item Managed by organizations or third party
       \item On-premises or off-premises
    \end{itemize}
+\end{itemize}
+
+\section{Control Layer}
+The control layer is responsible for managing the resources and the allocation of the resources to the virtual machines.
+\note{
+Note that you cannot allocate more virtual cores than the physical ones.
+}
+% Grade pools are used to allocate resources to the virtual machines. The control layer is responsible for managing the resources and the allocation of the resources to the virtual machines.\\
+% Different grade levels such as Gold, Silver, Bronze, etc. are used to allocate resources to the virtual machines. 
+\subsection{Resource Pooling and Provisioning}
+A unified manager at control layer allows to categorize in \textbf{grading pools} resources and identity pools based on predefined criteria.
+This helps creating variety of services, providing choices to consumers.
+Multiple grade levels (e.g. ``Gold'', ``Silver'', ``Bronze'') may be defined for each type of pool, where costs/prices of resource pools differ depending on grade level.
+\nl
+
+\textbf{Resource provisioning} starts when a user requests a service. 
+
+\section{Service Layer}
+Service Layer enables defining services in a service catalog, and provides a self-service portal for users to request services (enables on-demand and self-provisioning).
+
+Service orchestration is the process of integrating services to support the automation of business processes.
