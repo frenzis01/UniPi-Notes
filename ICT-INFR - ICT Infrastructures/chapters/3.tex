@@ -1,5 +1,6 @@
-\chapter{Cabling}
-Cabling is of paramount importance.
+\chapter{Fabric}
+``Fabric'' is the term used to refer to the \textit{interconnection} between nodes of a datacenter.\\
+\ul{Cabling is of paramount importance.}
 \note{Prof. Cisternino learnt it ``the hard way'' when he performed the cabling of the first UniPi datacenter by himself}
 \begin{enumerate}
    \item Maintenance
@@ -13,11 +14,13 @@ Cabling is of paramount importance.
    \item Not neglectable cost
 \end{enumerate}
 
-\section{Bandwidth}
+We refer to North-South traffic indicating the traffic outgoing and incoming to the datacenter (internet), while we refer to East-West as the internal traffic between servers.
+Most of the network (or fabric) traffic is processed horizontally (North-South traffic)\footnote{Seems odd that ``horizontal'' refers to North-South traffic, but that's how it is.}.
 
-\subsection{Storage implications}
+
+\section{Bandwidth and Storage implications}
 \label{sec:bandwidth_storage}
-A standard datacenter has servers connected with 25Gbit links in both directories, summing up to 50Gbit total bandwidth.
+A standard datacenter has servers connected with 25Gbit links in both directions, summing up to 50Gbit total bandwidth.
 Current SSDs provide much more. \ul{4 drives are enough to saturate a 100Gbit/s link.}\\
 We moved from a situation where the \textbf{bottleneck} were slow Hard Drives, to the current one where the bottleneck is the ---network--- \textbf{bandwidth}.\\
 Recently the PCI 3.0, which lasted very long ---providing $\sim 1000\texttt{Gbit/s}$---, suddenly become unsufficient to handle the needed traffic.
@@ -37,8 +40,8 @@ furthermore, you can't waste ---the high amount of--- energy ---consumed by such
 
 SSDs have a known write limit, but today, the usually last enough time: if you write the whole disk every day it will last for 5 years. Most-likely after five years you'd have to renew some components anyway, besides the failure is a predictable event.
 
-\subsection{Fabric and Cables}
-\subsubsection*{Optical}
+\section{Cables and standards}
+\subsection{Optical}
 Electric current propagates at a speed $s = {\sim}0.6c$.
 Hence \textbf{optical fiber} is ---at least in theory?--- faster.
 
@@ -59,7 +62,7 @@ Sometimes the two ends of the cable are detachable so that the cables may be swi
    \label{fig:sc_lc_connectors}
 \end{figure}
 
-\subsubsection*{Copper wires}
+\subsection{Copper wires}
 In case of electricity there are many aspects to be considered. Interferences, cable diameter/size, length, and also the fact that if a \texttt{1} has been transmitted for some time, it takes longer to transmit a \texttt{0}, due to the \textit{commutation} that must happen.
 \nl
 
@@ -106,6 +109,17 @@ In case of electricity there are many aspects to be considered. Interferences, c
 \end{paracol}
 
 \note{Fun fact: ci sono 9 cavi USB-C e solo due portano informazioni video.}
+
+\subsection{InfiniBand}
+Even though Ethernet is famous, it is not the only standard. InfiniBand is another one, which is used in supercomputers and known for its very high throughput and very low latency ($\sim 2\mu s$).
+It may send messages up to 2GB each, with 16 priority levels.
+It is a \textit{lossless protocol}, meaning that if a packet is received, its integrity is guaranteed.
+
+\textit{IB} avoids TCP/IP stack, which is very heavy, and instead uses MPI (\textit{Message Passing Interface}), which is a way to distributed parallel programs.
+
+\subsection{RDMA - Remote Direct Memory Access}
+
+RDMA is a technology API based (not a protocol!) that allows to access memory of a remote machine without involving the CPU or the OS of the remote machine.
 
 \section{Cabling Issues}
 The key point is that it would be desirable for cabling to be reconfigurable.

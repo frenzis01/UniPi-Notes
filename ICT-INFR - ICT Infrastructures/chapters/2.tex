@@ -2,13 +2,17 @@
 10 years ago datacenters were no more than a room with some computers, air conditioners and some plugs to power up the devices.
 Later on, customers started asking server vendors to include in the servers utilities to allow an \textit{automated datacenter management}.
 Thus the trend moved towards \textbf{\ul{Software Defined Datacenter}}, which currently is the only possible way to deploy a Datacenter.
+This refers to the fact that the behavior of some physical facility or system is not predefined in it’s building, but
+to some extent it’s behavior is defined by a software and so it can be changed
+over time, allowing for datacenters to be \textbf{future-proof}: servers may be replaced, but updating a whole datacenter is at least a 1-year project.
 
-An \textbf{Active Datacenter} allows for internet storage (?)
+Datacenters \textbf{active} systems that allow to host server storage and network.
 
-A Datacenter should be \textbf{future-proof}: servers may be replaced, but updating a whole datacenter is at least a 1-year project.
 
 \section{Structure}
-\textit{Racks} are made of ---$\sim 42$--- \textit{units}.
+\textit{Racks} are made of ---$\sim 42$\footnote{for 2 meters tall racks}--- \textit{units}.
+Racks are typically prefabricated in groups and automatically integrated in the datacenter POD (Point Of Delivery).\\
+\note{Servers occupying only one rack unit are often referred to as Pizza Box}
 
 Besides server theirselves, there is a \textbf{cooling system}.
 The first issue is the how to provide cool air. Then there is also how to define an evacuation plan, which must take into account dust.
@@ -22,7 +26,10 @@ However also the \textbf{floor} is not to be negliged.
          \textit{``A “floating floor” in a data center, also known as a “raised floor”, is a type of construction used in data centers to create a void between the actual concrete floor and the floor tiles where the servers and other equipment are located12. This space is typically used for routing cables and for air circulation, which helps with cooling the equipment1."}\footnote{ChatGPT 4.0 - Generated}
       }
    \end{itemize}
-   \item \textit{Resistance} usually around $1 \frac{ton}{m^2}$  
+   \item \textit{Resistance} usually around $1 \frac{ton}{m^2}$  for marble tiles, about the half for wooden ones.
+   \item \ul{Floating floors are always a good idea}.\\
+   They provide flexibility, allow to have some sort of cable management under the racks, and in general make possible changing the layout without having to redo everything.
+   \note{When the ceiling is not sufficiently high and no floating floor is possible, the cabling is done over the servers, which is not ideal.}
 \end{itemize}
 
 For example, in San Piero A Grado, there was a power cabin receiveing current from three lines.
@@ -32,7 +39,7 @@ Cables are not super-resistant to current. A lot of current passing through a co
 hence the current should also be balanced among different cables, to avoid exhausting some components before the others.
 
 
-A UPS ---first of all--- stabilizes the output current.
+\ul{A \textbf{UPS}} ---first of all--- \ul{stabilizes the output current}.
 
 In theory $1V * 1A = 1W$, but in reality, performing such conversion \ul{something gets lost}, so we have
 \[I * V * cos \phi = W\]
@@ -44,7 +51,24 @@ Electric panels (aka \textit{switchboards}) allow segmenting the power supply in
 \textbf{PDU}s stands for \textit{Power Distribution Units}, and allow to distribute power for a server units in a rack.
 Typically, for each PDU there is another one, providing redundacy and thus resilience/robustness.
 
+The UPS is attached to the PDU (Power Distribution Unit) which is linked to the server.
+As briefly stated before ---for redundancy reasons--- a server is powered by a pair of lines, that usually are attached to two different PDUs. The server uses both the lines, so that there will be continuity in case of failure of a line. 
+In the server there are the power plugs in a row that can monitored via a web server running on the rack PDU.
+
 \nl
+
+\textit{Inside} the datacenter \textbf{Direct Current} (DC) is preferred, because a DC power architecture contains less components (hence less heat production, hence less energy loss), but the problem is that the power companies supply our buildings with \textbf{Alternating Current} (AC).
+ment.\\
+AC is more efficient for power companies to deliver, but when it hits the equipment’s transformers, it exhibits a characteristic known as reactance.
+Reactance reduces the useful power (watts) available from the apparent power (volt-amperes).
+\begin{definition}[Power factor]
+The \textit{power factor} is the ratio between the real power and the apparent power.
+\end{definition}
+
+\note{
+   Early UPSs had a 0.8 PF, but today the standard is 0.9 PF.
+   A 100 kVA UPS would support only 0.8 kW of real power load.
+}
 
 \begin{definition}[PUE]
 \textit{Power Usage Effectiveness} \textbf{PUE} measures the efficiency of a Datacenter.
@@ -66,6 +90,11 @@ In particulare geographical zones with high temperature variations over the year
 Also the oceans have a very stable temperature; not on the surface, but deep down it is very stable.
 
 \section{Cooling}
+Cooling is critical since its the most important factor in determining the \textbf{PUE}. Today the standard is air based\footnote{Does not mean that water cannot be implied in the process}, but there are some experiments for water based cooling.
+\note{e.g. in the Netherlands there is a datacenter which uses water from the sea to cool down the datacenter.\\
+Prof. Cisternino displayed a Microsoft datacenter in the sea, which is cooled down by the sea itself.}
+Not all chilling techniques are possible in all places, because the temperature of the water must be lower than the one of the air, and the air must be dry.
+
 Note that racks are always placed back-to-back, because the front requires cool air, and the back outputs hot air.
 \subsection{CRAC}
 \begin{figure}[htbp]
@@ -86,6 +115,8 @@ The racks suck the cool air in front and output hot air from the back.
    this makes this architecture particularly inefficient for datacenter which have heterogeneous workloads.
 \end{enumerate}
 }
+
+No one is using this technique today apart from Aruba, since they have very omogeneus workload. Doors are used to isolate chilled and hot air.
 
 \newpage
 \subsection{Inrow Cooling}
@@ -173,7 +204,7 @@ A nice question would be, \textit{``Can\'t we simply chill the liquid and send i
 \begin{itemize}
    \item Required pressure is different
    \item Required temperatures do not match
-   \item ... TODO 
+   \item Having water directly inside the datacenter is risky
 \end{itemize}
 
 \subsection{Spilling Pipes}
