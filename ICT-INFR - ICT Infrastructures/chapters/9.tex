@@ -277,3 +277,113 @@ Backups are typically done incrementally, meaning that starting from a full back
 However, saving storage in this way leads to a more complex recovery process, as all the incremental backups must be applied to the full backup to recover the data, possibly considerably increasing the RTO.\\
 To overcome the issue, a full backup is done every now and then e.g. a week is common practice, and incremental daily backups are done until the next full backup.\\
 This fixes the RPO to 1 day, while the RTO still may vary depending on bandwidth, storage speed, and most importantly size and amount changes throughout time; typically it is days (?) or hours.
+
+\section{Security}
+\ul{Information is an organization’s most valuable asset.}
+
+Cloud is interesting, because, among other things, allows to distribute information in multiple places, to the cost of possibly broadening the attack surface.\\
+However, cloud tenants are isolated from each other, so the attack surface is typically limited to the cloud provider's infrastructure.
+
+For cloud customers the key point is \textbf{trust}, which is provided by means of \textbf{visibility} and \textbf{control} on the data hosted.
+
+\framedt{Three ICT Security Pillars}{
+   \begin{enumerate}
+      \item \textbf{Phyisical Security}\\
+      Badges, doors, locks, keys, etc\dots These are needed because with physical access to the hardware, one can do anything.
+      \item \textbf{Logical Security}\\
+      Accounts, passwords, firewalls, etc\dots\\
+      Logical security has been historically underestimated, but it is fundamental, and it was the easier to exploit. It refers to things like access rights, restricting an account's capabilities, etc. 
+      \item \textbf{Produceral Security}\\
+      ``An employee which knows the system must not be able to exploit it''.\\
+   \end{enumerate}
+}
+
+\textbf{Identity} is a key concept in security, which in later years has changed a lot, mostly due to \textit{federated identity}, which allows to use the same credentials to access multiple services.
+
+\note{Fun fact: today almost no internet service requires users to change password every 90 days, because it was found that it was counterproductive.
+People used to forget passwords and write them down onto notes that they would stick to the monitor or on the wall, completely breaking phyisical security.}
+
+\subsection{Defense-in-depth or Layered Security}
+A common approach is to provide multiple onion-like layers of security, where each layer is independent from the others, and if one fails, the others are still there to protect the system.\\
+The inner layer is typically defending the storage, which we know that \textit{data} is the most valuable asset of an organization.
+
+\subsection{Zero Trust Architecture}
+The Zero Trust Architecture is a security model that requires strict identity verification for every person and device trying to access resources on a private network, regardless of whether they are sitting within or outside of the network perimeter.
+
+The problem arose when people realized that the perimeter was not a good security measure, because once an attacker is inside the perimeter, it is game over. In other terms, security cannot be enforced based on the device itself and its location, we have no guarantee that is has not been compromised.
+
+\begin{definition}[Zero Trust Architecture]
+   ``Never trust, always verify''
+\end{definition}
+
+\ul{Almost every datacenter nowdays tends to follow the Zero Trust Architecture.}
+
+\subsection{CIA/AAA Triads, plus other concepts}
+The \textbf{CIA Triad} is a widely used model for security policy development, which stands for:
+\begin{itemize}
+   \item \textbf{Confidentiality}\\
+   Ensures that information is only accessible to those who have the right to access it.
+   \item \textbf{Integrity}\\
+   Ensures that information is accurate and reliable.\\
+   i.e. Unauthorized changes to data are not allowed.
+   \item \textbf{Availability}\\
+   Ensures that information is accessible when needed.
+\end{itemize}
+
+The \textbf{AAA Triad} instead stands for:
+\begin{itemize}
+   \item \textbf{Authentication}\\
+   Ensures that the user is who he claims to be.
+   \item \textbf{Authorization}\\
+   Ensures that the user has the right to access the resource.
+   \item \textbf{Auditing}\\
+   Ensures that the user's actions are logged.
+\end{itemize}
+
+\subsubsection{TCB and Multi-tenancy}
+It is not advisable to make a single device responsible for enforcing security for the whole system, it is better to distribute such responsibility.\\
+The TCB is the set of all hardware, firmware, and software components that are critical to the security of a computer system.
+\note{The TCB is the most critical part of the system, and it must be protected at all costs.
+}
+
+\subsubsection{Velocity and Spray-and-Pray}
+Velocity-of-attack refers to a situation where an existing security threat in a cloud may spread rapidly and have large impact.
+
+The majority of attacks are \textbf{spray-and-pray}, meaning that the attacker tries to exploit as many systems as possible, hoping that at least one of them is vulnerable.\\
+Like a fisherman which goes out in the ocean, you throw a net, and check what you caught.
+
+\subsection{Data Privacy}
+Data privacy is a fundamental right, and it is regulated by the GDPR in the EU.
+
+Even name and surname are considered personal data, and they must be protected.\\
+It is not only a matter of law, but also of ethics.
+A name appearing in a list may affect the life of a person, what that will person will be allowed to do, and so on, even if no other information is provided.
+
+\note{Prof. Cisternino cited \textit{Schindler's List}, to explain that even a list of names, with no other information such as address, date of birth, and so on, may decide what it will be of your life.}
+
+\framedt{``Accountability'' in GDPR}{
+
+   In GDPR appears the curious term \textit{``accountable''}, i.e. TODO.
+   Being able to produce all the documentation that proves that you are compliant with the GDPR, meaning that you did everything you should have done to protect the data.\\
+   Such term is different from ``responsible''. Accountability is about tracing back the actions, while responsibility is about the actions themselves.
+
+   \textit{``I'm accountable, I did everything I could to avoid such a bad situation to happen, but it happened anyway.''}
+}
+
+\subsection{IDS and IPS}
+Intrusion Detection Systems (IDS) and Intrusion Prevention Systems (IPS) are security measures that are used to protect a network from attacks.
+
+Sometimes they are not effective because intruders may remain silent for a long time, and then suddenly attack, or they may attack slowly in a way that the IDS/IPS does not recognize their actions as an attack, but rather as normal traffic or as a false positive in the worst case.
+
+\section{Service Management}
+Service portfolio management is the process of managing an organization’s service portfolio to ensure that the services are aligned with the business goals and objectives.
+
+Service operation management is the process of managing the operation of the services to ensure that the services are delivered as agreed in the service level agreements.
+
+TCO (Total Cost of Ownership) is the total cost of owning and operating a service over its lifecycle.\\
+ROI (Return on Investment) is the ratio of the net profit to the cost of the investment.
+\begin{align}
+   SALT =& \textit{Service Asset Lifetime}\\
+   TCO =& \sum_{t=1}^{t = \textit{SALT}} \text{One-time costs} + \text{Recurring costs}(t)\\
+   ROI =& \frac{\text{Gain from investment} - \text{Cost of investment}}{\text{Cost of investment}}
+\end{align}
