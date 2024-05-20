@@ -11,6 +11,15 @@ Furthermore, current drives have reached speeds such that latency may act as bot
 
 Cable aggregation (e.g. aggregating 4 cables 10Gbit/s, providing 40Gbit/s total)can be performed only at a low ---physical--- level. Otherwise the TCP/IP stream will be associated to a single cable of the ones aggregated, resulting in less bandwidth.
 
+\section{SDN - Software Defined Networking}
+SDN is a new approach to networking that uses software-based controllers or application programming interfaces (APIs) to communicate with the underlying hardware infrastructure and direct traffic on the network.
+
+In general a Software Defined Approach aims to abstract all the infrastructure components (compute, storage and network), and pools them into aggregated capacity.
+
+When such approach is applied to a whole datacenter, it is called \textbf{Software Defined Datacenter}, and it is a way to abstract all the infrastructure components in order to provide IT as a service.
+
+\subsection{Hyperconverged Infrastructure (HCI)}
+HCI is a software-defined IT infrastructure that virtualizes all of the elements of conventional hardware-defined systems. HCI includes, at a minimum, virtualized computing (a hypervisor), a virtualized SAN (software-defined storage) and virtualized networking (software-defined networking).
 
 \section{Layers}
 Programmers usually do not care about anything under layer 3/4 traffic.
@@ -42,7 +51,7 @@ Typically nowdays the network is a \textbf{graph}, where internal nodes are swit
 
 The phyisical medium is no more shared, but conceptually the data link layer behaves as if it was.
 
-On a switch, the only way to emulate a \textbf{shared bus}, is to \textit{``\textbf{copy-paste}''} a frame onto multiple ports, losing the ``identity'' of frames. Packets in higher layers (IP?) have an ID, but frames don't, making it impossible to recognize whether a frame is a copy of another one or not.
+On a switch, the only way to emulate a \textbf{shared bus}, is to \textit{``\textbf{copy-paste}''} a frame onto multiple ports, losing the ``identity'' of frames; there is not routing table at layer 2. Packets in higher layers (IP?) have an ID, but frames don't, making it impossible to recognize whether a frame is a copy of another one or not.
 This approach makes \textbf{loops} a problem, because they disrupt performance by generating a packet storm.\\
 The solution would be to ensure that the topology resembles a \textbf{tree}, instead of a graph.
 \ul{But}, at the same time, \ul{a \textbf{fully connected graph}} allows to have \ul{multiple routes for the same destination}, possibly \ul{enhancing performance}, reducing ``hops'' before reaching the destination.
@@ -55,6 +64,10 @@ The solution would be to ensure that the topology resembles a \textbf{tree}, ins
 \end{center}
 
 RSTP sends \textit{probes} to understand whether there are loops and where are PCs located.
+In case of link failure, RSTP is able to adjust the logical tree, blocking the link that caused the loop.
+
+RSTP can be used in campus networks or other networks exhibiting primarily North-South traffic, but it is not suitable for datacenters, where the traffic is mainly East-West:
+the protocol is too slow (order of \textit{seconds})to handle the high number of links and the high number of switches typical of a datacenter.
 
 \subsection{Spine Leaf architecture}
 \begin{figure}[htbp]
@@ -120,6 +133,8 @@ An interesting use of OpenFlow was implemented by a University and called Sandwi
 Some workloads are called \textit{latency-sensitive}, making the latency introduced by TCP-IP stack a problem.\\
 Inside a datacenter nowadays the typical latency is sub microsecond.
 
-\textit{InfiniBand} is a fabric technology that allows to have a very low latency, and is used in HPC\footnote{High performance computing} environments. \textit{OmniPath} is a technology that is similar to InfiniBand, but is more scalable.
+Regarding this issue, technologies mentioned earlier come in handy; 
+\textit{InfiniBand} is a fabric technology that allows to have a very low latency, and is used in HPC\footnote{High performance computing} environments, and \textit{OmniPath} is a technology that is similar to InfiniBand, but is more scalable and is its natural successor.
+Also \textit{RDMA} and \textit{RoCE} are technologies that allow to access memory of a remote machine without involving the CPU or the OS of the remote machine, bypassing the TCP/IP stack.
 
 \textit{Fibre Channel} switches are used in storage area networks, and are used to connect storage to servers CPUs. They are used in datacenters, but not for networking.

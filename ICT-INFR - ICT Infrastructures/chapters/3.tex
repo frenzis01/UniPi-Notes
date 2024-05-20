@@ -83,6 +83,11 @@ In case of electricity there are many aspects to be considered. Interferences, c
    \end{figure}
 \end{paracol}
 
+\subsection{SFP - Small Form-factor Pluggable}
+There can be a cable with a LC in one side and a SC on the other side.
+Instead of making switches with the optical plugs, switches were created with electrical plugs that would be able to host a \textbf{standard transceiver}.
+The latter is a pluggable module that will receive current power and electrical signals for the transmission, which is responsible for transitioning between electrical signals and Optical signal (and viceversa).
+
 \begin{paracol}{2}
    
    The aim of SFP is to decouple the optical transceivers from the server modules.
@@ -92,9 +97,11 @@ In case of electricity there are many aspects to be considered. Interferences, c
    \ul{A single cable having SFP ends costs about 100€}.
    The cost ain't neglectable \smiley.
    \note{\begin{itemize}
-      \item[\texttt{SFP}] $\longrightarrow$ 1Gbit 
-      \item[\texttt{SFP+}] $\longrightarrow$ 10Gbit 
-      \item[\texttt{SFP28}] $\longrightarrow$ 25Gbit
+      \item[\texttt{SFP}] $\longrightarrow 1Gbit $
+      \item[\texttt{SFP+}] $\longrightarrow 10Gbit $
+      \item[\texttt{SFP28}] $\longrightarrow 25Gbit$
+      \note{This is the current standard}
+      \item[\texttt{QSFP28}] $\longrightarrow 4\times25Gbit$
    \end{itemize}}
 
 
@@ -110,6 +117,22 @@ In case of electricity there are many aspects to be considered. Interferences, c
 
 \note{Fun fact: ci sono 9 cavi USB-C e solo due portano informazioni video.}
 
+\subsubsection{Issues about cabling and fabric}
+The key point is that it would be desirable for cabling to be reconfigurable, that's why transceivers are so important.
+
+\note{There are things called \textit{``Muffole''}, which are used for joining optical fiber cables, allowing for longer distances to be covered.
+They are designed to be underground.}
+
+Data traffic is always at least SFP+.
+Current standard is SFP28. Various SFP are typically compatible, the shape of the plug should stay the same.
+On switches there also some ports which are \texttt{QSFP+} or \texttt{QSFP28}, which allow up to \texttt{40} and \texttt{100Gbit/s} respecitively, and are used for north-south traffic.
+\note{The \texttt{Q} letter stands for \textit{Quality}}
+
+Switches for datacenters should be \textbf{non-blocking}, meaning that no port has to wait for other ones ---or any other thing--- before transmitting, they can also transmit simultaneously.
+
+
+\ul{In every datacenter it is \textit{MANDATORY} to document the cabling.}
+
 \subsection{InfiniBand}
 Even though Ethernet is famous, it is not the only standard. InfiniBand is another one, which is used in supercomputers and known for its very high throughput and very low latency ($\sim 2\mu s$).
 It may send messages up to 2GB each, with 16 priority levels.
@@ -121,18 +144,13 @@ It is a \textit{lossless protocol}, meaning that if a packet is received, its in
 
 RDMA is a technology API based (not a protocol!) that allows to access memory of a remote machine without involving the CPU or the OS of the remote machine.
 
-\section{Cabling Issues}
-The key point is that it would be desirable for cabling to be reconfigurable.
+RDMA supports zero-copy networking by enabling the network adapter to transfer data directly to or from application memory, eliminating the need to copy data between application memory and the data buffers in the operating system.\\
+The main use case is distributed storage.
 
-There are things called \textit{``Muffole''}, which are used for joining optical fiber cables, allowing for longer distances to be covered.
-They are designed to be underground.
+RoCE (\textit{RDMA over Converged Ethernet}) is a network protocol that allows remote direct memory access (RDMA) over an Ethernet network.
 
-Data traffic is always at least SFP+.
-Current standard is SFP28. Various SFP are typically compatible, the shape of the plug should stay the same.
-On switches there also some ports which are \texttt{QSFP+} or \texttt{QSFP28}, which allow up to \texttt{40} and \texttt{100Gbit/s} respecitively, and are used for north-south traffic.
-\note{The \texttt{Q} letter stands for \textit{Quality}}
+\subsection{Omni-Path}
+Omni-Path is a high-performance computing network architecture, developed by Intel. It is a successor to Intel's InfiniBand, and competes with InfiniBand's EDR and HDR technologies.
 
-Switches for datacenters should be \textbf{non-blocking}, meaning that no port has to wait for other ones ---or any other thing--- before transmitting, they can also transmit simultaneously.
+Intel plans to develop technology that will serve as the on-ramp to \textit{exascale computing}\footnote{A computing system capable of the least one exaFLOPS}, which is the next frontier in high-performance computing.
 
-
-\ul{In every datacenter it is \textit{MANDATORY} to document the cabling.}
