@@ -69,6 +69,35 @@ In case of link failure, RSTP is able to adjust the logical tree, blocking the l
 RSTP can be used in campus networks or other networks exhibiting primarily North-South traffic, but it is not suitable for datacenters, where the traffic is mainly East-West:
 the protocol is too slow (order of \textit{seconds})to handle the high number of links and the high number of switches typical of a datacenter.
 
+\subsection{Three-tier architecture}
+\begin{paracol}{2}
+   
+   Simple architecture consisting of\ns
+   \begin{enumerate}
+      \item Core switches
+      \item Aggregation switches
+      \item Access switches
+   \end{enumerate}\ns
+   The switches are connected in a tree-like topology, with the core switches at the top, the aggregation switches in the middle, and the access switches at the bottom.\\
+   STP is used to prevent loops in the network.
+
+   Also provides active-passive redundancy which leads to inefficient east west traffic, because the traffic is forced to go through the core switches (?), and devices connected to the same port may contend for bandwidth.\\
+   Moreover communication server-to-server might requires crossing between layer, causing latency and the abovementioned traffic bottleneck.
+   
+   \switchcolumn
+   
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/3tier_switches.png}
+      \caption{Three-tier architecture schema}
+      \label{fig:3tier_switches}
+   \end{figure}
+   \colfill
+   
+\end{paracol}
+This architecture is not used anymore, because it is not scalable, and it is not able to handle the high number of links and switches typical of a datacenter; more specifically, it does not fit virtualization most crucial need to be able to freely move VMs between servers.
+
 \subsection{Spine Leaf architecture}
 \begin{figure}[htbp]
    \centering
@@ -76,13 +105,32 @@ the protocol is too slow (order of \textit{seconds})to handle the high number of
    \caption{Spine-leaf architecture schema (from \href{https://www.arubanetworks.com/faq/what-is-spine-leaf-architecture/}{Arubanetworks.com})}
    \label{fig:}
 \end{figure}
-A \textbf{spine-leaf} architecture is data center network topology that consists of two switching layers: a spine and leaf.
-It ensures traffic is always the same number of hops from its next destination, so latency is lower and predictable (fixed).
+A \textbf{spine-leaf} architecture is data center network topology that consists of two switching layers:
+\begin{enumerate}
+   \item \textbf{Spine layer}\\
+   Swtiches responsible for routing traffic, working as the backbone of the network.   
+   \item \textbf{Leaf layer}\\
+   Switches connected to endpoints, such as servers, storage devices, firewalls, load balancers, edge routers, etc.
+\end{enumerate}
+Since \ul{every leaf switch is connected to every spine switch}, the spine-leaf architecture is a \textbf{fully connected} network,
+ensuring that any source is always the same number of hops (actually only one \smiley) away from any destination, so latency is lower and predictable (fixed).
 
 Capacity also improves because STP is no longer required. While STP enables redundant paths between two switches, only one can be active at any time. As a result, paths often become oversubscribed. 
 Conversely, spine-leaf architectures rely on protocols such as \textit{Equal-Cost Multipath} (\texttt{ECMP}) routing to load balance traffic across all available paths while still preventing network loops.
 
-Spine-leaf allows \textit{scale-out} opposed to \textit{scale-up}, by adding additional spine switches, ultimately increasing capacity.
+Spine-leaf allows \textit{scale-out} opposed to \textit{scale-up}, by adding additional spine switches, ultimately increasing capacity in case the bandwidth is not enough; doing so reduces also the subscription
+
+\subsubsection{LACP}
+Loops are prevented using \texttt{LACP} (\textit{Link Aggregation Control Protocol}), which is a protocol that allows to aggregate multiple links into a single logical link, providing higher bandwidth and active-active redundancy (in case a link fails);
+it also ensures no loops because each link is a single channel, and these are named \textit{port channels}.
+
+LACP also provides a method to control the bundling of several physical ports together to form a single logical channel.
+
+Note that even though the bandwidth is aggregated (i.e. $2\times 25Gbps$), the single stream is still limited to the bandwidth of a single link (i.e. $25Gbps$), because the traffic goes only from one way to the other each time.
+
+\subsubsection{Advantages}
+
+%TODO arrivato a pagina 27
 
 \subsection{Full fat tree}
 In a ---full?--- \textbf{fat tree}, branches nearer the top of the hierarchy are "fatter" (thicker) than branches further down the hierarchy. In a telecommunications network, the branches are data links; the varied thickness (bandwidth) of the data links allows for more efficient and technology-specific use.

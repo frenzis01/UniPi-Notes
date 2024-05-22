@@ -1,0 +1,24 @@
+\chapter{Exam}
+
+\begin{enumerate}
+   \item 
+   \textit{Do you think that cabling may affect the PUE?}\\
+   Yes, because the cabling may affect the airflow and the cooling system, which in turn may affect the PUE.
+   But not only this, because part of such PUE may be hidden in the ``compute'' part of a system:
+   fans inside the servers, when detecting a higher temperature, may increase their speed, (or lower the CPU performance) thus consuming more energy.
+\end{enumerate}
+
+% Spine-leaf must be related to protocol SFP, because it is a protocol that is used to connect switches in a data center.
+
+\section{Domande mie}
+
+\subsection{Three-tier architecture: What does it mean that ``provides active-passive redundancy which leads to inefficient east west traffic''?}
+
+Answer by Copilot: 
+``The three-tier architecture provides active-passive redundancy, which leads to inefficient east-west traffic. This is because the traffic between servers in the same tier must go through the core layer, which can lead to congestion and increased latency. In contrast, a spine-leaf architecture provides active-active redundancy, allowing traffic to flow more efficiently between servers in the same tier.'' 
+   
+
+\subsection{LACP: even though the bandwidth is aggregated (i.e. $2\times 25Gbps$), the single stream is still limited to the bandwidth of a single link (i.e. $25Gbps$), because the traffic goes only from one way to the other each time.}
+
+Answer by Copilot: 
+``LACP (Link Aggregation Control Protocol) is a method of combining multiple physical links into a single logical link to increase bandwidth and provide redundancy. However, even though the bandwidth is aggregated (e.g., 2x25Gbps), a single stream is still limited to the bandwidth of a single link (e.g., 25Gbps) because the traffic is hashed based on the source and destination MAC addresses, IP addresses, or TCP/UDP ports. This means that traffic between the same source and destination will always use the same physical link, limiting the effective bandwidth of a single stream to that of a single link.''
