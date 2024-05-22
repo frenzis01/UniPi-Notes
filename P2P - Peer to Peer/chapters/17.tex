@@ -1,0 +1,67 @@
+\chapter{Proof of Stake in Ethereum}
+
+Starting off recalling the Proof of Work consensus algorithm, it is important to understand that it is not the only way to reach consensus in a blockchain network.\\
+With Bitcoin's Proof of Work, miners compete to solve a cryptographic puzzle, and the first one to solve it gets to add a new block to the blockchain. This process is energy-intensive and requires a lot of computational power, and has its cost has risen so much that mining pools (\textit{farms}) control a significant portion of the network's hash rate, ultimately making the blockchain not fully distributed.
+
+It is important to understand that the Proof of Work algorithm is not the only way to reach consensus in a blockchain network.\\
+Proof of Stake is an alternative consensus algorithm that is more energy-efficient and less centralized than Proof of Work. In a Proof of Stake system, validators are chosen to create new blocks based on the number of coins they hold. This means that the more coins a validator holds, the more likely they are to be chosen to create a new block.
+\note{There are also Delegate Proof of Stake (DPoS, used by Algorand, Cardano, ...) and byzantine consensus (Hyperledger) algorithms.}
+
+\begin{definition}
+   [Ethereum PoS]
+   The Proof-of-Stake (PoS) Ethereum consensus protocol is constructed by applying the finality gadget \textit{Casper} FFG on top of the fork choice rule LMD \textit{GHOST}, a flavour of the Greedy Heaviest-Observed Sub-Tree (\textit{GHOST}) rule which considers only each participant's most recent vote (Latest
+   Message Driven, LMD).
+\end{definition}
+\note{This does not have to be known. It is just a definition to introduce \textit{GHOST} and \textit{Casper} acronyms.}
+\section{Validators opposed to Miners}
+
+PoS introduces the role of \textit{Validators} opposed to \textit{miners}; they propose new blocks, but without solving the PoW, and cast a vote to decide which will be the next block of the blockchain.\\
+Note that a single node can host anything from zero to hundreds or thousands of validators, and they would all share the same local view of the blockchain. 
+
+
+\subsection{Being a validator}
+The Key point here is not solving a puzzle, but to use the cryptocurrency itself as a stake to validate transactions; 
+validators have put something of value into the network that can be destroyed if they act dishonestly.
+To participate as a validator, a user must deposit 32 ETH into the deposit contract and run three separate pieces of software: an execution client, a consensus client, and a validator client.
+
+Validators are chosen to be in a committee, and they are responsible for proposing and voting on new blocks. The committee is chosen randomly, and the size of the committee is proportional to the total amount of ETH staked in the network.
+One peer among will be chosen as the proposer, and the rest will be validators.
+For a block to be inserted in the blockchain, it must be signed by 2/3 of the validators in the committee (super-majority).
+
+PoS, unlike PoW, is related to time and has to order events in \textbf{epochs}.
+For each epoch there are 32 block proposers, and each proposer is responsible for proposing a block in a slot.
+
+Each validator must assess the validity of the block proposed by the proposer, and if it is valid, they sign it, enacting an \textbf{attestation}.
+Each validator can attest one block per epoch, and if they do not, they get \textit{slashed}.
+
+\section{Nothing at Stake}
+
+The \textit{Nothing at Stake} problem is a theoretical problem that arises in PoS systems. It is based on the idea that validators have nothing to lose by voting for multiple blocks in a blockchain fork, as opposed to PoW, where miners have to choose one chain to mine on.
+
+To overcome this problem, Ethereum uses a mechanism called \textit{slashing}, which penalizes validators who vote for multiple blocks in a fork. Validators who are caught voting for multiple blocks are penalized by having a portion of their stake slashed.
+The same applies for proposing multiple blocks in the same slot.
+
+Slashing is possible because validators apply a signature to the block they propose, so if multiple blocks appear to be signed by the same malicious validator, he is caught and penalized.
+
+\section{\textit{Gasper} - Casper and GHOST}
+PoS consesus algorithm in Ethereum is called \textbf{Gasper} which results from putting together two main components: Casper and GHOST.
+\begin{enumerate}
+   \item \textbf{Casper} - checkpoint candidate choice:
+   defines whether a previously accepted block will become the next global checkpoint.
+   \note{Casper is a finality gadget that ensures that once a block is added to the blockchain, it cannot be reverted. This is done by having validators vote on the validity of blocks, and once 2/3 of the validators have voted on a block, it is considered final.}
+   \item \textbf{GHOST} - fork choice rule:
+   a new rule to choose the branch in case of fork, different from the longest chain rule
+\end{enumerate}
+
+\subsection{GHOST}
+GHOST is a fork choice rule that considers only each participant's most recent vote (Latest Message Driven, LMD). It is a rule that considers the weight of the blocks in the blockchain, and not just the length of the chain. This means that a block that has more weight (i.e., more validators have voted for it/block has more attestations) is considered to be the main chain, even if it is shorter than another chain.
+
+The winning branch is the branch with the most accumulated staked ETH that has voted for it.
+
+\subsection{Finality}
+Finality is the property that ensures that once a block is added to the blockchain, it cannot be reverted. This is done by having validators vote on the validity of blocks, and once 2/3 of the validators have voted on a block, it is considered final.
+
+\note{In Bitcoin there is no finality, and a block can be reverted if a longer chain is found. In Ethereum, once a block is added to the blockchain, it is considered final and cannot be reverted.
+}
+
+Periodically, all honest validators agree on fairly recent checkpoint blocks that they will never revert, i.e. no forks are possible before a checkpoint
