@@ -128,9 +128,36 @@ LACP also provides a method to control the bundling of several physical ports to
 
 Note that even though the bandwidth is aggregated (i.e. $2\times 25Gbps$), the single stream is still limited to the bandwidth of a single link (i.e. $25Gbps$), because the traffic goes only from one way to the other each time.
 
-\subsubsection{Advantages}
+\subsubsection{Advantages of Spine-Leaf}
 
-%TODO arrivato a pagina 27
+\begin{itemize}
+   \item Modular (because you can mix and match devices) with fixed size switches.
+   \item Latency predictable: every host is distance one or two hops to each other host.
+   \item Bandwidth control (it's possible to chose the proportion of NS and EW traffic) and overbooking (overbooking explained after).
+   \item Active-active redundancy (because both links of the port channels are enabled, so is the LACP to decide)
+   \item Loop aware topology (a tree topology with no links disabled for redundancy reasons).
+   \item Interconnect using standard cables (decide how many links use to interconnect spines with leaves and how many others link to racks).
+   
+\end{itemize}
+With this architecture it’s possible to turn off one switch, upgrade it and reboot it without compromising the network. Half of the bandwidth is lost in the process, but the twin switch keeps the connection alive.
+
+A typical configuration of the ports and bandwidth of the leaves is:
+\begin{itemize}
+   \item 1/3 going upwards and 2/3 going downwards
+   \item 48 ports 10 Gbps each (downward - from leaves to racks)
+   \begin{itemize}
+      \item plus 6 ports 40 Gbps each (upward - from leaves to spines)
+   \end{itemize}
+   \item or (typical switch) 48 ports 25 each (downward)
+   \begin{itemize}
+      \item plus 6 ports 100 each (upward)
+   \end{itemize}
+\end{itemize}
+
+Just a small remark: with spine and leaf we introduce \textbf{more hops}, so more latency, than the chassis approach. The solution for this problem is using as
+a base of the spine a huge switch (256 ports) which actually acts as a
+chassis, in order to reduce the number of hops and latency.
+
 
 \subsection{Full fat tree}
 In a ---full?--- \textbf{fat tree}, branches nearer the top of the hierarchy are "fatter" (thicker) than branches further down the hierarchy. In a telecommunications network, the branches are data links; the varied thickness (bandwidth) of the data links allows for more efficient and technology-specific use.
