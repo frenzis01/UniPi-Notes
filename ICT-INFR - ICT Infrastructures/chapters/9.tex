@@ -4,8 +4,13 @@ It was needed to handle peak of requests and to allow scalability, without overs
 \note{e.g. Amazon needs to handle way more requests on Christmas than on a normal day.}
 So, Cloud was a mean to reduce the cost of the ICT infrastructure.
 
+\note{When you program for the cloud, the consumer don't know where the process will be executed or where the data will be stored.}
+
 \textbf{Resource pooling} is the key concept of Cloud. It means that the services are provided to users using a multi-tenant model, with physical and virtual resources being dynamically allocated and deallocated according to the demand.\\
-Cloud was needed also to provide rapid elasticity, meaning that capabilities may be elastically provisioned and released, in some cases automatically, to scale rapidly outward and inward commensurate with demand. To the customer it means that the capabilities available for provisioning often appear to be unlimited and can be appropriated in any quantity at any time.
+Cloud was needed also to provide rapid \textbf{elasticity}, meaning that capabilities may be elastically provisioned and released, in some cases automatically, to scale rapidly outward and inward commensurate with demand. 
+To the customer it means that the capabilities available for provisioning often appear to be unlimited and can be appropriated in any quantity at any time.
+
+\textbf{Resource measurement} is another fundamental pillar of Cloud: since the Cloud model revolves around pricing and resource consumption it's imperative to monitor and measure the usage of resources.
 
 Benefits of Cloud:
 \begin{itemize}
@@ -96,6 +101,85 @@ Disadvantages of Cloud:
    \end{itemize}
 \end{itemize}
 
+\newpage
+\section{Cloud as a Layered architecture - Cisternino's POV}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/cloud_layers.png}
+   \caption{Cloud infrastructure as a layered architecture}
+   \label{fig:cloud_layers}
+\end{figure}
+In the last lectures of the Course, prof. Cisternino introduced the Cloud as a layered architecture, where each layer is responsible for a specific task, but went deeper only into the following topics:
+\begin{itemize}
+   \item Software for control layer resource management
+   \item Workflows: formalism to describe orchestration processes
+   \item RPO and RTO key metrics
+   \item The first two pages of Security
+   \item Zero Trust Architecture
+   \item Service Level Agreement
+   \item Incident and Problem management
+\end{itemize}
+% // TODO ref to sections
+\newpage
+
+\section{Physical Layer}
+Comprises \textbf{compute}, \textbf{storage} and \textbf{network} resources and executes both provider and consumer software. Compute systems are offered in the form of virtual machines.\\
+Storage and access methods (e.g. file-based, unified, \dots) have been exhaustively discussed in previous chapters.\\
+For what concerns the network communications, they may be:\ns
+\begin{itemize}
+   \item \textbf{Compute-to-Compute} (East-West?\footnote{Perhaps not necessarily}) : typically uses IP-based protocols
+   \item \textbf{Compute-to-Storage} : typically a SAN exploiting depending on the fabric and architecture SCSI, iSCSI, FC, FCoE, NFS, SMB, etc.\\
+   \begin{itemize}
+      \item FC SAN: Fibre Channel provinding up to 16Gbps bandwidth, and block-level access to storage
+      \item IP SAN: SAN using IP protocol and iSCSI or FCIP on top of it. Both encapsulate, respectively, SCSI and FC frames into IP packets
+      \item FCoE SAN: Fibre Channel over Ethernet
+   \end{itemize}
+   \item \textbf{inner-cloud}: A different cloud interconnected to another one by WAN.
+\end{itemize}
+
+\section{Virtual Layer}
+Abstract physical resources, including storage and network, and makes them appear as virtual resources.
+\framedt{Virtualization}{
+   Through \textbf{virtualization} a multi tenant environment is achieved, by running multiple ---customer--- organizations VMs on the same server;
+   note however that this concept is not limited to VMs as a computing resource, but applies to storage and network as well.
+   Virtual LANs, SANs and switches may be created.
+
+   Virtualization is composed by 3 entities:\ns
+   \begin{itemize}
+      \item Virtualization Software
+      \item Resource pool
+      \item Virtual resources
+   \end{itemize}
+}
+\nl
+
+Lastly, remember that Hypervisors, used to manage VMs and virtual resources, may be of two types:
+\begin{itemize}
+   \item \textbf{bare-metal}: directly installed on the hardware. Performes better than hosted hypervisors, and typically are designed for enterprise datacenters.
+   \item \textbf{hosted}: installed on top of an OS. Unlike bare-metal hypervisors, they do not have direct access to the hardware.
+\end{itemize}
+
+\subsection{VMs network components}
+\begin{enumerate}
+   \item \texttt{vSwitch}: OSI Layer 2 switch that forwards traffic between VMs. May be internal or external, depending whether it connects solely VMs or if it is also attached to a physical NIC.
+   \note{A physical NIC already connected to a vSwitch cannot be attached to any other vSwitch.}
+   \item \texttt{vNIC}: A vNIC connects a VM to a virtual switch, acting similarly to a physical NIC. Each vNCI has a unique MAC and IP address, and uses ethernet just as a physical NIC would.
+   \item \texttt{Uplink NIC}: an uplink NIC is a physical NIC connected to the uplink port of a vSwitch and functions an \textit{Inter-switch link}.
+   It is called uplink because it only provides a physical interface to connect a compute system to the network and is not addressable from the network, they are neither assigned an IP address nor are their built-in MAC addresses available to any compute system in the network. 
+   They simply forward the VM traffic between the VM network and the external physical network without modification.
+\end{enumerate}
+
+\subsection{Virtual Networks}
+\begin{enumerate}
+   \item VLAN
+   \item PVLAN (Private VLAN)
+   \item Stretched VLAN 
+   \item VXLAN (Virtual Extensible LAN)
+   \item VSAN
+\end{enumerate}
+There exists a mapping between VSAN and VLAN to determine which VLAN carries a VSAN traffic.
+
+
 \section{Control Layer}
 The control layer is responsible for managing the resources and the allocation of the resources to the virtual machines.
 
@@ -106,7 +190,7 @@ The control layer is responsible for managing the resources and the allocation o
 
 Note that you cannot allocate more virtual cores than the physical ones ---same applies to memory---, but you can allocate smaller pieces so you can create a resource pooling of resources that can be taken partially (assuming that they can run on a single node), but making you perceive it as a pool of resources.
 
-Layers above the control layer have no clue where workloads are running, they just know that they do so somewhere, it is completely up to the control layer to manage where and how. 
+\textit{Service} and \textit{Orchestration} layers above the control layer have no clue where workloads are running, they just send requests to the control one, it is completely up to such layer to manage where and how. 
 \nl
 
 The steps towards provisioning a resource are three
@@ -145,26 +229,30 @@ Multiple grade levels (e.g. ``Gold'', ``Silver'', ``Bronze'') may be defined for
 
 Lastly, it is important to recall that \textbf{Resource monitoring} is fundamental to keep track of the resources used and to prevent over-provisioning.
 
+\newpage
 \subsection{Control Software demo}
+
+\begin{paracol}{2}
+   \colfill
    Prof. Cisternino demonstrated a Control Software he uses for the UniPi Cloud, where he can see the resources available and the resources allocated to the VMs.
-
-   \begin{paracol}{2}
-      \colfill
-      In the ``VM and Services'' view, the software allows to see the different Clouds associated to Polo 1, Polo 2, etc. and the resources allocated to each of them.\\
-      There is also another inner view to check VM networks and the actual hosts where the VMs are running.
-      \colfill
-      \switchcolumn
-      \begin{figure}[htbp]
-         \centering
-         \includegraphics[width=0.45\columnwidth]{images/Control_VMandServices.png}
-         \includegraphics[width=0.45\columnwidth]{images/Control_FabricView.png}
-         \caption{VM and Services view}
-      \end{figure}
-   \end{paracol}
-
+   
+   In the ``VM and Services'' view, the software allows to see the different Clouds associated to Polo 1, Polo 2, etc. and the resources allocated to each of them.\\
+   There is also another inner view to check VM networks and the actual hosts where the VMs are running.
+   
    He may even open a Powershell terminal on a VM.
 
    \ul{This software allows him to manage about 1400 VMs.}
+   \colfill
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.45\columnwidth]{images/Control_VMandServices.png}
+      \includegraphics[width=0.45\columnwidth]{images/Control_FabricView.png}
+      \caption{VM and Services view}
+   \end{figure}
+   \end{paracol}
+
+   
 \section{Service Layer/Service Orchestration Layer}
 
 \begin{definition}[Cloud Service]
@@ -180,6 +268,10 @@ This means that deploying a service, does not mean simply deploying a VM, but a 
 \textbf{Service Orchestration layer} implements the process of integrating services to support the automation of business processes:
 \ul{actuates the policies and the requests automatically from the user}.
 
+\begin{definition}[Tenant] A tenant is a user of the cloud, and the cloud provider must ensure that the tenant is isolated from the others. This is done by means of \textbf{multi-tenancy}.
+\end{definition}
+\note{UniPi\st{.it} is a tenant for Microsoft Azure.}
+\subsubsection*{Workflows}
 \begin{figure}[htbp]
    \centering
    \includegraphics[width=0.45\columnwidth]{images/serviceorchestration1.png}
@@ -187,10 +279,15 @@ This means that deploying a service, does not mean simply deploying a VM, but a 
    \caption{Service orchestration layer use cases. On the left, provisioning a CRM application, while on the right a tenant removal}
    \label{fig:serviceorchestration}
 \end{figure}
-\begin{definition}[Tenant] A tenant is a user of the cloud, and the cloud provider must ensure that the tenant is isolated from the others. This is done by means of \textbf{multi-tenancy}.
-\end{definition}
-\note{UniPi\st{.it} is a tenant for Microsoft Azure.}
-\nl
+
+Although some manual steps (performed by cloud administrators) may be
+required while processing the service provisioning and management
+functions, service providers are looking to \textbf{automate these
+functions as much as possible}.
+
+Cloud service providers typically deploy a purpose-designed orchestration software (\textit{``orchestrator''}) that orchestrates the execution of various system functions.
+The \textbf{orchestrator} \ul{programmatically integrates and sequences various system functions into automated workflows for executing higher-level service provisioning} and management functions provided by the cloud portal.\\
+The orchestration workflows are not only meant for fulfilling requests from consumers but also for administering cloud infrastructure, such as adding resources to a resource pool, handling service-related issues, scheduling a backup for a service, billing, and reporting.
 
 \subsection{Deeper into Services}
 \begin{paracol}{2}

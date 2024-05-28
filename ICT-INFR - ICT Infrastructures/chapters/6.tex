@@ -1,4 +1,14 @@
 \chapter{Computing}
+One important notion of compute system is \textit{density}: there are different needs (in how many cores / how many operations per second) depending on the application that is running on the system. The structure of a server is a tradeoff between \textbf{capacity} (even if we need to do a lot of computing, space is limited, so less space for the drives) and \textbf{density}.
+
+There are two types of compute systems in a datacenter:\ns
+\begin{enumerate}
+   \item \textbf{Rack} servers: they are the most common type of servers, and are used for general purpose applications.
+   \item \textbf{Blade} servers: they are used for specific applications, and are more expensive than rack servers.
+   Each blade server is a self-contained compute system, inserted in a ---fatter--- \textit{chassis}, typically dedicated to a single application, providing multiple services.\\
+   The modular design of blade server make them smaller, minimizing floor space requirements, increasing system density and scalability, ultimately providing a more efficient use of power and cooling, compared to tower and rack servers.
+\end{enumerate}
+
 \begin{center}
    ``In a server how many OSs are ran at the same time?''
 \end{center}
@@ -63,7 +73,7 @@ Nowdays there are multiple units in the CPU, which are used to execute instructi
 Chiplets are a way to increase the number of cores in a CPU. They are small chips which are connected to the main CPU.
 Even at CPU the ``general-purpose'' methodology is not feasible anymore, and the CPU is divided into multiple units, each one specialized in a specific task.
 
-\section{Random notions on Hardware}
+\section{Misc notions on Hardware}
 GPUs became of paramount importance for datacenter in the last years, mostly because of the rise of AI and machine learning. They are used to perform parallel computations, and are much faster than CPUs for such tasks.
 However, they are very expensive.
 

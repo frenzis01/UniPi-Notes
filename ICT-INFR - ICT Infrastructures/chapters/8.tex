@@ -1,14 +1,14 @@
 \chapter{Containers}
 \label{chap:containers}
 
-A VM is better than a process because it provides \textbf{isolation}:
+\ul{A VM is better than a process because it provides \textbf{isolation}}:
 a typical problem in cybersec is that if an attacker cracks a process, he may access the whole system;
 with a VM, the attacker can only access the VM, not the host.
 However, a VM introduces overhead due both to the hypervisor and to the OS (cache, kernel, storage management\dots).
 
 \note{The idea is to tell a process that a process that its root is a subdirectory of the host's root, resulting in a strong isolation.}
 
-\textbf{Docker} provides a \textit{differential filesystem}, which is a filesystem that is a diff of the host's filesystem.
+\textbf{Docker} provides a \textit{differential filesystem}, which is a filesystem that is a diff of the host's filesystem, an abstraction where the new ``inner'' file system is based on a given one, where the system will only store the differences between the original file system and the new one.
 
 Docker has become the de facto standard for containers, but there are other solutions like \textbf{LXC} (Linux Containers) and \textbf{rkt}.
 A Dockerfile contains the information to build a container.
