@@ -10,7 +10,7 @@
 \begin{paracol}{2}
    
    Historically the storage was the slowest part of the system, \textit{ms} against \textit{ns} of the CPU.
-   Today, with SSDs, the gap is considerably reduced to \textit{us}.
+   Today, with SSDs, the gap is considerably reduced to \textit{us}, they are $\sim 100x$ times faster.
    
    \ul{NVMe stands for \textit{Non-Volatile Memory Express}, and is a protocol (\textit{not a HW component!})} that allows to access the storage directly from the PCIe bus, without having to go through the SATA controller. This allows to have a much higher throughput, and a much lower latency.
 
@@ -22,89 +22,196 @@
       \includegraphics{images/storage_intel.jpg}
       \caption{Storage types comparison}
       \label{fig:storage_intel}
+      NVMe basically removes the orange part of the figure, which is the latency introduced by the controller, since it is a \textit{controller-less protocol} and allows to access the storage directly from the PCIe bus.
    \end{figure}
 \end{paracol}
 
+
+\framedt{
+   \textit{Why would a 15TB disk be better than a 27TB disk?}\\
+   }{
+      \note{Assume the same performance, and the same price.}
+      It would be preferrable because \ul{it would take less time to extract all the data from the disk}\footnotemark[1], since it is smaller.
+      
+      However, large capacity drives are used for \textit{cold storage}, where the data is not accessed frequently, speed is not a priority, and even if the data is accessed, only a portion of the disk is needed at a time; in case of failure and thus needing to retrieve an entire backup, the time taken to retrieve the data is not a priority, since this ---hopefully--- happens only ``once''.
+      }
+      
+\footnotetext[1]{i.e. taking advantage of the space provided}
+\section{SSDs - QLC and TLC}
 SSDs were invented by Toshiba back in 1980, but they were not popular for almost 30 years, until they eventually became cost-effective. Sometimes extra size in SSDs is used for redundancy, to increase the lifespan of the disk e.g. on a 30TB disk, only 10TB are used, the rest is used for redundancy, extending x3 the lifespan of the disk.
 
-\begin{center}
-   \textit{Why would a 15TB disk be better than a 27TB disk?}\\
-   \note{Assume the same performance, and the same price.}
-\end{center}
-It would be preferrable because \ul{it would take less time to extract all the data from the disk}\footnote{i.e. taking advantage of the space provided}, since it is smaller.
-
-However, large capacity drives are used for \textit{cold storage}, where the data is not accessed frequently, speed is not a priority, and even if the data is accessed, only a portion of the disk is needed at a time; in case of failure and thus needing to retrieve an entire backup, the time taken to retrieve the data is not a priority, since this ---hopefully--- happens only ``once''.
-
-\section{SSDs - QLC and TLC}
+\note{DWPD stands for \textit{Drive Writes Per Day}, and is a measure of how many times the disk can be written to in a day. It can be calculated as $\frac{TBW}{365\times\textit{Years of Warranty}\times\textit{capacity}}$}.
 
 TLC stands for \textit{Triple Level Cell}, and QLC stands for \textit{Quad Level Cell}. The difference between the two is the number of bits stored in each cell. The more bits stored in each cell, the cheaper the disk is, but the slower it is. The more bits stored in each cell, the more difficult it is to read and write the data, and the more difficult it is to keep the data stored in the cell.
 
 Generally QLC disks are used for cold storage, while TLC disks are used for hot storage.
 TLC in general is more reliable than QLC, has a longer lifespan and better performance, however they cost more.
+\subsection{Tiering - Memory Hierarchy}
 
-\section{Latency}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/tiering_memory.png}
+   \caption{Memory tiering hierarchy}
+   Ram could actually be split in \texttt{RAM} and \texttt{nvRAM} (Non-volatile \texttt{RAM}, uses \texttt{nvDIMM}), which is used to store the data in case of a power failure.
+   Sometimes, \textit{tape} is included in the hierarchy, because it is used for long-term storage, and it is very cheap.
+   \label{fig:tiering_memory}
+\end{figure}
+
+Tiering consists in categorizing the data in different categories, and storing the data in different types of storage, depending on the category. The data that is accessed more frequently is stored in the fastest storage, while the data that is accessed less frequently is stored in the slowest storage. This allows to increase the performance, and to reduce the cost. 
+
+\subsection{Latency and Storage Aggregation}
 A mechanical hard drive introduces 2.71\% of latency when reading, for instance, 40MB of data.  Optane can perform 416 accesses in the same time needed by a mechanical hard drive to perform 1 access. It looks like the latency in this latter case is neglegtible. Someone may be tempted to reduce the size of read/write operations and perform multiple smaller ones, since ``it's free''. 
 
-\section{Checkpoints}
+Latency in general is due to:
+\begin{itemize}
+   \item \textbf{Software}\\
+   $\mu s$ order which cannot be removed
+   \item \textbf{Controller}\\
+   Taken down to $20\mu s$ with NVMe (even $2.8\mu s$ according to Copilot)
+   \item \textbf{HDD latency}\\
+   This was drastically reduced with SSDs and got even less with 3D NAND.
+\end{itemize}
+Latency may be solved by \textbf{storage aggregation}, which consists in aggregating multiple storage devices into a single logical unit, in order to increase the performance and reliability.
+Even if the data is split in multiple disks, the whole system is ``pictured'' as a single huge drive\footnote{\textit{``Cloud resource pooling''} rings a bell?}, making a huge difference in terms of latency.\\
+Fiber channel is the fabric dedicated to storage; the link coming from the storage ends up in the \textit{HBA} (Host Bus Adapter) in the server.
+
+\subsection{Bus, controller and some numbers}
+A bus is a component to whom multiple devices may be attached. It has a clock and some lanes, 16 in the case of PCI, each one providing almost 1GB bandwidth, summing up to $\sim 15GB$: 4 drives are enough to saturate a full PCI bus, or a 100Gbit link ($12.5GB/s$).;
+in fact an NVMe SSD has a bandwidth of 3.5GB/s, hence $3.5\times 4 = 14GB/s \simeq 15GB/s$.\\
+NVMe is often used in the lower memory tier of the RAM: its speed is only one order of magnitude less than RAM, but can provide high capacity without any problem.
+It may represent a valid super-fast cache level for the RAM and hence started being associated in one single level to implement a big RAM tier, in a totally transparent way for the system.
+
+Since the software latency in disk IOs is 5 microseconds more or less,
+TCP/IP software introduces also a latency of 70-80 microseconds, the disk is
+no more a problem. Indeed, the problem is now the network, not only for the
+latency, but also for the bandwidth: as stated before 4 NVMe totally saturate a 100 Gbps
+link.
+
+\section{Redundancy and backup}
+\subsection{Checkpoints}
 It's unpractical for a system to go down after 5 months. For this reason it is necessary to have checkpoints, which are points in time where the system can be restored to. The system can be restored to the last checkpoint, and the data that was written after the checkpoint can be re-applied. This is similar to what happens to applications on smartphones are closed and then re-opened, the application is restored to the last checkpoint.
 
-\section{RAID}
+\subsection{RAID}
 \textbf{RAID} stands for \textit{Redundant Array of Independent Disks}. It is a technology that allows to combine multiple disks into a single logical unit, in order to increase the performance, the reliability, or both. There are different levels of RAID, each with different characteristics.
 
 Historically \textit{Redundant Array of Inexpensive Disks}, because it was more common for disks to eventually fail, so RAID was the only countermeasure to this. Today, disks are more reliable, so RAID is used more for performance reasons.
 
 In RAID, \textbf{XOR} is used to calculate the parity of the data. The parity is used to recover the data in case of a disk failure. The parity is calculated by XORing the data of the disks. The parity is stored on a separate disk, called the parity disk. The parity disk is used to recover the data in case of a disk failure.
 
-\section{Network sharing}
-\textbf{SMB/CIFS} is a protocol that allows to share files over the network. It is used by Windows, but it is also supported by Linux and MacOS. NFS is a protocol that allows to share files over the network, it is used by Linux and MacOS, but it is also supported by Windows.\\
-NFS is faster than SMB, but it is also less secure. SMB is slower than NFS, but it is also more secure.
 
-\textbf{NAS} instead are devices that are connected to the network, and that are used to store files. They are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices. NAS devices are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices. NAS devices are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices.
+\section{Network sharing architectures}
+Before going into the details of the architectures, it is important to understand the difference between \textbf{protocols} and \textbf{architectures}.\\
+\textbf{SMB/CIFS} is a protocol that allows to share files over the network. It is used by Windows, but it is also supported by Linux and MacOS. NFS is a protocol that allows to share files over the network, it is used by Linux and MacOS, but it is also supported by Windows.\\
+NFS is faster than SMB, but it is also less secure. SMB is slower than NFS, but it is also more secure.\\
+These however are protocols for file sharing, not properly ``architectures''.
+
+\framedt{Capacity and system architecture}{
+   When we talk about \textbf{capacity}, there are two measures which we can refer to:
+   \begin{enumerate}
+      \item \textit{Scale-\textbf{up}}:
+      adding more disks to the same server
+      \item \textit{Scale-\textbf{out}}:
+      adding more servers to the same network
+   \end{enumerate}
+}
+
+\subsection{File based - NAS}
+\textbf{NAS} are devices that are connected to the network, and that are used to store files, providing aggregated capacity. They are used to store files that are accessed by multiple users, and that need to be accessed from multiple devices.
+NAS systems have integrated HW and SW component, including CPU, memory, NICs, optimized OS for file serving, file sharing protocols and so on.\\
+Typically they exploit SMB/CIFS or NFS protocols, or AFP over optical fiber, and represent a good solution for \textit{document management}.
+
+\subsection{Block based - SAN}
+\textbf{SAN} stands for \textit{Storage Area Network}, which enables the creation and assignment (i.e. access and share) of storage volumes to compute systems.\\
+The compute OS (or hypervisor) discovers these storage volumes as local drives.
+The servers have different NICs (HBA) connected (usually through
+fiber channels) to those blocks, which are aggregated volumes.\\
+SAN also enables performance optimization of the storage by performing
+deduplication (delete sequence of blocks that are equivalent).
 
 \note{HBA stands for \textit{Host Bus Adapter}, and is a device that allows to connect a computer to a storage device. It is used to connect a computer to a storage device, and to allow the computer to access the storage device.}
 
-When we talk about \textbf{capacity}, there are two measures which we can refer to:
-\begin{enumerate}
-   \item \textit{Scale-\textbf{up}}:
-   adding more disks to the same server
-   \item \textit{Scale-\textbf{out}}:
-   adding more servers to the same network
-\end{enumerate}
-
-SAN stands for \textit{Storage Area Network}, and is a network that is used to connect multiple storage devices to multiple servers. It is used to connect multiple storage devices to multiple servers, and to allow the servers to access the storage devices. It is used to connect multiple storage devices to multiple servers, and to allow the servers to access the storage devices.\\
 SAN was, before SSDs, one of the datacenter pillars.
 Its architecture included a ``Head'' to which drives were attached, and the head was connected to the network. The head was used to manage the drives, and to allow the servers to access the drives.\\
-When SSDs became popular, the head became a bottleneck, because it was not able to keep up with the speed of the SSDs(Recall that 4 SSDs are enough to saturate a 10Gbit link, See Sec. \ref{sec:bandwidth_storage}). For this reason, the head was removed, and the drives were connected directly to the network. This is called \textbf{DAS}. 
+When SSDs became popular, the head became a bottleneck, because it was not able to keep up with the speed of the SSDs(Recall that 4 SSDs are enough to saturate a 10Gbit link, See Sec. \ref{sec:bandwidth_storage}). For this reason, the head was removed, and the drives were connected directly to the network. This is called \textbf{DAS}.
 
+However with groups of mechanical drives, ---if the data is splitted in a smart way--- it's possible to be faster of a single SSD, since the request will be forwarded in parallel to different drives.
+
+\subsubsection{Protocols}
+SANs are classified based on protocols they support.
+Common SAN deployments types are Fibre Channel SAN (FC SAN), Internet Protocol SAN (IP SAN), and Fibre Channel over Ethernet SAN (FCoE SAN), ATA over Ethernet (AoE) and HyperSCSI ().
+It can be implemented as some controllers attached to some JBoDS (Just a Bunch of Disks)
+
+\note{While NAS provides both storage and a file system, SAN provides only block-based storage and leaves file system concerns on the “client” side.
+However, note that a NAS \textit{can} be part of a SAN network.}
+
+
+\subsubsection{Pools and LUNs}
+
+\textbf{Storage pools} are used to combine multiple storage devices into a single logical unit, in order to increase performance and reliability. 
+
+The SAN is divided in different Logical Unit Numbers (\textbf{LUN}s), which abstract identity and internal functions of storage devices, and appear as phyisical storage to the compute system.\\
+\textbf{Storage LUNs} define a storage partition and are used to assign storage ---a portion of the pool--- to a server, and to allow the server to access the storage, using ACLs.
+\nl
+
+In the following section, some LUNs features are listed
+\begin{itemize}
+   \item 
+   Storage \textbf{capacity} of a LUN can be dynamically expanded or reduced
+   by means \textbf{virtual storage provisioning}, i.e. present a LUN as if it has more capacity than it actually has, to avoid fragmentatation and then expand it when it is needed.\\
+   Besides, \ul{available space may \textit{decrease} over time}, mostly due to snapshots (discussed later on).
+   \item LUNs may perform \textbf{deduplication} (delete sequence of blocks that are equivalent/redundant, and exploiting indexes to retrieve duplicated data) to optimize storage performance. It is very useful in document-rich file systems, since people tend to copy a document multiple times.
+   \item LUNs may perform \textbf{compression} to reduce the size of the data, and to increase the performance. It may be lossy or lossless.  Its major downside is that it is computationally expensive, since the data must decompressed before using it.
+   On the other hand, allows to spare bandwidth by sending compressed data, which we know to be critical.\\
+   \textit{Searching} in compressed data is not trivial, but there are tools to do it, such as the \href{https://en.wikipedia.org/wiki/FM-index}{\texttt{FM-index}}.
+   \item LUNs may create \textbf{snapshots}, \textit{``point-in-time''} copy of current data state, to save the differences between the current state of the data and the previous state of the data. This allows to recover the overwritten data in case of a failure, but it also takes up space.\\
+   Snapshots older than a week are usually deleted, since they are not needed anymore.
+   
+\end{itemize}
+
+\subsubsection{Provisioning and Capacities}
+LUNs may be created from\ns
+\begin{itemize}
+   \item A \ul{RAID set} (traditional approach); suited for application that require predictable performance
+   \item A \ul{storage pool} (modern approach); suited for application that require flexibility and scalability, and that tolerate performance variations.
+\end{itemize}
+
+Both of these approaches have different capacities:\ns
+\begin{itemize}
+   \item Row capacity: the total capacity of the LUN
+   \item Usable capacity: the capacity that is available to the server
+   \item Provisioned capacity: the capacity that is actually used by the server
+\end{itemize}
+
+\subsection{Object based - S3}
+\textbf{S3} stands for \textit{Simple Storage Service}, and is a service that is used to store file data in the form of objects based on the content and other attributes of the data rather than the name and location of the file.
+The additional metadata (size, date, ownership\dots) or attributes (retention, access pattern\dots) enable optimized search, retention and deletion of objects.\\
+A flat, non-hierarchical address space to store data provides the flexibility to \textit{scale massively}.\\
+\ul{S3 is leveraged to provide Storage as Service.}
+
+\subsection{Big Data - HDFS}
+\textbf{HDFS} stands for \textit{Hadoop Distributed File System}, and is a distributed file system that is used to store large amounts of data across multiple servers.
+A \texttt{map/reduce} algorithm is applied on the data, and then results are collected and summarized.\\
+It exploits good forms of parallelism to run efficiently the algorithm
+
+\subsection{Unified - Unified Storage}
+\textbf{Unified Storage} or multi-protocol storage has emerged as solution that consolidates block, file and object storage into a single storage platform. It supports multiple protocols, such as NFS, SMB, iSCSI, FC, REST and SOAP.
+
+\framedt{iSCSI and its death}{
+   SCSI (Small Computer System Interface) was invented in 1979 for chaining drives
+   through a bus (used for e.g. in fibre channels). The controller was so smart
+   to allow the the drive to share the flat cable as a bus.\\
+   Over the time some variants were invented, but the basic idea is the same.
+   One example is iSCSI: \textit{Internet Small Computer Systems Interface}, an IP-based storage networking standard for linking data storage facilities.
+   It provides block-level access to storage devices by carrying SCSI commands over a TCP/IP network. The protocol died when SSD were introduced, since the latency was too high when communicating over the network.
+
+   The key idea behind SCSI was for \ul{mutiple drives to share the same physical flat cable}.\\
+   It had been ``deprecated'' in favor of \texttt{NVMe}, but it is still used today, because it is very reliable.
+}
 \subsection{Synchronization Software and its Price}
-
 The ``storage guy'' must ensure that there is no condition under which can happen data loss, because it is never an option. It is also important to have powerful \textbf{synchronization algorithms}, which must allow data to be copied and synchronized in multiple locations without disrupting performance and handling concurrency;
 such software is typically \textit{costful}.
 
 It is difficult nowdays to establish what is the ``right'' price for software. The shift from highly specialized and costful hardware to general hardware-plus-software, gave the software, which still a non-physical entity, increasingly more value, perhaps even too much.
-
-\section{Snapshots, Compression and other features}
-\subsection{Storage Provisioning}
-Storage provisioning is the process of assigning storage to a server. It is used to assign storage to a server, and to allow the server to access the storage.
-To decide how much storage to assign to a server, usually the architect overbooks the storage, even beyond an estimation of how much storage it will need in the future.
-
-Besides, \ul{available space may \textit{decrease} over time.}
-\textbf{Snapshots} are to blame in this case. Snapshots consists in saving the differences between the current state of the data and the previous state of the data. This allows to recover the \textit{overwritten} data in case of a failure, but it also takes up space. The more snapshots are taken, the more space is taken up. The more space is taken up, the less space is available for the data.
-
-\subsection{Compression}
-Compression grants less space to be used, but it also requires more CPU power. However note that also allows to save some \textbf{bandwidth}, which we know to be critical.
-\textit{Searching} in compressed data is not trivial, but there are tools to do it, such as the \href{https://en.wikipedia.org/wiki/FM-index}{\texttt{FM-index}}.
-
-\subsection{Pools and LUNs}
-
-\textbf{Storage pools} 
-are used to combine multiple storage devices into a single logical unit, in order to increase performance and reliability. 
-\textbf{Storage LUNs} define a storage partition and are used to assign storage ---a portion of the pool--- to a server, and to allow the server to access the storage, using ACLs.
-
-\texttt{SCSI} is a protocol whose idea is to create a BUS of drives to be accessed together. It is an old protocol, designed in 1979 for small computers, but it is still used today, because it is very reliable.
-The key idea was for \ul{mutiple drives to share the same physical flat cable}.\\
-It had been ``deprecated'' in favor of \texttt{NVMe}, but it is still used today, because it is very reliable.
-
 
 
 \section{Hyperconverged Infrastructure}
@@ -114,17 +221,25 @@ The limitations is that you can only attach up to 2 or 3 drives to a server.
 
 An idea came out to use the servers' internal drive to build a Storage Area Network, and this is called \textbf{VSAN}.
 
+\subsection{HCI solutions}
 \textbf{HCI} stands for \textit{Hyperconverged Infrastructure}, and is a technology that allows to combine multiple servers into a single logical unit, in order to increase the performance, the reliability, or both. 
 The idea was born to allow a scale-out architecture, where you can add more servers to the network.
 
-The \textbf{Hypervisor} is the software that allows to run multiple virtual machines on a single server. There should be some locality between the VM and the storage, because the VM should be able to access the storage quickly.
-\texttt{read} operations are always performed locally on local drives; \texttt{write} operations instead sometimes require to retrieve a remote piece of data.
+\begin{center}
+   \ul{\textit{``Adding servers adds capacity''}}
+\end{center}
 
-\subsection{Riak}
+The \textbf{Hypervisor} is the software that allows to run multiple virtual machines on a single server. There should be some locality between the VM and the storage, because the VM should be able to access the storage quickly.\\
+The VM acts as a controller implementing the storage abstraction and the logical moving of data
+\texttt{read} operations are always performed locally on local drives; \texttt{write} operations instead sometimes require to retrieve a remote piece of data.
+A copy on the local server storage is kept, but the server needs to wait for the acknowledgment of the remote server in order to keep updated replicas of written data in other nodes.
+
+\subsection*{Riak}
 Riak is a distributed database that is used to store data in multiple locations. 
 
 Recently it has been recognized that \ul{using general purpose hardware is no longer a feasible option.}
 
-
-
-
+\section{SDS - Software Defined Storage}
+\textbf{SDS} \textit{Software Defined Storage} refers to software for policy-based provisioning and management of data storage independently from the underlying hardware.
+Such software is more costful than the hardware it is running on, since it also optizimes the drives, not simply managing them.\\
+SDS exploits object-based storage architecture and DHTs to provide storage services.

@@ -10,13 +10,32 @@ If the TCP/IP stack is used (standard application case), latency is about $70-90
 Furthermore, current drives have reached speeds such that latency may act as bottleneck between them and the CPU.
 
 Cable aggregation (e.g. aggregating 4 cables 10Gbit/s, providing 40Gbit/s total)can be performed only at a low ---physical--- level. Otherwise the TCP/IP stream will be associated to a single cable of the ones aggregated, resulting in less bandwidth.
+\framedt{Latency-sensitive}
+{
+   Some workloads are called \textit{latency-sensitive}, making the latency introduced by TCP-IP stack a problem.\\
+   Inside a datacenter nowadays the typical latency is sub microsecond.
+   
+   Regarding this issue, technologies mentioned earlier come in handy; 
+   \textit{InfiniBand} is a fabric technology that allows to have a very low latency, and is used in HPC\footnote{High performance computing} environments, and \textit{OmniPath} is a technology that is similar to InfiniBand, but is more scalable and is its natural successor.
+   Also \textit{RDMA} and \textit{RoCE} are technologies that allow to access memory of a remote machine without involving the CPU or the OS of the remote machine, bypassing the TCP/IP stack.
+   
+   \textit{Fibre Channel} switches are used in storage area networks, and are used to connect storage to servers CPUs. They are used in datacenters, but not for networking.
+   }
 
 \section{SDN - Software Defined Networking}
 SDN is a new approach to networking that uses software-based controllers or application programming interfaces (APIs) to communicate with the underlying hardware infrastructure and direct traffic on the network.
 
 In general a Software Defined Approach aims to abstract all the infrastructure components (compute, storage and network), and pools them into aggregated capacity.
 
-When such approach is applied to a whole datacenter, it is called \textbf{Software Defined Datacenter}, and it is a way to abstract all the infrastructure components in order to provide IT as a service.
+\note{When such approach is applied to a whole datacenter, it is called \textbf{Software Defined Datacenter}, and it is a way to abstract all the infrastructure components in order to provide IT as a service.
+}
+
+The problem was that the network infrastructure was ``ossified'' and not programmable. SDN allows to program the network, and to make it more flexible and adaptable to the needs of the applications, without having to disrupt the existing infrastructure.
+
+The key idea proposed in the OpenFlow article, which eventually became a standard, is to separate the control plane from the data plane, and to have a controller that can program through an API the data plane, where the \textbf{Flow Table} resides.
+
+An interesting use of OpenFlow was implemented by a University and called Sandwich firewall, which consisted in routing the first part of the stream through a firewall and if the stream was not malicious, it was routed directly to the destination, otherwise it was dropped.
+
 
 \subsection{Hyperconverged Infrastructure (HCI)}
 HCI is a software-defined IT infrastructure that virtualizes all of the elements of conventional hardware-defined systems. HCI includes, at a minimum, virtualized computing (a hypervisor), a virtualized SAN (software-defined storage) and virtualized networking (software-defined networking).
@@ -158,15 +177,37 @@ Just a small remark: with spine and leaf we introduce \textbf{more hops}, so mor
 a base of the spine a huge switch (256 ports) which actually acts as a
 chassis, in order to reduce the number of hops and latency.
 
+\subsubsection{Oversubscription}
+Oversubscription is the practice of connecting multiple devices to the same
+switch port to optimize the use. For example, it is particulary useful to connect multiple slower devices to a single port to take advantage of the unused
+capacity of the port and improve its utilization. However, devices and applications that require high bandwidth should generally connect with a switch
+port 1-on-1, because multiple devices connected to the same switch port may
+contend for that port’s bandwidth, resulting in poor response time. Hence,
+significant increases in the use of multi-core CPUs, server virtualization, flash
+storage, Big Data and cloud computing have driven the requirement for mod-
+ern networks to have lower oversubscription. For this reason, it is important
+to keep in mind the oversubscription ratio (downlink ports ---to servers/storage--- to uplink ports ---to spina switches---), when designing the fabric.
+Current modern network designs have oversubscription ratios of 3:1 or less.
+
+\note{``Uplink'' and ``downlink'' refers to the direction of the link in the topology. It appears more clear with a picture.}
 
 \subsection{Full fat tree}
-In a ---full?--- \textbf{fat tree}, branches nearer the top of the hierarchy are "fatter" (thicker) than branches further down the hierarchy. In a telecommunications network, the branches are data links; the varied thickness (bandwidth) of the data links allows for more efficient and technology-specific use.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/fullfattree_network.png}
+   \caption{Full fat tree network topology schema}
+   \label{fig:fullfattree_network}
+\end{figure}
+In a \textbf{full fat tree} topology, branches nearer the top of the hierarchy are "fatter" (thicker) than branches further down the hierarchy. In a telecommunications network, the branches are data links; the varied thickness (bandwidth) of the data links allows for more efficient and technology-specific use, a typical use case is for HPC.
+\note{Full-fat tree is rarely needed.}
 
-Full-fat tree is rarely needed.
+The full fat tree resolves the problem of over-subscription. Adopting
+the spine and leaf there is the risk that the links closer to the spines can’t sustain the traffic coming from all the links going from the servers to the leaves. The full fat tree is a way to build a tree so that the capacity is never
+less than the incoming traffic. Since it's quite expensive some oversubscription can be accepted.
 
 \section{Virtualization}
 
-With VLAN frames are extended by 4 bytes. Every switch nowdays automatically sets the \texttt{VLAN\_ID} to \texttt{1}; if the field is not existent, it is appended, making an \textbf{tagged} an \textit{untagged} frame.
+With VLAN frames are extended by 4 bytes\footnote{12 bits are reserved for the VLAN ID allowing up to $4094$ ($4096-2$) logical partitions}. Every switch nowdays automatically sets the \texttt{VLAN\_ID} to \texttt{1}; if the field is not existent, it is appended, making an \textbf{untagged} a \textit{tagged} frame.
 
 Switches ensure that data cannot spill/leak from a VLAN to another.
 VLAN became largely of use when 10Gbit connection came out, because only 1Gbit was a too constrained bandwidth to be splitted into multiple VLANs. 
@@ -194,22 +235,3 @@ It is possible to use a very fast and simple ---reduced number of keystroke down
 \note{Prof. Cisternino performed a demo of this in class.}
 
 Interestingly, the behaviour of the \texttt{netsh} command in Windows is very similar to the one of a switch.
-
-\section{SDN}
-\textbf{Software Defined Networking} is a new approach to networking that uses software-based controllers or application programming interfaces (APIs) to communicate with the underlying hardware infrastructure and direct traffic on the network.
-
-The problem was that the network infrastructure was ``ossified'' and not programmable. SDN allows to program the network, and to make it more flexible and adaptable to the needs of the applications, without having to disrupt the existing infrastructure.
-
-The key idea proposed in the OpenFlow article, which eventually became a standard, is to separate the control plane from the data plane, and to have a controller that can program through an API the data plane, where the \textbf{Flow Table} resides.
-
-An interesting use of OpenFlow was implemented by a University and called Sandwich firewall, which consisted in routing the first part of the stream through a firewall and if the stream was not malicious, it was routed directly to the destination, otherwise it was dropped.
-
-\subsection*{Latency-sensitive}
-Some workloads are called \textit{latency-sensitive}, making the latency introduced by TCP-IP stack a problem.\\
-Inside a datacenter nowadays the typical latency is sub microsecond.
-
-Regarding this issue, technologies mentioned earlier come in handy; 
-\textit{InfiniBand} is a fabric technology that allows to have a very low latency, and is used in HPC\footnote{High performance computing} environments, and \textit{OmniPath} is a technology that is similar to InfiniBand, but is more scalable and is its natural successor.
-Also \textit{RDMA} and \textit{RoCE} are technologies that allow to access memory of a remote machine without involving the CPU or the OS of the remote machine, bypassing the TCP/IP stack.
-
-\textit{Fibre Channel} switches are used in storage area networks, and are used to connect storage to servers CPUs. They are used in datacenters, but not for networking.

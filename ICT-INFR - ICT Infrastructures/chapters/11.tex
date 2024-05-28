@@ -24,3 +24,18 @@ Answer by Copilot:
 ``LACP (Link Aggregation Control Protocol) is a method of combining multiple physical links into a single logical link to increase bandwidth and provide redundancy. However, even though the bandwidth is aggregated (e.g., 2x25Gbps), a single stream is still limited to the bandwidth of a single link (e.g., 25Gbps) because the traffic is hashed based on the source and destination MAC addresses, IP addresses, or TCP/UDP ports. This means that traffic between the same source and destination will always use the same physical link, limiting the effective bandwidth of a single stream to that of a single link.''
 
 \subsection{Spine-leaf: ``with spine and leaf we introduce \textbf{more hops}''. Weren't the necessary hops no more than one?}
+
+\subsection{Why would a 15TB disk be better than a 27TB disk?}
+\note{Assume the same performance, and the same price.}
+It would be preferrable because \ul{it would take less time to extract all the data from the disk}\footnote{i.e. taking advantage of the space provided}, since it is smaller.
+
+However, large capacity drives are used for \textit{cold storage}, where the data is not accessed frequently, speed is not a priority, and even if the data is accessed, only a portion of the disk is needed at a time; in case of failure and thus needing to retrieve an entire backup, the time taken to retrieve the data is not a priority, since this ---hopefully--- happens only ``once''.
+
+\subsection{Optane can perform 416 accesses in the same time needed by a mechanical hard drive to perform 1 access. It looks like the latency in this latter case is neglegtible. Someone may be tempted to reduce the size of read/write operations and perform multiple smaller ones, since ``it's free''. Why is this not a good idea or why is it?}
+
+\subsection{SAN also enables performance optimization of the storage by performing
+deduplication (delete sequence of blocks that are equivalent). Why/How?}
+
+\subsection{``Storage \textbf{capacity} of a LUN can be dynamically expanded or reduced by means \textbf{virtual storage provisioning}, i.e. present a LUN as if it has more capacity than it actually has, to avoid fragmentatation and then expand it when it is needed.''. Why does this avoid fragmentation?}
+
+\subsection{Define row, usable and provisioned capacity}
