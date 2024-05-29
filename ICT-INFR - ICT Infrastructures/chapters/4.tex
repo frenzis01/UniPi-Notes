@@ -140,6 +140,7 @@ Conversely, spine-leaf architectures rely on protocols such as \textit{Equal-Cos
 Spine-leaf allows \textit{scale-out} opposed to \textit{scale-up}, by adding additional spine switches, ultimately increasing capacity in case the bandwidth is not enough; doing so reduces also the subscription
 
 \subsubsection{LACP}
+\label{sec:LACP}
 Loops are prevented using \texttt{LACP} (\textit{Link Aggregation Control Protocol}), which is a protocol that allows to aggregate multiple links into a single logical link, providing higher bandwidth and active-active redundancy (in case a link fails);
 it also ensures no loops because each link is a single channel, and these are named \textit{port channels}.
 

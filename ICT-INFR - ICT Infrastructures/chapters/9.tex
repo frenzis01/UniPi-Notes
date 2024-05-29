@@ -268,6 +268,11 @@ This means that deploying a service, does not mean simply deploying a VM, but a 
 \textbf{Service Orchestration layer} implements the process of integrating services to support the automation of business processes:
 \ul{actuates the policies and the requests automatically from the user}.
 
+The slides report ``Automated arrangement, coordination, and management of various system or component functions in a cloud infrastructure to provide and manage cloud services.''\\
+``Programmatically integrates and sequences various system functions into automated workflows''
+
+Upon a service request by the customer, the orchestration layer triggers the appropriate \textbf{workflows} to provision the service.\\
+
 \begin{definition}[Tenant] A tenant is a user of the cloud, and the cloud provider must ensure that the tenant is isolated from the others. This is done by means of \textbf{multi-tenancy}.
 \end{definition}
 \note{UniPi\st{.it} is a tenant for Microsoft Azure.}
@@ -352,20 +357,87 @@ Aside from the SLA, other parameters are discussed such as pricing, termination 
    BC entails preparing for, responding to, and recovering from service outage that adversely affects business operations
 \end{definition}
 
-\textbf{SPOF}s may occur at component level, or at site or data center level.\\
-The key to avoid SPOFs is to have redundancy, which may be achieved by means of \textbf{replication} or \textbf{backup}s (more on this later).
-\nl
+Business continuity involves \textbf{proactive} measures, such as business impact analysis, risk assessment, building resilient IT infrastructure, deploying data protection\footnote{Data is the most critical asset!} solutions (\textit{backup} and \textit{replication}).
+It also involves \textbf{reactive} countermeasures, such as \textit{disaster recovery}, to be invoked in the event of a service failure.
 
+
+
+\subsection{SPOFs and Remedies}
+\textbf{SPOF}s may occur at component level, or at site (data center) level.\\
+The key to avoid SPOFs is to have redundancy, which may be achieved by means of \textbf{replication} or \textbf{backup}s (more on this in following Sec \ref{sec:dataprotection}).
+
+\subsubsection*{Redundancy}
+Redundancy \texttt{N+1} redundancy is a technique for fault tolerance forseeing, in a set of N components, an extra one to take over in case of failure.\\
+It may be active-active or active-passive, depending on the standard status of the extra component.
+
+\subsubsection{Compute Redundancy}
+Regarding the compute, it may be protected by means of \textbf{compute clustering}.
 \begin{definition}[Compute Clustering]
    A technique where at least two compute systems (or nodes) work together and are viewed as a single compute system to provide high availability and load balancing. 
-
 \end{definition}
 Enables service failover in the event of compute system failure to another system to minimize or avoid any service outage.\\
-The implementation may be \textit{active-active} or \textit{active-passive}.
+\note{Again, the implementation may be \textit{active-active} or \textit{active-passive}.}
+Also VMs Live Migration helps, since it allows to perform maintenance on a compute system without service downtime, only some temporary performance degradation.
+
+\subsubsection{Network Redundancy}
+Link and switch \textbf{aggregation} are practices consisting in combining two or more physical components to make them appear as a single logical one.\\
+We mentioned \textit{link aggregation} when speaking about LACP in Sec \ref{sec:LACP}, explaining that ---partially--- increases bandwidth and provides a backup link in case one fails.\\
+Aggregating two switches allows a single node to use a port-channel across two switches, and network traffic is distributed across all the links in the port-channel.\\
+\note{Also NICs may be aggregated}.
+
+\subsubsection{Storage Redundancy}
+\note{We will go deeper in data protection in Sec \ref{sec:dataprotection}, but these are techniques to provide straight redundancy for storage systems.}
+
+\begin{itemize}
+   \item \texttt{RAID} (Redundant Array of Independent Disks)
+   \item \texttt{DDS} Dynamic Disk Sparing
+   \item Erasure coding: a set of N disks is divided in M disks that store data
+   and K disks that store coding information. Providing space-optimal data redundancy
+   \item Mirrored LUNs: a LUN is mirrored to another LUN which must be in a different storage systems
+\end{itemize}
+
+
+\subsubsection{Service Availability Zones}
+
+\begin{definition}
+   [Service Availability Zone]
+   A location with its own set of resources and isolated from other zones to avoid that a failure in one zone will not impact other zones
+\end{definition}
+
+Service providers typically deploy multiple zones within a data center, and also across multiple geographically dispersed data centers to provide high availability and fault tolerance.\\
+There should be a mechanism that allows seamless (automated) failover of services
+running in one zone to another.
+
+\subsection{VM Live Migration}
+Recall that in a VM live migration the \ul{entire \textbf{active state} of a VM is moved
+from one hypervisor to another}.
+\textbf{Live migration} summary:\ns
+\begin{enumerate}
+\item
+  copy the \textbf{RAM} and at the end, copy the \textbf{pages} writed
+  during this phase.
+\item
+  create an empty drive on B
+\item
+  copy the \textbf{CPU registers} (the VM is stopped for a really short
+  period)
+\item
+  manage vSwitch and ARP protocol. The virtual switch must be aware of
+  the migration: if the old vSwitch receives a packet for the just
+  migrated VM it should forward it to B.
+\item
+  continue running the VM on B, only when it needs the disk you stop it
+  and start copying the disk file. A jumboframe can be used to avoid
+  storage traffic fragmentation.
+\end{enumerate}
+
+The whole process is a little bit easier if both the VMs use a shared
+storage.
 
 \subsection{Data Protection}
-A \textbf{backup} is not simply a copy of the current data to be used in case a disk fails. In case a ransomware attack occurs, the copy will be encrypted as well, or even more trivially, if a service has a bug and it corrupts data, also the copy would contain bad data.\\
-``\ul{Backup must allow to travel back in time.}''
+\label{sec:dataprotection}
+A \textbf{backup} is \textit{not} simply a copy of the current data to be used in case a disk fails. In case a ransomware attack occurs, the copy will be encrypted as well, or even more trivially, if a service has a bug and it corrupts data, also the copy would contain bad data.\\
+``\ul{Backups must allow to travel back in time.}''
 
 The two critical terms are \textit{Recovery Time Objective} (\texttt{RTO}) and  \textit{Recovery Point Objective} (\texttt{RPO})\footnote{Point in time}.
 They refer to the time it takes to recover from a disaster and the amount of data that can be lost respectively.
@@ -379,10 +451,55 @@ This fixes the RPO to 1 day, while the RTO still may vary depending on bandwidth
 \ul{Information is an organization’s most valuable asset.}
 
 Cloud is interesting, because, among other things, allows to distribute information in multiple places, to the cost of possibly broadening the attack surface.\\
-However, cloud tenants are isolated from each other, so the attack surface is typically limited to the cloud provider's infrastructure.
+However, cloud tenants are isolated from each other, so the attack surface is typically limited to the cloud provider's infrastructure.\\
+The Security layer is responsible for providing secure multi-tenancy.
 
-For cloud customers the key point is \textbf{trust}, which is provided by means of \textbf{visibility} and \textbf{control} on the data hosted.
+\begin{center}
+   \ul{For cloud customers the key point is \textbf{trust}, which is provided by means of \textbf{visibility} and \textbf{control} on the data hosted.}
+\end{center}
 
+\subsection{Security threats in cloud environments}
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|c|}
+      \hline
+      \textbf{Threat} & \textbf{Description} & \textbf{Countermeasure} \\
+      \hline
+      Data Leakage & Unauthorized access to data & \shortstack{
+         Encryption\\
+         Shredding unused data\\
+         Multifactor auth
+      } \\
+      \hline
+      Data Loss & Data is lost due to a failure & Backup and replication \\
+      \hline
+      Account hijacking & Unauthorized access to an account & \dots\\
+      \hline
+      Insecure APIs & APIs are not secure & \shortstack{Restrict API access to\\ authorized users}\\
+      \hline
+      DoS & Denial of Service & Restriction on resource usage\\
+      \hline
+      Malicious insider & \dots & \dots \\
+      \hline
+      Abuse & \shortstack{Usage of cloud resources\\ for malicious purposes} & \shortstack{Establish agreement with customer\\ on authorized activities} \\
+      \hline
+      Loss of compliance & \shortstack{Provider does not adhere to\\ laws and regulations} & \dots \\
+      \hline
+      Loss of governance & \shortstack{Provider outsources its servers \\to a third party may lose control} & \dots \\
+      \hline
+      
+   \end{tabular}
+   \caption{Security threats in cloud environments}
+   \label{tab:securitythreats_cloud}
+\end{table}
+\begin{itemize}
+   \item Data Leakage
+   \item Data Loss
+   \item Account hijacking
+   \item Insecure APIs
+\end{itemize}
+
+\subsection{Security Pillars and Datacenter Pillars}
 \framedt{Three ICT Security Pillars}{
    \begin{enumerate}
       \item \textbf{Phyisical Security}\\
@@ -391,15 +508,62 @@ For cloud customers the key point is \textbf{trust}, which is provided by means 
       Accounts, passwords, firewalls, etc\dots\\
       Logical security has been historically underestimated, but it is fundamental, and it was the easier to exploit. It refers to things like access rights, restricting an account's capabilities, etc. 
       \item \textbf{Produceral Security}\\
-      ``An employee which knows the system must not be able to exploit it''.\\
+      ``An employee which knows the system must not be able to exploit it''.
    \end{enumerate}
 }
 
-\textbf{Identity} is a key concept in security, which in later years has changed a lot, mostly due to \textit{federated identity}, which allows to use the same credentials to access multiple services.
+We may break down the triad storage/compute/network of datacenters and see how security aspects get involved in each of them.
 
+\subsubsection{Compute}
+Here \textbf{Physical security} plays a key role, because if you have physical access to a machine, you can do anything.
+It is enforced by means of badges, biometrics, disabling unused devices, surveillance\dots
+
+\textbf{Identity} is a key concept in security, which in later years has changed a lot, mostly due to \textit{federated identity}, which allows to use the same credentials to access multiple services.\\
+Associated to identity there are the long-discussed concepts of \textbf{authentication} and \textbf{authorization}.\\
+\labelitemize{Authentication}{
+   \begin{itemize}
+      \item OAuth
+      \item Multi-factor authentication
+      \item Kerberos
+      \item Challenge-response authentication
+      \item OpenID
+   \end{itemize}
+}
+\labelitemize{Authorization}{
+   Unix systems enforce a \textit{default deny} policy, and users are added to groups to grant them permissions.\\
+   Windows has ACLs, which determine what can be done and what should be logged.\\
+   In general, role-based access control is the most common way to manage authorization.
+}
 \note{Fun fact: today almost no internet service requires users to change password every 90 days, because it was found that it was counterproductive.
 People used to forget passwords and write them down onto notes that they would stick to the monitor or on the wall, completely breaking phyisical security.}
 
+To prevent VM exploitation, there are also \textbf{Virtual Machine Hardening} techniques.
+
+\subsubsection{Storage}
+\begin{itemize}
+   \item LUN masking
+   \item Data Encryption
+   \item Data Shredding
+\end{itemize}
+
+\subsubsection{Network}
+
+\textbf{IDS}s and \textbf{IPS}s are security measures used to protect the network, and they are typically placed at the edge of the network, to prevent attacks from the outside;
+they are often combined with firewalls.\\
+Sometimes they are not effective because intruders may remain silent for a long time, and then suddenly attack, or they may attack slowly in a way that the IDS/IPS does not recognize their actions as an attack, but rather as normal traffic or as a false positive in the worst case.
+
+However, aside from intrusions, also tools for \textbf{network monitoring} and analysis are used, also for non-security purposes: we've already mentioned how important is monitoring everything inside a datacenter.
+
+VPNs can extend a consumer's private network across the public network, and are used to secure the communication between the consumer and the cloud provider; the use of VPN may allow to avoid opening services to the public internet.
+
+Other practices which somehow enforce network security are\ns
+\begin{itemize}
+   \item VLAN and VSAN
+   \item Zoning
+   \item iSNS discovery domain - same as FC zones
+   \item Port binding - limiting the device that can connect to a specific switch port
+   \item Fabric binding - only authorized switches maay join a fabric
+\end{itemize}
 \subsection{Defense-in-depth or Layered Security}
 A common approach is to provide multiple onion-like layers of security, where each layer is independent from the others, and if one fails, the others are still there to protect the system.\\
 The inner layer is typically defending the storage, which we know that \textit{data} is the most valuable asset of an organization.
@@ -407,13 +571,28 @@ The inner layer is typically defending the storage, which we know that \textit{d
 \subsection{Zero Trust Architecture}
 The Zero Trust Architecture is a security model that requires strict identity verification for every person and device trying to access resources on a private network, regardless of whether they are sitting within or outside of the network perimeter.
 
+Earlier on, security was approached as a multi-layered concept, and consisted of five levels, where the outermost was the perimeter, and the innermost was the storage.\\
 The problem arose when people realized that the perimeter was not a good security measure, because once an attacker is inside the perimeter, it is game over. In other terms, security cannot be enforced based on the device itself and its location, we have no guarantee that is has not been compromised.
+\framedt{Zero Trust Architecture}{
+   \begin{definition}[Zero Trust Architecture]
+      ``Never trust, always verify''
+   \end{definition}
 
-\begin{definition}[Zero Trust Architecture]
-   ``Never trust, always verify''
-\end{definition}
+   \ul{Almost every datacenter nowdays tends to follow the Zero Trust Architecture.}
+}
 
-\ul{Almost every datacenter nowdays tends to follow the Zero Trust Architecture.}
+The ZTA consists of a set of principles called tenets, which are:\ns
+\begin{enumerate}
+   \item All data sources and computing services are considered \textit{resources}, possible targets of an attack.
+   \item All communication is \textit{secured}, regardless of the network location.
+   \item Access to resources is \textit{granted on a per-session basis}, and is \textit{limited to the minimum required}.
+   \item All access requests are \textit{authenticated and authorized} before being granted.
+   \item All access requests are \textit{monitored and logged}, as well as the security posture of all owned assets.
+   \item The enterprise collects as much information as possible about the current state of assets, network infrastructure, and communications, in order to improve its security posture.
+\end{enumerate}
+
+Decisions are taken in the \textit{Control Plane} through a \textit{Policy Engine}, which enforces all the security policies of the organization. 
+This \textit{Policy Decision Point} (\textbf{PDP}) interacts with a \textit{Policy Enforcement Point}, which checks whether your connection is trusted for a specific resource.
 
 \subsection{CIA/AAA Triads, plus other concepts}
 The \textbf{CIA Triad} is a widely used model for security policy development, which stands for:
@@ -466,11 +645,6 @@ A name appearing in a list may affect the life of a person, what that will perso
 
    \textit{``I'm accountable, I did everything I could to avoid such a bad situation to happen, but it happened anyway.''}
 }
-
-\subsection{IDS and IPS}
-Intrusion Detection Systems (IDS) and Intrusion Prevention Systems (IPS) are security measures that are used to protect a network from attacks.
-
-Sometimes they are not effective because intruders may remain silent for a long time, and then suddenly attack, or they may attack slowly in a way that the IDS/IPS does not recognize their actions as an attack, but rather as normal traffic or as a false positive in the worst case.
 
 \section{Service Management}
 Service portfolio management is the process of managing an organization’s service portfolio to ensure that the services are aligned with the business goals and objectives.

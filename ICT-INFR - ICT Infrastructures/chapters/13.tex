@@ -1,0 +1,122 @@
+\hypertarget{about-numbers}{%
+\chapter{About numbers}\label{about-numbers}}
+
+\hypertarget{current-1}{%
+\section{Current}\label{current-1}}
+
+\begin{itemize}
+\item
+  Watt = cos fi * A * V
+\item
+  The Industrial current il 380 Volts, 3 phases
+\item
+  32 KW (consume of 10 appartments) datacenter is a small one
+\item
+  2 idle CPUs (14 cores each) consume 140 Watts
+\item
+  Intel XEON (28 cores) 165 W on avarage
+\item
+  lines coming from the generator to the UPS: 80 KW each,
+  \textasciitilde{} 200 A; can be used for 6 racks each 32 A (I will not
+  use the whole 32 A so I'll put more racks)
+\item
+  rack PDU: 2 banks, 12 plugs each
+
+  \begin{itemize}
+  \item
+    16 A each bank
+  \item
+    15 KW per rack
+  \item
+    42 servers per rack (42 U) =\textgreater{} \textasciitilde{} 350 W x
+    server (2 CPUs 140 W look above)
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{fabric-1}{%
+\section{Fabric}\label{fabric-1}}
+
+\begin{itemize}
+\item
+  ethernet MTU 9 KB (jumbo frame)
+\item
+  TCP/IP introduce 70-100 micro sec of latency
+\item
+  Infiniband MTU 4 KB, latency 2 micro sec
+\item
+  servers with 1 Gbps connection (not so high) connected to 48 ports
+  switch =\textgreater{} switch uplink 48 Gbps.
+\item
+  100 Gbps uppper bound nowadays for ethernet (using QSFP28, 4 * 25
+  Gbps)
+\item
+  other bandwidths
+
+  \begin{itemize}
+  \item
+    25 Gbps
+  \item
+    50 Gbps (2* 25)
+  \item
+    16 Gbps
+  \item
+    40 Gbps (4 *10)
+  \end{itemize}
+\item
+  STP can take up to 30-50 sec to converge
+\item
+  some switches up to 1 KWatt (years ago 200 W)
+\item
+  \textbf{spine and leaf}
+
+  \begin{itemize}
+  \item
+    LACP links 2*25 Gbps
+  \item
+    1/3 ports upwards, 2/3 downward
+  \item
+    48 ports 10 Gbps (downward)
+
+    \begin{itemize}
+    \item
+      plus 6 ports 40 Gbps each (upward)
+    \item
+      oversubscription. 48*10 / {[}(6-2)*40{]} = 3/1
+    \end{itemize}
+  \item
+    48 ports 25 Gbps each (downward)
+
+    \begin{itemize}
+    \item
+      6 port 100 Gbps (upward)
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
+
+\hypertarget{disk-and-storage}{%
+\section{Disk and Storage}\label{disk-and-storage}}
+
+\begin{itemize}
+\item
+  PCI express bus 15 GB/s = 120 Gbps 
+  
+  (PCIe Transfer rate per lane increased exponentially since 2003)
+\item
+  4 drives can saturate a full PCIe bus and also a 100 Gbps link
+\item
+  NVMe drives up to 11 GBps
+\item
+  Intel Ruler up to 1 PB capacity
+\item
+  SATA SSD 500 MB bandwidth
+\item
+  SATA HDD 130 MB bandwidth
+\item
+  nVME SSD 24 Gbps (3 GBps) bandwidth
+\item
+  4 fiber channel are enought with 15 GB/s
+\item
+  SATA interface 16 Gbps
+\item
+  SCSI interface 22.5 Gbps
+\end{itemize}
