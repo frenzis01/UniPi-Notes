@@ -10,7 +10,7 @@
 \begin{paracol}{2}
    
    Historically the storage was the slowest part of the system, \textit{ms} against \textit{ns} of the CPU.
-   Today, with SSDs, the gap is considerably reduced to \textit{us}, they are $\sim 100x$ times faster.
+   Today, with SSDs, the gap is considerably reduced to \textit{$\mu s$}, they are $\sim 100x$ times faster.
    
    \ul{NVMe stands for \textit{Non-Volatile Memory Express}, and is a protocol (\textit{not a HW component!})} that allows to access the storage directly from the PCIe bus, without having to go through the SATA controller. This allows to have a much higher throughput, and a much lower latency.
 
@@ -46,6 +46,8 @@ TLC stands for \textit{Triple Level Cell}, and QLC stands for \textit{Quad Level
 
 Generally QLC disks are used for cold storage, while TLC disks are used for hot storage.
 TLC in general is more reliable than QLC, has a longer lifespan and better performance, however they cost more.
+
+\section{Storage Concepts}
 \subsection{Tiering - Memory Hierarchy}
 
 \begin{figure}[htbp]
@@ -58,6 +60,33 @@ TLC in general is more reliable than QLC, has a longer lifespan and better perfo
 \end{figure}
 
 Tiering consists in categorizing the data in different categories, and storing the data in different types of storage, depending on the category. The data that is accessed more frequently is stored in the fastest storage, while the data that is accessed less frequently is stored in the slowest storage. This allows to increase the performance, and to reduce the cost. 
+
+\subsection{IO operations, are they all the same?}
+\textbf{IOPS} (Input/output operations per second) is an input/output
+performance metric used to characterize computer storage devices; it is associated with an access pattern: \textit{random} or \textit{sequential}.
+
+\subsubsection{Random vs Sequential access}
+
+Before explaining the distinction, is important to remember the concept of \textit{queues}: for each thread, the OS can implement a series of queues to solve asynchronously the I/O requests. Using multiple queue can make performances better, since having
+the OS to manage parallel requests will increase throughput.
+If the queries are latency sensible, not using a queue is better, since
+usually queue requests overlap between each other.
+
+\textit{Random access files} are advantageous in scenarios where frequent direct access or modification of specific records is required, while \textit{sequential access files} are advantageous in scenarios where frequent reads of the full files are required. The disk behaves differntly in case of access of those files.
+
+To have a full picture of random vs sequential access, check this site: \url{https://www.prepbytes.com/blog/general/difference-between-sequential-and-random-access-file/} 
+
+\newpage
+\subsubsection{Cisternino's demo}
+Prof. Cisternino showed a demo in class, where he used a tool to measure the IOPS of a disk.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/iops.png}
+   \caption{IOPS demo; respetively}
+   \label{fig:iops}
+\end{figure}
+
+\ul{Recall that IOPS by itself is meaningless!} It is a number that must qualified and put in relationship with something else.
 
 \subsection{Latency and Storage Aggregation}
 A mechanical hard drive introduces 2.71\% of latency when reading, for instance, 40MB of data.  Optane can perform 416 accesses in the same time needed by a mechanical hard drive to perform 1 access. It looks like the latency in this latter case is neglegtible. Someone may be tempted to reduce the size of read/write operations and perform multiple smaller ones, since ``it's free''. 
@@ -72,7 +101,7 @@ Latency in general is due to:
    This was drastically reduced with SSDs and got even less with 3D NAND.
 \end{itemize}
 Latency may be solved by \textbf{storage aggregation}, which consists in aggregating multiple storage devices into a single logical unit, in order to increase the performance and reliability.
-Even if the data is split in multiple disks, the whole system is ``pictured'' as a single huge drive\footnote{\textit{``Cloud resource pooling''} rings a bell?}, making a huge difference in terms of latency.\\
+Even if the data is split in multiple disks, the whole system is ``pictured'' as a single huge drive\footnote{\textit{``Cloud resource pooling''} rings a bell?}, making a huge difference in terms of latency, since multiple \texttt{read/write} requests may be sent in parallel to multiple disks.\\
 Fiber channel is the fabric dedicated to storage; the link coming from the storage ends up in the \textit{HBA} (Host Bus Adapter) in the server.
 
 \subsection{Bus, controller and some numbers}
@@ -157,7 +186,8 @@ In the following section, some LUNs features are listed
 \begin{itemize}
    \item 
    Storage \textbf{capacity} of a LUN can be dynamically expanded or reduced
-   by means \textbf{virtual storage provisioning}, i.e. present a LUN as if it has more capacity than it actually has, to avoid fragmentatation and then expand it when it is needed.\\
+   by means \textbf{virtual storage provisioning}, i.e. present a LUN as if it has more capacity than it actually has, to avoid fragmentatation and then expand it when it is needed.
+   \note{e.g. if you assign a 1TB LUN to a server, and then you need to expand the LUN due to lack of space, if you have space next to the already assigned TB you can avoid fragmentation. Besides, if you can put data in only 1TB instead of 2TB (even if you present the volume as if it had 2TB), internal fragmentation may happen only inside that TB, and later on you can expand the volume up to the reserved 2TB.}
    Besides, \ul{available space may \textit{decrease} over time}, mostly due to snapshots (discussed later on).
    \item LUNs may perform \textbf{deduplication} (delete sequence of blocks that are equivalent/redundant, and exploiting indexes to retrieve duplicated data) to optimize storage performance. It is very useful in document-rich file systems, since people tend to copy a document multiple times.
    \item LUNs may perform \textbf{compression} to reduce the size of the data, and to increase the performance. It may be lossy or lossless.  Its major downside is that it is computationally expensive, since the data must decompressed before using it.
@@ -230,7 +260,7 @@ The idea was born to allow a scale-out architecture, where you can add more serv
 \end{center}
 
 The \textbf{Hypervisor} is the software that allows to run multiple virtual machines on a single server. There should be some locality between the VM and the storage, because the VM should be able to access the storage quickly.\\
-The VM acts as a controller implementing the storage abstraction and the logical moving of data
+The \textit{controller VM} (one per host) implements the storage abstraction and the logical moving of data.
 \texttt{read} operations are always performed locally on local drives; \texttt{write} operations instead sometimes require to retrieve a remote piece of data.
 A copy on the local server storage is kept, but the server needs to wait for the acknowledgment of the remote server in order to keep updated replicas of written data in other nodes.
 

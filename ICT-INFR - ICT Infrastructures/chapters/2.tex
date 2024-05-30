@@ -110,8 +110,8 @@ The racks suck the cool air in front and output hot air from the back.
    There are two \textbf{drawbacks}:
    \ns
 \begin{enumerate}
-   \item It is difficult to confine and keep separated hot air and cool air. The mixup between the two leads to cooling inefficiency, thus energy and money waste
-   \item In case a rack has a workload heavier than others and thus requires more cooling air, the chiller must provide more cool air to all the racks in the same row;
+   \item \textbf{Mixing air}: It is difficult to confine and keep separated hot air and cool air. The mixup between the two leads to cooling inefficiency, thus energy and money waste
+   \item \textbf{Absence of locality}: In case a rack has a workload heavier than others and thus requires more cooling air, the chiller must provide more cool air to all the racks in the same row;
    this makes this architecture particularly inefficient for datacenter which have heterogeneous workloads.
 \end{enumerate}
 }
@@ -127,6 +127,10 @@ No one is using this technique today apart from Aruba, since they have very omog
    The first advantage is that it allows for heterogeneous cooling in the datacenter.
    Secondarily, a fan outputs hot air directly where another fan expects it to be.
    This allows to confine hot air and to avoid wasting energy in outputting air and sucking it.
+
+   Rack units take cool air from the front and spit it out hot from the back; inrow coolers is placed so that they suck the hot air from the back of the rack and output cool air in the front of them. 
+
+   \note{There is \ul{one inrow cooler for each \textit{pair} rack.}}
 
    \colfill
    \switchcolumn

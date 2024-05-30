@@ -19,6 +19,9 @@ Docker containers are processes, and only see a portion of the host's filesystem
 
 Inside a Dockerfile you may create temporary containers by exploiting multiple images and lastly build the resulting slimmed image.
 
+\section{Upgrading a system}
+
+Typical procedure when a system needs to be updated: create first a snapshot before updating the containers (especially if there are updates related to the database), then update, run back the containers, check if everything works, and then delete the snapshot. If anything goes wrong, the snapshot will help to roll back.
 
 \section{Docker compose}
 Docker compose is a tool to define and run multi-container Docker applications. It uses a YAML file to configure the application's services, networks and volumes. With a single command, you can create and start all the services from your configuration.

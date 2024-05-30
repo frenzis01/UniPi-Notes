@@ -21,9 +21,9 @@ Most of the network (or fabric) traffic is processed horizontally (North-South t
 \section{Bandwidth and Storage implications}
 \label{sec:bandwidth_storage}
 A standard datacenter has servers connected with 25Gbit links in both directions, summing up to 50Gbit total bandwidth.
-Current SSDs provide much more. \ul{4 drives are enough to saturate a 100Gbit/s link.}\\
+Current SSDs using NVMe provide much more, about $3.5 GB/s$, making \ul{4 drives are enough to saturate a 100Gbit/s link.}\\
 We moved from a situation where the \textbf{bottleneck} were slow Hard Drives, to the current one where the bottleneck is the ---network--- \textbf{bandwidth}.\\
-Recently the PCI 3.0, which lasted very long ---providing $\sim 1000\texttt{Gbit/s}$---, suddenly become unsufficient to handle the needed traffic.
+Recently the PCI 3.0, which lasted very long ---providing roughly$\sim\texttt{120Gbit/s}$ using 16 pin---, suddenly become unsufficient to handle the needed traffic.
 
 Considering this, \ul{datacenters must be designed to allow \textit{Terabytes} of data to be moved in east-west traffic.}
 
