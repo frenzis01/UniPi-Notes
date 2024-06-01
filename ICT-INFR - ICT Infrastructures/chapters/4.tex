@@ -88,6 +88,41 @@ In case of link failure, RSTP is able to adjust the logical tree, blocking the l
 RSTP can be used in campus networks or other networks exhibiting primarily North-South traffic, but it is not suitable for datacenters, where the traffic is mainly East-West:
 the protocol is too slow (order of \textit{seconds})to handle the high number of links and the high number of switches typical of a datacenter.
 
+\subsection{Network Chassis architecture}
+
+\begin{paracol}{2}
+   
+   Historically a typical solution was to use a \textbf{network chassis}, consisting of many \textit{line cards} (blade servers?), each being a switch.
+   All links from various racks converged in the chassis, and the chassis was responsible to route the traffic to the right destination, ultimately resembling a \textbf{star topology}.
+   
+   The key advantages were:
+   \begin{itemize}
+      \item Possibility to buy a switch with few line cards and then add more as needed, reducing inital CAPEX.
+      \item Chassis act as a single switch, so they are much easier to manage than a bunch of switches. 
+      \item Chassis includes redundancy mechanism to allow \textit{hot-replacing} of a line card.
+   \end{itemize}
+   
+   \switchcolumn
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/network_chassis.png}
+      \caption{Network chassis}
+      \label{fig:network_chassis}
+   \end{figure}
+
+\end{paracol}
+   
+The Chassis is costful since it is a complex modular structure, so people tried to manage a stack of switches using protocols, making them act as if they a chassis.
+
+Ports were numbered using $\langle line , port\rangle$. The line number was used to identify the line card, and the port number was used to identify the port on the line card. According to Cisternino this is important, and there is a ``lot of legacy''.
+
+Chassis died because it was impossible to design a chassis the could allow hot replacing and modularity, and at the same time allow high speed links.
+
+Nowdays star solutions are rare to find.
+
+TODO
+
 \subsection{Three-tier architecture}
 \begin{paracol}{2}
    

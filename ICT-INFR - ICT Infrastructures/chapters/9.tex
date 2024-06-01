@@ -50,7 +50,7 @@ Disadvantages of Cloud:
    \item Your software depends on someone else
    \item Legislation is complicated
    \note{In EU public administration data, must be stored in the EU.}
-   \item \dots TODO
+   \item Availability depends on SLA, which may be written in a tricky way
 \end{itemize}
 
 \section{Cloud Service Models}
@@ -138,7 +138,8 @@ For what concerns the network communications, they may be:\ns
 \end{itemize}
 
 \section{Virtual Layer}
-Abstract physical resources, including storage and network, and makes them appear as virtual resources.
+Abstract physical resources, including storage and network, and makes them appear as virtual resources;
+enables a single hardware resource to support multiple concurrent instances of systems or multiple hardware resources to support single instance of system.
 \framedt{Virtualization}{
    Through \textbf{virtualization} a multi tenant environment is achieved, by running multiple ---customer--- organizations VMs on the same server;
    note however that this concept is not limited to VMs as a computing resource, but applies to storage and network as well.
@@ -200,12 +201,13 @@ The steps towards provisioning a resource are three
    \item \textbf{Resource Provisioning}
 \end{enumerate}
 
-A key component in the control layer is a Unified Manager software, which handles, by means of APIs, the tools associated to
+A key component in the control layer is the \textbf{manager}, which may be an Element Manager or a Unified Manager software, which handles, by means of APIs, the tools associated to
 \begin{itemize}
    \item Compute System management
    \item Fabric management
    \item Storage System management
 \end{itemize}
+An \textit{Element manager} has separate management tools for the three pillars listes, a \textit{unified} instead exposes a unified (\smiley) management tool on top of them.
 
 \subsection{Resource Discovery}
 The control layer enables \textbf{unified manager} to learn about resources that are available for service deployment
@@ -350,7 +352,7 @@ Aside from the SLA, other parameters are discussed such as pricing, termination 
 
 \section{Business Continuity}
 \begin{definition}[Business Continuity]
-   The capability of an organization to continue delivery of products or services at acceptable predefined levels following a disruptive incident.
+   The capability of an organization to continue delivering products or services at acceptable predefined levels following a disruptive incident.
 
    \emph{\dots or \dots}
    
@@ -458,6 +460,7 @@ The Security layer is responsible for providing secure multi-tenancy.
    \ul{For cloud customers the key point is \textbf{trust}, which is provided by means of \textbf{visibility} and \textbf{control} on the data hosted.}
 \end{center}
 
+\newpage
 \subsection{Security threats in cloud environments}
 \begin{table}[htbp]
    \centering
@@ -492,12 +495,6 @@ The Security layer is responsible for providing secure multi-tenancy.
    \caption{Security threats in cloud environments}
    \label{tab:securitythreats_cloud}
 \end{table}
-\begin{itemize}
-   \item Data Leakage
-   \item Data Loss
-   \item Account hijacking
-   \item Insecure APIs
-\end{itemize}
 
 \subsection{Security Pillars and Datacenter Pillars}
 \framedt{Three ICT Security Pillars}{
