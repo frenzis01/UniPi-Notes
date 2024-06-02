@@ -114,14 +114,19 @@ the protocol is too slow (order of \textit{seconds})to handle the high number of
 \end{paracol}
    
 The Chassis is costful since it is a complex modular structure, so people tried to manage a stack of switches using protocols, making them act as if they a chassis.
+The chassis provided redundancy for every component, and included ---two \smiley --- RPMs, routing processing modules.
 
 Ports were numbered using $\langle line , port\rangle$. The line number was used to identify the line card, and the port number was used to identify the port on the line card. According to Cisternino this is important, and there is a ``lot of legacy''.
 
-Chassis died because it was impossible to design a chassis the could allow hot replacing and modularity, and at the same time allow high speed links.
+Chassis died when moving from 10Gbit/s to 25 and upper, because it was impossible to design a chassis the could allow hot replacing and modularity, and at the same time allow high speed links.
+The size of the lanes and the type of the connector would limit the bandwidth and the frequency the physical link can resist.
 
-Nowdays star solutions are rare to find.
-
-TODO
+Nowdays star solutions are rare to find. Starting from 2013/2014 it was not convenient to use chassis anymore, because they would get old too soon.
+Swtiches started to have a fixed standard \textit{non-modular} form factor.\\
+All vendors embedded proprietary protocols inside switches to allow to manage two switches as if they were one, and to aggregate two ports (one port for each switch) to have a single logical link, called \textbf{port channel}.
+The standard protocol to do so, is called LACP (Link Aggregation Control Protocol) and is described in \ref{sec:LACP}.
+\note{The port channel is a single logical link, but the bandwidth is \textit{not aggregated for the same data stream}.
+However, the logical link provides redundancy and avoids loops.}
 
 \subsection{Three-tier architecture}
 \begin{paracol}{2}
@@ -169,6 +174,10 @@ A \textbf{spine-leaf} architecture is data center network topology that consists
 Since \ul{every leaf switch is connected to every spine switch}, the spine-leaf architecture is a \textbf{fully connected} network,
 ensuring that any source is always the same number of hops (actually only two or four \smiley) away from any destination, so latency is lower and predictable (fixed).
 
+\note{
+   ``However, it's not true that every rack is connected with any other rack.
+   There is some topology that has been designed with the data center and it will.'' -Cisternino
+}
 Capacity also improves because STP is no longer required. While STP enables redundant paths between two switches, only one can be active at any time. As a result, paths often become oversubscribed. 
 Conversely, spine-leaf architectures rely on protocols such as \textit{Equal-Cost Multipath} (\texttt{ECMP}) routing to load balance traffic across all available paths while still preventing network loops.
 
@@ -186,16 +195,17 @@ Note that even though the bandwidth is aggregated (i.e. $2\times 25Gbps$), the s
 \subsubsection{Advantages of Spine-Leaf}
 
 \begin{itemize}
-   \item Modular (because you can mix and match devices) with fixed size switches.
+   \item Modular: you can mix and match devices with fixed size switches.
    \item Latency predictable: every host is distance one or two hops to each other host.
    \note{Actually it is 2 or 4 hops, because we have either\ns
    \begin{itemize}
       \item server $\rightarrow$ leaf, leaf $\rightarrow$ server
       \item server $\rightarrow$ leaf, leaf $\rightarrow$ spine, spine $\rightarrow$ leaf, leaf $\rightarrow$ server
-   \end{itemize}}
-   \item Bandwidth control (it's possible to chose the proportion of NS and EW traffic) and overbooking.
-   \item Active-active redundancy (because both links of the port channels are enabled, so is the LACP to decide)
-   \item Loop aware topology (a tree topology with no links disabled for redundancy reasons).
+   \end{itemize}
+   However, the hops from server to leaf and viceversa are typically not counted as ``hops''.}
+   \item Bandwidth control: it's possible to chose the proportion of NS and EW traffic and overbooking.
+   \item Active-active redundancy:  both links of the port channels are enabled, so is the LACP to decide.
+   \item Loop aware topology: a tree topology with no links disabled for redundancy reasons.
    \item Interconnect using standard cables (decide how many links use to interconnect spines with leaves and how many others link to racks).
    
 \end{itemize}
@@ -213,8 +223,9 @@ contend for that port’s bandwidth, resulting in poor response time. Hence,
 significant increases in the use of multi-core CPUs, server virtualization, flash
 storage, Big Data and cloud computing have driven the requirement for modern networks to have lower oversubscription. For this reason, it is important
 to keep in mind the oversubscription ratio (downlink ports ---to servers/storage--- to uplink ports ---to spina switches---), when designing the fabric.
-Current modern network designs have oversubscription ratios of 3:1 or less.
+Current modern network designs have oversubscription ratios of 3:1 or less, meaning that bandwidth for NS traffic in $\dfrac{1}{3}$ of the bandwidth for EW traffic.
 
+\newpage
 \subsubsection{Uplink and Downlink ratio}
 ``Uplink'' and ``downlink'' refers to the direction of the link in the topology. It appears more clear with a picture.
 
@@ -225,12 +236,45 @@ So, considering the following switch having 20 QSFP ports (\texttt{40Gbit/s}) an
    \item 400 Gbit/s uplink, exploiting 4 QSFP28
 \end{itemize}
 
+\note{Even though traffic is categorized as NS or EW, there is also the \textit{aggregation traffic}, due to MLAG 
+}
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/downuplink_switch.png}
    \caption{Blue ports are downlink, yellow ports are uplink}
    \label{fig:downuplink_switch}
 \end{figure}
+
+\subsubsection{Considerations on Increasing Bandwidth}
+
+In case the uplink bandwidth is not enough, it is possible to increase it by:
+\begin{itemize}
+   \item  adding more spine switches, and connecting them to the leaf switches.
+   \begin{itemize}
+      \item More redundancy in the paths between leaves, allowing to have even paths to the same destination
+      \item More uplink ports needed, reducing oversubscription ratio
+   \end{itemize}
+   \item adding leaf switches, and redistributing the servers among them.
+   \begin{itemize}
+      \item Less downlink ports used per switch, reducing oversubscription ratio
+      \item \textit{¡ACHTUNG!} Spine switches may need to be upgraded to support more leaves
+   \end{itemize}
+   \item adding a \textit{super-spine}, enhancing the number of hops but allowing to handle a huge number of servers.
+\end{itemize}
+The \textit{super-spine} fits an ``extreme'' scenario: the number of ports in spines is insufficient to handle the number of leaves.\\
+Let's make a few calculations:
+Considering that LACP allows to aggregate a maximum of 8 ports, but it is very unlikely to aggregate 8 ports from spines to leaves, since it would mean that every leaf switch has 8 ports for each spine.\\
+Assuming to have respectively as spine and leaves the switches in Fig \ref{fig:downuplink_switch} and the oversubscription ratio to be 1:2, the maximum number of spines would be 6, and the maximum number of leaves 20.
+Each leaf has 48 downlink ports, which however may be aggregated in 12 groups of 4 ports, hence 12 servers per leaf.\\
+Summing up:
+\begin{itemize}
+   \item 6 spines
+   \item 20 leaves per spine
+   \item 12 servers (at least) per leaf
+   \item $20 \times 12 = \textbf{240}$ servers units.
+\end{itemize}
+UniPi datacenter has 62 physical nodes, just for comparison.
+Even assuming to halve the number of spines and to aggregate every pair of links from spines to leaves, the number of servers would be 240, still a pretty big number.
 
 \framedt{How can a leaf know which is the best path to send its data onto?}{
    We want the path which is, at the moment of transmission, less used by other leaves and with more available bandwidth.\nl
@@ -259,7 +303,21 @@ The full fat tree resolves the problem of over-subscription. Adopting
 the spine and leaf there is the risk that the links closer to the spines can’t sustain the traffic coming from all the links going from the servers to the leaves. The full fat tree is a way to build a tree so that the capacity is never
 less than the incoming traffic. Since it's quite expensive some oversubscription can be accepted.
 
+\begin{definition}[Full Fat Tree]
+   ``The full fat tree is simply a spine and leaf architecture in which the bandwidth that you reserve to East West traffic is equivalent to the bandwidth that you reserve between the North and South uh traffic.''
+
+   Hence, the oversubscription ratio is 1:1.
+\end{definition}
+
 \section{Virtualization}
+
+\framedt{
+   What's the key difference between Layer 2 and Layer 3?
+}{
+   There is \ul{no routing in layer 2}, \ul{\textbf{broadcast} is the standard way of communicating}.
+   Potentially anyone who is physically in the same LAN can see the traffic of almost anyone else, slightly depending on the fabric.\\
+   But luckily, \textbf{VLANs} exist. 
+}
 
 \begin{figure}[htbp]
    \centering
@@ -270,7 +328,7 @@ less than the incoming traffic. Since it's quite expensive some oversubscription
 
 With VLAN frames are extended by 4 bytes\footnote{12 bits are reserved for the VLAN ID allowing up to $4094$ ($4096-2$) logical partitions}. Every switch nowdays automatically sets the \texttt{VLAN\_ID} to \texttt{1}; if the field is not existent, it is appended, making an \textbf{untagged} a \textit{tagged} frame.
 
-Switches ensure that data cannot spill/leak from a VLAN to another.
+\ul{\textbf{Switches} ensure that data cannot spill/leak from a VLAN to another}, because they avoid sending traffic on ports which are not associated to the current VLAN.
 VLAN became largely of use when 10Gbit connection came out, because only 1Gbit was a too constrained bandwidth to be splitted into multiple VLANs. 
 
 VLAN are used to partition the traffic at data link layer without having to redo the fabric. They are particularly useful in cloud environments.

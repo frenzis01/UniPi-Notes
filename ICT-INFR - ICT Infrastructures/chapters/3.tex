@@ -138,7 +138,12 @@ Even though Ethernet is famous, it is not the only standard. InfiniBand is anoth
 It may send messages up to 2GB each, with 16 priority levels.
 It is a \textit{lossless protocol}, meaning that if a packet is received, its integrity is guaranteed.
 
-\textit{IB} avoids TCP/IP stack, which is very heavy, and instead uses MPI (\textit{Message Passing Interface}), which is a way to distributed parallel programs.
+\textit{IB} avoids TCP/IP stack, which is very heavy, and instead uses MPI (\textit{Message Passing Interface}), which is a way to distributed parallel programs, also exploited by OmniPath.
+
+InfiniBand cables and connectors look similar to Ethernet ones, but they are not compatible.
+
+Aside from HPC environments, it is uncommon to build an entire network with InfiniBand, typically there is an IB switch to whom the servers equipped with IB NICs are connected, which intereacts with the rest of the network with Ethernet, because ``it's cheaper and it works''.
+\note{Today, we are about 400 Gbit/s on both IB and Ethernet.}
 
 \subsection{RDMA - Remote Direct Memory Access}
 

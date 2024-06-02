@@ -101,9 +101,28 @@ Latency in general is due to:
    This was drastically reduced with SSDs and got even less with 3D NAND.
 \end{itemize}
 Latency may be solved by \textbf{storage aggregation}, which consists in aggregating multiple storage devices into a single logical unit, in order to increase the performance and reliability.
-Even if the data is split in multiple disks, the whole system is ``pictured'' as a single huge drive\footnote{\textit{``Cloud resource pooling''} rings a bell?}, making a huge difference in terms of latency, since multiple \texttt{read/write} requests may be sent in parallel to multiple disks.\\
-Fiber channel is the fabric dedicated to storage; the link coming from the storage ends up in the \textit{HBA} (Host Bus Adapter) in the server.
+Even if the data is split in multiple disks, the whole system is ``pictured'' as a single huge drive\footnote{\textit{``Cloud resource pooling''} rings a bell?}, making a huge difference in terms of latency, since multiple \texttt{read/write} requests may be sent in parallel to multiple disks.
 
+\newpage
+\subsection{Storage Fabric - Fibre Channel}
+\textbf{Fibre Channel} is the fabric dedicated to storage; the link coming from the storage ends up in the \textit{HBA} (Host Bus Adapter) in the server.
+\begin{paracol}{2}
+
+   The idea is to have an interface which announces itself as drive and that manages the remote storage through Fibre Channel.
+   Fibre Channel typically runs on optical fiber cables, but may also run on Ethernet cables (FCoE).
+
+   In Fig. \ref{fig:fibrechannel} is depicted the ideal architecture for Fibre Channel, where the storage is connected to the network through a switch, and the servers have a dedicated HBA to connect to the storage.
+   
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/fibrechannel.png}
+      \caption{Fibre Channel desired architecture}
+      \label{fig:fibrechannel}
+   \end{figure}
+   
+\end{paracol}
+   
 \subsection{Bus, controller and some numbers}
 A bus is a component to whom multiple devices may be attached. It has a clock and some lanes, 16 in the case of PCI, each one providing almost 1GB bandwidth, summing up to $\sim 15GB$: 4 drives are enough to saturate a full PCI bus, or a 100Gbit link ($12.5GB/s$).;
 in fact an NVMe SSD has a bandwidth of 3.5GB/s, hence $3.5\times 4 = 14GB/s \simeq 15GB/s$.\\

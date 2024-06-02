@@ -48,8 +48,9 @@ In theory $1V * 1A = 1W$, but in reality, performing such conversion \ul{somethi
 
 Electric panels (aka \textit{switchboards}) allow segmenting the power supply in the various zones of the datacenter.
 
-\textbf{PDU}s stands for \textit{Power Distribution Units}, and allow to distribute power for a server units in a rack.
+\textbf{PDU}s stands for \textit{Power Distribution Units}, and allow to distribute power for server units inside racks.
 Typically, for each PDU there is another one, providing redundacy and thus resilience/robustness.
+Multiple racks may be powered by the same PDU, as it happens in SPG.
 
 The UPS is attached to the PDU (Power Distribution Unit) which is linked to the server.
 As briefly stated before ---for redundancy reasons--- a server is powered by a pair of lines, that usually are attached to two different PDUs. The server uses both the lines, so that there will be continuity in case of failure of a line. 
