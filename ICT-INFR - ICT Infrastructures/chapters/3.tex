@@ -50,8 +50,13 @@ Hence \textbf{optical fiber} is ---at least in theory?--- faster.
 Blu-Ray came out when scientists managed to create light using frequencies in the Blu area, which are the higher ones.
 Currently, the best and most expensive optical fibers exploit blu-lasers as source of light.
 
+\subsubsection{Connectors}
 Note that with optical you always need 2 fibers, one sending and the other receiving. The two possible connectors are \texttt{SC} and \texttt{LC}.
 Sometimes the two ends of the cable are detachable so that the cables may be switched; this is useful because sometimes you may want to attach the TX cable on the RX plug and viceversa. 
+
+However, NICs and switches for optical fibers typically provide \texttt{SFP} ports, which are pluggable modules that can host a transceiver, responsible for transitioning between electrical signals and Optical signal (and viceversa).
+These are discussed in Sec. \ref{sec:sfp}.
+
 
 \begin{figure}[htbp]
    \centering
@@ -62,9 +67,17 @@ Sometimes the two ends of the cable are detachable so that the cables may be swi
    \label{fig:sc_lc_connectors}
 \end{figure}
 
+\subsubsection{Protocols}
+Optical Fiber layer 2 protocols include \texttt{SONET} and \texttt{SDH}\footnote{\href{https://en.wikipedia.org/wiki/Synchronous_optical_networking}{``Essentially the same'' - Wikipedia}} that transfer multiple digital bit streams synchronously over optical fiber.
+
+\texttt{PPP} is another data link layer communication protocol used over many types of physical networks, including fiber optic links such as SONET. It can provide loop detection, authentication, transmission encryption, and data compression.
+
+In recent years also \texttt{Ethernet} has been used over optical fibers, which is historically the most common protocol used in LANs, and it is becoming widely popular.
+Besides, as reported in Sec. \ref{sec:infiniband} it has reached about the same speed of InfiniBand.
+
 \subsection{Copper wires}
 In case of electricity there are many aspects to be considered. Interferences, cable diameter/size, length, and also the fact that if a \texttt{1} has been transmitted for some time, it takes longer to transmit a \texttt{0}, due to the \textit{commutation} that must happen.
-\nl
+\newpage
 
 \begin{paracol}{2}
    \colfill
@@ -84,6 +97,7 @@ In case of electricity there are many aspects to be considered. Interferences, c
 \end{paracol}
 
 \subsection{SFP - Small Form-factor Pluggable}
+\label{sec:sfp}
 There can be a cable with a LC in one side and a SC on the other side.
 Instead of making switches with the optical plugs, switches were created with electrical plugs that would be able to host a \textbf{standard transceiver}.
 The latter is a pluggable module that will receive current power and electrical signals for the transmission, which is responsible for transitioning between electrical signals and Optical signal (and viceversa).
@@ -91,10 +105,10 @@ The latter is a pluggable module that will receive current power and electrical 
 \begin{paracol}{2}
    
    The aim of SFP is to decouple the optical transceivers from the server modules.
-   \note{Is this correct?}
+
    They allow to go \textit{optic-copper}, \textit{copper-optic}, \textit{optic-optic} and \textit{copper-copper}.\\
    SFP and GBIC (oldest one, now dead) pluggable modules acting as active transceivers for optical wiring using RJ45 connector.\\
-   \ul{A single cable having SFP ends costs about 100€}.
+   \ul{A single cable plus SFP ends costs about 100€}.
    The cost ain't neglectable \smiley.
    \note{\begin{itemize}
       \item[\texttt{SFP}] $\longrightarrow 1Gbit $
@@ -106,16 +120,17 @@ The latter is a pluggable module that will receive current power and electrical 
 
 
    \switchcolumn
-
+   \colfill
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/sfp.jpeg}
       \caption{SFP transceivers form factors}
       \label{fig:sfp}
    \end{figure}
+   \colfill
 \end{paracol}
 
-\note{Fun fact: ci sono 9 cavi USB-C e solo due portano informazioni video.}
+\note{Fun fact: there are 9 USB-C connectors and only two may carry video signal.}
 
 \subsubsection{Issues about cabling and fabric}
 The key point is that it would be desirable for cabling to be reconfigurable, that's why transceivers are so important.
@@ -125,25 +140,31 @@ They are designed to be underground.}
 
 Data traffic is always at least SFP+.
 Current standard is SFP28. Various SFP are typically compatible, the shape of the plug should stay the same.
-On switches there also some ports which are \texttt{QSFP+} or \texttt{QSFP28}, which allow up to \texttt{40} and \texttt{100Gbit/s} respecitively, and are used for north-south traffic.
-\note{The \texttt{Q} letter stands for \textit{Quality}}
+On switches there also some ports which are \texttt{QSFP+} or \texttt{QSFP28}, which allow up to \texttt{40} and \texttt{100Gbit/s} respectively, and are used for north-south traffic.\ns
+\note{The \texttt{Q} letter stands for \textit{Quad}}
 
 Switches for datacenters should be \textbf{non-blocking}, meaning that no port has to wait for other ones ---or any other thing--- before transmitting, they can also transmit simultaneously.
-
+\nl
 
 \ul{In every datacenter it is \textit{MANDATORY} to document the cabling.}
 
 \subsection{InfiniBand}
+\label{sec:infiniband}
 Even though Ethernet is famous, it is not the only standard. InfiniBand is another one, which is used in supercomputers and known for its very high throughput and very low latency ($\sim 2\mu s$).
 It may send messages up to 2GB each, with 16 priority levels.
 It is a \textit{lossless protocol}, meaning that if a packet is received, its integrity is guaranteed.
 
 \textit{IB} avoids TCP/IP stack, which is very heavy, and instead uses MPI (\textit{Message Passing Interface}), which is a way to distributed parallel programs, also exploited by OmniPath.
 
-InfiniBand cables and connectors look similar to Ethernet ones, but they are not compatible.
+\ul{InfiniBand cables and connectors look similar to Ethernet ones, but they are \textbf{not} compatible.}
 
 Aside from HPC environments, it is uncommon to build an entire network with InfiniBand, typically there is an IB switch to whom the servers equipped with IB NICs are connected, which intereacts with the rest of the network with Ethernet, because ``it's cheaper and it works''.
 \note{Today, we are about 400 Gbit/s on both IB and Ethernet.}
+
+\subsubsection{Omni-Path}
+Omni-Path is a high-performance computing network architecture, developed by Intel. It is a successor to Intel's InfiniBand, and competes with InfiniBand's EDR and HDR technologies.
+
+Intel plans to develop technology that will serve as the on-ramp to \textit{exascale computing}\footnote{A computing system capable of the least one exaFLOPS}, which is the next frontier in high-performance computing.
 
 \subsection{RDMA - Remote Direct Memory Access}
 
@@ -152,10 +173,9 @@ RDMA is a technology API based (not a protocol!) that allows to access memory of
 RDMA supports zero-copy networking by enabling the network adapter to transfer data directly to or from application memory, eliminating the need to copy data between application memory and the data buffers in the operating system.\\
 The main use case is distributed storage.
 
+This clearly represents a \ul{huge advantage in} terms of \ul{latency}, since the data is directly transferred from the memory of the sender to the memory of the receiver, without involving the CPU or the OS of the receiver, but also represents a \ul{big challenge in terms of security}.
+
 RoCE (\textit{RDMA over Converged Ethernet}) is a network protocol that allows remote direct memory access (RDMA) over an Ethernet network.
 
-\subsection{Omni-Path}
-Omni-Path is a high-performance computing network architecture, developed by Intel. It is a successor to Intel's InfiniBand, and competes with InfiniBand's EDR and HDR technologies.
 
-Intel plans to develop technology that will serve as the on-ramp to \textit{exascale computing}\footnote{A computing system capable of the least one exaFLOPS}, which is the next frontier in high-performance computing.
 

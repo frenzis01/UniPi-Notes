@@ -13,47 +13,13 @@
 \section{Domande mie}
 
 \subsection{What is the standard voltage of incoming power in a data center? Where does the conversion from AC to DC happen?}
+380V, and the conversion happens in the UPS, sometimes there may be a dedicated component to the conversion.
 
 \subsection{Three-tier architecture: What does it mean that ``provides active-passive redundancy which leads to inefficient east west traffic''?}
 
-Answer by Copilot: 
-``The three-tier architecture provides active-passive redundancy, which leads to inefficient east-west traffic. This is because the traffic between servers in the same tier must go through the core layer, which can lead to congestion and increased latency. In contrast, a spine-leaf architecture provides active-active redundancy, allowing traffic to flow more efficiently between servers in the same tier.'' 
+The three-tier architecture provides active-passive redundancy because the multiple paths provided by the various switches, are used only one at time, since the RSTP protocol blocks the other paths, in order to avoid loops. This leads to inefficient east-west traffic because the traffic is not distributed across all the links, but only one at a time.
    
-
-\subsection{LACP: even though the bandwidth is aggregated (i.e. $2\times 25Gbps$), the single stream is still limited to the bandwidth of a single link (i.e. $25Gbps$), because the traffic goes only from one way to the other each time.}
-
-Answer by Copilot: 
-``LACP (Link Aggregation Control Protocol) is a method of combining multiple physical links into a single logical link to increase bandwidth and provide redundancy. However, even though the bandwidth is aggregated (e.g., 2x25Gbps), a single stream is still limited to the bandwidth of a single link (e.g., 25Gbps) because the traffic is hashed based on the source and destination MAC addresses, IP addresses, or TCP/UDP ports. This means that traffic between the same source and destination will always use the same physical link, limiting the effective bandwidth of a single stream to that of a single link.''
-
-\subsection{Spine-leaf: ``with spine and leaf we introduce \textbf{more hops}''. Weren't the necessary hops no more than one?}
-
-\subsection{Why would a 15TB disk be better than a 27TB disk?}
-\note{Assume the same performance, and the same price.}
-It would be preferrable because \ul{it would take less time to extract all the data from the disk}\footnote{i.e. taking advantage of the space provided}, since it is smaller.
-
-However, large capacity drives are used for \textit{cold storage}, where the data is not accessed frequently, speed is not a priority, and even if the data is accessed, only a portion of the disk is needed at a time; in case of failure and thus needing to retrieve an entire backup, the time taken to retrieve the data is not a priority, since this ---hopefully--- happens only ``once''.
 
 \subsection{Optane can perform 416 accesses in the same time needed by a mechanical hard drive to perform 1 access. It looks like the latency in this latter case is neglegtible. Someone may be tempted to reduce the size of read/write operations and perform multiple smaller ones, since ``it's free''. Why is this not a good idea or why is it?}
 
-\subsection{SAN also enables performance optimization of the storage by performing
-deduplication (delete sequence of blocks that are equivalent). Why/How?}
-
-\subsection{What is the difference between a SAN and a NAS?}
-
-
-
-\subsection{``Storage \textbf{capacity} of a LUN can be dynamically expanded or reduced by means \textbf{virtual storage provisioning}, i.e. present a LUN as if it has more capacity than it actually has, to avoid fragmentatation and then expand it when it is needed.''. Why does this avoid fragmentation?}
-
-\subsection{Define row, usable and provisioned capacity}
-
-\subsection{Cloud Phyisical Layer - ``Compute systems are offered in the form of virtual machines''. Isn't virtualizing a job of the control layer?}
-
-\subsection{The hypervisor demonstrated by prof Cisternino is bare-metal or hosted?}
-
-\subsection{``Aggregating two switches allows a single node to use a port-channel across two switches, and network traffic is distributed across all the links in the port-channel.'' Why is this useful? Besides, also NICs may be aggregated, why is this useful?}
-
-\subsection{What about physical security for what concerns storage in a DC?}
-
-\subsection{Why in the CRM application workflow example two separate VMs are used?}
-
-\subsection{How does scaling an application work in a cloud environment?}
+Answer by Copilot: ``Because the time needed to perform the operation is not the only factor to consider. The time needed to prepare the operation, and the time needed to manage the operation, are also important. If we perform multiple smaller operations, we need to prepare and manage each of them, which may lead to a higher overall time needed to perform the operations.''

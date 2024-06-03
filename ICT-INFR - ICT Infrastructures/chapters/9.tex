@@ -128,7 +128,8 @@ Storage and access methods (e.g. file-based, unified, \dots) have been exhaustiv
 For what concerns the network communications, they may be:\ns
 \begin{itemize}
    \item \textbf{Compute-to-Compute} (East-West?\footnote{Perhaps not necessarily}) : typically uses IP-based protocols
-   \item \textbf{Compute-to-Storage} : typically a SAN exploiting depending on the fabric and architecture SCSI, iSCSI, FC, FCoE, NFS, SMB, etc.\\
+   \item \textbf{Compute-to-Storage} : typically a SAN exploiting depending on the fabric and architecture SCSI, iSCSI, FC, FCoE, NFS, SMB, etc.
+   \ns
    \begin{itemize}
       \item FC SAN: Fibre Channel provinding up to 16Gbps bandwidth, and block-level access to storage
       \item IP SAN: SAN using IP protocol and iSCSI or FCIP on top of it. Both encapsulate, respectively, SCSI and FC frames into IP packets
@@ -140,6 +141,8 @@ For what concerns the network communications, they may be:\ns
 \section{Virtual Layer}
 Abstract physical resources, including storage and network, and makes them appear as virtual resources;
 enables a single hardware resource to support multiple concurrent instances of systems or multiple hardware resources to support single instance of system.
+\nl
+
 \framedt{Virtualization}{
    Through \textbf{virtualization} a multi tenant environment is achieved, by running multiple ---customer--- organizations VMs on the same server;
    note however that this concept is not limited to VMs as a computing resource, but applies to storage and network as well.
@@ -185,7 +188,7 @@ There exists a mapping between VSAN and VLAN to determine which VLAN carries a V
 The control layer is responsible for managing the resources and the allocation of the resources to the virtual machines.
 
 \begin{definition}[Control Layer]
-   ``The control layer is important because it's the way pool the resources set and see all the resources in a coherent way so it's a sort of a software layer that hides the differences and gives you primitives (such as ``I need a VM, I don't care where, but I need one'').''
+   ``The control layer is important because it's the way to poll the resources set and see all the resources in a coherent way so it's a sort of a software layer that hides the differences and gives you primitives (such as ``I need a VM, I don't care where, but I need one'').''
 \end{definition}
 
 
@@ -413,7 +416,8 @@ running in one zone to another.
 \subsection{VM Live Migration}
 Recall that in a VM live migration the \ul{entire \textbf{active state} of a VM is moved
 from one hypervisor to another}.
-\textbf{Live migration} summary:\ns
+We had spoken about earlier on in Sec \ref{sec:livemigration}, but here are anyway reported some stuff.
+{\textbf{Live migration} summary:\ns
 \begin{enumerate}
 \item
   copy the \textbf{RAM} and at the end, copy the \textbf{pages} writed
@@ -431,7 +435,7 @@ from one hypervisor to another}.
   continue running the VM on B, only when it needs the disk you stop it
   and start copying the disk file. A jumboframe can be used to avoid
   storage traffic fragmentation.
-\end{enumerate}
+\end{enumerate}}
 
 The whole process is a little bit easier if both the VMs use a shared
 storage.
@@ -460,7 +464,6 @@ The Security layer is responsible for providing secure multi-tenancy.
    \ul{For cloud customers the key point is \textbf{trust}, which is provided by means of \textbf{visibility} and \textbf{control} on the data hosted.}
 \end{center}
 
-\newpage
 \subsection{Security threats in cloud environments}
 \begin{table}[htbp]
    \centering
@@ -517,7 +520,7 @@ It is enforced by means of badges, biometrics, disabling unused devices, surveil
 
 \textbf{Identity} is a key concept in security, which in later years has changed a lot, mostly due to \textit{federated identity}, which allows to use the same credentials to access multiple services.\\
 Associated to identity there are the long-discussed concepts of \textbf{authentication} and \textbf{authorization}.\\
-\labelitemize{Authentication}{
+\labelitemize{\textit{Authentication}}{
    \begin{itemize}
       \item OAuth
       \item Multi-factor authentication
@@ -526,11 +529,14 @@ Associated to identity there are the long-discussed concepts of \textbf{authenti
       \item OpenID
    \end{itemize}
 }
-\labelitemize{Authorization}{
-   Unix systems enforce a \textit{default deny} policy, and users are added to groups to grant them permissions.\\
-   Windows has ACLs, which determine what can be done and what should be logged.\\
-   In general, role-based access control is the most common way to manage authorization.
-}
+\labelitemize{\textit{Authorization}}{
+   \begin{description}
+      \item[] 
+      \quad Unix systems enforce a \textit{default deny} policy, and users are added to groups to grant them permissions.\\
+      Windows has ACLs, which determine what can be done and what should be logged.\\
+      In general, role-based access control is the most common way to manage authorization.
+   \end{description}
+      }
 \note{Fun fact: today almost no internet service requires users to change password every 90 days, because it was found that it was counterproductive.
 People used to forget passwords and write them down onto notes that they would stick to the monitor or on the wall, completely breaking phyisical security.}
 
@@ -570,6 +576,8 @@ The Zero Trust Architecture is a security model that requires strict identity ve
 
 Earlier on, security was approached as a multi-layered concept, and consisted of five levels, where the outermost was the perimeter, and the innermost was the storage.\\
 The problem arose when people realized that the perimeter was not a good security measure, because once an attacker is inside the perimeter, it is game over. In other terms, security cannot be enforced based on the device itself and its location, we have no guarantee that is has not been compromised.
+\nl
+
 \framedt{Zero Trust Architecture}{
    \begin{definition}[Zero Trust Architecture]
       ``Never trust, always verify''
@@ -578,7 +586,7 @@ The problem arose when people realized that the perimeter was not a good securit
    \ul{Almost every datacenter nowdays tends to follow the Zero Trust Architecture.}
 }
 
-The ZTA consists of a set of principles called tenets, which are:\ns
+{The ZTA consists of a set of principles called tenets, which are:\ns
 \begin{enumerate}
    \item All data sources and computing services are considered \textit{resources}, possible targets of an attack.
    \item All communication is \textit{secured}, regardless of the network location.
@@ -586,7 +594,7 @@ The ZTA consists of a set of principles called tenets, which are:\ns
    \item All access requests are \textit{authenticated and authorized} before being granted.
    \item All access requests are \textit{monitored and logged}, as well as the security posture of all owned assets.
    \item The enterprise collects as much information as possible about the current state of assets, network infrastructure, and communications, in order to improve its security posture.
-\end{enumerate}
+\end{enumerate}}
 
 Decisions are taken in the \textit{Control Plane} through a \textit{Policy Engine}, which enforces all the security policies of the organization. 
 This \textit{Policy Decision Point} (\textbf{PDP}) interacts with a \textit{Policy Enforcement Point}, which checks whether your connection is trusted for a specific resource.
@@ -636,8 +644,7 @@ A name appearing in a list may affect the life of a person, what that will perso
 
 \framedt{``Accountability'' in GDPR}{
 
-   In GDPR appears the curious term \textit{``accountable''}, i.e. TODO.
-   Being able to produce all the documentation that proves that you are compliant with the GDPR, meaning that you did everything you should have done to protect the data.\\
+   In GDPR appears the curious term \textit{``accountable''}, i.e. being able to produce all the documentation that proves that you are compliant with the GDPR, meaning that you did everything you should have done to protect the data.\\
    Such term is different from ``responsible''. Accountability is about tracing back the actions, while responsibility is about the actions themselves.
 
    \textit{``I'm accountable, I did everything I could to avoid such a bad situation to happen, but it happened anyway.''}

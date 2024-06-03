@@ -1,15 +1,18 @@
 \chapter{Computing}
 One important notion of compute system is \textit{density}: there are different needs (in how many cores / how many operations per second) depending on the application that is running on the system. The structure of a server is a tradeoff between \textbf{capacity} (even if we need to do a lot of computing, space is limited, so less space for the drives) and \textbf{density}.
 
-There are two types of compute systems in a datacenter:\ns
-\begin{enumerate}
+{
+   There are two types of compute systems in a datacenter:\ns
+   \begin{enumerate}
    \item \textbf{Rack} servers: they are the most common type of servers, and are used for general purpose applications.
    \item \textbf{Blade} servers: they are used for specific applications, and are more expensive than rack servers.
    Each blade server is a self-contained compute system, inserted in a ---fatter--- \textit{chassis}, typically dedicated to a single application, providing multiple services.\\
    The modular design of blade server make them smaller, minimizing floor space requirements, increasing system density and scalability, ultimately providing a more efficient use of power and cooling, compared to tower and rack servers.
    \note{Usually contain only CPU(/RAM) and NIC, but in some cases also storage, possibly configured as SAN or NAS.}
-\end{enumerate}
+   \end{enumerate}
+}
 
+\section{Remote Management of servers}
 \begin{center}
    ``In a server how many OSs are ran at the same time?''
 \end{center}
@@ -47,6 +50,7 @@ Redfish is a standard which is used to manage servers. It is a RESTful API which
    these are detected by the \textit{Smart} technology.
    Also AI may be used to predict disk failure.
 }
+\nl
 
 \begin{center}
    \textit{No phyisical security means no security at all}
@@ -59,7 +63,7 @@ This is not only ``handy'', but often necessary, since the \ul{\textit{physical}
 }
 
 \section{Knights Landing and high performance computing}
-\textbf{Knights Landing} is an old multi ---up to 72--- core architecture is designed to be used in supercomputers. The memory had a super high bandwidth, to avoid bottlenecking the many cores inside, since such memory is shared among them.
+\textbf{Knights Landing} is an old multi ---up to 72--- core architecture designed to be used in supercomputers. The memory had a super high bandwidth, to avoid bottlenecking the many cores inside, since such memory is shared among them.
 
 \textit{NUMA} is a technique used to avoid bottlenecking in multi core architectures. It is a technique which allows to have multiple memory banks, each one connected to a subset of the cores. This way, each core can access its own memory bank without having to wait for the others to finish accessing the shared memory.
 

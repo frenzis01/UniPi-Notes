@@ -79,6 +79,8 @@
 \usepackage{soul}
 \usepackage{cancel}
 
+\usepackage{pifont} % used for tick and cross marks
+
 % This are needed because the correct double quotes would be ``'' or ``",
 % but i've always written "text"
 % TODO - check whether this affects listing environment
@@ -173,6 +175,9 @@
 }
 
 \newcommand{\textred}[1]{{\color{red}#1}}
+
+\newcommand{\cmark}{\ding{51}}% TICK
+\newcommand{\xmark}{\ding{55}}% CROSS
 
 \newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
 \rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2} 

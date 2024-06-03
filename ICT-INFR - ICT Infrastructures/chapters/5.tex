@@ -8,13 +8,15 @@
 }
 
 \begin{paracol}{2}
-   
+   \colfill
    Historically the storage was the slowest part of the system, \textit{ms} against \textit{ns} of the CPU.
    Today, with SSDs, the gap is considerably reduced to \textit{$\mu s$}, they are $\sim 100x$ times faster.
    
    \ul{NVMe stands for \textit{Non-Volatile Memory Express}, and is a protocol (\textit{not a HW component!})} that allows to access the storage directly from the PCIe bus, without having to go through the SATA controller. This allows to have a much higher throughput, and a much lower latency.
 
    \note{Optane was a technology developed by intel which is now end of life}
+
+   \colfill
    \switchcolumn
 
    \begin{figure}[htbp]
@@ -70,7 +72,7 @@ performance metric used to characterize computer storage devices; it is associat
 Before explaining the distinction, is important to remember the concept of \textit{queues}: for each thread, the OS can implement a series of queues to solve asynchronously the I/O requests. Using multiple queue can make performances better, since having
 the OS to manage parallel requests will increase throughput.
 If the queries are latency sensible, not using a queue is better, since
-usually queue requests overlap between each other.
+it allows a single query to have ``max'' priority.
 
 \textit{Random access files} are advantageous in scenarios where frequent direct access or modification of specific records is required, while \textit{sequential access files} are advantageous in scenarios where frequent reads of the full files are required. The disk behaves differntly in case of access of those files.
 
@@ -108,10 +110,12 @@ Even if the data is split in multiple disks, the whole system is ``pictured'' as
 \textbf{Fibre Channel} is the fabric dedicated to storage; the link coming from the storage ends up in the \textit{HBA} (Host Bus Adapter) in the server.
 \begin{paracol}{2}
 
+   \colfill
    The idea is to have an interface which announces itself as drive and that manages the remote storage through Fibre Channel.
    Fibre Channel typically runs on optical fiber cables, but may also run on Ethernet cables (FCoE).
 
    In Fig. \ref{fig:fibrechannel} is depicted the ideal architecture for Fibre Channel, where the storage is connected to the network through a switch, and the servers have a dedicated HBA to connect to the storage.
+   \colfill
    
    \switchcolumn
    \begin{figure}[htbp]
@@ -122,6 +126,17 @@ Even if the data is split in multiple disks, the whole system is ``pictured'' as
    \end{figure}
    
 \end{paracol}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.32\columnwidth]{images/storage_fabric1.png}
+   \includegraphics[width=0.32\columnwidth]{images/storage_fabric2.png}
+   \includegraphics[width=0.32\columnwidth]{images/storage_fabric3.png}
+   \caption{These are three possible configurations for the storage fabric, the first being the most performant, and the third being the cheapest.
+   Note that in the second picture the first link is Ethernet and the second is Fibre Channel.}
+   \label{fig:storage_fabric}
+\end{figure}
+Note that the image may me misleading, since there may be multiple FC switches (as partially depicted in Fig. \ref{fig:fibrechannel}) and multiple storage racks.
    
 \subsection{Bus, controller and some numbers}
 A bus is a component to whom multiple devices may be attached. It has a clock and some lanes, 16 in the case of PCI, each one providing almost 1GB bandwidth, summing up to $\sim 15GB$: 4 drives are enough to saturate a full PCI bus, or a 100Gbit link ($12.5GB/s$).;
@@ -137,7 +152,7 @@ link.
 
 \section{Redundancy and backup}
 \subsection{Checkpoints}
-It's unpractical for a system to go down after 5 months. For this reason it is necessary to have checkpoints, which are points in time where the system can be restored to. The system can be restored to the last checkpoint, and the data that was written after the checkpoint can be re-applied. This is similar to what happens to applications on smartphones are closed and then re-opened, the application is restored to the last checkpoint.
+It's unpractical for a system to go down after 5 months. For this reason it is necessary to have \ul{\textit{checkpoints}, which are points in time where the system can be restored to.} The system can be restored to the last checkpoint, and the data that was written after the checkpoint can be re-applied. This is similar to what happens to applications on smartphones are closed and then re-opened, the application is restored to the last checkpoint.
 
 \subsection{RAID}
 \textbf{RAID} stands for \textit{Redundant Array of Independent Disks}. It is a technology that allows to combine multiple disks into a single logical unit, in order to increase the performance, the reliability, or both. There are different levels of RAID, each with different characteristics.
@@ -172,22 +187,26 @@ Typically they exploit SMB/CIFS or NFS protocols, or AFP over optical fiber, and
 \textbf{SAN} stands for \textit{Storage Area Network}, which enables the creation and assignment (i.e. access and share) of storage volumes to compute systems.\\
 The compute OS (or hypervisor) discovers these storage volumes as local drives.
 The servers have different NICs (HBA) connected (usually through
-fiber channels) to those blocks, which are aggregated volumes.\\
+fibre channels) to those blocks, which are aggregated volumes.\\
 SAN also enables performance optimization of the storage by performing
 deduplication (delete sequence of blocks that are equivalent).
 
 \note{HBA stands for \textit{Host Bus Adapter}, and is a device that allows to connect a computer to a storage device. It is used to connect a computer to a storage device, and to allow the computer to access the storage device.}
 
+SAN are a network separate from the LAN, so not affected by its traffic.\\
+They usually exploit Fibre Channel or iSCSI (which is not as fast) protocols.
+
 SAN was, before SSDs, one of the datacenter pillars.
-Its architecture included a ``Head'' to which drives were attached, and the head was connected to the network. The head was used to manage the drives, and to allow the servers to access the drives.\\
-When SSDs became popular, the head became a bottleneck, because it was not able to keep up with the speed of the SSDs(Recall that 4 SSDs are enough to saturate a 10Gbit link, See Sec. \ref{sec:bandwidth_storage}). For this reason, the head was removed, and the drives were connected directly to the network. This is called \textbf{DAS}.
+Its architecture included a ``head'', an advanced Fibre Channel switch, to which drives were attached, and the head was connected to the network. The head was used to manage the drives, and to allow the servers to access the drives.\\
+When SSDs became popular, the head became a bottleneck, because it was not able to keep up with the speed of the SSDs(Recall that 4 SSDs are enough to saturate a 10Gbit link, See Sec. \ref{sec:bandwidth_storage}). 
+For this reason, the head may be removed, with the drives connected directly to the servers. This is called \textbf{DAS}, typically uses SCSI protocol, but is not as scalable as SAN.
 
 However with groups of mechanical drives, ---if the data is splitted in a smart way--- it's possible to be faster of a single SSD, since the request will be forwarded in parallel to different drives.
 
 \subsubsection{Protocols}
-SANs are classified based on protocols they support.
+SANs are classified based on protocols and fabric they support. Some possible configurations can be found in Fig. \ref{fig:storage_fabric} 
 Common SAN deployments types are Fibre Channel SAN (FC SAN), Internet Protocol SAN (IP SAN), and Fibre Channel over Ethernet SAN (FCoE SAN), ATA over Ethernet (AoE) and HyperSCSI ().
-It can be implemented as some controllers attached to some JBoDS (Just a Bunch of Disks)
+It can be implemented as some controllers attached to some JBoDS (Just a Bunch of Disks).
 
 \note{While NAS provides both storage and a file system, SAN provides only block-based storage and leaves file system concerns on the “client” side.
 However, note that a NAS \textit{can} be part of a SAN network.}
@@ -226,9 +245,9 @@ LUNs may be created from\ns
 
 Both of these approaches have different capacities:\ns
 \begin{itemize}
-   \item Row capacity: the total capacity of the LUN
-   \item Usable capacity: the capacity that is available to the server
-   \item Provisioned capacity: the capacity that is actually used by the server
+   \item Row capacity: the total capacity of the LUN, limited by the physical capacity of the storage devices
+   \item Usable capacity: the capacity that is available to the server, limited by data structures needed to allocate the file system.
+   \item Provisioned capacity: the capacity that you present to the server. May be more than the usable capacity, obtaining overprovisioning. 
 \end{itemize}
 
 \subsection{Object based - S3}
@@ -260,7 +279,7 @@ It exploits good forms of parallelism to run efficiently the algorithm
 The ``storage guy'' must ensure that there is no condition under which can happen data loss, because it is never an option. It is also important to have powerful \textbf{synchronization algorithms}, which must allow data to be copied and synchronized in multiple locations without disrupting performance and handling concurrency;
 such software is typically \textit{costful}.
 
-It is difficult nowdays to establish what is the ``right'' price for software. The shift from highly specialized and costful hardware to general hardware-plus-software, gave the software, which still a non-physical entity, increasingly more value, perhaps even too much.
+It is difficult nowdays to establish what is the ``right'' price for software. The shift from highly specialized and costful hardware to general hardware-plus-software, gave the software, which still is a non-physical entity, increasingly more value, perhaps even too much.
 
 
 \section{Hyperconverged Infrastructure}
@@ -283,8 +302,17 @@ The \textit{controller VM} (one per host) implements the storage abstraction and
 \texttt{read} operations are always performed locally on local drives; \texttt{write} operations instead sometimes require to retrieve a remote piece of data.
 A copy on the local server storage is kept, but the server needs to wait for the acknowledgment of the remote server in order to keep updated replicas of written data in other nodes.
 
-\subsection*{Riak}
+As mentioned in the section dedicated to HCI and networking Sec. \ref{sec:HCI_network}, new server are automatically added to the network seamlessly integrating with the pre-existing HCI cluster.
+The same applies to the storage, which is automatically added to the pool, and local replicas of data are built.
+
+\subsubsection{VM Live Migration}
+Live Migration of VMs is a technique that allows to move a VM from one server to another server, without interrupting the service. 
+When it happens over SAN there's no need to copy storage to the new server, since the storage is shared and accessed through the network.
+The case of HCI is similar since the storage is mostly shared, but there are also the above mentioned local copies of data, which may need to be updated. 
+
+\subsection*{Riak and Acropolis}
 Riak is a distributed database that is used to store data in multiple locations. 
+The same applies to Acropolis, which is a distributed storage system.
 
 Recently it has been recognized that \ul{using general purpose hardware is no longer a feasible option.}
 

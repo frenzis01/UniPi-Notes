@@ -26,7 +26,7 @@ LACP protocol allowing to bind multiple links to a single conceptual
 link (link aggregation, active-active).\\
 \textbf{over-subscription} the links to the spine should be able to
 sustain the trafic coming from all the links below. This is not a
-problem for EW trafic between servers attached to the same switch
+problem for EW traffic between servers attached to the same switch
 (because the link to the spine is not affected).\\
 Pros:
 
@@ -44,7 +44,7 @@ It became popular after 10 GBps; before it was difficult to use it with
 
 \textbf{Traditional Chassis}\\
 Tipically two modular chassis connected by two links (STP) in
-atcive-passive (the second chassis goes up only when the first isn't
+active-passive (the second chassis goes up only when the first isn't
 working). The ratio between the number of ports and the bandwidth is
 completely different from spine and leaf. Link aggregation is possible
 but it's not convenient.\\
@@ -86,17 +86,10 @@ To enlarge the bandwidth in a spine and leaf architecture we need only
 to add a new spine and to connect to all leaves. With the chassis
 approach we can add bandwidth adding new line cards (new switches) to
 the chassis, provided that there are free slots in the chassis.\\
-In the spine and leaf arch we can upgrade a spine reducing \textred{\textbf{\textit{(???)}}1} the
+In the spine and leaf arch we can upgrade a spine reducing the
 bandwidth, but still without disrupting the connectivity. In the
 traditional chassis an upgrade degrades the bandwidth =\textgreater{}
 TODO: verify.
-
-\subsubsection{How much Bandwidth?}
-\textred{How much can the bandwidth be increased by adding new switches?}
-If a server has only one NIC, isn't the bandwidth limited to the NIC?
-Adding switches may mean adding links for east-west traffic, but which is the upper bound?\\
-Actually the max number of links is the number of arcs in a complete graph, which is $n(n-1)/2$ where $n$ is the number of nodes.\\
-Pretty unreachable, but also quite messy to manage as fabric.
 
 \hypertarget{orchestration-layer-1}{%
 \section{2) Orchestration layer}\label{orchestration-layer-1}}
@@ -116,8 +109,7 @@ istances should be used to serve a Web system?
 Assuming the DB is distributed and has infinite capacity, because
 tipically the bottleneck is the Web Server
 
-An orchestrator can:
-
+{\ns An orchestrator can:
 \begin{itemize}
 \item
   create new VM running the WS, getting a new IP and talking to the
@@ -130,11 +122,10 @@ An orchestrator can:
   increase memory
 \item
   etc..
-\item \textred{\textit{Not migration! (right?)}}
-\end{itemize}
+\item \textred{\textit{Not migration! (right?) It should be done by the control layer}}
+\end{itemize}}
 
-Based on:
-
+{\ns Based on:
 \begin{itemize}
 \item
   average response time
@@ -146,9 +137,8 @@ Based on:
   number of connections (requests)
 \item
   CPU usage
-
 \item \textred{\textit{What about the pricing plan of the customer?}}
-\end{itemize}
+\end{itemize}}
 
 \hypertarget{datacenter-architecture}{%
 \section{3) Datacenter architecture}\label{datacenter-architecture}}
@@ -233,29 +223,34 @@ factor (PF).
 
 \hypertarget{solution-2-1}{%
 \subsection{Solution 2}\label{solution-2-1}}
+\begin{paracol}{2}
+  \colfill
+  \emph{t1 and t2 are AC/DC transformers}\\
+  \emph{ATS: Automatic Transfer Switch}
+  
+  15 KW/Rack x 10 Racks = 150 KW to deliver towards our DC
+  
+  380 Volts x 150 KW = 400 Ampere (at least)
+  
+  Assuming a PUE of 1.2, we need:
+  
+  400 Ampere x 1.2 = 480 Ampere (including cooling and AC/DC power loss)
+  
+  So, every couple UPS/PDU must manage 480 Ampere at full load.
+  
+  According to Facebook, by eliminating centralized UPS/PDUs you can
+  achieve a total loss of 7\%.
+  \colfill
+  \switchcolumn
 
-\emph{t1 and t2 are AC/DC transformers}\\
-\emph{ATS: Automatic Transfer Switch}
-
-15 KW/Rack x 10 Racks = 150 KW to deliver towards our DC
-
-380 Volts x 150 KW = 400 Ampere (at least)
-
-Assuming a PUE of 1.2, we need:
-
-400 Ampere x 1.2 = 480 Ampere (including cooling and AC/DC power loss)
-
-So, every couple UPS/PDU must manage 480 Ampere at full load.
-
-According to Facebook, by eliminating centralized UPS/PDUs you can
-achieve a total loss of 7\%.
-
-\begin{figure} [htbp]
+  
+  \begin{figure} [htbp]
     \centering
-   %  \includegraphics[width=0.9\textwidth]{./assets/10racks.jpeg}
+    \includegraphics{images/datacenter_sketch.png}
     \caption{Solution 2 schema}
     \label{fig:10racks}
-\end{figure}
+  \end{figure}
+\end{paracol}
 
 \hypertarget{san-vs-hyperconverged-architecture}{%
 \section{4) SAN VS hyperconverged
@@ -290,11 +285,11 @@ one.
   SATA SSD has 500 MB bandwidth.\\
   \textred{What about NVMe?}
 \item
-  With 15 GB/sec, 4 fiber channel are enough.
+  With 15 GB/sec, 4 fibre channel are enough.
 \end{itemize}
 
 \textbf{SAN area network (recap)}\\
-uSCSI internet protocol (SCSI on fiber) allows to mount blocks/disks.\\
+SCSI internet protocol (SCSI on fiber) allows to mount blocks/disks.\\
 Block-based access: you mount a chunk of bytes seen as a drive.\\
 LUN (Logical UNits), can be replicated, compression can be used, it can
 be overbooked.\\
@@ -396,15 +391,14 @@ Can't have 100 GBps straight to the server because of spine and leaf, so
 I have to consider the idea of distribution (hyperconverged).
 \textred{Why not? 100Gbps is the max bandwidth of a single link, but we can have multiple links, right? Could I add more links/NICs?}
 
-Recap that:
-
+{\ns Recap that:
 \begin{itemize}
 \item
   just 1 or 2 ports of 100Gbps are enough to saturate the PCIe.
 \item
   not good to have 100Gbps for each node cause I'm overloading that
   single node while HCI is distributed
-\end{itemize}
+\end{itemize}}
 
 First I have to choose the Ethernet bandwidth between
 (10-25-50-100-400), considering that 400 Gbps is achievable only on the
@@ -455,7 +449,7 @@ overhead (e.g. to connect two spine nodes together).
 
 \textred{So we have 5 leaf switches, each providing 25Gbps to the server, and each server has 6 disks, each providing 500MBps.\\
 Using 5 servers we have 125Gbps of storage bandwidth, which is enough to sustain the 120Gbps of incoming bandwidth.\\
-What has to done at the spine layer? Which type of protocols and connectors must be used in order to achieve the abovementioned bandwidth?}
+What has to be done at the spine layer? Which type of protocols and connectors must be used in order to achieve the abovementioned bandwidth?}
 
 \hypertarget{other-questions}{%
 \section{Other questions}\label{other-questions}}

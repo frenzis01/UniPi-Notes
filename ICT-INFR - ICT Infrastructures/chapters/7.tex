@@ -7,7 +7,7 @@ It is not equal to \textit{emulation} which consists in simulating hardware, giv
 \framedt{CPU Rings and isolation}{
    \ul{Virtualization is a strong way of isolating things.}\\
    To isolate VMs the hypervisor exploits CPU rings, which are used to separate the different levels of privilege. The higher the ring, the higher the privilege level.
-   In intel CPUs there are 16 rings.
+   In intel CPUs there are typically 4, but up to 16 rings.
 }
 
 There are two kinds of virtualization systems:
@@ -22,13 +22,14 @@ Similarly to snapshots in storage systems, there are \textbf{checkpoints}, which
 
 \section{Network}
 HyperVisors introduce a \textbf{crucial} piece of software called \textbf{Virtual Switch}, which is responsible for managing the network of the virtual machines.\\
-VMware is the leader in virtualization, but lately they have been changing pricings and licensing, which has made some customers unhappy.\\
-\note{Broadcom is a chip manufacturer, and we might end up with virtualization software already inside the chip. }
+VMware is the leader in virtualization, but lately they have been changing pricings and licensing, which has made some customers unhappy.
+{\ns\note{Broadcom is a chip manufacturer, and we might end up with virtualization software already inside the chip. }}
 
 VMware virtual switch is called \textbf{vSwitch}. It is a software-based switch that is responsible for managing the network of the virtual machines.\\
 Every network interface of a virtual machine has its own MAC address, and may be connected to a vSwitch.
 \note{An hypervisor may handle multiple vSwitches.}
-From a network point of view, a virtual machine is just like a physical machine, assuming that the network card is in \textbf{promiscuous} mode, it can see all the traffic that is going through the vSwitch.
+From a network point of view, a virtual machine is just like a physical machine  assuming that the network card is in \textbf{promiscuous} mode; the host can see all the traffic that is going through the vSwitch.
+{\ns\note{Perhaps also the VMs?}
 
 \section{Live Migration}
 Hypervisors provide also the migration of virtual machines from one host to another, which is called \textbf{vMotion} in VMware. This is useful for load balancing, maintenance, etc. In Windows Hyper-V, this primitive is called \textbf{Live Migration}.\\
@@ -46,6 +47,28 @@ Assuming that the disk is shared, the migration is performed like so:
 \end{enumerate}
 
 vSwitches are also migrated, so that the network configuration is preserved. The old vSwitch may communicate with the new one, and if needed forward packets, until ARP tables are updated.
+
+\note{
+   A more in-depth analysis of the steps is:\ns
+\begin{enumerate}
+\item
+  copy the \textbf{RAM} and at the end, copy the \textbf{pages} writed
+  during this phase.
+\item
+  create an empty drive on B
+\item
+  copy the \textbf{CPU registers} (the VM is stopped for a really short
+  period)
+\item
+  manage vSwitch and ARP protocol. The virtual switch must be aware of
+  the migration: if the old vSwitch receives a packet for the just
+  migrated VM it should forward it to B.
+\item
+  continue running the VM on B, only when it needs the disk you stop it
+  and start copying the disk file. A jumboframe can be used to avoid
+  storage traffic fragmentation.\\
+  This step ain't necessary if the disk is shared.
+\end{enumerate}}
 
 \subsection{Replication}
 Replication is the process of copying data from one host to another, in order to have a backup in case of failure.\\
