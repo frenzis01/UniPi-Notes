@@ -16,7 +16,7 @@ The Physical layer may operate in three possible frequency bands:
 
 The Physical Layer works well even in low \textit{Signal-to-noise ratio} (\texttt{SNR}) environments, and it is able to work with a very low power consumption.
 In other words, it is less likely to misread a packet.
-\note{For example, the ``shouting'' of the preamble in B-MAC increases the SNR.}
+{\ns\note{For example, the ``shouting'' of the preamble in B-MAC increases the SNR.}}
 
 \note{\begin{itemize}
    \item \textbf{Data Service}
@@ -97,7 +97,7 @@ At the MAC layer there may be different network topologies:
       \includegraphics{images/802_p2p.png}
       \label{fig:802_p2p}
    \end{figure}
-   \item \textbf{Cluster-tree}: a coordinator communicates with other coordinators, which in turn communicate with other nodes.
+   % \item \textbf{Cluster-tree}: a coordinator communicates with other coordinators, which in turn communicate with other nodes.
 \end{itemize}
    
 \section{Channel Access}
@@ -138,7 +138,7 @@ It is divided into two parts:
       \item if the slot is busy the device shall wait for another random number of slots before
       trying again.
       \item If the channel is idle, the device can transmit
-      \item Once the transmission starts, the node keeps the medium until the end of the frame
+      \item Once the transmission starts, the \ul{node keeps the medium until the end of the frame}
    \end{itemize}
    \item (\ul{optional}) \textit{Contention Free Period} (\textbf{CFP}), which occupies the last time slots of the active period and is meant for low-latency applications or applications with specific data bandwidth.\\
    It is divided into \textit{Guaranteed Time Slots} (\textbf{GTS})
@@ -164,47 +164,53 @@ Data transfer from coordinators to end-devices is
 \subsection{Trasferring data}
 Data transfer may be of three types, and have different implementations for beacon and non-beacon enabled networks:
 \begin{enumerate}
-   \item End-device to coordinator (or router)
-   \item Coordinator (or router) to end-device
-   \item Peer to peer.
+   \item \textit{End-device to coordinator (or router)}
+   \item \textit{Coordinator (or router) to end-device}
+   \item \textit{Peer to peer.}
 \end{enumerate}
 
 \newpage
 \subsubsection{Beacon enabled}
 
 \begin{enumerate}
-   \item Data transfer from an end device to a coordinator:
+   \item \textit{Data transfer from an end device $\longrightarrow$ coordinator}:
    \begin{paracol}{2}
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics[width=0.6\columnwidth]{images/802_datatransfer_1.png}
+         \label{fig:802_datatransfer_1}
+      \end{figure}
       
+      \switchcolumn
+      \colfill
       \begin{enumerate}
          \item The end device first waits for the network beacon to synchronize with the superframe.
          \item If it owns a GTS it uses it without contention, otherwise it transmits the data frame to the coordinator using the slotted CSMA-CA protocol in one of the frames in the CAP period
          \item The coordinator may optionally send an acknowledgement
       \end{enumerate}
+      \colfill
 
-      \switchcolumn
-
+   \end{paracol}
+      \item \textit{Data transfer from a coordinator $\longrightarrow$ end device}:
+   \begin{paracol}{2}
+      \colfill
       \begin{figure}[htbp]
          \centering
-         \includegraphics[width=0.3\columnwidth]{images/802_datatransfer_1.png}
-         \label{fig:802_datatransfer_1}
+         \includegraphics[width=0.6\columnwidth]{images/802_datatransfer_2.png}
+         \label{fig:802_datatransfer_2}
       \end{figure}
-   \end{paracol}
-      \item Data transfer from a coordinator to an end device:
-   \begin{figure}[htbp]
-      \centering
-      \includegraphics[width=0.3\columnwidth]{images/802_datatransfer_2.png}
-      \label{fig:802_datatransfer_2}
-   \end{figure}
-
-   \begin{enumerate}
+      \colfill
+      \switchcolumn
+      
+      \begin{enumerate}
       \item The coordinator stores the message and signals that the message is pending in the beacon;
       \item The end-device sleeps most of the time and it occasionally listens to the beacon to check for pending messages, and it notices that there is one, it requests the message to the coordinator.
       \item The coordinator sends the pending message in a
       successive slot of the CAP
       \item The device sends a \textit{mandatory} acknowledgment frame in a successive time slot, so that the coordinator may remove the pending message from its list
    \end{enumerate}
-   \item Data transfer in Peer to peer:
+\end{paracol}
+   \item \textit{Data transfer in Peer to peer}:
    \begin{itemize}
       \item Between the coordinator (or a router) and an end-device one of the previous schemes is used.
       But this is not possible between two end-devices, because they cannot communicate directly.
@@ -217,39 +223,55 @@ Data transfer may be of three types, and have different implementations for beac
 \newpage
 \subsubsection{Non beacon-enabled}
 \begin{enumerate}
-   \item Data transfer from an end device to a coordinator:
-   \begin{figure}[htbp]
-      \centering
-      \includegraphics[width=0.3\columnwidth]{images/802_datatransfer_3.png}
-      \label{fig:802_datatransfer_3}
-   \end{figure}
-   \begin{itemize}
-      \item the end device simply transmits its data frame to the coordinator using unslotted CSMA-CA, assuming that the coordinator is always on.
-      \item The coordinator acknowledges the successful reception of the data by transmitting an \textit{optional} acknowledgment frame
-   \end{itemize}
-   \item Data transfer from a coordinator to an end device:
-   \begin{figure}[htbp]
-      \centering
-      \includegraphics[width=0.3\columnwidth]{images/802_datatransfer_4.png}
-      \label{fig:802_datatransfer_4}
-   \end{figure}
-   \begin{enumerate}
-      \item The coordinator stores the message and waits for
-      the device to request for the data.
-      \item A device can poll the coordinator for pending messages by transmitting a Data request (using unslotted CSMA-CA).
-      \item The coordinator send an ack for the request.
-      \item The coordinator transmits the pending message(s) to the devices.
-      \note{If none present, an empty message is sent}
-      \item The device sends an ack and the coordinator discards the sent messages. 
-   \end{enumerate}
-   \item Data transfer in Peer to peer:
+   \item \textit{Data transfer from an end device $\longrightarrow$ coordinator:}
+   \begin{paracol}{2}
+      \colfill
+      
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics[width=0.6\columnwidth]{images/802_datatransfer_3.png}
+         \label{fig:802_datatransfer_3}
+      \end{figure}
+      \colfill
+      \switchcolumn
+      \colfill
+      \begin{itemize}
+         \item the end device simply transmits its data frame to the coordinator using unslotted CSMA-CA, assuming that the coordinator is always on.
+         \item The coordinator acknowledges the successful reception of the data by transmitting an \textit{optional} acknowledgment frame
+      \end{itemize}
+      \colfill
+   \end{paracol}
+   \item \textit{Data transfer from a coordinator $\longrightarrow$ end device}:
+   \begin{paracol}{2}
+      \colfill
+      
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics[width=0.6\columnwidth]{images/802_datatransfer_4.png}
+         \label{fig:802_datatransfer_4}
+      \end{figure}
+      \colfill
+      \switchcolumn
+      \colfill
+      \begin{enumerate}
+         \item The coordinator stores the message and waits for
+         the device to request for the data.
+         \item A device can poll the coordinator for pending messages by transmitting a Data request (using unslotted CSMA-CA).
+         \item The coordinator send an ack for the request.
+         \item The coordinator transmits the pending message(s) to the devices.
+         \note{If none present, an empty message is sent}
+         \item The device sends an ack and the coordinator discards the sent messages. 
+      \end{enumerate}
+      \colfill
+   \end{paracol}
+   \item \textit{Data transfer in Peer to peer}:
    \begin{enumerate}
       \item Each device may communicate with every other device in its radio range
       \item The devices will need to remain always active or to synchronize with each other.
+      {\ns\note{Bad!}}
       \begin{itemize}
          \item In the first case the device can directly transmit the data.
-         \item In the latter case the devices synchronization is beyond the scope of
-         the IEEE 802.15.4 standard (it is left to the upper layers.
+         \item In the latter case the \ul{devices synchronization is beyond the scope of the IEEE 802.15.4 standard} (it is left to the upper layers.)
       \end{itemize}
    \end{enumerate}
 \end{enumerate}
@@ -272,16 +294,52 @@ The MAC layer also provides \textbf{Management services}:
    \item Other service
 \end{itemize}
 
+
+\subsection{Associating}
 Considering the \textbf{Associate Protocol} from the end-device perspective:
 it is invoked by a device willing to associate with a PAN that has already been identified by a preliminary execution of the SCAN service; this procedure thus applies to beacon-enabled networks.\\
 The protocol is fairly simple:
-\begin{enumerate}
-   \item The ASSOCIATE.request primitive is sent by the device and has as parameters:
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/802_associate.png}
+   \caption{Associate protocol in 802.15.4}
+   \label{fig:802_associate}
+\end{figure}
+
+\begin{paracol}{2}
    \begin{enumerate}
-      \item the PAN identifier
-      \item the coordinator address
-      \item the 64-bits extended IEEE address of the device
+      \item The ASSOCIATE.request primitive is sent by the device and has as parameters:
+      \begin{enumerate}
+         \item the PAN identifier
+         \item the coordinator address
+         \item the 64-bits extended IEEE address of the device
+      \end{enumerate}
+      Such request message is sent during the CAP using the slotted CSMA-CA protocol.\\
+      Since the device has not yet joined the network, it uses its MAC to send the message.
+      \item The coordinator answers with an \texttt{ACK}, which however doesn't mean that the device has joined the network.
+      \item The coordinator forwards the association request to the network layer, which in case of acceptance sends an \texttt{ASSOCIATE.response} primitive to the MAC layer, indicating both the MAC of the end-device and its ``associated'' \textit{16-bits address}.
+      \item After some predefined time, the end device requests the address, followed by an exchange of ACKs
+      \item Lastly the end-device MAC layer sends an \texttt{ASSOCIATE.confirm} primitive to the upper layer.
    \end{enumerate}
-   Such request message is sent during the CAP using the slotted CSMA-CA protocol.\\
-   Since the device has not yet joined the network, it uses its MAC to send the message.
-\end{enumerate}
+   
+   \switchcolumn
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/802_join.png}
+      \caption{The associate protocol takes place in the last part of the ZigBee network join process}
+      \label{fig:802_join}
+   \end{figure}
+   
+\end{paracol}
+
+\framedt{Security services}{
+   The MAC layer provides some security features:
+   \begin{itemize}
+      \item Access control through ACLs
+      \item Symmetric Data encryption using keys provided by upper layers
+      \item Frame integrity using the same keys of encryption
+      \item Sequential freshness of frames
+   \end{itemize}
+}

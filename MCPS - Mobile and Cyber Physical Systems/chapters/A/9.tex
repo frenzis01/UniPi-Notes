@@ -28,14 +28,14 @@ In general is not possible to program and compile code directly, or to control t
 }
 
 \section{Executable and SW organization}
-When a device starts it executes the \texttt{main} program, which first initializes device peripherals and then enters an infinite loop, implementing the functionalities of the device.
+When a device starts it executes the \texttt{main} program, which first initializes device peripherals using an \texttt{init} procedure and then enters an infinite \textbf{loop}, implementing the functionalities of the device.
 Such loop naturally defines a duty cycle, typically consisting of:
-\begin{itemize}
+{\ns\begin{itemize}
    \item Reading from transducers
    \item Taking a decision
    \item Controlling actuators
    \item Optionally communicating with other devices
-\end{itemize}
+\end{itemize}}
 
 At low-level, the code interacts with the device hardware by means of commands and interrupts. In conventional OSs insteads commands are available in terms of system calls, which are later handled by the OS.
 
@@ -73,7 +73,7 @@ this is the case of the \texttt{read handler} in the figure \ref{fig:tinyos_mode
 
 Arduino is an open-source electronics prototyping platform based on flexible, easy-to-use hardware and software. Its concept comprises the actual Device, the IDE, and the online Forum.
 
-It is now considered part of the IoT world, even though in its original design it was not meant to be connected to the internet, it was more \textsl{Internet-of-}``Things''.
+It is now considered part of the IoT world, even though in its original design it was not meant to be connected to the internet, it was more \st{Internet-of-}``Things''.
 
 
 \subsection{Interrupts}

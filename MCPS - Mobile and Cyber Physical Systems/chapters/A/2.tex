@@ -240,7 +240,19 @@ After \texttt{CONNECT} the publishers may send \texttt{PUBLISH} messages, which 
 There are also \texttt{UNSUBSCRIBE} and \texttt{UNSUBACK} messages which have a similar structure but are not described here.
 
 \section{Topics}
-TODO
+Topics are strings that are organized into a hierarchy
+of \textit{``topic levels''}, separated by a \textit{``\texttt{/}''} character.
+{\ns\note{Example: \texttt{home/firstfloor/bedroom/presence}}}
+Wildcard may be used in the topic levels:
+\begin{itemize}
+   \item \texttt{home/firstfloor/\textred{+}/presence}\\
+   Selects all presence sensors in all rooms of the first
+   floor
+   \item \texttt{home/firstfloor/\textred{\#}}\\
+   Selects all sensors in the first floor
+   \item Topics that begins with a ``\texttt{\textred{\$}}'' are reserved for internal statistics of MQTT;
+   There is no standardization on such topics, and cannot be published by clients
+\end{itemize}
 
 \section{QoS}
 The \textbf{QoS} is an agreement between the sender and the

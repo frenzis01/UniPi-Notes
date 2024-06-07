@@ -11,8 +11,8 @@ Note that the energy production varies with time and on environmental conditions
 this is an aspect typically out of the control of the designer.
 
 \begin{definition}[Energy Source]
-   Source of energy to be harvested
-   \note{Sun, wind, etc\dots}
+   {\ns Source of energy to be harvested
+   \note{Sun, wind, etc\dots}}
 \end{definition}
 
 \begin{definition}
@@ -36,23 +36,19 @@ this is an aspect typically out of the control of the designer.
 
 \begin{definition}
    [Harvesting System]
-
-   \begin{itemize}
-      \item A system that supports a variable load from a variable energy-harvesting source
-      \item \dots also when the instantaneous power supply levels from the harvesting source do not match the load.
-   \end{itemize}
+      A system that supports a variable load from a variable energy-harvesting source, also when the instantaneous power supply levels from the harvesting source do not match the load.
 \end{definition}
 
 \subsection{Takeaway}
 In theory, there are two main approaches:
-\begin{enumerate}
-   \item adapt the load to the actual energy supply
-   \item use an energy buffer
+{\ns\begin{enumerate}
+   \item \textbf{adapt the load} to the actual energy supply
+   \item use an \textbf{energy buffer}
    \note{i.e. a rechargeable battery or a
    supercapacitor}
-\end{enumerate}
+\end{enumerate}}
 
-However, in practice neither of these two approaches may be sufficient, since the load cannot be reduced arbirarily, and the buffer is not ideal (no infinite storage and eventually energy leaks).
+However, in practice \ul{neither of these two approaches may be sufficient}, since the load cannot be reduced arbirarily, and the buffer is not ideal (no infinite storage and eventually energy leaks).
 \newpage
 \section{Harvesting Architectures}
 \subsection{Harvest-use}
@@ -77,8 +73,6 @@ However, in practice neither of these two approaches may be sufficient, since th
 \end{paracol}
 
 The energy harvested, but not required by the device functioning is \textbf{wasted}.
-
-TODO modeling
 
 \subsection{Harvest-store-use}
 \begin{paracol}{2}
@@ -239,8 +233,8 @@ There are some wind turbines for IoT applications, which are:
    \colfill
    The energy production of a panel depends on several factors:
    \begin{itemize}
-      \item \textbf{Solar radiation}\\
-      \note{Depends on the angle drawn by the Sun with, respect to the vertical axis of the Earth surface,that depends on the geographical position of the panel, and on the day in the year; besides it also depends on the weather conditions.}
+      \item \textbf{Solar radiation}
+      {\ns\note{Depends on the angle drawn by the Sun with, respect to the vertical axis of the Earth surface,that depends on the geographical position of the panel, and on the day in the year; besides it also depends on the weather conditions.}}
       \item \textbf{Size of the panel}
       \item \textbf{Charging efficiency}
    \end{itemize}
@@ -337,6 +331,7 @@ to reduce the energy consumption.
 }
 
 Earlier on the goal was to maximize the device lifetime, but nowdays the standard approach is to obtain \ul{\textbf{energy neutrality},which is the ability of a device to keep the desired performance level ``forever''.} 
+\newpage
 
 \section{Energy neutrality}
 \begin{enumerate}
@@ -373,16 +368,16 @@ The key elements are
 Kansal considers the case of \ul{\textit{predictable} but \textit{uncontrollable} sources}.
 
 The objectives are three:
+{\ns
 \begin{enumerate}
-   \item keep the system energy neutral
-   \item ensure the system never fails due to energy depletion
-   \item maximize the node's performance
-\end{enumerate}
+   \item keep the system \textbf{energy neutral}
+   \item ensure the system \textbf{never fails} due to energy depletion
+   \item maximize the node's \textbf{performance}
+\end{enumerate}}
 and the approach to do so is to take current end expected battery charge into account and dynamically tune the device’s performance (and thus the load),
 so that the device \textit{neither} operates below minimum performance levels nor switches OFF before the next recharge cycle.
 
-% \newpage
-% \newpage
+\newpage
 
 \begin{paracol}{2}
    \begin{figure}[htbp]
@@ -392,11 +387,12 @@ so that the device \textit{neither} operates below minimum performance levels no
       \label{fig:kansal_1}
    \end{figure}
    \switchcolumn
+   \colfill
    \[E_T = \int_{T}P_S(t)dt\]
    $E_T$ is the amount of energy produced in a $[0,T]$ interval.
    By looking at the graph, we note/assume that for some $\rho_S,\sigma \in \mathbb{R}$
    \[\rho_S T - \sigma < E_T \leq \rho_S T + \sigma\] 
-
+   \colfill
 \end{paracol}
 
 \begin{paracol}{2}
@@ -407,11 +403,12 @@ so that the device \textit{neither} operates below minimum performance levels no
       \label{fig:kansal_2}
    \end{figure}
    \switchcolumn
+   \colfill
    \[L_T = \int_{T}P_C(t)dt\]
-   $E_T$ is the amount of energy produced in a $[0,T]$ interval.
-   By looking at the graph, we note/assume that for some $\rho_S,\sigma \in \mathbb{R}$
+   $L_T$ is the amount of energy consumed in a $[0,T]$ interval.
+   for some $\rho_S,\phi \in \mathbb{R}$
    \[0 < L_T \leq \rho_C T + \Sigma\] 
-
+   \colfill
 \end{paracol}
 
 \framedt{Kansal's theorem}{
@@ -438,19 +435,21 @@ Consider a system designed to detect the presence of intruders in a room.
    \item Above $dc_{max}$ it is useless to sample (the intruder is not that fast\dots)
 \end{itemize}
 
-This leads to an optimization problem where:
+{\ns This leads to an \textit{optimization problem} where:
 \begin{itemize}
-   \item The production varies over time (uncontrolled), but it is predictable (by assumption)
-   \item The load varies over time according to the duty cycle (controlled)
-   \item The battery charge varies over time accordingly
-\end{itemize}
+   \item The \textit{production varies} over time (uncontrolled), but it is \textit{predictable} (by assumption)
+   \item The \textit{load varies} over time according to the duty cycle (controlled)
+   \item The battery \textit{charge varies} over time accordingly
+   \item[] \note{The battery charge variation may be computed, using the ---controlled--- load and the forecasted energy production}
+\end{itemize}}
 \framed{
    Since the energy source is \textit{predictable} we have to find the load so that the \textit{system is energy \textbf{neutral}} and the overall \textit{\textbf{utility} is maximized}
 }
+\nl
 
-Kansal's approach to assign a duty cycle at each time slot (assuming time is slotted), does not requires the knowledge of the future production\footnote{However it may be available in some cases, such as weather forecasting}, but just an estimation, an it builds the cycle over three components:
+Kansal's approach to assign a duty cycle at each time slot (assuming time is slotted), does not require the knowledge of the future production\footnote{However it may be available in some cases, such as weather forecasting}, but just an \textit{estimation} based on previous observations, an it builds the cycle over three components:
 \begin{enumerate}
-   \item forecasts future power production based on past power production, using a \texttt{EWMA} (Exponentially Weighted Moving Average) filter (i.e. assumes the future production to be similar to the past day)
+   \item forecasts future power production based on past power production, using a \texttt{EWMA} (Exponentially Weighted Moving Average) filter\footnote{i.e. assumes the future production to be similar to the past day}
    \begin{equation}
       \tilde{p}^{j+1}_S(i) = \alpha \cdot\tilde{p}^j_S(i) + (1-\alpha)\cdot\tilde{p}^j_S(i)
    \end{equation}
@@ -461,20 +460,21 @@ Kansal's approach to assign a duty cycle at each time slot (assuming time is slo
 \end{enumerate}
 
 \framed{
-   $k$ number of time slots
-   $B(i)$ battery charge at the beginning of slot $i$
+   $k$ number of time slots\\
+   $B(i)$ battery charge at the beginning of slot $i$\\
    $B(k+1)$ battery level at the end of slot $k$ (i.e. at the end of the day)
+   \nl
    
    Based on the expected power production $\tilde{p}_S(i)$ at each slot $i \in [1,k]$, the algorithm assigns a duty cycle $dc(i)$ and hence a utility $u(i)$to each slot $i$,
    while requiring that $B(k+1)\geq B(1)$ i.e. that the system must be \textit{energy neutral}.
 }
 
 
-\textit{\ul{What about the number of time slots $k$?}} There is not a fixed number and there is not a method to determine the best one; three considerations may be done in regards to:
+\textit{\ul{What about the number of time slots $k$?}} There is not a fixed number and there is not a method to determine the best one; three considerations may be done in regards to it:
 
 \begin{enumerate}
    \item Too small implies a simpler model, but higher risk of error. Too large implies a possibly (not necessarily)more accurate model, but higher computational cost
-   \item It time slots are too small ($k$ is large) the signal output may present too many oscillations
+   \item If time slots are too small ($k$ is large) the signal output may present too many oscillations
    \note{Consider a device which every minute changes the sample rate: this may lead to a lot of oscillations in the signal output, resulting in more complicate data analysis}
    \item If time slots are too small, you may not be able to properly feed the estimation model, e.g. 1-minute slotting may not be significant to estimate the production of a solar panel
 \end{enumerate}
@@ -502,9 +502,13 @@ Even though the system functionality does not change, the implementation may cha
    data.
 \end{itemize}
 
-\newpage
-\begin{paracol}{2}
 
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/taskmodel.png}
+      \caption{Task based model architecture}
+      \label{fig:taskmodel}
+   \end{figure}
 
    We call \ul{\textbf{task} an implementation of the application in the IoT device.}
    We may achieve \textit{load modulation} by scheduling the tasks in execution; clearly, the server needs to know which task is running to behave accordingly.
@@ -512,14 +516,7 @@ Even though the system functionality does not change, the implementation may cha
    To each task we may associate a \textit{power consumption} and a \textit{utility}, allowing a dedicated \textit{task scheduler} component to properly choose the task to run in each \textbf{time slot}.
    
    \note{Kansal's time slotting goes nicely along with this architecture}
-   \switchcolumn
-   \begin{figure}[htbp]
-      \centering
-      \includegraphics{images/taskmodel.png}
-      \caption{Task based model architecture}
-      \label{fig:taskmodel}
-   \end{figure}
-\end{paracol}
+
 
 The scheduler must solve an \textbf{optimization problem} by means of linear programming, which is to maximize the utility of the tasks assigned to the slots:
 \begin{equation}

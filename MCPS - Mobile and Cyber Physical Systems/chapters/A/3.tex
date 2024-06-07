@@ -41,17 +41,19 @@ ZigBee is widely used in various fields from home automation to Mars exploration
    We may say that for each APO provides a ``functionality''.
    
    The ZDO is an applicative object that defines and maintaines the device behaviour in a ZigBee network.
-   \note{An example of this behaviour, is replying to a device discovery message. Such reply is handled by the ZDO}
+   {\ns\note{An example of this behaviour, is replying to a device discovery message. Such reply is handled by the ZDO}}
    The ZDO is provided by the third parties which are giving you the ZigBee stack.
    Manufacturers which produce devices compliant with ZigBee, sell them with a ZigBee stack already implemented, allowing for the buyer ---e.g. a company which develops ZigBee solutions--- to simply implement the ``functionalities'' (i.e. APOs) they want.
    \switchcolumn
 
+   \colfill
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/zigbee_architecture.png}
       \caption{Zigbee architecture layers}
       \label{fig:zigbee_architecture}
    \end{figure}
+   \colfill
 \end{paracol}
 
 \section{Primitives}
@@ -252,7 +254,7 @@ The \textbf{group management} provides services to build and maintain groups of 
 This in general is not performed on low-end RFD devices.}
 
 \section{Binding}
-Addresses are indirect, allowing to implicitly specify the destination of messages, which are no longer routed based on a pair $\langle destination endpoint, destination network address \rangle$ (\textit{direct addressing}), but binding tables and address maps are used instead.
+Addresses are indirect, allowing to implicitly specify the destination of messages, which are no longer routed based on a pair $\langle \textit{destination endpoint}, \textit{destination network address} \rangle$ (\textit{direct addressing}), but binding tables and address maps are used instead.
 
 This is one of the key functions of the ZigBee Transport Layer, and is performed by the \textit{APS}.
 
@@ -271,7 +273,7 @@ updates its internal tables to preserve the bindings.
 \end{figure}
 
 \subsection{APS - Binding}
-We assume that typically the binding is performed by an admin who is ---physically--- deploying network nodes. 
+We assume that typically the \ul{binding is performed by an admin who is ---physically--- deploying network nodes}. 
 \labelitemize{\textit{Primitives}}{
    \begin{itemize}
       \item \texttt{BIND.request}\\
@@ -281,6 +283,7 @@ We assume that typically the binding is performed by an admin who is ---physical
       binding table.
    \end{itemize}
 }
+
 The binding table associates sources and destinations based on MAC addresses, and is stored in the APS of the ZigBee coordinator (and/or of the routers); it gets updated on explicit request of the ZDO in the routers or in the
 coordinator, and is usually initialised at the network deployment.
 In general, it is \textit{static}.
@@ -366,45 +369,143 @@ ZigBee developers are expected to use the ZCL to find relevant cluster functiona
    \item Facilitate maintainability
 \end{itemize}
 
-A cluster is a collection of commands and attributes, which define an
-interface to a specific functionality of a device.
-Clusters refer to functional domains within the respective profile.\\
-The ZCL forsees a Client-Server model.
-\begin{itemize}
-   \item The device that \textit{stores} the attributes is the \textit{server} of the cluster
-   \item The device that \textit{manipulates} the attributes is the \textit{client} of the cluster
-\end{itemize}
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/zigbee_functionaldomains.png}
-   \caption{Functional domains}
-   \label{fig:zigbee_functionaldomains}
-\end{figure}
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/zigbee_functionaldomains.png}
+      \caption{Functional domains}
+      \label{fig:zigbee_functionaldomains}
+   \end{figure}
+   \switchcolumn
+   A \textbf{cluster} is a collection of \textbf{commands} and \textbf{attributes}, which define an
+   interface to a specific functionality of a device.
+   Clusters refer to \textit{functional domains} within the respective profile.\\
+   The ZCL forsees a Client-Server model.
+   \begin{itemize}
+      \item The device that \textit{stores} the attributes is the \textit{server} of the cluster
+      \item The device that \textit{manipulates} the attributes is the \textit{client} of the cluster
+   \end{itemize}
+\end{paracol}
 
-TODO integrate some slides
 
-ZCL is built to allow combining simpler clusters into more complex ones, providing a hierarchical approach to define device functionalities.
+\begin{paracol}{2}
 
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/zigbee_zclcombining.png}
-   \caption{ZCL Hierarchical approach}
-   \label{fig:zigbee_zclcombining}
-\end{figure}
-
-\begin{figure}[htbp]
-   \centering
-   \begin{tikzpicture}
-      \node[draw=white,align=left] (S) at (1.5,3) {Sensor};
-      \node[draw=white,align=left] (T) at (0,0) {Thermostat};
-      \node[draw=white,align=left] (H) at (3,0) {Heating};
-      \node[draw=white,align=left] (E) at (5,1.5) {Heating};
-      
-      \path [->] (S) edge node[left] {\tiny \textit{Temp/Humidity}} (T);
-      \path [->] (T) edge node[left] {\tiny \textit{Set Attributes}} (H);
-      % \path [->] (H) edge node[left] {} (S);
-   \end{tikzpicture}
    
-   \caption{Heating System - exercise 2 Schema}
-   \label{fig:zigbee_heatingsystem}
+   {\ns\textit{Commands} are in a format specified by the ZCL, and are used to manipulate the attributes or for dynamic attribute reporting of a cluster; more specifically:
+   \begin{itemize}
+      \item Read/write
+      \item Configure reporting
+      \item Discover attributes
+   \end{itemize}}
+   
+   ZCL is built to allow combining simpler clusters into more complex ones, providing a hierarchical approach to define device functionalities.
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/zigbee_attributes.png}
+      \caption{ZigBee basic device cluster attributes}
+      \label{fig:zigbee_attributes}
+   \end{figure}
+\end{paracol}
+
+\begin{figure}[htbp]
+      \centering
+      \includegraphics{images/zigbee_zclcombining.png}
+      \caption{ZCL Hierarchical approach, and combining clusters to exploit existing functionalities}
+      \label{fig:zigbee_zclcombining}
 \end{figure}
+
+\subsection{Indoor Localization}
+\begin{itemize}
+   \item Remote positioning\\
+   A mobile device sends radio beacons to a network of anchors which estimate its positioning.
+   \item Self positioning\\
+   A network of fixed anchors sends radio beacons to a mobile device which estimates its own position.
+   
+\end{itemize}
+
+\subsection{Exploiting ZigBee and ZCL for real applications}
+Manufacturers of ZigBee-compliant HW platform usually provide
+the ZigBee stack (with also the ZDO) and the ZigBee Cluster
+libraries.
+Starting from this, the manufacturer of a ZigBee solution builds its
+devices, possibly adding the necessary hardware (e.g. transducers),
+and implementing the rest of the SW and configuration
+\begin{itemize}
+   \item  For each device decide its role in the network (coordinator, router,end-device) and configure it accordingly (either by SW or by tools)
+   \item For each device: implement the APO.
+   \begin{itemize}
+      \item An APO implements the ``businness logic'' of the device
+      \item If it is compliant with the ZCL it will also be interoperable with devices of other manufacturers
+   \end{itemize}
+\end{itemize}
+
+\section{Security}
+Security services provided for ZigBee include methods for:
+\begin{itemize}
+   \item key establishment,
+   \item key transport,
+   \item frame protection,
+   \item device management.
+\end{itemize}
+These services form the building blocks for implementing
+security policies within a ZigBee device.
+
+\subsection{Keys}
+The problem of security is that some important assumptions, aside from that security protocols are correctly implemented and that keys are securely stored, have to be made regarding the \textbf{keying material};
+There must be trust in its secure initialization and installation, as well as in its secure processing and storage of keying material.\\
+However, due to the low cost of ZigBee devices, \ul{one cannot generally assume the availability of \textit{tamper resistant hardware}}.
+Hence, physical access to a device may yield access to secret keying
+material and other privileged information, as well as access to the
+security software and hardware.
+
+Another problem is that APOs in the same device are not logically separated and lower layers are entirely accessible to the application layer; hence different APO in the same device must trust each other.
+
+\subsubsection{Key Establishment}
+\begin{itemize}
+   \item 128-bit \textbf{Network} key (shared by all devices):
+   \begin{itemize}
+      \item acquired either by key-transport or pre-installation
+      \item two types of network keys: standard, and high-security
+   \end{itemize}
+   \item 128-bit \textbf{Link} keys (shared by two devices):
+   \begin{itemize}
+      \item acquired either by key-transport, key-establishment, or pre-installation
+      \item If key establishment is used, it is based on a pre-existing master key
+      \item two types of link keys: global or unique
+      \item A default global key serves to connect to the network trust center
+   \end{itemize}
+   \item 128-bit \textbf{Master} key:
+   \begin{itemize}
+      \item used only to implement key establishment protocols
+      \item acquired either by key-transport or pre-installation
+      plus other keys to implement the secure transport of key material
+      \item derived from the link key with one-way functions
+   \end{itemize}
+\end{itemize}
+
+\subsection{Trust Center}
+The Trust Center is the device trusted by devices within
+a network, there shall be exactly one, and exactly one has to be recognized by all members of the network.
+It distributes keys (key transport) for the purpose of
+network and end-to-end application configuration
+management.
+
+% \begin{figure}[htbp]
+%    \centering
+%    \begin{tikzpicture}
+%       \node[draw=white,align=left] (S) at (1.5,3) {Sensor};
+%       \node[draw=white,align=left] (T) at (0,0) {Thermostat};
+%       \node[draw=white,align=left] (H) at (3,0) {Heating};
+%       \node[draw=white,align=left] (E) at (5,1.5) {Heating};
+      
+%       \path [->] (S) edge node[left] {\tiny \textit{Temp/Humidity}} (T);
+%       \path [->] (T) edge node[left] {\tiny \textit{Set Attributes}} (H);
+%       % \path [->] (H) edge node[left] {} (S);
+%    \end{tikzpicture}
+   
+%    \caption{Heating System - exercise 2 Schema}
+%    \label{fig:zigbee_heatingsystem}
+% \end{figure}
