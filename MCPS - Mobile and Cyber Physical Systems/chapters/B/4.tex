@@ -19,7 +19,7 @@ SDN is often referred to as a ``radical new idea of networking''. It has been ma
    \note{This is the most critical aspect}
 \end{enumerate}
 
-\section{Traffic Patterns}
+\section{Motivations and Traffic Patterns}
 Modern distributed applications typically access multiple databases and servers that
 must communicate with each other, creating a lot of
 \textit{``horizontal''} traffic between servers ---in addition to the \textit{``vertical''} client/server one--- which was initially neglectable, but now it is not.
@@ -28,7 +28,12 @@ Unified communications (UC) services are increasingly used within enterprises. M
 information, voice, mobility, audio, web and video traffic, must be \textit{integrated} into a unique service
 delivery platform
 
-TODO
+Increasing use of cloud shifted traffic relegated in enterprise networks to remote clouds, causing unpredictable loads on enterprise routers.
+
+Server virtualization, now a common practice, besides increasing the number of virtual machines (VMs) on a single physical server and corresponding communications, brings east-west traffic due to migration and remote storage access.
+
+Summing up, up to $70\%$ of traffic in datacenters is now East West, and traditional three-tier \textit{access-aggregation-core} network architecture no longer fits the bandwidth traffic requirements.
+
 
 \section{Layering}
 Layering, as it is applied in TCP/IP stack, implies decomposing delivery into fundamental components, allowing independent but compatible innovation at each layer; it revealed itself to be pretty successful, however, \ul{many issues reside in the \textit{Network Control/Management Plane}}.
@@ -43,18 +48,22 @@ SDN helps providing some abstraction through a centralized view of the network.
    \note{Data Plane}
    \item \textbf{Routing} determine route taken by packets from
    source to destination
-   \note{Control Plane}
+   \note{Control Plane\\
+   Traditionally it was implemented \textit{per-router}, with SDN instead is \textit{logically centralized}}
 \end{itemize}
 
-These are the two key tasks. In Fig. a comparison between the tradional and the SDN approaches.
+These are the two key tasks. In Fig. \ref{fig:sdn_planes} a comparison between the tradional and the SDN approaches.
 \begin{figure}[htbp]
    \centering
    \includegraphics[width=0.45\columnwidth]{images/sdn_planes1.png}
    \includegraphics[width=0.45\columnwidth]{images/sdn_planes2.png}
    \caption{Traditional vs SDN}
    \label{fig:sdn_planes}
-\end{figure}
+   \end{figure}
+In Internet early days, \textbf{resiliency} was a key issue, so the network was designed to be decentralized and distributed, with data and control tightly coupled and embedded in the same ---routers--- networking devices.\\
+However, this design does not allow to arbitrarily choose the traffic paths with ease: the only way to do so is to change the link weights, and waiting for a recomputation of the routing tables, which is somewhat far from being considered ``control''.
 
+\section{SDN Architecture}
 \begin{paracol}{2}
    \textbf{Data-plane switches} are fast, simple, commodity switches implementing generalized data-plane forwarding in hardware, and generally provide API for table-based switch control, e.g. \texttt{OpenFlow}.
 
@@ -72,10 +81,22 @@ These are the two key tasks. In Fig. a comparison between the tradional and the 
 \end{paracol}
 
 \newpage
-\section{Data Plane}
+\subsection{Data Plane}
 Resource or infrastructure layer providing a \textit{Forwarding Abstraction} made up of \textbf{forwarding devices} ---without embedded software to make autonomous decisions--- which perform the transport and processing of data according to decisions made by the SDN control plane.
 
-Inside the routers there is an \textbf{OpenFlow} \textbf{flow\footnotemark[1] table}.
+\begin{paracol}{2}
+   
+   Inside the routers there is an \textbf{OpenFlow} \textbf{flow\footnotemark[1] table}.
+   The pattern implemented is called \ul{\textit{``match+action''}} and is used to define the rules for packet processing. FOr each packet bits are analysed and compared to the rules in the flow table, when a match is found, the corresponding action is taken.
+   \switchcolumn
+   \begin{figure}[htbp]
+   \centering
+   \includegraphics{images/openflow_table.png}
+   \caption{OpenFlow table}
+   \label{fig:openflow_table}
+   \end{figure}
+\end{paracol}
+
 \begin{paracol}{2}
    Some simple forwarding rules are defined:
    \begin{itemize}
