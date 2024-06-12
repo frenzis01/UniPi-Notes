@@ -86,8 +86,10 @@ Resource or infrastructure layer providing a \textit{Forwarding Abstraction} mad
 
 \begin{paracol}{2}
    
+   \colfill
    Inside the routers there is an \textbf{OpenFlow} \textbf{flow\footnotemark[1] table}.
    The pattern implemented is called \ul{\textit{``match+action''}} and is used to define the rules for packet processing. FOr each packet bits are analysed and compared to the rules in the flow table, when a match is found, the corresponding action is taken.
+   \colfill
    \switchcolumn
    \begin{figure}[htbp]
    \centering
@@ -98,6 +100,7 @@ Resource or infrastructure layer providing a \textit{Forwarding Abstraction} mad
 \end{paracol}
 
 \begin{paracol}{2}
+   \colfill
    Some simple forwarding rules are defined:
    \begin{itemize}
       \item \textit{Match}:
@@ -109,6 +112,7 @@ Resource or infrastructure layer providing a \textit{Forwarding Abstraction} mad
       \item \textit{Counters}:
       Typically used for \texttt{\#bytes} and \texttt{\#packets}   
    \end{itemize}
+   \colfill
 
    \switchcolumn
    \begin{figure}[htbp]
@@ -117,7 +121,7 @@ Resource or infrastructure layer providing a \textit{Forwarding Abstraction} mad
       \includegraphics{images/openflow_rulesexamples1.png}
       \caption{OpenFlow rules examples}
       \label{fig:openflow_rulesexamples}
-   \end{figure}
+   \end{figure}to enable the
 \end{paracol}
 
 \footnotetext[1]{Defined by \textit{link}, \textit{network} and \textit{transport} layer fields}
@@ -138,12 +142,11 @@ Data Plane Network devices support, alongside the abovementioned rule-based form
    \caption{OpenFlow switch}
    \label{fig:openflow_switch}
 \end{figure}
-Through OpenFlow, the controller can add, update, and delete flow
-entries in tables, both reactively (in response to packets) and
-proactively.
+Through OpenFlow, the controller can add, update, and delete flowentries in tables, both reactively (in response to packets) and proactively.
 
 A switch is made up of one or multiple pipelined flow tables, possibly allowing for considerable flexibility.
 Instructions performed on a packet may explicitly direct it to another flow table (\texttt{Goto} instruction) and so on, until it is formwarded to an output port.
+A packet may also be redirected to controller, enabling it to define a new flow for that and similar packets, or decide to drop the packet
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/openflow_switchtables.png}
@@ -184,7 +187,28 @@ The Openflow protocol operates between acontroller and switches using TCP (optio
    \end{enumerate}
    \item Symmetric (misc.)
 \end{enumerate} 
-\note{ortunately, network operators don’t “program” switches by creating/sending OpenFlow messages directly; they use instead use higher-level abstraction at controller.}
+\note{Fortunately, network operators don't ``program'' switches by creating/sending OpenFlow messages directly; they use instead use higher-level abstraction at controller.}
+
+\subsection{Link Failure scenario}
+\begin{paracol}{2}
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/sdn_linkdown.png}
+      \caption{S1 loses the link (not displayed) with S2}
+      \label{fig:sdn_linkdown}
+      \end{figure}
+   \switchcolumn
+   \begin{enumerate}
+      \item S1 detects link failure and uses OpenFlow port status message to notify controller.
+      \item SDN controller receives OpenFlow message, and updates link status info.
+      \item Dijkstra's routing algorithm gets called in this case
+      \item The algorithm accesses enetwork graph info, link state info in controller, and computes new routes.
+      \item Link state routing app interacts with flow-table-computation component in SDN controller, which computes the new flow tables for switches.
+      \item The controller sends OpenFlow messages to install new tables in switches that need updating.
+   \end{enumerate}   
+   \end{paracol}
+
 
 \section{Topology discovery and forwarding in the SDNs}
 \subsection{Routing}
@@ -202,10 +226,11 @@ The centralized routing application performes two tasks
    \begin{itemize}
       \item Maintains the topology information for the network
       \item calculates routes in the network (the shortest path between two data plane
-      nodes or between a data plane node and a hos
+      nodes or between a data plane node and a host)
    \end{itemize}
 \end{itemize}
 
+\subsection{Topology Discovery}
 Every OF switch has initially set the IP address and TCP port of a controller to establish a connection as soon as the device is turned on; it also has preinstalled flow rules to route directly to the controller via a Packet-In message any message of the \textbf{Link Layer Discovery Protocol (LLDP)}, which is a neighbor discovery protocol of a single jump, i.e. it advertises its identity and capabilities and receives the same information from the adjacent switches.
 \note{
    LLDP is vendor neutral and works at layer 2, using \textit{Ethernet} as ``transport'' protocol.
@@ -213,6 +238,24 @@ Every OF switch has initially set the IP address and TCP port of a controller to
 
 Switches send the LLDP messages (\textit{``frames''}) ---periodically at a given interval of time--- to discover the underlying topology by request of the controller.
 
+\subsubsection{LLDP message content}
+\begin{itemize}
+   \item \texttt{Chassis ID}: identifier of switch sending the packet
+   \item \texttt{Port ID}: identifier of the port through which the LLDP packet is sent
+   \item \texttt{TTL}: time in seconds during which the information received in the LLDP
+   packet is going to be valid.
+   \item End of \texttt{LLDPDU}: indicates the end of the payload in the LLDP frame
+\end{itemize}
+
+\subsubsection{Discovery process}
+\begin{enumerate}
+   \item The controller generates a Packet-Out message per active port on each switch discovered on the network and encapsulates a LLDP packet inside each generated message.
+   \item When an OF switch receives a LLDP message sent by the controller, it forwards the message by the appropriate Port ID included in the message to adjacent switches
+   \item Upon receiving the messages by a port that is not the controller port, the adjacent switches encapsulate the packet within a Packet-In message addressed to the controller. Metadata is included in the message such as Switch ID, Port ID where the LLDP packet is received, among others
+   \item When the packet comes back to the controller from an adjacent switch, the controller extracts this information, and then it knows a link exists between those switches
+   \note{Switch ID and Port ID in the LLDP message and Switch ID and Port ID in metadata}
+\end{enumerate}
+\ul{This process is repeated for each switch.}
 
 \section{Google B4 WAN}
 There are two \textbf{backend backbones}, \texttt{B2} carrying internet facing traffic, and \texttt{B4} moving inter-datacenter traffic; the latter has grown a lot in the recent years.

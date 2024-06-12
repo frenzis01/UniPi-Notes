@@ -10,24 +10,18 @@ In typical enterprise networks, there aren't only servers and switches, but also
 \ul{NFV is about moving these functions to software, so they can be run on commodity hardware.
 }
 
-NFV is one (the?) way to address these
-challenges by leveraging virtualization
-technologies. 
-The main idea is \textbf{decoupling} physical network
-equipment from the functions that run on them, with network functions provided as \textbf{plain software}.
+NFV is one (the?) way to address these challenges by leveraging virtualization technologies. 
+The main idea is \textbf{decoupling} physical network equipment from the functions that run on them, with network functions provided as \textbf{plain software}.
 
-A Network service can be decomposed into a set of
-Virtual Network Functions (VNFs).
-VNFs may then be relocated and instantiated at
-different network locations without requiring to buy
-and install new hardware.
+A Network service can be decomposed into a set of \textbf{Virtual Network Functions} (\texttt{VNF}s).
+VNFs may then be relocated and instantiated at different network locations without requiring to buy and install new hardware.
 
 One of the key points is to \textbf{reduce costs}. Two types of costs are involved:
 \begin{itemize}
    \item \textbf{CAPEX} (Capital Expenditure): the cost of buying the hardware.
    This is reduced by buying general purpose hardware instead of specialized one.
    \item \textbf{OPEX} (Operational Expenditure): the cost of managing the hardware.
-   Acquired by reducing the number of devices to manage.
+   Reduced by reducing the number of devices to manage.
 \end{itemize}
 
 Performance is also a concern, as the software implementation may be slower than the hardware one. However, the performance of commodity hardware is increasing, and the software can be optimized to run on it.
@@ -70,6 +64,15 @@ Nodes running VNFs are called \textbf{Points of Presence} (\textit{PoPs}) and ar
    \label{fig:VNF_service}
 \end{figure}
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/vnf_fullarch.png}
+   \caption{VNF more complete example}
+   As displayed in figure a single PoP may run multiple VNFs.
+   Logical links between VNFs may be managed using SDN, and must be backed by physical links in the underlying network infrastructure.
+   \label{fig:vnf_fullarch}
+\end{figure}
+
 \section{NFV Architectural Framework}
 \begin{figure}[htbp]
    \centering
@@ -80,21 +83,11 @@ Nodes running VNFs are called \textbf{Points of Presence} (\textit{PoPs}) and ar
 
 \begin{itemize}
    \item \textbf{NFV} infrastructure (NFVI)\\
-   Comprises the hardware and
-   software resources that create
-   the environment in which VNFs
-   are deployed.
+   Comprises the hardware and software resources that create the environment in which VNFs are deployed.
    \item \textbf{VNF}\\ 
-   The collection of VNF
-   implemented in software to run
-   on virtual computing, storage,
-   and networking resources.
-   NFV management and
-   \item \textbf{Orchestration} (NFV-MANO)\\
-   Framework for the management
-   and orchestration of all
-   resources in the NFV
-   environment.
+   The collection of VNF implemented in software to run on virtual computing, storage, and networking resources.
+   \item \textbf{NFV management} and \textbf{Orchestration} (NFV-MANO)\\
+   Framework for the management and orchestration of all resources in the NFV environment.
 \end{itemize}
 
 \begin{figure}[htbp]

@@ -1,4 +1,4 @@
-\section{Signals}
+\chapter{Signals}
 
 \begin{definition}[Signal]
    A signal is a real function of time
@@ -14,6 +14,7 @@
 \section{Signal types}
 \begin{paracol}{2}
    
+   \colfill
    \begin{definition}[Continuous-time signal]
       A signal is continuous-time (also known as analog signals) if it is defined for all real numbers.
       The domain thus $\mathcal{D}$ is the set of real numbers $\mathbb{R}$\\
@@ -23,19 +24,20 @@
       amplitude signals
       AKA quantized signals
    \end{definition}
+   \colfill
 
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/signals_continuous.png}
+      \includegraphics[width=0.4\columnwidth]{images/signals_continuous.png}
       \caption{Continous signals}
       \label{fig:signals_continuous}
    \end{figure}
 \end{paracol}
 
 \begin{paracol}{2}
-   
+   \colfill   
    \begin{definition}[Discrete-time signal]
       A signal is discrete-time if it is defined only at discrete times.\\
       The domain $\mathcal{D}$ is the set of integers $\mathbb{Z}_T$,
@@ -48,11 +50,12 @@
       A text is an example of a symbolic signal.
       
    \end{definition}
+   \colfill
 
    \switchcolumn
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/signals_discrete.png}
+      \includegraphics[width=0.4\columnwidth]{images/signals_discrete.png}
       \caption{Discrete signals}
       \label{fig:signals_discrete}
    \end{figure}
@@ -193,7 +196,7 @@ The Fourier series has a base represented by a set of functions
    \phi_n(t) , n \in \mathbb{Z}
 \]
 This set of functions must be orthogonal (as in the case of decomposition of vectors in a vector space)
-
+\newpage
 \begin{definition}[Fourier series]
    Given a continuous signal $s(t) : \mathbb{R} \rightarrow \mathbb{R}$, periodic in the interval $[-\pi, \pi]$ its Fourier
    series is defined as:
@@ -207,6 +210,8 @@ This set of functions must be orthogonal (as in the case of decomposition of vec
 
 It is rather complicate to assess the conditions under which an arbitrary $s(t)$ can be developed in a Fourier series, in particular necessary conditions are \textit{not} known; however, there are sufficient conditions:
 \begin{theorem}[Dirichlet]
+   
+   \nl
    \begin{enumerate}
       \item $s(t)$ is periodic
       \item $s(t)$ is piecewise continuous

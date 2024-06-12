@@ -162,7 +162,7 @@ message. Since such message may be lost, the broker answers with a \texttt{CONNE
       \begin{itemize}
          \item Clean Session
          \begin{itemize}
-            \item Set to \texttt{FALSE} if the client requests a \textbf{persistent session}, allowing for session resuming and better QoS (storing missed messages).
+            \item Set to \texttt{FALSE} if the client requests a \textbf{persistent session}, allowing for session resuming and better QoS (storing \ul{missed messages with QoS 1,2 not 0!}).
          \end{itemize}
          \item Username/Password
          \begin{itemize}

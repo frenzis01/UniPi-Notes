@@ -83,9 +83,10 @@ to better understand this point, look at the following figure, consider that at 
 \end{enumerate}
 
 Basically, a transmitting node sends a \textit{Request to Send} \texttt{RTS} and a receiving node answers with \textit{Clear to Send} \texttt{CTS}.
-Other nodes which hear \texttt{RTS} or \texttt{CTS} \ul{must stay silent until the transmission is over}.
+Other nodes which hear \texttt{CTS} \ul{must stay silent until the transmission is over}.
+Hearing \texttt{RTS} instead does not imply to stay silent, i.e. hearing a \texttt{RTS} does not forbid to transmit stuff to other nodes.
 
-\note{Further details and examples on how the protocol works are on the slides.}
+\note{\ul{Further details and examples on how the protocol works are on the slides.}}
 \nl
 
 \textbf{MACAW} implements some improvements to MACA:
