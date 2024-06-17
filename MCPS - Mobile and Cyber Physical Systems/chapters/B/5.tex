@@ -74,13 +74,19 @@ Nodes running VNFs are called \textbf{Points of Presence} (\textit{PoPs}) and ar
 \end{figure}
 
 \section{NFV Architectural Framework}
-\begin{figure}[htbp]
-   \centering
+
+\colfill
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
    \includegraphics{images/NFV_architecture.png}
    \caption{NFV Architecture}
    \label{fig:NFV_architecture}
 \end{figure}
+\colfill
 
+\switchcolumn
+\colfill
 \begin{itemize}
    \item \textbf{NFV} infrastructure (NFVI)\\
    Comprises the hardware and software resources that create the environment in which VNFs are deployed.
@@ -89,23 +95,32 @@ Nodes running VNFs are called \textbf{Points of Presence} (\textit{PoPs}) and ar
    \item \textbf{NFV management} and \textbf{Orchestration} (NFV-MANO)\\
    Framework for the management and orchestration of all resources in the NFV environment.
 \end{itemize}
+\colfill
+\end{paracol}
 
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/NFV_infr.png}
-   \caption{NFV Infrastructure}
-   \label{fig:NFV_infr}
-\end{figure}
-The NFV infrastructure is the typical hardware plus virtual machines managed by a hypervisor.
-The three domains depicted in Fig. \ref{fig:NFV_infr} are:
-\begin{itemize}
-   \item \textbf{Compute Domain}\\
-   Provides commercial off-the- shelf (COTS) high-volume servers and storage.
-   \item \textbf{Hypervisor Domain}\\
-   Mediates the resources of the compute domain to the VMs (today also Containers) of the software appliances, providing an abstraction of the hardware.
-   \item \textbf{Infrastructure Network Domain}\\
-   Comprises all the generic high volume switches interconnected into a network that can be configured to supply network services
-\end{itemize}
+\begin{paracol}{2}
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/NFV_infr.png}
+      \caption{NFV Infrastructure}
+      \label{fig:NFV_infr}
+   \end{figure}
+   \colfill
+   \switchcolumn
+   \colfill
+   The NFV infrastructure is the typical hardware plus virtual machines managed by a hypervisor.
+   The three domains depicted in Fig. \ref{fig:NFV_infr} are:
+   \begin{itemize}
+      \item \textbf{Compute Domain}\\
+      Provides commercial off-the- shelf (COTS) high-volume servers and storage.
+      \item \textbf{Hypervisor Domain}\\
+      Mediates the resources of the compute domain to the VMs (today also Containers) of the software appliances, providing an abstraction of the hardware.
+      \item \textbf{Infrastructure Network Domain}\\
+      Comprises all the generic high volume switches interconnected into a network that can be configured to supply network services
+   \end{itemize}
+   \colfill
+\end{paracol}
 
 \subsection{vSwitch - Case study}
 \textbf{Virtual Switches} provide connectivity between \textit{Virtual Interfaces} (VIFs) and the \textit{Physical Interfaces} (PIFs), and also handle traffic between VIFs located on the same host.\\

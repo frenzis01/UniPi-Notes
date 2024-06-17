@@ -67,7 +67,7 @@ However, this design does not allow to arbitrarily choose the traffic paths with
 \begin{paracol}{2}
    \textbf{Data-plane switches} are fast, simple, commodity switches implementing generalized data-plane forwarding in hardware, and generally provide API for table-based switch control, e.g. \texttt{OpenFlow}.
 
-   \textbf{SDN controller} (network OS) maintain network state information and interacts with network control applications ``above'' via northbound API, and with switches using ``below'' via southbound API.
+   \textbf{SDN controller} (network OS) maintain network state information and interacts with network control applications ``above'' via \textit{northbound} API, and with switches using ``below'' via \textit{southbound} API (\texttt{OpenFlow}).
    They are implemented as distributed system for performance, scalability, fault-tolerance, robustness.
 
    \textbf{Network-control apps} are ``brains'' of control, they implement control functions using lower-level services. They are \textit{unbundled}, meaning that they may be provided by a $3^{rd}$ party different from routing vendor or SDN controller
@@ -88,7 +88,7 @@ Resource or infrastructure layer providing a \textit{Forwarding Abstraction} mad
    
    \colfill
    Inside the routers there is an \textbf{OpenFlow} \textbf{flow\footnotemark[1] table}.
-   The pattern implemented is called \ul{\textit{``match+action''}} and is used to define the rules for packet processing. FOr each packet bits are analysed and compared to the rules in the flow table, when a match is found, the corresponding action is taken.
+   The pattern implemented is called \ul{\textit{``match+action''}} and is used to define the rules for packet processing. For each packet bits are analysed and compared to the rules in the flow table, when a match is found, the corresponding action is taken.
    \colfill
    \switchcolumn
    \begin{figure}[htbp]
@@ -162,7 +162,7 @@ A packet may also be redirected to controller, enabling it to define a new flow 
    \caption{Inside an OpenFlow controller}
    \label{fig:openflow_controllerinside}
 \end{figure}
-The Openflow protocol operates between acontroller and switches using TCP (optional encryption). There are three classes of OpenFlow messages:
+The Openflow protocol operates between a controller and switches using TCP (optional encryption). There are three classes of OpenFlow messages:
 \begin{enumerate}
    \item Controller-to-switch
    \begin{enumerate}

@@ -187,11 +187,11 @@ This approach overcomes the inefficiency of the indirect routing, but it require
    \end{figure}
    \switchcolumn
    \begin{enumerate}
-      \setcounter{enumi}{5}
+      \setcounter{enumi}{4}
       \item Target BS informs the MME that it is the new serving BS for the mobile device, which in turn informs the SGW to update the path to the mobile device.
       \item Now target BS sends an \texttt{ACK} to the source BS, which can release resources and stop forwarding packets.
       \begin{itemize}
-         \item Shouldn't the target BS wait for an ACK by the MME?
+         \item \note{Shouldn't the target BS wait for an ACK by the MME?}
       \end{itemize}
       \item Datagrams now flow through the new channel from target BS to SGW.
    \end{enumerate}

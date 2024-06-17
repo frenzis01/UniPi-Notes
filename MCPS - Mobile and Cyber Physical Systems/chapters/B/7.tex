@@ -148,7 +148,7 @@ However, sampling and quantization introduce a further distortion of the analog 
    
    A continuous signal $s(t): \mathbb{R} \rightarrow \mathbb{R}$ is periodic with period $T$ if
    $s(t) = s(t + T) \quad \forall t \in \mathbb{R}$.\\
-   Example: $\sin(nt)$ and $\cos(nt)$ are periodic with period $T = 2\pi n$ for all $n \in \mathbb{Z}$
+   Example: $\sin(nt)$ and $\cos(nt)$ are periodic with period $T = \nicefrac{2\pi}{n}$ for all $n \in \mathbb{Z}$
    Non-periodic signals are called aperiodic.
 
    Periodic signals can be studied in the period $[0, T]$ since their behavior remains the same in all its domain of existence.\\
@@ -310,7 +310,7 @@ The Fourier series is usually expressed in the complex number domain, to represe
 The \textbf{base of Fourier} is the set of functions:
 \begin{equation}
    % \phi_n(t) = e^{j\frac{2\pi n}{T}t}
-   e^{j2\pi n F t} \forall n \in \mathbb{Z}
+   e^{j2\pi n F t} \quad\forall n \in \mathbb{Z}
 \end{equation}
 Considering also the definition of the exponential $e^{x + jy}$, we get the last equation:
 \begin{align}
@@ -364,9 +364,9 @@ $S_n$ may be also represented using the Euler's exponential, with the first term
 
 \section{From FT to Discrete FT}
 \note{Non ho capito molto di questa cosa}
-In the field of digital signal processing, signals and spectra are processed only in sampled form.
+In the field of digital signal processing, signals and spectrum are processed only in sampled form.
 \begin{itemize}
-   \item We have a signal s known only at a finite number instants separated by sample times (i.e. a finite sequence of data)
+   \item We have a signal $s$ known only at a finite number instants separated by sample times (i.e. a finite sequence of data)
    \item We want to compute a finite number of samples of the Fourier Transform so that\dots
    \item Discrete-time data sets are converted into a finite discrete-frequency representation
 \end{itemize}
