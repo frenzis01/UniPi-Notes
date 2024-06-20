@@ -1,15 +1,27 @@
 \input{../preamble.tex}
-
+% \setlength\cftsectionnumwidth{4em} % uncomment to see difference
 \title{Mobile and Cyber Physical Systems - Appunti}
 \author{Francesco Lorenzoni}
 \date{February 2024}
 
-\begin{document}
+% \usepackage{tocloft}
+% % Adjust the spacing in the table of contents
+% \cftsetpnumwidth{8em} % Width of the box containing the section numbers
+% \cftsetrmarg{8em}     % Right margin
 
+\setcounter{minitocdepth}{4}
+\mtcsettitle{parttoc}{Contents of this Part} % Set the title for the part TOC
+
+\begin{document}
+% \dominitoc
+\doparttoc[n]
 \maketitle
 \tableofcontents
+% \addtocontents{toc}{\setlength{\cftsecnumwidth}{4em}}
 \include{chapters/0}
 \part{Stefano Chessa}
+% \minitoc
+\parttoc
 \include{chapters/A/1}
 \include{chapters/A/2}
 \include{chapters/A/3}
@@ -26,6 +38,9 @@
 \include{chapters/A/Bluetooth}
 
 \part{Federica Paganelli}
+% \minitoc
+\parttoc
+% \parttoc
 \include{chapters/B/1}
 \include{chapters/B/2}
 \include{chapters/B/3}
@@ -34,5 +49,11 @@
 \include{chapters/B/6}
 \include{chapters/B/7}
 
+\part{Exam Questions\\[\bigskipamount] 
+\large Francesco Lorenzoni\\Emiliano Sescu}
+% \minitoc
+\parttoc
+\include{chapters/C/rispostechessa}
+\include{chapters/C/rispostepaganelli}
 
 \end{document}

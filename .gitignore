@@ -5,5 +5,8 @@
 *.out
 *.synctex.gz
 *.toc
+*.mtc*
+*.ptc*
+*.maf
 ignore
 ICT-INFR - ICT Infrastructures/ICT_Infrastructures.pdf
