@@ -115,6 +115,7 @@ Possible lookup algorithms are the following, but they all are not very scalable
    \includegraphics{images/flooding_unstructured.png}
    \caption{Flooding search in unstructured overlay}
    Messages have a \textit{TTL} to limit the number of hops when propagating, but also a \textit{unique identifier} to detect cycles.
+   Once the result is found it may be transferred using a direct HTTP connection.
 
    \note{Flooding is not only for searching, but also to \ul{propagate transactions in the
    P2P network underlying a \textbf{blockchain}}}
@@ -129,7 +130,7 @@ Possible lookup algorithms are the following, but they all are not very scalable
    \includegraphics[width=0.45\columnwidth]{images/expandingring2.png}
    \includegraphics[width=0.45\columnwidth]{images/expandingring4.png}
    \caption{Expanding ring/Iterative Deepening}
-   This tecnique consists in repeated flooding with an increasing TTL, implementing a BFS search.
+   This tecnique consists in repeated flooding towards ---possibly restricted to a subset of randomly selected--- neighbors with an increasing TTL, implementing a BFS search.
    \label{fig:expandingring}
 \end{figure}
 
@@ -145,31 +146,41 @@ Possible lookup algorithms are the following, but they all are not very scalable
    Note that only one successor node is chosen at each step.\\
    The path is bounded by a TTL.
 \end{figure}
-Random walk avoids and exponential increase in the amount of messages, which becomes an issue for vastly populated networks.\\
+Random walk avoids the exponential increase in the amount of messages common in flooding, which becomes an issue for vastly populated networks.\\
 Paths can be stopped by a TTL but also by checking periodically with the destination wether the stop condition has been met.\\
 A querying node can also bias its walks towards high-degree nodes: higher probability to choose the highest degree neighbor.
 
 \subsection{Structured overlays}
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/structured_overleay.png}
-   \caption{Structured overleay}
-   \label{fig:structured_overleay}
-\end{figure}
-The choice of the neighbours is defined according to a given criteria, resulting in a \textbf{structured} overlay network.\\
-The goal is to guarantee scalability by providing:
-\begin{itemize}
-   \item \textit{key-based lookup}
-   \item  information lookup has a given \textit{complexity} e.g. $\mathcal{O}(log N)$
-\end{itemize}
-
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/structured_overleay.png}
+      \caption{Structured overleay}
+      \label{fig:structured_overleay}
+   \end{figure}
+   \switchcolumn
+   The choice of the neighbours is defined according to a given criteria, resulting in a \textbf{structured} overlay network.\\
+   The goal is to guarantee scalability by providing:
+   \begin{itemize}
+      \item \textit{key-based lookup}
+      \item  information lookup has a given \textit{complexity} e.g. $\mathcal{O}(log N)$
+   \end{itemize}
+   
+   DHT based solutions, such as \texttt{Chord}, \texttt{Pastry}, \texttt{Kademlia} are examples of structured overlays.
+\end{paracol}
+   
 \subsection{Hierarchical overlays}
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/hierarchical_overlay.png}
-   \caption{Hierarchical overlay}
+\begin{paracol}{2}
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/hierarchical_overlay.png}
+      \caption{Hierarchical overlay}
    \label{fig:hierarchical_overlay}
 \end{figure}
+
+\switchcolumn
+
 Peers connect to \textbf{Super-Peers} which know (\textit{``index''}) Peer resources.
 The flooding is restricted to Super-Peers, but still allowing for resources to be directly exchanged between the peers.
 
@@ -177,6 +188,7 @@ Lookup complexity is less and the scalability is improved, but there is a \ul{lo
 
 \note{In some cases ---such as Gnutella--- peers are ``\textit{self-promoted}'' to super-peers, while in others they are statically defined.}
 
+\end{paracol}
 \subsection{Summary}
 \begin{figure}[htbp]
    \centering
