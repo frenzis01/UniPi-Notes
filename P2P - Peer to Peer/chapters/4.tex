@@ -81,24 +81,34 @@ when a peer receives a piece, it becomes the seeder of that piece.
       allowing to require retransmission in case the check fails.\\
       Pieces size got adapted to have a reasonably small .torrent file
 }
-Pieces are then split in \textbf{subpieces} (\textit{\textbf{blocks}}) of 16KB, with each one downloadable from a different peer, optimizing the bandwith and allowing \textit{pipelining}, decreasing the overall download time.
+\ul{Pieces are then split in \textbf{subpieces} (\textit{\textbf{blocks}}) of 16KB}, with each one downloadable from a different peer, optimizing the bandwith and allowing \textit{pipelining}, decreasing the overall download time.
+Pieces are the smaller units of retransmission, and are checked using a SHA-1 hash once all of its blocks are downloaded.
 
-Trackers keep a database of swarms identified by torrent hash, and knows also the state of each peer in each swarm.
+\ul{\textbf{Trackers} keep a database of swarms identified by torrent hash, and knows also the state of each peer in each swarm}.
 In the last versions, \textbf{trackerless} BitTorrent uses \textit{Kademlia DHT} to avoid the centralization point of the tracker.
 
 \section{Pieces selection}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/bittorrent_policy.png}
+   \caption{BitTorrent policies over time}
+   \label{fig:bittorrent_policy}
+\end{figure}
 The order in which pieces are selected by different peers is critical for good performance, to avoid making peers end up stuck with the same pieces.
 \labelitemize{\textit{Policies}}{
    \begin{itemize}
       \item \textbf{Strict Priority}\\
-      Complete the ``assembling'' of a piece before asking for another piece
+      \ul{Complete the ``assembling'' of a piece before asking for another piece}.
       \item \textbf{Rarest First}\\
-      Download the rarest pieces first
+      \ul{Download the rarest pieces first}.
+      Allowed since the peers have a local view of the availability of each piece. Acquiring rare pieces means that many peers will be interested in them, increasing the download speed for the peer owning them (``tit-for-tat'' approach).
       \item \textbf{Random First Piece}\\
-      Choose a random piece ---only--- in the bootstrap phase
+      \ul{Choose a random piece ---only--- in the bootstrap phase}.
+      Used because peers need to acquire a piece ASAP to start negotiating with other peers, i.e. downloading remaining pieces
       \item \textbf{Endgame}\\
-      When the file download is almost terminated, the remaining pieces are required in \textit{parallel} to all peers who own them.
-      This policy is executed for a small period of time
+      \ul{When the file download is almost terminated, the remaining pieces are required in \textit{parallel} to all peers who own them}.
+      This policy is executed for a small period of time.
+      It is used because typically most downloads slow down when the file is almost complete.
    \end{itemize}
 }
 
