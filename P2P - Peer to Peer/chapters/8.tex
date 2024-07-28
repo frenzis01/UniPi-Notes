@@ -2,10 +2,9 @@
 
 Recall that the \textbf{distributed consesus} is a procedure to reach a common agreement in a distributed or decentralized multi-agent system;
 it must ensure correct results even in presence of faulty nodes, network partitioning and byzantine faults\footnote{Nodes behaving maliciously}.
-
 \note{Even though it is difficult to classify the method used by Bitcoin to achieve decentralization from a theoretical point of view, it works in practice.
 
-\textit{``...is not purely technical, but it’s a combination of technical methods and clever incentive engineering.''}
+\textit{``...is not purely technical, but it's a combination of technical methods and clever incentive engineering.''}
 }
 
 \section{Competing}
@@ -93,7 +92,7 @@ The system is resistant to Sybil attacks because the PoW is a scarce resource, a
 Email spam may be prevented through a PoW by adding a post stamp to each email message, and the receiver may decide to accept the message only if the PoW is valid.}
 
 \subsection{Block propagation and incentives}
-\paragraph*{Block propagation}
+\paragraph{Block propagation}
 The mined block is broadcasted on the network, and each node receiving the block verifies that the PoW has been solved by hashing the block header and checking that the hash is less than the target.
 It is easy to verify, without centralization points.\\
 After the verification, the node adds the block to the blockchain and kicks out any conflicting transaction from \texttt{MemPool}.

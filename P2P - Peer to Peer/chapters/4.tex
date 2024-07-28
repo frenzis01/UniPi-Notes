@@ -115,10 +115,11 @@ The order in which pieces are selected by different peers is critical for good p
 \subsection{Free Riders}
 Free riders in BitTorrent are peers that do not put their bandwidth at disposal of the community.\\
 Several non official BitTorrent clients enable the user to limit the upload bandwidth as they like.
+The performance of the whole network relies on the \ul{cooperative behavior of the peers}, making free riders a problem.
 
-However, an approach to solve this problem is based on \textbf{reciprocity}, allowing a client to obtain a good service if and only if it gives a good service to the community, by exploiting a dynamic strategy based on connection monitoring called ``Tit for Tat'', implemented using \textbf{choking}:\\
+An approach to address this issue is based on \textbf{reciprocity}, allowing a client to obtain a good service if and only if it gives a good service to the community, by exploiting a dynamic strategy based on connection monitoring called ``Tit for Tat'', implemented using \textbf{choking}:\\
 choking means \textit{temporarily} refusing to upload to another peer, but still downloading from them;  
-the principle is to upload to peers who have uploaded to us.
+the principle is to upload to peers who have uploaded to us, so each peer, periodically, evaluates for each neighbor  the \textit{upload rate} and the \textit{download rate}, and decides a fixed number of neighbors to \textit{choke} (and \textit{unchoke}, see)
 
 \labelitemize{\textit{Choking}}{
 \begin{center}
@@ -128,7 +129,7 @@ the principle is to upload to peers who have uploaded to us.
       \item The remote peer \textit{unchoked} the local peer
    \end{itemize}
 \end{center}
-   }
+}
 
 Choking only peers that upload the most to the local peers would lead to ignoring peers that recently join the network
 and to the lack of discovery of connections actually better than the used ones.\\
@@ -143,12 +144,36 @@ For \textit{seeders} this schema does clearly not apply, since they do not have 
 \ul{unchoke peers with the highest upload rate}, ensuring that pieces get uploaded and replicated faster.
 
 \section{DHT and BitTorrent}
-Kademlia is the protocol used by the largest public DHTs.
-Bittorrent Inc. introduces its own DHT, called \textit{Mainline DHT}.
-With respect to Kademlia there are some improvements concerning 
+Even though a tracker requires very little resources, it is still a single point of failure, and a potential bottleneck for the system, besides it may be target of several\footnote{Not only cyber, also \textit{legal} ones} attacks.
+
+To address this problem, Bittorrent Inc. introduces its own DHT, called \textit{Mainline DHT},
+based on Kademlia, but with some improvements concerning 
 \begin{itemize}
    \item Routing table management
    \item Look-up
 \end{itemize}
-
 The main purpose of Mainline DHT is to provide a “trackerless” peer discovery mechanism to locate peers belonging to a swarm.
+
+The DHT acts as a distributed tracker, and stores the content's infohash (\textit{key}) and the list of peers in the swarm (\textit{value}).
+Each node implements both the DHT and the BitTorrent protocol.
+
+The protocol provides four messages:
+\begin{enumerate}
+   \item \texttt{PING} to check if a node is available
+   \item \texttt{FIND\_PEER(target\_id)} to find the node closest to a given ID
+   \item \texttt{ANNOUNCE\_PEER} to announce that a peer is part of a swarm
+   \item \texttt{GET\_PEERS(infohash)} to find the peers in a swarm
+\end{enumerate}
+
+\begin{paracol}{2}
+   The DHT is exploited just as a regular DHT, where the value to seek is the list of seeders for a given infohash.
+   \texttt{Alice} asks its neighbors if they know the seeders for an infohash (tracker info for the infohash), and if they do not, they ask their neighbors, and so on;
+   When \texttt{Alice} receives from node \texttt{15} the info that node \texttt{4} is a seeder for the infohash, they will connect to node \texttt{4} to download the file.
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/bittorrent_dht.png}
+      \caption{\texttt{15} has tracking information for the pink (\texttt{14}) content, so it returns info about all the peers providing the file: in this case, only \texttt{Joe} with \texttt{ID 4}}
+      \label{fig:}
+   \end{figure}
+\end{paracol}
