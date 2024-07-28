@@ -5,14 +5,19 @@
 \end{definition}
 
 \subsection{Hash functions and collisions}
-Non-crypto hash functions have low collision probability, but still for an adversary specifically looking to produce one, it may be easy to succeed.\\
+Non-crypto hash functions have low collision probability, but for an adversary specifically looking to produce one, it may be easy to succeed.\\
 For example, the \textit{Cyclic Redundancy Check} (\texttt{CRC}) ---which essentially is the remainder in a long division calculation--- was long mistakenly used where instead crypto integrity was required.
 Even if it is unlinkely to generate a collision using random errors, it is reasonably easy for an adversary to find one. 
 
 Note that \ul{collisions \textit{always} exist}, because the codomain is always smaller than the domain of the function.
+\note{The pigeonhole principle states that if $n$ pigeons are put into $m$ pigeonholes, with $n > m$, then at least one pigeonhole must contain two or more pigeons.}
 The term \textbf{hash security} refers to how hard is to \textit{find} a collision for a given hash function.
 
-
+\framedt{Birthday Paradox}{
+   A hash function $H$ has $n$ possible outputs, so $2^n$ possible inputs.\\
+   If $H$ is applied to $k$ inputs, in order to have the probability of a collision greater than $1/2$, $k$ must be greater than $\sqrt{2^n} = 2^{n/2}$.
+   This is known as the \textbf{birthday paradox}.
+}
 \subsection{Cryptographic Hash functions}
 Two main properties must hold for an HF to be cryptographic:
 \begin{enumerate}
@@ -23,18 +28,17 @@ Two main properties must hold for an HF to be cryptographic:
 These are formalized as:
 \begin{enumerate}
    \item \textit{Pre-image} resistance\\
-   $\forall y \in Y. \textit{hard to find } x \in X s.t. h(x) = y$
+   $\forall y \in Y. \textit{ hard to find } x \in X\ |\ h(x) = y$
    \note{\textit{``one-way function''}}
    \item \textit{Second pre-image} resistance
-   $\textit{given } x \in X, y = h(x). \textit{hard to find } x' \in X s.t. h(x') = y$
+   $\textit{given } x \in X, y = h(x). \textit{ hard to find } x' \in X\ |\ h(x') = y$
    \note{Also called \textit{\ul{weak} collision resistance}}  
    \item \textit{Collision} resistance
-   $\textit{Hard to find} x_1,x_2 \in X. x_1 \neq x_2 \wedge h(x_1) = h(x_2)$
+   $\textit{Hard to find } x_1,x_2 \in X. x_1 \neq x_2 \wedge h(x_1) = h(x_2)$
    \note{Also called \textit{\ul{strong} collision resistance}}
+   Given a $m-bit$ hash function, the attacker needs about $2^{m/2}$ brute force computation to find a collision, as stated by the birthday paradox.
 \end{enumerate}
 
-Given a $m-bit$ hash function, the attacker needs $2^{m/2}$ brute force computation to
-find a collision.
 
 \subsection{Hiding and Puzzles}
 For cryptocurrencies and blockchains also \textbf{hiding} and \textbf{puzzle-friendliness} are required.
@@ -43,6 +47,16 @@ a hash function $H$ is said to be hiding when a secret value $R$ is chosen from
 a probability distribution that has high min-entropy, then, given  $H(R || x)$, it is infeasible to find $x$
 \end{definition}
 \nl
+
+\framedt{Commit and Reveal} {
+   \begin{enumerate}
+      \item Alice commits to a value $x$ by sending $H(x)$ to Bob
+      \item Alice reveals $x$ to Bob
+      \item Bob checks that $H(x)$ matches the commitment
+   \end{enumerate}
+   Basically the commitment is a \textit{hash} of the value, and the value is revealed after the hash is sent.
+   Suppose you have to remotely play Rock-Paper-Scissors: you can both commit to your choice by sending the hash of it, and then reveal them at the same time, resulting in a fair game. 
+}
 
 A hash/search puzzle consists of:
 \begin{itemize}
@@ -54,7 +68,7 @@ A hash/search puzzle consists of:
 \end{itemize}
 Bitcoin \textit{Proof of Work} (\textbf{PoW}) is based on a hash/search puzzle.
 \begin{definition}[Puzzle friendliness]
-   H is said to be puzzle friendly if:
+   $H$ is said to be puzzle friendly if:
    \begin{itemize}
       \item For every possible n-bit output value $y$, if $k$ is chosen from a distribution with high min entropy, then it is \ul{infeasible to find $x$ such that $H(k || x) = y$ in time significantly less than $2^n$}.
    \end{itemize}
@@ -70,7 +84,7 @@ Puzzle-friendly property implies that
    $H(x)$ may be used as a checksum value
    \item \textbf{DHT}s
    \item \textbf{Digital Signature}\\
-   Hash functions are widely used for public-key aymmetric algorithms, for ensuring both confidentaliaty and message integrity, by appending a \textbf{digest} to the message.
+   Hash functions are widely used for public-key aymmetric algorithms, for ensuring both \textit{confidentaliaty} and message \textit{integrity} (and \textit{authentication}), by appending a \textbf{digest} to the message.
    \note{Recall that without a \textit{digital certificate} proving the identity of the sender, only ``weak authentication'' is provided;
    without one, a third party may impersonate someone else.} 
    The major challenge for digital signatures is to prevent adversaries from learning how to sign messages by analysing the verification-key.
@@ -90,13 +104,16 @@ Puzzle-friendly property implies that
       $1$ & $k \textit{ \ul{may be} in } S$  
    \end{cases*}   
 \end{equation}
-The probability of false positives is
+Given $n$ elements mapped on $m$ bits through $k$ hash functions, the probability of false positives is
 \begin{equation*}
    p' = \left( 1 - \frac{1}{m}\right) ^{kn} \approx e^{-kn/m}
 \end{equation*}
 
 A common use of BFs is to perform the \textbf{intersection} between them.
-They are used by Ethereum, Google, and Bitcoin.
+It is possible to compute also the \textbf{union} of two BFs, by computing the Bitwise OR of the two BFs.
+\textbf{Delete} operation is not possible, but it is possible to use a \textit{Counting Bloom Filter} to keep track of the number of times an element has been inserted, and increment or decrement the counter accordingly.
+
+Bloom Filters are used by Ethereum, Google, and Bitcoin.
 
 \subsection{Merkle Hash Table}
 \begin{paracol}{2}
