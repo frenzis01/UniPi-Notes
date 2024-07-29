@@ -115,10 +115,10 @@ It is possible to compute also the \textbf{union} of two BFs, by computing the B
 
 Bloom Filters are used by Ethereum, Google, and Bitcoin.
 
-\subsection{Merkle Hash Table}
+\subsection{Merkle Hash Tree}
 \begin{paracol}{2}
    It is a data structure summarizing a big quantity of data, with the goal of verifying the correctness of the content.
-   A \textbf{Merkle Hash Table} consists of a complete binary tree of hashes built starting from an initial set of data:
+   A \textbf{Merkle Hash Tree} consists of a complete binary tree of hashes built starting from an initial set of data:
    \begin{itemize}
       \item $i^{th}$ leaf stores the hash $h_i$ of $f_i$ 
       \item An internal node contains the concatenation of the hashes of the sons of the node
@@ -152,6 +152,9 @@ if the proof verification had yielded the same hash but with a different \st{fil
 $f'_i\neq f_i$ as the $i^{th}$ input, this would yield a collision in the underlying hash function
 $H$ used to build the tree; but such a collision is not possible if $H$ is collision resistant.
 
+The reason to build a Merkle tree is to avoid sending the whole tree to the verifier, but only the path from the leaf to the root, which is logarithmic ($log n$) in the number of leaves.
+I case of thousands of leaves, the proof is much shorter than the tree itself.
+
 \subsubsection*{Enlightening Example - Cloud File Integrity}
 \begin{figure}[htbp]
    \centering
@@ -178,7 +181,7 @@ Dropbox can provide ---along with the file--- a portion of the original Merkle T
    }
    
    This is very space consuming since every node stores a label. 
-   The trie may be compressed by storing only the first different prefixes\footnotemark[1]  in the nodes, resulting in an equivalent \textbf{Patricia Trie}.
+   The trie may be compressed by storing only the first different prefixes\footnotemark[1]  in the nodes, resulting in an equivalent \textbf{Patricia Trie}, shown in the second figure.
    \colfill
    \switchcolumn
    
@@ -190,4 +193,29 @@ Dropbox can provide ---along with the file--- a portion of the original Merkle T
       \label{fig:trie}
    \end{figure}
 \end{paracol}
+
+\subsection{Patricia Merkle Trie}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/patriciaMerkle.png}
+   \caption{Patricia Merkle \textit{key-value} Trie}
+   \label{fig:patriciaMerkle}
+\end{figure}
+A \textbf{Patricia Merkle Trie} is a combination of a Merkle Tree and a Patricia Trie, introduced by Ethereum.
+
+A trie can be used to store a set of key-value pairs, where the key is a string and the value is either a pointer to another child (or node), or the value itself, in case of a leaf node.
+
+In Ethereum the Patricia Merkle Trie is used to store the state of the blockchain, where the \ul{key} is the address of
+\begin{enumerate}
+   \item an \textit{account} and the \ul{value} is the account \textit{balance}.
+   \item a \textit{transaction} and the \ul{value} is the \textit{transferred amount}.
+\end{enumerate}
+
+Since the nodes of such tree are multi-element, and hash functions are instead applied to strings, some sort of \textbf{serialization} is applied:
+\begin{itemize}
+   \item \texttt{HP} - \texttt{Hex Prefix Encoding} for the keys
+   \item \texttt{RLP} - \texttt{Recursive Length Prefix Encoding} for the values (which may be \textit{structured data})
+\end{itemize}
+
 \footnotetext[1]{Actually also only the first different character should be ok, if I recall corecctly from Algorithm Engineering course}
