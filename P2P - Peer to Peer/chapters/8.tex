@@ -9,30 +9,45 @@ it must ensure correct results even in presence of faulty nodes, network partiti
 
 \section{Competing}
 Every node holds a \texttt{MemPool} containing all Bitcoin transactions awaiting confirmation.
-Conflicts may happen there, not in the ledger.
+\ul{\textit{Conflicts} may happen there, not in the ledger}.
 In case a node receives a double-spending transaction, it will keep the first one and discard the second one.\\
 Nodes try to get transactions into the ledger, and \textbf{compete} to do so.
 Nakamoto consesus is implemented like a ``lottery'' where the winner gets to add a block ---of valid transactions--- to the blockchain, and to send its neighbours the updated ledger. The process of competing to add transactions to the blockchain is called \textbf{mining}.
 
 \subsection{Mining}
 Mining process starts with filling a candidate block with transactions taken
-from the memory pool, and then building a block header (1000 times smaller than the block);
+from the memory pool (\texttt{MemPool}), and then building a block header (1000 times smaller than the block);
 finally the node performs the Proof of Work.\\
 So, while a single transaction may be built by anyone, blocks are built by miners, and include multiple transactions and the header.
 
-The block header contains:
-\begin{itemize}
-   \item Version
-   \item Timestamp
-   \item \texttt{mhash} The Merkle root of the transactions in the block
-   \note{Merkle tree is not explicitly represented in the block, it is built on demand}
-   \item \texttt{hashprev} The hash of the previous block
-   \item PoW related fields:
+\begin{paracol}{2}
+   \ns
+   The block header contains:
    \begin{itemize}
-      \item Target
-      \item Nonce
+      \item Version
+      \item Timestamp
+      \item \texttt{mhash} The Merkle \ul{root} of the transactions in the block
+      \note{Merkle tree is not explicitly represented in the block, it is built on demand.\\
+      Any change to a transaction results in a change of \texttt{mhash}, consequently in a change of the hash of the whole block.}
+      \item \texttt{hashprev} The hash of the previous block header, and a hash pointer to the previous block
+      \item PoW related fields:
+      \begin{itemize}
+         \item Target
+         \item Nonce
+      \end{itemize}
    \end{itemize}
-\end{itemize}
+   \switchcolumn
+
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/bitcoin_blockheader.png}
+      % \caption{}
+      \label{fig:bitcoin_blockheader}
+   \end{figure}
+   \colfill
+
+\end{paracol}
 
 \framedt{Mining}{
    \begin{enumerate}
@@ -44,7 +59,7 @@ The block header contains:
          \item Hash the block header including the \texttt{nonce}
       \end{enumerate}
    \end{enumerate}
-   Target acts as threshold, and represents the number of leading zeros the hash must have.
+   \textbf{Target} acts as \textit{threshold}, and represents the \ul{number of leading zeros the hash must have}.
    The nonce is 32 bit long, and even a slight increment on it changes the whole hash result.
 }
 
@@ -92,12 +107,12 @@ The system is resistant to Sybil attacks because the PoW is a scarce resource, a
 Email spam may be prevented through a PoW by adding a post stamp to each email message, and the receiver may decide to accept the message only if the PoW is valid.}
 
 \subsection{Block propagation and incentives}
-\paragraph{Block propagation}
+\subsubsection{Block propagation}
 The mined block is broadcasted on the network, and each node receiving the block verifies that the PoW has been solved by hashing the block header and checking that the hash is less than the target.
 It is easy to verify, without centralization points.\\
 After the verification, the node adds the block to the blockchain and kicks out any conflicting transaction from \texttt{MemPool}.
 
-\paragraph{Incentives}
+\subsubsection{Incentives}
 There are two mechanisms to incentivize the miners to be honest:
 \begin{enumerate}
    \item \textbf{Block reward}:
