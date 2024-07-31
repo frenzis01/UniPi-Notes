@@ -22,10 +22,11 @@ counterparty.}
 
 
    \item \textit{Opening a Lightning Channel}:
-   Let's say Alice wants to pay Bob with Bitcoin. To establish a payment channel, Alice or Bob (or both) must deposit Bitcoin into a 2-of-2 multi-signature (multisig) wallet2. This is like opening a tab at a bar. You pay some money upfront, and then you can make many transactions (buying drinks) without having to reach for your wallet each time.
+   Let's say Alice wants to pay Bob with Bitcoin. To establish a payment channel, Alice or Bob (or both) must deposit Bitcoin into a 2-of-2 multi-signature (\texttt{multisig}) wallet. This is like opening a tab at a bar. You pay some money upfront, and then you can make many transactions (buying drinks) without having to reach for your wallet each time.
+   So Alice sends some money to the multisignature wallet upfront.
 
    \item \textit{Transacting in the Lightning Channel}:
-   Now that there is funding available, Alice can send the payment to Bob2. These transactions happen off-chain, meaning they don't need to be recorded on the Bitcoin blockchain. This allows for faster and cheaper transactions.
+   Now that there is funding available, Alice can send the payment to Bob. These transactions happen off-chain, meaning they don't need to be recorded on the Bitcoin blockchain. This allows for faster and cheaper transactions.
    Both of them have a signed copy of the latest state of the channel.
 
    \item \textit{Closing the Lightning Channel}:
@@ -33,8 +34,21 @@ counterparty.}
 
 \end{enumerate}
 
+In case Bob disappears after Alcie has funded the multi-sig address, Alice can get back her funds in 30 days\footnote{such delay is introduced to prevent other scams}.
+
+\framedt{Example}{
+   \begin{enumerate}
+      \item Alice funds the channel with 100 BTC, and Bob with 0 BTC.
+      \item Alice sends 10 BTC to Bob, and the channel state is updated with a transaction moving from the escrow contract 90 BTC to Alice and 10 BTC to Bob.
+      \item Alice sends 5 BTC to Bob, and the channel state is updated with a transaction moving from the escrow contract 85 BTC to Alice and 15 BTC to Bob.
+      \item Bob sends 3 BTC to Alice, and the channel state is updated with a transaction moving from the escrow contract 88 BTC to Alice and 12 BTC to Bob.
+      \item The channel is closed, and \ul{only the last transaction} (final state) \ul{is settled on the blockchain}.
+   \end{enumerate}
+
+}
+
 \section{Punishing cheaters}
-The first issue is that m\ul{id-transactions are valid even in case there are newer ones}.
+The first issue is that \ul{mid-transactions are valid even in case there are newer ones}.
 There is no way for thr Lightning network to guarantee to rip up older transactions when a new one is created.
 The current workaround is based on \textbf{punishment}:
 \begin{itemize}
@@ -56,27 +70,46 @@ This is used in case multiple channels are involved in a transaction, to ensure 
    \label{fig:lightning_HTLC1}
 \end{figure}
 
-In this scenario, Alice wants to pay Dave, but they don't have a direct channel.
+In this scenario, Alice wants to pay Dave, but they don't have a direct channel, and if for some reason she doesn't want to create a new one, she may exploit existing channels to reach Dave.
+\note{To better understand how this works, go back to Fig. \ref{fig:bitcoin_htlc} and read the explanation.}
 \begin{enumerate}
-   \item Dave generates a secret R and sends H = hash(R) to Alice.
-   \item Alice sends a \textit{hash-locked} payment to Bob, with the condition that Bob can redeem the funds only if he knows R.
+   \item Dave generates a secret $R$ and sends $H = hash(R)$ to Alice.
+   \item Alice sends a \textit{hash-locked} payment to Bob, with the condition that Bob can redeem the funds only if he knows $R$.
    \item Each node generates a \textit{hash-locked} payment to the next node, with the same condition.
-   \item Dave redeems the payment by revealing R to Carol, who reveals R to Bob, who reveals R to Alice.
-   \item When Alice knows R, she knows that every node in the path has been paid.
+   \item Dave redeems the payment by revealing $R$ to Carol, who reveals $R$ to Bob, who reveals $R$ to Alice.
+   \item When Alice knows $R$, she knows that every node in the path has been paid.
 \end{enumerate}
 
-The \textit{time-locked} part of the contract is used to ensure that Dave propagates R when he receives its Bitcoin within a certain time frame, if he doesn't the funds are refunded to the transferor.
+\framedt{Propagating $R$}{
+   Why does the secret $R$ have to be propagated back? From the moment Dave publishes it, shouldn't it be accessible to all the nodes in the path?
+   
+   I think that the reason may be hidden in the ``onion-like'' routing schema, which forsees a layer of encryption for each node in the path. In this way, the secret $R$ is not visible to the nodes in the path, and it must be propagated back to the sender.
+   In this way the sender knows that the payment has been completed and that each node in the path has received the BTC,
+   furthermore, anonimity is ensured, every node knows only the previous and the next one.
+   }
+
+The \textit{time-locked} part of the contract is used to ensure that Dave propagates $R$ when he receives its Bitcoin within a certain time frame, if he doesn't the funds are refunded to the transferor.
 
 \subsection{Routing}
 The problem of paying someone shifts to finding a route between two nodes.\\
-LN uses a \textbf{source routing} algorithm, where the source node knows the whole network and can find the shortest path to the destination, it is a BGP-like solution.
+LN uses a \textbf{source routing} algorithm, where the source node (each node actually) knows the whole network and can find the shortest path to the destination, it is a BGP-like solution.
 To ensure privacy, Alice can use \textbf{Onion Routing}, where the payment is encrypted multiple times, and each node in the path can only decrypt the outer layer.
 
-Channels also have fixed capacity, so the network must be balanced to allow for payments in both directions. 
-If payment fails because of a lack of capacity, the payment is refunded to Alice, and she tries another route.
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/lightning_capacity.png}
+      \caption{Impossible to send \texttt{X BTC} from \texttt{A} to \texttt{B} if \texttt{B} holds all the money in the channel}
+      \label{fig:lightning_capacity}
+   \end{figure}
+   \switchcolumn
+   Channels also have \textbf{fixed capacity}, established when the channel is opened\footnote{Depends on how much the channel is funded, and cannot be changed.}, so the network must be balanced to allow for payments in both directions. 
+   If payment fails because of a lack of capacity, the payment is refunded to Alice, and she tries another route.
+   \note{Finding a route may take minutes.}
+\end{paracol}
 
 \section{Doubts}
-It has not been proved yet that the Lightning Network is \textbf{Scalable}, \textbf{Decentralized} and \textbf{Secure} at an acceptable level.
+It has \textbf{not} been proved yet that the Lightning Network is \textbf{Scalable}, \textbf{Decentralized} and \textbf{Secure} at an acceptable level.
 
 Many problems are still open:
 \begin{itemize}
