@@ -31,7 +31,7 @@ For what concerns privacy-protected transfers in Blockchains, using ZKPs, it is 
 
 \section{ZK-SNARKs}
 
-Zero-Knowledge Succinct Non-Interactive Argument of Knowledge (ZK-SNARKs) are a type of ZKP that allows a prover to convince a verifier that a statement is true without revealing any information about the statement itself. ZK-SNARKs are \textbf{non-interactive}, meaning that the prover can generate a proof and send it to the verifier without any interaction.
+\textit{Zero-Knowledge Succinct Non-Interactive Argument of Knowledge} (ZK-SNARKs) are a type of ZKP that allows a prover to convince a verifier that a statement is true without revealing any information about the statement itself. ZK-SNARKs are \textbf{non-interactive}, meaning that the prover can generate a proof and send it to the verifier without any interaction.
 \begin{itemize}
    \item \texttt{ZK} \textit{Zero-Knowledge}: the verifier learns nothing about the statement itself
    \item \texttt{S} \textit{Succinct}: the proof is short and easy to verify
@@ -39,10 +39,12 @@ Zero-Knowledge Succinct Non-Interactive Argument of Knowledge (ZK-SNARKs) are a 
    \item \texttt{ARKS} \textit{Argument of Knowledge}: the prover convinces the verifier that the statement is true
 \end{itemize}
 
+% TODO better understand examples in the slides
+
 \section{XACML and ZKPs}
 XACML (eXtensible Access Control Markup Language) is a standard for access control that allows administrators to define policies that determine who can access what resources. ZKPs can be used to prove that a user is allowed to access a resource without revealing the user's identity or the resource being accessed.
 
-XACML framework is used in Ethereum to implement access control for smart contracts, 
+Prof. Ricci et al. proposed a XACML framework exploiting a blockchain to implement access control, removing the need for a trusted third party to perform ACAB (\textit{Attribute Based Access Control}) and using smart contracts instead 
 \begin{itemize}
    \item Outsource the access control decision process
    \item No need of a trusted third party to perform the access control decision
@@ -50,3 +52,5 @@ XACML framework is used in Ethereum to implement access control for smart contra
    \item Auditability, decentralization
 \end{itemize}
 
+The initial proposal however posed the problem of privacy, as the blockchain is public and all the transactions are visible to everyone. To solve this, ZKPs can be used to prove that a user is allowed to access a resource without revealing the user's identity or the resource being accessed, allowing for the presence of ``private attributes''.
+The second solution exploited Zokrates, a toolbox for zkSNARKs on Ethereum, to implement the ZKPs.
