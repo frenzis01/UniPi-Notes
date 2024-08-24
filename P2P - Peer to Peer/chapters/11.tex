@@ -1,5 +1,5 @@
 \chapter{Bitcoin Lightning network}
-
+\label{ch:lightning}
 Bitcoin is currently far from supporting the world finantial exchanges, it handles about 250.000 transactions in a day, while VISA handles about 47.000 transactions \textit{per second}.
 This is due mainly to max block size and block time, that are respectively 1MB and 10 minutes, and also to the need of broadcasting a transaction to every node.
 \texttt{
@@ -34,7 +34,7 @@ counterparty.}
 
 \end{enumerate}
 
-In case Bob disappears after Alcie has funded the multi-sig address, Alice can get back her funds in 30 days\footnote{such delay is introduced to prevent other scams}.
+In case Bob disappears after Alice has funded the multi-sig address, Alice can get back her funds in 30 days\footnote{such delay is introduced to prevent other scams}.
 
 \framedt{Example}{
    \begin{enumerate}
@@ -49,7 +49,7 @@ In case Bob disappears after Alcie has funded the multi-sig address, Alice can g
 
 \section{Punishing cheaters}
 The first issue is that \ul{mid-transactions are valid even in case there are newer ones}.
-There is no way for thr Lightning network to guarantee to rip up older transactions when a new one is created.
+There is no way for the Lightning network to guarantee to rip up older transactions when a new one is created.
 The current workaround is based on \textbf{punishment}:
 \begin{itemize}
    \item Transactions have a ``revocation secret'', which is sent to Bob by Alice when she creates a new transaction.
@@ -81,7 +81,9 @@ In this scenario, Alice wants to pay Dave, but they don't have a direct channel,
 \end{enumerate}
 
 \framedt{Propagating $R$}{
-   Why does the secret $R$ have to be propagated back? From the moment Dave publishes it, shouldn't it be accessible to all the nodes in the path?
+   \begin{center}
+   \textit{Why does the secret $R$ have to be propagated back? From the moment Dave publishes it, shouldn't it be accessible to all the nodes in the path?}
+   \end{center}
    
    I think that the reason may be hidden in the ``onion-like'' routing schema, which forsees a layer of encryption for each node in the path. In this way, the secret $R$ is not visible to the nodes in the path, and it must be propagated back to the sender.
    In this way the sender knows that the payment has been completed and that each node in the path has received the BTC,

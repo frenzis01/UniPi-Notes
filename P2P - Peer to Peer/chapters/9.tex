@@ -2,7 +2,7 @@
 
 Naive attempts to \textbf{double spending} are easily detected and rejected by the network.
 By sending two transactions that spend the same coin, the network will accept only one of them, the first one that arrives. The second transaction will be rejected as it tries to spend a coin that has already been spent.
-Or, still, adding the same coin two times in the same block will be rejected by the network, as the block is invalid.\\
+Or, still, adding the same coin two times in the same block will be rejected by the network, as the block would be invalid.\\
 However, there are more sophisticated attacks that can be performed on the Bitcoin network. Later on in this chapter we will discuss some of them.
 
 \section{Forks}
@@ -23,7 +23,7 @@ If two blocks $A$ and $B$ are mined at the same time (actually, the second is mi
 
 \framedt{Forks and double spending}{
    If an attacker performs a double spending attack by sending two transactions that spend the same coin, typically one of the two will be mined before the other (they cannot coexist in the same block), and the latter will result invalid and never mined by nodes.
-   But it may happen that the two transactions are mined simultaneously in two different blocks, resulting in a \textbf{fork}. To avoid so, \ul{a transaction is accepted by the network only after 6 blocks have been mined on top of it}.
+   But it may happen that the two transactions are mined simultaneously in two different blocks, resulting in a \textbf{fork}. To avoid so, \ul{a transaction is accepted by the network only after 6 blocks have been mined on top of it} (Def. \ref{def:6confirmation}).
 }
 
 \newpage
@@ -49,7 +49,7 @@ If two blocks $A$ and $B$ are mined at the same time (actually, the second is mi
 
 This attack requires for the attacker to control more than 50\% of the whole network's mining power, which is a \textit{very difficult} task. It is pretty unlikely that an attacker succeeds.
 
-In 2014 GHash.io, a mining pool, reached 51\% of the network's mining power. The pool was asked to reduce its power, and it did.
+In 2014 \texttt{GHash.io}, a mining pool, reached 51\% of the network's mining power. The pool was asked to reduce its power, and it did.
 
 \section{Transaction Malleability}
 A subtle attack on the Bitcoin network is the transaction malleability. This attack does not allow to double spend, but it can be used to confuse the network and the users.
@@ -79,12 +79,13 @@ The main idea is to separate the signature data from the transaction data. The s
 Cheating in the Bitcoin network is very expensive, and most likely leads to a waste of energy and money.
 But also the honest nodes have to spend a lot of energy to mine a block, and the reward is not guaranteed, making \textit{``solo mining''} not profitable.
 For this reason, miners join \textbf{mining pools}, where they share the reward in proportion to the computational power they provide to the pool.
+\note{Recalling Sec. \ref{sec:mining_pools} key points}
 
 It is not trivial to demonstrate how much a miner contributed to the pool, and the pool operator could cheat on the miners, by not sharing the reward fairly.
 \begin{itemize}
    \item \textbf{Pay per Share} is a method that rewards miners based on the number of shares they contributed to the pool. The reward is enacted immediately, and the pool operator takes the risk of not finding a block.
    \item \textbf{Pay Proportional} rewards miners based on how much they contributed to the pool, but the reward is given only when a block is found. The pool operator takes no risk, but the miners have to trust the operator.
    \item \textbf{Decentralized Mining Pool} a separate private blockchain (\texttt{sharechain}, with less difficulty such that valid blocks are mined every 30s) is used to keep track of the shares contributed by the miners, which mine ``weak blocks''. The pool operator cannot cheat on the miners, and the miners cannot cheat among theirselves, as the sharechain is public and transparent.\\
-   Each weak block refers to a partial resolution of the original PoW, allowing for a fair reward distribution.
+   Each weak block refers to a partial resolution of the original PoW, allowing for a \textbf{fair} reward distribution.
    When a miner solves the PoW the last block is linked to the ``real'' public blockchain, and the reward is shared among the miners.
 \end{itemize}

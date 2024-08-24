@@ -115,11 +115,11 @@ After the verification, the node adds the block to the blockchain and kicks out 
 \subsubsection{Incentives}
 There are two mechanisms to incentivize the miners to be honest:
 \begin{enumerate}
-   \item \textbf{Block reward}:
+   \item \textbf{\ul{Block reward}}:
    a payment to the miner in exchange for the service of creating a block.\\
    Bitcoin mints new coins when a new block is mined, and is the only way to create new bitcoins.\\
    The reward is halved every 210K blocks ($\sim 4 \textit{ years}$), and the last block reward will be mined in 2140.
-   \item \textbf{Transaction fees}:
+   \item \textbf{\ul{Transaction fees}}:
    for each transaction in the block the miner gets the difference between transaction inputs and outputs.\\
    It was voluntarily inserted to obtain a good ``quality of service'' from the miners.
 \end{enumerate}
@@ -167,6 +167,7 @@ The blockchain is tamper-free because:
    \item The PoW is a scarce resource
 \end{itemize}
 
+\newpage
 It would take an \ul{unfeasible amount of power for an attacker to change a transaction in a block}, since it would imply that: 
 \begin{enumerate}
    \item The root of the Merkle tree changes and so the block header
@@ -209,6 +210,7 @@ If a \ul{miner receives a block that makes the other fork longer, it \textit{aba
 shorter fork};
 the transactions of the ``abandoned'' fork that were not approved in the winning fork are returned to the pool of ``not-yet-approved'' transactions.
 \begin{definition}[6 Confirmation Rule]
+   \label{def:6confirmation}
    Bitcoin approves a transaction finally only once there are at least \textbf{five} following blocks in the chain 
 \end{definition}
 
@@ -247,6 +249,7 @@ ASICs stands for Application Specific Integrated Circuits, and are hardware devi
 For this task, they are faster and more efficient than CPUs and GPUs.
 
 \subsection{Centralized Mining pools}
+\label{sec:mining_pools}
 \ul{Mining is a very risky task}, since it is very likely to spend a lot for mining hardware and eletricity without
 obtaining a reward for a long time.
 \textbf{Mining pools} are a way to share the risk and the reward among the participants. 
@@ -257,7 +260,7 @@ The \textbf{Pool Manager} sends blocks to miners and distributes the reward amon
    \item How does a pool manager know how much work each member of the pool is actually performing?
    \note{Also miners that have not been able to solve the PoW have to be rewarded for their work.}
    \item How can the pool manager divide the revenue proportional to the amount of work each miner is doing?
-   \note{Partecipants to the pool may cheat claim that they've done more than they actually did.\\
+   \note{Partecipants to the pool may cheat, i.e. claim that they've done more than they actually did.\\
    It is in general hard to prove how much work a node has performed. Generally some ``near-valid blocks'' are sent to the pool manager, to indicate that the miner is actually working.}
 \end{itemize}   
 }
@@ -267,21 +270,26 @@ Miner's are payed from pool's existing balance, and there is no special reward f
 
 \textit{Pay-proportional} is instead a reward system where the pool manager enacts a reward proportional to the amount of work done by the miner, making miners more incentivized to present valid blocks.
 This is less riskful for the pool manager, since payment is enacted only when a block is mined.
+\note{\ul{Understading the amount of work done by a miner is still a challenge}. \textit{Decentralized mining pools} are a solution to this problem.}
 
+\newpage
 \subsection{Decentralized Mining pools}
 \begin{paracol}{2}
    
-   The basic idea behind decentralized mining pools is to build a separate, private chain including \textit{``weak blocks''} mined with lower difficulty, store in the private chain called \textit{``sharechain''}transactions rewarding for mining weak blocks
+   The basic idea behind decentralized mining pools is to build a separate, private chain including \textit{``weak blocks''} mined with lower difficulty, store in the private chain called \textit{``sharechain''} transactions rewarding for mining weak blocks
    until a valid block is found;
    at that point reward is distributed through a side blockchain which is then merged to the main chain, hence obtaining a transparent and fair payout scheme with efficiency minimal performance overhead.
 
-   \switchcolumn
+   This approach also solves the problem of having a centralization point, since the pool manager does not have to be distribute the rewards.
 
+   \switchcolumn
+   \colfill
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/bitcoin_decentralized_pool.png}
       \caption{Sharechain and main bitcoin chain}
       \label{fig:bitcoin_decentralized_pool}
    \end{figure}
+   \colfill
 
 \end{paracol}
