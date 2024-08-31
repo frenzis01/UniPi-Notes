@@ -85,15 +85,19 @@ In this scenario, Alice wants to pay Dave, but they don't have a direct channel,
    \textit{Why does the secret $R$ have to be propagated back? From the moment Dave publishes it, shouldn't it be accessible to all the nodes in the path?}
    \end{center}
    
-   I think that the reason may be hidden in the ``onion-like'' routing schema, which forsees a layer of encryption for each node in the path. In this way, the secret $R$ is not visible to the nodes in the path, and it must be propagated back to the sender.
+   \st{I think that the reason may be hidden in the ``onion-like'' routing schema, which forsees a layer of encryption for each node in the path. In this way, the secret $R$ is not visible to the nodes in the path, and it must be propagated back to the sender.
    In this way the sender knows that the payment has been completed and that each node in the path has received the BTC,
-   furthermore, anonimity is ensured, every node knows only the previous and the next one.
+   furthermore, anonimity is ensured, every node knows only the previous and the next one.}
+
+   Whether it actually is indeed available to all nodes in the path or not is irrelevant. Dave redeems 1 BTC from Carol by revealing $R$, and Carol redeems 1 BTC from Bob by exhibiting $R$, and Bob redeems 1 BTC from Alice by exhibiting $R$ ---regardless of whether he had seen it published by Dave, since it's the same secret Carol used to redeem funds from him---. In this way, the payment is propagated back to the sender, so the only one who has actually paid a BTC is Alice.\\
+   However due to Onion-Routing described in Sec. \ref{sec:routing}, the secret $R$ should not be visible to the nodes in the path, and it must be propagated back to the sender.
    }
 
 The \textit{time-locked} part of the contract is used to ensure that Dave propagates $R$ when he receives its Bitcoin within a certain time frame, if he doesn't the funds are refunded to the transferor.
 
 \subsection{Routing}
-The problem of paying someone shifts to finding a route between two nodes.\\
+\label{sec:routing}
+\ul{The problem of paying someone shifts to \textbf{finding a route} between two nodes.}\\
 LN uses a \textbf{source routing} algorithm, where the source node (each node actually) knows the whole network and can find the shortest path to the destination, it is a BGP-like solution.
 To ensure privacy, Alice can use \textbf{Onion Routing}, where the payment is encrypted multiple times, and each node in the path can only decrypt the outer layer.
 

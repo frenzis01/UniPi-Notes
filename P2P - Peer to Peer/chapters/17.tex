@@ -4,7 +4,7 @@ Starting off recalling the Proof of Work consensus algorithm, it is important to
 With Bitcoin's Proof of Work, miners compete to solve a cryptographic puzzle, and the first one to solve it gets to add a new block to the blockchain. This process is energy-intensive and requires a lot of computational power, and has its cost has risen so much that mining pools (\textit{farms}) control a significant portion of the network's hash rate, ultimately making the blockchain not fully distributed.
 
 It is important to understand that the Proof of Work algorithm is not the only way to reach consensus in a blockchain network.\\
-Proof of Stake is an alternative consensus algorithm that is more energy-efficient and less centralized than Proof of Work. In a Proof of Stake system, validators are chosen to create new blocks based on the number of coins they hold. This means that the more coins a validator holds, the more likely they are to be chosen to create a new block.
+Proof of Stake is an alternative consensus algorithm that is more energy-efficient and less centralized than Proof of Work. In a Proof of Stake system, \ul{validators are chosen to create new blocks based on the number of coins they hold}. This means that the more coins a validator holds, the more likely they are to be chosen to create a new block.
 \note{There are also Delegate Proof of Stake (DPoS, used by Algorand, Cardano, ...) and byzantine consensus (Hyperledger) algorithms.}
 
 \begin{definition}
@@ -16,16 +16,16 @@ Proof of Stake is an alternative consensus algorithm that is more energy-efficie
 \section{Validators opposed to Miners}
 
 PoS introduces the role of \textit{Validators} opposed to \textit{miners}; they propose new blocks, but without solving the PoW, and cast a vote to decide which will be the next block of the blockchain.\\
-Note that a single node can host anything from zero to hundreds or thousands of validators, and they would all share the same local view of the blockchain. 
+Note that \ul{a single node can host anything from zero to hundreds or thousands of validators}, and they would all share the same local view of the blockchain. 
 
 
 \subsection{Being a validator}
 The Key point here is not solving a puzzle, but to use the cryptocurrency itself as a stake to validate transactions; 
 validators have put something of value into the network that can be destroyed if they act dishonestly.
-To participate as a validator, a user must deposit 32 ETH into the deposit contract and run three separate pieces of software: an execution client, a consensus client, and a validator client.
+To participate as a validator, a user must deposit 32 ETH into the deposit contract and run three separate pieces of software: an \textit{execution} client, a \textit{consensus} client, and a \textit{validator} client.
 
-Validators are chosen to be in a committee, and they are responsible for proposing and voting on new blocks. The committee is chosen randomly, and the size of the committee is proportional to the total amount of ETH staked in the network.
-One peer among will be chosen as the proposer, and the rest will be validators.
+Validators are chosen to be in a \textbf{committee}, and they are responsible for proposing and voting on new blocks. The committee is chosen randomly, and the size of the committee is proportional to the total amount of ETH staked in the network.
+One peer among them will be chosen as the \textit{proposer}, and the rest will be \textit{validators}.
 For a block to be inserted in the blockchain, it must be signed by 2/3 of the validators in the committee (super-majority).
 
 PoS, unlike PoW, is related to time and has to order events in \textbf{epochs}.
@@ -33,6 +33,9 @@ For each epoch there are 32 block proposers, and each proposer is responsible fo
 
 Each validator must assess the validity of the block proposed by the proposer, and if it is valid, they sign it, enacting an \textbf{attestation}.
 Each validator can attest one block per epoch, and if they do not, they get \textit{slashed}.
+\note{Can attest or \textred{must} attest? I think it is the latter, due to the definition of slashing below.
+% //TODO
+ }
 
 \section{Nothing at Stake}
 

@@ -29,7 +29,7 @@ So, while a single transaction may be built by anyone, blocks are built by miner
       \item \texttt{mhash} The Merkle \ul{root} of the transactions in the block
       \note{Merkle tree is not explicitly represented in the block, it is built on demand.\\
       Any change to a transaction results in a change of \texttt{mhash}, consequently in a change of the hash of the whole block.}
-      \item \texttt{hashprev} The hash of the previous block header, and a hash pointer to the previous block
+      \item \texttt{hashprev} The hash of the previous block \textit{header}, and a hash pointer to the previous block
       \item PoW related fields:
       \begin{itemize}
          \item Target
@@ -52,11 +52,11 @@ So, while a single transaction may be built by anyone, blocks are built by miner
 \framedt{Mining}{
    \begin{enumerate}
       \item Set \texttt{nonce = 0}
-      \item Hash the block header including the \texttt{nonce}
+      \item Hash the \textit{block header} including the \texttt{nonce}
       \item \texttt{while (\texttt{hash} > \texttt{target})}
       \begin{enumerate}
          \item Increment \texttt{nonce}
-         \item Hash the block header including the \texttt{nonce}
+         \item Hash the \textit{block header} including the \texttt{nonce}
       \end{enumerate}
    \end{enumerate}
    \textbf{Target} acts as \textit{threshold}, and represents the \ul{number of leading zeros the hash must have}.

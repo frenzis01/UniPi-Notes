@@ -25,7 +25,7 @@ $99\%$ of keys have to be remapped, resulting in a lot of messages exchange.
 each node manages ---instead of a set of sparse keys--- an interval of consecutive hash keys, and intervals are joined/splitted when nodes join/leave the network and keys redistributed between adjacent peers.
 
 
-\section{Building DHT}
+\section{Building CHORD DHT}
 \begin{paracol}{2}
    % \colfill
    \begin{itemize}
@@ -82,16 +82,51 @@ to avoid such a problem:
 
 When the hash table is \textbf{resized}, on the average,only $\frac{k}{n}$ keys need to be remapped on average, where $k$ is the number of keys and $n$ is the number of servers.
 \newpage
-\section{Data Lookup}
+\section{Finger Table and Data Lookup}
+
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/dht_exponentialsearch.png}
-   \caption{Exponential Search for DHT}
+   \caption{Finger table for CHORD DHT}
    The data lookup can be implemented by using exponential search, rather than performing a walk by asking each peer for its successor
    \label{fig:dht_exponentialsearch}
 \end{figure}
 
-Data Lookup can be sped up even more, by computing the hash $h(x)$ of the searched object, and propagating the query to farthest node\footnote{Which is found using exponential search} which has an identifier smaller than $h(x)$, which then recursively applies the same algorithm, until the object is found.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/dht_chordfinger.png}
+   \caption{This image is a bit more precise than the previous one}
+   \label{fig:dht_chordfinger}
+   Each $k^{th}$ \textbf{finger} for the node $n$ is defined as $finger[k] = succ(n+2^{k-1})$, i.e. the first node on the circle that succeeds $n+2^{k-1} mod 2^m$, having $1 \leq k \leq m$. 
+\end{figure}
+
+\begin{paracol}{2}
+   \colfill
+   The lookup algorithm, instead of walking through successors to find the desired key, can be sped up by using the \textbf{finger table}.
+   Here is the algorithm, which is logarithmic in the number of nodes.
+   The use of finger tables not only allows to speed up the search, but also to reduce the number of nodes each peer has to keep track of.
+
+   \note{In Fig. \ref{fig:dht_chordfinger} node 8 the successor of 54 he knows of is 1, which does not contain the key 54, so then 8 finds the closest preceding node to 54 in its finger table, which is 42, which finds again as successor of 54 the node 1, since he knows only $succ(42+8)=51$ and $succ(42+16)=1$, so asks 51 (closest preceding node) to find the successor of 54, which is 56 (finally \smiley).}
+   \colfill
+   \switchcolumn
+   \begin{lstlisting}[mathescape=true,basicstyle={\footnotesize\ttfamily},language=Haskell]
+// ask node n to find the successor of id
+n.find successor(id)
+   if (id $\in$ (n, successor])
+      return successor;
+   else
+      n' = closest preceding node(id );
+      return n'.find successor(id);
+// search the local table for the highest predecessor of id
+n.closest preceding node(id)
+   for i = m downto 1
+      if (finger[i] $\in$ (n, id))
+         return finger[i];
+   return n;  
+   \end{lstlisting}
+\end{paracol}
+
+So, \textbf{Data Lookup} is performed by computing the hash $h(x)$ of the searched object, asking for $succ(h(x))$ whether they have $x$, and if not, propagating the query to farthest node\footnote{Which is found using the finger table} which has an identifier smaller than $h(x)$, which then recursively applies the same algorithm, until the object $x$ is found.
 \begin{figure}[htbp]
    \centering
    \includegraphics[width=0.3\columnwidth]{images/dht_chordsearch01.png}
@@ -99,6 +134,7 @@ Data Lookup can be sped up even more, by computing the hash $h(x)$ of the search
    \includegraphics[width=0.3\columnwidth]{images/dht_chordsearch03.png}
    \includegraphics[width=0.3\columnwidth]{images/dht_chordsearch04.png}
    \caption{Lookup performed in the \texttt{\textbf{CHORD}} DHT}
+   Dotted arrows here indicate the nodes each peer knows of, and the big solid arrows indicate the path the query follows to find the desired key.
    \label{fig:dht_chordsearch}
 \end{figure}
 

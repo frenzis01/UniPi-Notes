@@ -41,7 +41,7 @@ In case  \texttt{verify(pk, data, sig) == true} then the transaction signed with
 
 Addresses in the majority of cases represent the owner of a private/public key pair, and are generated using \texttt{pk}, but they may also be a \textbf{script}.
 
-Anyone can make a new identity at any time, and such identities are not necessarily linked to any real-world identity, but the activity of an identity may be observed over time ---the blockchain is in clear readable by anyone--- and thus make inferences on who it may belong.
+Anyone can make a new identity at any time, and such identities are not necessarily linked to any real-world identity, but the activity of an identity may be observed over time ---the blockchain is in clear readable by anyone--- and thus make inferences on to whom it may belong.
 
 \section{Bitcoin Transactions}
 
@@ -66,7 +66,7 @@ When a miner solves the Proof of Work, the block is broadcasted to the network, 
 
 On the left of each transaction there is a list of inputs, and on the right a list of outputs. 
 
-In the left transaction, 0.25 is the money requested by Bob, 1.00 is the money given by Alive and 0.75 is the change she gets back.\\
+Consider Fig. \ref{fig:bitcoin_multiinput}: in the left transaction, 0.25 is the money requested by Bob, 1.00 is the money given by Alive and 0.75 is the change she gets back.\\
 Every input must equal the outputs, but note that this should include a transaction fee, computed as the difference between the inputs and the outputs, and is given to the miner who confirms the transaction.
 
 It is possible to \textbf{merge} or \textbf{distribute}, in the first case, multiple inputs are used to create a single output, in the second case, a single input is used to create multiple outputs.\\
@@ -84,17 +84,24 @@ Typical centralized currencies exploit ``bank'' accounts and \textit{transfers} 
 Also Ethereum follows this approach, while Bitcoin adopted the UTXO one, which is based on \textbf{unsent output addresses}, i.e. addresses containing bitcoins and not spent in any
 transaction.
 
+\begin{definition}[UTXO]
+   \label{def:UTXO}
+   A UTXO represents a certain amount of cryptocurrency that has been authorized by a sender and is available to be spent by a recipient.
+   UTXOs employ public key cryptography to ascertain and transfer ownership. More specifically, the recipient's public key is formatted into the UTXO, thereby limiting the capability to spend the UTXO to the account that can demonstrate ownership of the corresponding private key. A valid digital signature associated with the public key must be included for the UTXO to be spent.\\
+   \href{https://en.wikipedia.org/wiki/Unspent_transaction_output}{Wikipedia}
+\end{definition}
+
 Each transaction input is linked (refers) an UTXO of
-a previous transaction, while each output generates a new UXTO, which is included in the user's wallet and is available to be spent.
-Each UXTO is \textit{spent} (thus is no more an UTXO) if it is linked to the input of a subsequent transaction.\\
-Getting the the balance of an address, equals to scanning the network for UTXOs and adding up all the unspent output locked to that address.
+a previous transaction, while each output generates a new UTXO, which is included in the user's wallet and is available to be spent.
+Each UTXO is \textit{spent} (thus is no more an UTXO) if it is linked to the input of a subsequent transaction.\\
+Getting the the \textbf{balance} of an address, equals to scanning the network for UTXOs and adding up all the unspent output locked to that address.
 
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/bitcoin_UTXO.png}
    \caption{UTXO locking}
 
-   Each UXTO \textit{``locks''} the newly generated UXTO to the new owner's public key, and if they decide to use the UXTO in a new transaction, it must \textit{``unlock''} the funds with their private key.
+   Each UTXO \textit{``locks''} the newly generated UTXO to the new owner's public key, and if they decide to use the UTXO in a new transaction, it must \textit{``unlock''} the funds with their private key.
    \label{fig:bitcoin_UTXO}
 \end{figure}
 
@@ -131,8 +138,8 @@ A unlocks some of its bitcoins ---locked by a previous transaction--- and create
 
 \subsubsection{Analyzing P2PKH}
 The sender appends a script on to sent bitcoin to lock the transferred bitcoin (the UTXO includes the locking script (?)) and make it usable only by the receiver, which is the only one able to append a script to unlock the bitcoin.\\
-\textred{Not so sure of how the unlocking script is inserted intto the transaction.}
-Executing both scripts allows the receiver to spend the bitcoin.
+The unlocking script is prepended to the locking script retrieved from the input UTXO, and the result is executed by the Bitcoin network to verify that the sender can actually spend the funds. The transaction output includes the locking script, which will be used by the recipient when spending the funds.
+Executing both unlocking and locking scripts allows the receiver to spend the bitcoin.
 \begin{paracol}{2}
 
    Execution is stack based, so first \texttt{Sig} and \texttt{PubK} are pushed on the stack, then the \texttt{OP\_DUP} duplicates the top element of the stack, \texttt{OP\_HASH160} hashes the top element of the stack, \texttt{OP\_EQUALVERIFY} checks if the top two elements are equal, which are the newly generated hash and the \texttt{PubKHash} contained in the locking script,

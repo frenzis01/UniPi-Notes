@@ -33,6 +33,7 @@ In \textbf{P2P CDN} the initial file request are served by a centralized server,
    \caption{Swarm schema}
    \label{fig:bit_swarmschema}
 \end{figure}
+\newpage
 \subsection{Glossary}
 \begin{itemize}
    \item \textbf{tracker}: active entity which coordinates
@@ -57,7 +58,7 @@ In \textbf{P2P CDN} the initial file request are served by a centralized server,
 \end{figure}
 \labelitemize{\textit{Seeder}}{
    \begin{enumerate}
-      \item Upload the .torrent on a Torrent Server
+      \item Upload the .torrent on a Torrent Server, indicating a Tracker address and the infohash of the file
       \item Opens a connection to the Tracker and informs it of its own existence: for the moment, it is the only peer which owns the file
    \end{enumerate}
 }
@@ -87,7 +88,7 @@ Pieces are the smaller units of retransmission, and are checked using a SHA-1 ha
 
 \ul{\textbf{Trackers} keep a database of swarms identified by torrent hash, and knows also the state of each peer in each swarm}.
 In the last versions, \textbf{trackerless} BitTorrent uses \textit{Kademlia DHT} to avoid the centralization point of the tracker.
-
+\newpage
 \section{Pieces selection}
 \begin{figure}[htbp]
    \centering
@@ -120,7 +121,7 @@ The performance of the whole network relies on the \ul{cooperative behavior of t
 
 An approach to address this issue is based on \textbf{reciprocity}, allowing a client to obtain a good service if and only if it gives a good service to the community, by exploiting a dynamic strategy based on connection monitoring called ``Tit for Tat'', implemented using \textbf{choking}:\\
 ``choking'' means \textit{temporarily} refusing to upload to another peer, but still downloading from them;  
-the principle is to ``upload to peers who have uploaded to us'', so each peer, periodically, evaluates for each neighbor  the \textit{upload rate} and the \textit{download rate}, and decides a fixed number of neighbors to \textit{choke} (and \textit{unchoke}, see)
+the principle is to ``upload to peers who have uploaded to us'', so each peer, periodically, \ul{evaluates for each neighbor  the \textit{upload rate} and the \textit{download rate}, and decides a fixed number of neighbors to \textit{choke}} (and \textit{unchoke})
 
 \labelitemize{\textit{Choking}}{
 \begin{center}
@@ -143,6 +144,7 @@ In case a peer is choked by everyone, it follows an \textbf{anti-snubbing} polic
 For \textit{seeders} this schema does clearly not apply, since they do not have to download anything; hence they use a different choking algorithm:
 \ul{unchoke peers with the highest upload rate}, ensuring that pieces get uploaded and replicated faster.
 
+\newpage
 \section{DHT and BitTorrent}
 Even though a tracker requires very little resources, it is still a single point of failure, and a potential bottleneck for the system, besides it may be target of several\footnote{Not only cyber, also \textit{legal} ones} attacks.
 

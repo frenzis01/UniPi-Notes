@@ -71,7 +71,8 @@ In either case, two transactions are needed, one from Alice to the escrow, and a
 \section{Towards Pay-to-Script-Hash}
 
 \texttt{multi-sig} scripts (or \textred{transactions}?) are longer than standard scripts, require more public keys to be exchanged and come with higher fees.
-\texttt{Pay-to-Script-Hash} (P2SH) is a way to simplify the use of complex scripts, by hashing the script and using the hash as the address. This way, the script is not revealed until the funds are spent, and the address is shorter and easier to use, removing complexity at the sender side.
+\texttt{Pay-to-Script-Hash} (P2SH) is a way to simplify the use of complex scripts, by hashing the script and using the hash as the address. This way, the script is not revealed until the funds are spent, and the address is shorter and easier to use, removing complexity at the sender side. Moreover, the receiver does not need to know the script to redeem the funds.\\
+Furthermore, being the transaction shorter and easier to compute, the \textbf{fees} are lower.
 
 \section{Hash-time locked contracts}
 \textbf{Hash-time locked contracts} are a way to secure a transaction by locking the funds until a certain time has passed, or a certain condition is met. They are used in the Lightning Network to secure off-chain transactions.

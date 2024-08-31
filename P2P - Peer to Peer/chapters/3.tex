@@ -8,21 +8,21 @@
    \item IPFS
 \end{itemize}
 }
-It has three key charateristics which are not offered by other DHTs
+{It has three key charateristics which are not offered by other DHTs\ns
 \begin{enumerate}
    \item routing information spreads automatically as a side-effect of lookups
    \item flexibility to send multiple requests in parallel to speed up lookups by
    avoiding timeout delays (parallel routing)
    \item iterative routing
    \note{At each routing step of the query, the queried node sends a report to the starting querying node, even if it could not answer the query.}
-\end{enumerate}
+\end{enumerate}}
 
 \section{Structure}
 \begin{paracol}{2}
    \colfill
    Kademlia exploits the leaves of a complete binary \textbf{Trie}\footnote{k-ary search tree and prefix tree} to define the logical identifier space;
 
-   Note that not all leaves correspond to nodes (peers). In Fig. \ref{fig:kademlia_trie}, only the circled leaves are nodes.
+   Note that not all leaves correspond to nodes (peers). In Fig. \ref{fig:kademlia_trie}, \ul{only the \textbf{circled} leaves are nodes}.
    \colfill
    \switchcolumn
 
@@ -76,21 +76,20 @@ In order to look for data, Kademlia's key idea is to \ul{store a logarithmic num
    \label{fig:kademlia_routingtable.png}
 \end{figure}
 
+
+Each k-bucket corresponds to a prefix and covers a subset of the identifier space: the set of all k-buckets covers the whole identifier space which $2^m$, with $m$\footnote{$m=160$ in Kademlia} the length of an identifier; more precisely the $i$-th bucket covers the range $[2^i, 2^{i+1})$, so as $i$ increases, so does the range of the bucket, exponenetially.\\
+The first entries of the routing table correspond to peers sharing a long prefix
+with the owner of the routing table; the last entries instead of the routing table correspond to peers sharing a smaller prefix, and cover a larger set of identifiers.
+The value of $k$ is defined such that the probability that a crash of more of $k$ nodes is a rare event.
+\ul{Nodes in each bucket are maintained ordered such that \textit{least recently contacted nodes are in the first positions of the list}}.
+\newpage
 \begin{figure}[htbp]
    \centering
    \includegraphics[width=0.45\columnwidth]{images/kademlia_routing_table1.png}
    \includegraphics[width=0.45\columnwidth]{images/kademlia_routing_table2.png}
    \label{fig:kademlia_routing_table}
+   \caption{Deeper into Routing Tables and buckets}
 \end{figure}
-
-Each k-bucket corresponds to a prefix and covers a subset of the identifier space: the set of all the k-buckets covers the whole identifier space.
-The first entries of the routing table correspond to peers sharing a long prefix
-with the owner of the routing table; the last entries instead of the routing table correspond to peers sharing a smaller prefix, and cover a larger set of identifiers.
-The value of K is defined such that the probability that a crash of more of K
-nodes is a rare event.
-\ul{Nodes in each bucket are maintained ordered such that \textit{least recently contacted nodes are in the first positions of the list}}.
-
-% //TODO capire come funziona questa roba
 
 \subsection{Routing Strategies}
 In \textbf{iterative routing} the node $n$ sending the lookup request manages the whole search process.
@@ -103,15 +102,15 @@ In \textbf{recursive routing} the node $n$ sending the lookup request delegates 
 
 \section{Key Lookup}
 
-The idea for key lookup is:
+{The idea for key lookup is:\ns
 \begin{enumerate}
-   \item Find the closest node to the key in your routing table via the XOR distance
+   \item Find the closest node to the key in your routing table, computing the XOR distance in case of ties
    \item While the closest node you know of does not have the key and has not already responded
    \begin{enumerate}
       \item Ask the closest node you know of, for the key or a closer node
-      \item If the closest node responds with a closer node, update your closest nodes set.
+      \item If the closest node responds with a closer node, update your closest nodes set. (i.e. current bucket)
    \end{enumerate}
-\end{enumerate}
+\end{enumerate}}
 At each iteration, the XOR metric is reduced by $\sfrac{1}{2}$ and results in smaller size k-buckets
 
 \begin{figure}[htbp]

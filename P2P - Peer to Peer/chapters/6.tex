@@ -10,22 +10,22 @@ For example, the \textit{Cyclic Redundancy Check} (\texttt{CRC}) ---which essent
 Even if it is unlinkely to generate a collision using random errors, it is reasonably easy for an adversary to find one. 
 
 Note that \ul{collisions \textit{always} exist}, because the codomain is always smaller than the domain of the function.
-\note{The pigeonhole principle states that if $n$ pigeons are put into $m$ pigeonholes, with $n > m$, then at least one pigeonhole must contain two or more pigeons.}
+\note{The \textbf{pigeonhole principle} states that if $n$ pigeons are put into $m$ pigeonholes, with $n > m$, then at least one pigeonhole must contain two or more pigeons.}
 The term \textbf{hash security} refers to how hard is to \textit{find} a collision for a given hash function.
 
 \framedt{Birthday Paradox}{
-   A hash function $H$ has $n$ possible outputs, so $2^n$ possible inputs.\\
+   A hash function $H$ has $n$ possible output bits, so $2^n$ possible output strings.\\
    If $H$ is applied to $k$ inputs, in order to have the probability of a collision greater than $1/2$, $k$ must be greater than $\sqrt{2^n} = 2^{n/2}$.
    This is known as the \textbf{birthday paradox}.
 }
 \subsection{Cryptographic Hash functions}
-Two main properties must hold for an HF to be cryptographic:
+{Two main properties must hold for an HF to be cryptographic:\ns
 \begin{enumerate}
    \item \textbf{Adversarial collision resistance}
    \item \textbf{One way function}
-\end{enumerate}
+\end{enumerate}}
 
-These are formalized as:
+{These are formalized as:\ns
 \begin{enumerate}
    \item \textit{Pre-image} resistance\\
    $\forall y \in Y. \textit{ hard to find } x \in X\ |\ h(x) = y$
@@ -38,7 +38,7 @@ These are formalized as:
    \note{Also called \textit{\ul{strong} collision resistance}}
    Given a $m-bit$ hash function, the attacker needs about $2^{m/2}$ brute force computation to find a collision, as stated by the birthday paradox.
 \end{enumerate}
-
+}
 
 \subsection{Hiding and Puzzles}
 For cryptocurrencies and blockchains also \textbf{hiding} and \textbf{puzzle-friendliness} are required.
@@ -58,19 +58,19 @@ a probability distribution that has high min-entropy, then, given  $H(R || x)$, 
    Suppose you have to remotely play Rock-Paper-Scissors: you can both commit to your choice by sending the hash of it, and then reveal them at the same time, resulting in a fair game. 
 }
 
-A hash/search puzzle consists of:
+{A hash/search puzzle consists of:\ns
 \begin{itemize}
    \item Cryptographic hash function, $H$
    \item Random value, $r$
    \item Target set, $S$
    \item Solution of the puzzle is a value $x$, such that:
    $m = r || x \wedge H(m) \in S$
-\end{itemize}
+\end{itemize}}
 Bitcoin \textit{Proof of Work} (\textbf{PoW}) is based on a hash/search puzzle.
 \begin{definition}[Puzzle friendliness]
    $H$ is said to be puzzle friendly if:
    \begin{itemize}
-      \item For every possible n-bit output value $y$, if $k$ is chosen from a distribution with high min entropy, then it is \ul{infeasible to find $x$ such that $H(k || x) = y$ in time significantly less than $2^n$}.
+      \item For every possible n-bit output value $y$, if $r$ is chosen from a distribution with high min entropy, then it is \ul{infeasible to find $x$ such that $H(r || x) = y$ in time significantly less than $2^n$}.
    \end{itemize}
 \end{definition}
 Puzzle-friendly property implies that
@@ -203,19 +203,26 @@ Dropbox can provide ---along with the file--- a portion of the original Merkle T
    \label{fig:patriciaMerkle}
 \end{figure}
 A \textbf{Patricia Merkle Trie} is a combination of a Merkle Tree and a Patricia Trie, introduced by Ethereum.
+{Nodes may be of three types:\ns
+\begin{enumerate}
+   \item \textit{Branch} Node - multiple children, and may store a \textbf{value} referred to the key which points to such Branch Node (if it is indeed a key and not a prefix)
+   \item \textit{Extension} Node - single child, and stores the \textbf{prefix} of the key
+   \item \textit{Leaf} Node - stores the final bits of the \textbf{key} and the \textbf{value}
+\end{enumerate}
+}
 
 A trie can be used to store a set of key-value pairs, where the key is a string and the value is either a pointer to another child (or node), or the value itself, in case of a leaf node.
 
-In Ethereum the Patricia Merkle Trie is used to store the state of the blockchain, where the \ul{key} is the address of
+{In Ethereum the Patricia Merkle Trie is used to store the state of the blockchain, where the \ul{key} is the address of \ns
 \begin{enumerate}
    \item an \textit{account} and the \ul{value} is the account \textit{balance}.
    \item a \textit{transaction} and the \ul{value} is the \textit{transferred amount}.
-\end{enumerate}
+\end{enumerate}}
 
-Since the nodes of such tree are multi-element, and hash functions are instead applied to strings, some sort of \textbf{serialization} is applied:
+{Since the nodes of such tree are multi-element, and hash functions are instead applied to strings, some sort of \textbf{serialization} is applied: \ns
 \begin{itemize}
    \item \texttt{HP} - \texttt{Hex Prefix Encoding} for the keys
    \item \texttt{RLP} - \texttt{Recursive Length Prefix Encoding} for the values (which may be \textit{structured data})
-\end{itemize}
+\end{itemize}}
 
 \footnotetext[1]{Actually also only the first different character should be ok, if I recall corecctly from Algorithm Engineering course}
