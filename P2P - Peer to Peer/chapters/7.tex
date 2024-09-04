@@ -7,14 +7,14 @@ The bank would \textit{``blind sign''} the scrambled data, without being able to
 
 \section{Bitcoin release}
 
-Later on, in 2008, Satoshi Nakamoto\footnote{This is a pseudonym, the actual name of the author is unknown} introduced Bitcoin, a decentralized digital currency, with some key properties:
+{Later on, in 2008, Satoshi Nakamoto\footnote{This is a pseudonym, the actual name of the author is unknown} introduced Bitcoin, a decentralized digital currency, with some key properties:\ns
 \begin{itemize}
    \item \textit{Double-spending} is prevented with a peer-to-peer network.
    \item No mint or other trusted parties.
    \item Participants can be \textit{anonymous}.
    \item New coins are made from Hashcash style \textit{proof-of-work}.
    \item The \textit{proof-of-work} for new coin generation also powers the network to prevent \textit{double-spending}
-\end{itemize}
+\end{itemize}}
 
 Bitcoin differs from \texttt{e-Cash} in that it is a decentralized and \textit{unstructured} entirely P2P system, with no central authority such as banks.
 
@@ -66,11 +66,11 @@ When a miner solves the Proof of Work, the block is broadcasted to the network, 
 
 On the left of each transaction there is a list of inputs, and on the right a list of outputs. 
 
-Consider Fig. \ref{fig:bitcoin_multiinput}: in the left transaction, 0.25 is the money requested by Bob, 1.00 is the money given by Alive and 0.75 is the change she gets back.\\
-Every input must equal the outputs, but note that this should include a transaction fee, computed as the difference between the inputs and the outputs, and is given to the miner who confirms the transaction.
+Consider Fig. \ref{fig:bitcoin_transaction}: in the left transaction, 0.25 is the money requested by Bob, 1.00 is the money given by Alive and 0.75 is the change she gets back.\\
+Every input must equal the outputs, but note that this should include a \textbf{transaction fee}, computed as the difference between the inputs and the outputs, and is given to the miner who confirms the transaction.
 
-It is possible to \textbf{merge} or \textbf{distribute}, in the first case, multiple inputs are used to create a single output, in the second case, a single input is used to create multiple outputs.\\
-Transactions may also be \textbf{multi input}.
+It is possible to \textbf{merge} or \textbf{distribute}, in the first case, multiple inputs are used to create a single output, in the second case, a single input is used to create multiple outputs.
+So, as said, transactions may also be \textbf{multi input} as depicted in Fig. \ref{fig:bitcoin_multiinput}.
 
 \begin{figure}[htbp]
    \centering
@@ -105,6 +105,15 @@ Getting the the \textbf{balance} of an address, equals to scanning the network f
    \label{fig:bitcoin_UTXO}
 \end{figure}
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/bitcoin_utxo_model.png}
+   \caption{More comprehensive example explaining how UTXOs are related to transactions}
+   \label{fig:bitcoin_utxo_model}
+\end{figure}
+
+
+\newpage
 \subsection{Scripts}
 \begin{figure}[htbp]
    \centering
@@ -133,24 +142,38 @@ Script types include:
    \caption{Bitcoin script example}
    \label{fig:bitcoin_script}
 \end{figure}
-B first notifies its public key to A, who now knows to whom to send the bitcoin.
-A unlocks some of its bitcoins ---locked by a previous transaction--- and creates a lock on the bitcoin sent to B, which can be unlocked by B using its private key.
+\framedt{Put simply}{
+   B first notifies its public key to A, who now knows to whom to send the bitcoin.
+   A unlocks some of its bitcoins ---locked by a previous transaction--- and creates a lock on the bitcoin sent to B, which can be unlocked by B using its private key.
+}
+
+But what actually happens is this:
+\begin{enumerate}
+   \item \textit{Alice} chooses the UTXO\footnote{Or more UTXOs from multiple transaction} of a transaction $t_1$ from \textit{Eve} to her. Inside $t_1$ there is a script that locks the UTXO to \textit{Alice}'s public key.
+   \item \textit{Alice} creates a new transaction $t_2$ to send some bitcoin to \textit{Bob}. $t_1$ is indicated as input for $t_2$. $t_2$ includes a script which unlocks the funds from $t_1$ and locks and a locking script which binds the output of $t_2$ to \textit{Bob}'s public key.
+   \item Nodes will verify ---among other things--- that \lstinline{eval(t1.locking_script | t2.unlocking_script)} is true.
+\end{enumerate}
 
 \subsubsection{Analyzing P2PKH}
-The sender appends a script on to sent bitcoin to lock the transferred bitcoin (the UTXO includes the locking script (?)) and make it usable only by the receiver, which is the only one able to append a script to unlock the bitcoin.\\
-The unlocking script is prepended to the locking script retrieved from the input UTXO, and the result is executed by the Bitcoin network to verify that the sender can actually spend the funds. The transaction output includes the locking script, which will be used by the recipient when spending the funds.
+As stated before, the outline of a transaction is as follows:\\
+The sender appends a script onto sent bitcoin to lock the transferred bitcoin (the UTXO should include the locking script) and make it usable only by the receiver, which is the only one able to write a script (signature) to unlock the bitcoin.
+The unlocking script is prepended to the locking script retrieved from the input UTXO, and the result is executed by the Bitcoin network to verify that the sender can actually spend the funds.\\
+The transaction output includes the locking script, which will be used by the recipient when spending the funds.
 Executing both unlocking and locking scripts allows the receiver to spend the bitcoin.
+
+In the case of P2PKH, the locking script is a \texttt{Pay to Public Key Hash} script, which is a script that locks the UTXO to the public key hash of the receiver, i.e. the address.
+In the default case, the unlocking script is a signature of \textit{all} input and output fields of the transaction, but it's not necessarily like that (See \ref{sec:bitcoin_signatures}).
 \begin{paracol}{2}
 
    Execution is stack based, so first \texttt{Sig} and \texttt{PubK} are pushed on the stack, then the \texttt{OP\_DUP} duplicates the top element of the stack, \texttt{OP\_HASH160} hashes the top element of the stack, \texttt{OP\_EQUALVERIFY} checks if the top two elements are equal, which are the newly generated hash and the \texttt{PubKHash} contained in the locking script,
    lastly \texttt{OP\_CHECKSIG} expects \texttt{Sig} and \texttt{PubK} to be in the stack and verifies the \textit{signature}.
-   The signature may have been performed an all output fields of the transaction, or only to a single one, or none. (See below for more)
+   The signature may have been performed an all output fields of the transaction, or only to a single one, or none. (See below \ref{sec:bitcoin_signatures} for more)
    
    \switchcolumn
    \colfill
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/bitcoin_p2pkh.png}
+      \includegraphics[width=0.95\columnwidth]{images/bitcoin_p2pkh.png}
       \caption{Pay to Public Key Hash}
       Here \texttt{PubKHash} is the hash of the public key of the receiver.
       \label{fig:bitcoin_p2pkh}
@@ -177,25 +200,24 @@ Executing both unlocking and locking scripts allows the receiver to spend the bi
 
 \note{To better understand how locking works, check out \href{https://bitcoin.stackexchange.com/questions/75165/what-is-bitcoin-locking-and-unlocking-script}{this stackexchange discussion}. It provides a fairly detailed description of the process.\\
 It might be helpful to give a look also at \href{https://learn.saylor.org/mod/book/view.php?id=36364&chapterid=18948}{this brief page on the topic.}}
-
 \subsubsection{Coinbase Transaction}
 Coinbase transactions involve fresh bitcoins generated by the system used to reward miners for solving the Proof of Work, and are not linked to any previous transaction.
 
 \subsection{Transaction Lifecycle}
 \labelitemize{Lifecycle}{
    \begin{enumerate}
-      \item Starts with the transaction's creation
-      \item Then the transaction is signed with one or more signatures indicating the
+      \item Starts with the transaction's \textbf{creation}
+      \item Then the transaction is \textbf{signed} with one or more signatures indicating the
       authorization to spend the funds referenced by the transaction. 
       \note{(See digression on signatures types \ref{sec:bitcoin_signatures})}
-      \item It is broadcasted on the Bitcoin P2P network
-      \item Each network node (participant) validates and propagates the transaction
+      \item It is \textbf{broadcasted} on the Bitcoin P2P network
+      \item Each network node (participant) validates and \textbf{propagates} the transaction
       until it reaches (almost) every node in the network.
-      \item The transaction is verified by a mining node and included in a block of
+      \item The transaction is verified by a mining node and included in a \textbf{block} of
       transactions recorded on the blockchain.
-      \item Once recorded on the blockchain and confirmed by sufficient subsequent
+      \item Once recorded on the blockchain and \textbf{confirmed} by sufficient subsequent
       blocks (confirmations), the transaction is a permanent part of the blockchain
-      \item The funds allocated to a new owner by the transaction can then be spent in a
+      \item The funds allocated to a new owner by the transaction can then be \textbf{spent} in a
       new transaction, extending the chain of ownership
    \end{enumerate}
 }

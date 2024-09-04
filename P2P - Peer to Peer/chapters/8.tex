@@ -67,12 +67,12 @@ So, while a single transaction may be built by anyone, blocks are built by miner
 Node is selected to propose the next block in proportion to a resource that it is hard to
 monopolize: in Bitcoin this resource is \textbf{computational power} and the selection is done on the basis of the Proof of Work.
 
-The Consensus is \textbf{implicit}:
+{The Consensus is \textbf{implicit}:\ns
 \begin{itemize}
    \item No collective distributed algorithm executed by the nodes
    \item No voting
    \item Selection of malicious nodes is also implicitily handled by the system
-\end{itemize}
+\end{itemize}}
 
 Even if the nodes may have occasionally an inconsistent view of the ledger (blockchain forks) consensus will eventually occur, the consistent ledger will eventually be the longest chain.
 \note{This is true if the majority of the nodes are honest.}
@@ -85,16 +85,16 @@ Even if the nodes may have occasionally an inconsistent view of the ledger (bloc
 \end{itemize}
 
 \begin{definition}[Proof of Work]
-   A proof of work is a function $F_d(c,x) \rightarrow {\texttt{True,False}}$ satisfying:
+   {A proof of work is a function $F_d(c,x) \rightarrow {\texttt{True,False}}$ satisfying:\ns
    \begin{enumerate}
       \item \texttt{d} and \texttt{c} are \textit{fixed}
       \item $F_d(c,x)$ is \textit{fast to compute}, if \texttt{d}, \texttt{c}, and \texttt{x} are known
       \item instead, finding \texttt{x} so that $F_d(c,x) = \texttt{True}$ is computationally difficult, but feasible.
-   \end{enumerate}
+   \end{enumerate}}
 \end{definition}
 
 The PoW is hard to solve because the computing output looks like a random 256-bit string where each bit is equally likely to be \texttt{0} or \texttt{1} independently of the other bits, so each output bit looks like coin flips (\texttt{0/1}).
-There is no better way of finding the correct output than trying by \textbf{brute force}.\\
+\ul{There is no better way of finding the correct output than trying by \textbf{brute force}}.\\
 The probability $p$ that the block hash is below the target $T$ and average number of attempts $a$ to find a solution are:
 \begin{align*}
    p=\frac{T+1}{2^{256}} & & a=\frac{1}{p}
@@ -266,7 +266,7 @@ The \textbf{Pool Manager} sends blocks to miners and distributes the reward amon
 }
 
 \textit{Pay-per-share} (PPS) is a common reward system used by mining pools, where the pool manager pays a fixed amount for each share submitted by the miner.
-Miner's are payed from pool's existing balance, and there is no special reward for the miner who actually mines the block.
+Miner's are paid from pool's existing balance, and there is no special reward for the miner who actually mines the block.
 
 \textit{Pay-proportional} is instead a reward system where the pool manager enacts a reward proportional to the amount of work done by the miner, making miners more incentivized to present valid blocks.
 This is less riskful for the pool manager, since payment is enacted only when a block is mined.
@@ -286,7 +286,7 @@ This is less riskful for the pool manager, since payment is enacted only when a 
    \colfill
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/bitcoin_decentralized_pool.png}
+      \includegraphics[width=0.95\columnwidth]{images/bitcoin_decentralized_pool.png}
       \caption{Sharechain and main bitcoin chain}
       \label{fig:bitcoin_decentralized_pool}
    \end{figure}

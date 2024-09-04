@@ -11,8 +11,10 @@
 {It has three key charateristics which are not offered by other DHTs\ns
 \begin{enumerate}
    \item routing information spreads automatically as a side-effect of lookups
+   \note{The list of known nodes is updated with the most recently contacted ones}
    \item flexibility to send multiple requests in parallel to speed up lookups by
    avoiding timeout delays (parallel routing)
+   \note{Sending requests to multiple nodes in the same k-bucket}
    \item iterative routing
    \note{At each routing step of the query, the queried node sends a report to the starting querying node, even if it could not answer the query.}
 \end{enumerate}}
@@ -160,3 +162,10 @@ The actual \textbf{Lookup algorithm} is based on \texttt{FIND\_NODE}.
 many \texttt{FIND\_NODE} can be executed in parallel, according to $\alpha$ that is a system-wide concurrency parameter.
 \note{With $\alpha = 1$, the lookup algorithm is similar to \textit{Chord}, one step progress each time}
 \note{Lookup procedure is the same for \texttt{FIND\_VALUE} and \texttt{FIND\_NODE}}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/kademlia_algorithm.png}
+   \caption{Kademlia Lookup Algorithm}
+   \label{fig:kademlia_algorithm}
+\end{figure}
