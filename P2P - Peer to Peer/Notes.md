@@ -1,0 +1,4 @@
+- 3.3 Kademlia Routing Table
+  - Non capisco bene il discorso sulla vista dell'albero di ciascun nodo, e su come funzionino i bucket
+  - Iterative routing e routing strategies
+- 
