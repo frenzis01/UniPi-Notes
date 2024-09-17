@@ -94,10 +94,10 @@ When the hash table is \textbf{resized}, on the average,only $\frac{k}{n}$ keys 
 
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/dht_chordfinger.png}
+   \includegraphics[width=0.95\columnwidth]{images/dht_chordfinger.png}
    \caption{This image is a bit more precise than the previous one}
    \label{fig:dht_chordfinger}
-   Each $k^{th}$ \textbf{finger} for the node $n$ is defined as $finger[k] = succ(n+2^{k-1})$, i.e. the first node on the circle that succeeds $n+2^{k-1} mod 2^m$, having $1 \leq k \leq m$. 
+   Each $k^{th}$ \textbf{finger} for the node $n$ is defined as $finger[k] = succ(n+2^{k-1})$, i.e. the first node on the circle that succeeds $n+2^{k-1}\ mod\ 2^m$, having $1 \leq k \leq m$. 
 \end{figure}
 
 \begin{paracol}{2}
@@ -138,10 +138,11 @@ So, \textbf{Data Lookup} is performed by computing the hash $h(x)$ of the search
    \label{fig:dht_chordsearch}
 \end{figure}
 
+\newpage
 \subsection{Addressing data}
 Data was usually addressed by \textbf{location}, a \texttt{http://} link to locate resources;
 Such link is an identifier that points to a particular location on the web.\\
-This approach forces us all to \ul{pretend that the data are in only one location}.
+This approach forces us all to \ul{pretend that the data are in only one location}, which is not the case for distributed storage.
 
 IPFS instead uses \textbf{content addressing}, which exploits the cryptographic hash of the content to identify it.
 

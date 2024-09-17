@@ -58,7 +58,7 @@ Recall that the transaction inputs are signed with the private key of the owners
 All the nodes receiving a transaction verify that the sender(s) are really the owners of the transaction.
 
 A node can change the unlocking script in such a way that the transaction has the same effect and the signature is still valid, but the \textit{TXID changes!}
-The transaction ID is computed by hashing a set of data that is a superset of the fields covered by the signature.
+The transaction ID \ul{TXID is computed by hashing a set of data that is a superset of the fields covered by the signature}.
 Adding a \texttt{NO\_OP} operation in the unlocking script, or changing the order of the operations, will change the TXID, but the signature and the unlocking script will still be valid.
 
 \subsection{Exploiting Malleability}
