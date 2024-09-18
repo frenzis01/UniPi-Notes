@@ -35,7 +35,7 @@ This code executed using Clang/LLVM 5.0 takes 1156s (19m 16s) to execute, about 
       \centering
       \includegraphics[width=0.9\columnwidth]{images/02/caches_looporder.png}
       \caption{Performance against loop order}
-      \label{fig:caches_looporder}
+      \label{fig:02/caches_looporder}
    \end{figure}
    
 \end{paracol}
@@ -47,7 +47,7 @@ As you can see, there is a huge difference in the running time of the loop depen
    \centering
    \includegraphics{images/02/rowmajor.png}
    \caption{Memory layout for matrix rows}
-   \label{fig:rowmajor}
+   \label{fig:02/rowmajor}
 \end{figure}
 Matrices are stored in memory in row-major order, so the first loop should iterate over the rows of the matrix, to exploit the cache.
 
@@ -57,7 +57,7 @@ Matrices are stored in memory in row-major order, so the first loop should itera
    \includegraphics[width=0.49\columnwidth]{images/02/memory_layout2.png}\\
    \includegraphics[width=0.49\columnwidth]{images/02/memory_layout3.png}
    \caption{Memory layout and spaciality implications}
-   \label{fig:spaciality}
+   \label{fig:02/spaciality}
 \end{figure}
 
 \section{Compiler Optimization}
@@ -72,7 +72,7 @@ Matrices are stored in memory in row-major order, so the first loop should itera
       \centering
       \includegraphics{images/02/optimization.png}
       \caption{Optimization flags and relative performance}
-      \label{fig:optimization}
+      \label{fig:02/optimization}
    \end{figure}
 \end{paracol}
 
@@ -103,5 +103,68 @@ We don't have to know what's behind the \texttt{cilk\_for} keyword, but it will 
    \centering
    \includegraphics{images/02/loops_rule_of_thumb.png}
    \caption{Parallelizing only the outermost loop leads to optimal performance}
-   \label{fig:loops_rule_of_thumb}
+   \label{fig:02/loops_rule_of_thumb}
 \end{figure}
+
+\newpage
+\section{Tiling}
+Well, the possible optimizations ain't over \smiley.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/02/tiling1.png}\\
+   \includegraphics{images/02/tiling2.png}
+   \caption{Tiling}
+   \label{fig:02/tiling}
+\end{figure}
+Consider the first picture and let's dig into some math. How many memory accesses must the looping perform to fully compute 1 row of C? 
+\begin{align}
+   &4096 \cdot 1 &=\quad& 4096 \textit{ writes to C}\\
+   &4096 \cdot 1 &=\quad& 4096 \textit{ reads from C}\\
+   &4096 \cdot 4096 &=\quad& 1.6777216\cdot 10^6 \textit{ reads from B}\\
+   &1.6777216 + 4096 + 4096 &=\quad& 1.6785408\cdot 10^6 \textit{ total memory accesses}
+\end{align}
+
+But if we consider instead computing a $64\times 64$ block of C we can shrink down the number of memory accesses to half a million:
+\begin{align}
+   & 64 \cdot 64 &=\quad&  4096 \textit{ writes to C}\\
+   & 64 \cdot 4096 &=\quad&  262144 \textit{ reads from A}\\
+   & 4096 \cdot 64 &=\quad&  262144 \textit{ reads from B}\\
+   & 262144 + 262144 + 4096 &=\quad&  528384 \textit{ total memory accesses}\\
+\end{align}
+
+But in general, which would the optimal block size be? The only way is to experiment.
+\note{Why?}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/02/tiling_size.png}
+   \caption{Tile size}
+   \label{fig:02/tiling_size}
+\end{figure}
+\newpage
+
+\section{Where have we gotten so far - Further optimizations}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/02/comparison.png}
+   \caption{Comparison of the various optimizations}
+   \label{fig:02/comparison}
+\end{figure}
+
+\subsection{Recursion in Tiling}
+Tiling may be also implemented as a divide-and-conquer algorithm exploiting recursion. This yields slightly better performance, but requires to tune the recursion base case \textbf{threshold}.
+Having a too small threshold would lead to a lot of overhead, due to many function invocations.
+
+\subsection{Vectorization Flags}
+There may be also flags to enable instructions specific of a given architecture:
+\begin{itemize}
+   \item \texttt{-mavx}: Use Intel AVX vector instructions.
+   \item \texttt{-mavx2}: Use Intel AVX2 vector instructions.
+   \item \texttt{-mfma}: Use fused multiply-add vector instructions.
+   \item \texttt{-march=<string>}: Use whatever instructions are available on the specified architecture.
+   \item \texttt{-march=native}: Use whatever instructions are available on the architecture of the machine doing compilation.
+   \item[] Due to restrictions on floating-point arithmetic, additional flags, such as \texttt{-ffast-math}, might be needed for these vectorization flags to have an effect
+\end{itemize}
+
+You could also use \texttt{AVX Intrinsic Instructions} that provide access to hardware vector operations. They are available in C and C++.
+\href{https://software.intel.com/sites/landingpage/IntrinsicsGuide/}{software.intel.com/sites/landingpage/IntrinsicsGuide}.\\
+These may help further more, but we are getting very closer to the hardware.
