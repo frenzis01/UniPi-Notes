@@ -76,3 +76,64 @@ The locality principle is the driving force that makes the cache work. Locality 
    \item \textit{Where do we store it in the cache?}
    \item \textit{Cache is full, what should we evict?}
 \end{enumerate}
+
+\note{At the beginning of the second half of the $4^{th}$ lecture, the professor displays how to VPN in the unipi and then ssh to the servers.}
+
+\subsection{Cache mapping and eviction strategies}
+\begin{itemize}
+   \item \textbf{Direct-mapped} cache: each memory block can be placed in only one cache line.
+   \item \textbf{n-way} set associative cache: each memory block can be placed in $n$ cache lines.
+   \item \textbf{Least Recently Used} (LRU) cache: the block that has been accessed the least recently is evicted.
+\end{itemize}
+
+\framedt{Transposing Matrices}{
+   Suppose you have to multiply matrix A and B. If you access A as rows, you'll access B as columns.\\
+   Since matrices are stored in row-major order, you won't exploit spatial locality on B, and for each element of A you'll have a cache miss on B, creating the need to evict a line and load another one in cache.\\
+   \textbf{Transposing} B would solve the problem, since you would access B as rows, exploiting spatial locality.
+
+   Prof. Torquati displayed that transposing and then multiplying the matrices would lead to a 2x speedup.
+   \note{17s vs 37s}
+}
+
+\subsection{Cache Write Policies}
+Data in cache may be inconsistent with the value in memory, leading to the need to write back the data to memory. There are two policies:
+\begin{itemize}
+   \item \textbf{Write-through}: data is written to both cache and memory. It is simple but slow.
+   \item \textbf{Write-back}: data is written only to the cache, and then to memory when the block is evicted. It is faster but more complex.
+   \begin{itemize}
+      \item Caches mark data in the cache as dirty (Dirty bit)
+      \item When a dirty line is evicted, it is written in main memory
+      \item A store write buffer is generally used to reduce the cost of cache writes
+   \end{itemize}
+\end{itemize}
+
+\subsection{Cache Coherence}
+\begin{paracol}{2}
+   With private caches per core, it is possible to have several copies of shared data in distinct caches, each cache stores a different value for a single address location.
+   
+   \begin{definition}[Cache incosistency]
+      Two caches store different values for the same variable.
+   \end{definition}
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/04/cache_coherence.png}
+      \caption{Cache incosistency problem}
+      \label{fig:04/cache_coherence}
+   \end{figure}
+
+\end{paracol}
+
+Hardware firmware automatically solves this problem, but it is important to know that it exists.
+The algorithms responsible for this are called \textbf{cache coherence protocols}, a famous one is the \textbf{MESI} protocol, but we ain't going to study it.
+Note however that \ul{the cache coherence protocol granularity is the \textit{cache line}, not the \textit{single variable}.}
+   
+\section{Suggested readings}
+\begin{itemize}
+   \item
+      Chapter 3.1 of the Parallel Programming Concept and Practice book
+   \item
+      Cache-coherence protocols: ``A Primer on Memory Consistency and Cache Coherence'' Daniel J. Sorin, Mark D. Hill, and David A. Wood
+\end{itemize}
