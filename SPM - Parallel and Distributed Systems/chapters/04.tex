@@ -137,3 +137,51 @@ Note however that \ul{the cache coherence protocol granularity is the \textit{ca
    \item
       Cache-coherence protocols: ``A Primer on Memory Consistency and Cache Coherence'' Daniel J. Sorin, Mark D. Hill, and David A. Wood
 \end{itemize}
+
+\section{Advanced Processors and Technologies}
+\subsection{Superscalar CPUs}
+Superscalar CPUs are designed to execute multiple instructions from a single process/thread simultaneously to improve performance and CPU utilization
+
+The processor fetches multiple instructions concurrently in a single clock cycle and executes them out-of-order, exploiting instruction-level parallelism, Results are then re-ordered to ensure they are written back to the register file or memory in the correct program order
+
+However, in sequential programs, the number of instructions that are independent are small thus, the exploited parallelism is low.
+To overcome this limitation, \textbf{SMT} (\textit{Simultaneous Multi-Threading}) has been added in superscalar processors to execute multiple instructions from multiple threads of control simultaneously.
+\note{Hyperthreading is Intel's implementation of SMT}
+
+\subsection{HW Multithreading}
+HW multithreading enablesa single core to execute multiple threads concurrently.
+There are two main types of HW multithreading:
+\begin{itemize}
+   \item \textbf{Fine-grained multithreading}: the processor switches between threads at each cycle (instruction level).
+   \item \textbf{Coarse-grained multithreading}: the processor switches between threads only when the thread in execution causes a stall.
+\end{itemize}
+
+Each thread has its own set of registers and program counter; the processor maintains the context of each thread to quickly switch between them.
+However, they share the same cache and execution units.
+For the OS, each context is seen as a logical core.
+
+\section{Programming Shared Memory Systems}
+\subsection{Threads are the way to go}
+
+Thread creation is more lightweight and faster (from 3x to 5x) than process creation\footnote{A \texttt{fork} system call requires copying (\texttt{memcpy}) more data, e.g. page table}, and threads share the same memory space, so they can communicate easily.
+Creating a thread takes $\mathcal{O}(10^4)$ cycles in C/C++.
+
+\subsection{Data-race}
+\begin{definition}
+   [Data Race] Scenario that occurs when two threads access a shared variable simultaneously and at least one of the accesses is a write, and the accesses are not guarded by a synchronization operation.   
+\end{definition}
+\begin{paracol}{2}
+   DRs produce non-deterministic results, and are hard to debug, since they depend on the thread scheduling. To avoid this issue, we may use \textit{mutexes, condition variables, semaphores, atomic operations, etc.}
+   
+   \note{We will discuss all four, except \textit{semaphores}, which are more common in processes synchronization.}
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/04/data_race.png}
+      \caption{Data Race example}
+      \label{fig:04/data_race}
+   \end{figure}
+
+\end{paracol}
