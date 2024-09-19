@@ -1,2 +1,341 @@
-\chapter{Evolving Distributed Systems}
-\section{Lorem Ipsum}
+\chapter{Elements and Challenges in Distributed Systems}
+\coolquote{A distributed system is one in which the failure of a computer you didn't know existed can render your own computer unusable}{Leslie Lamport}
+
+Various definitions of Distributed Systems have been given in the literature, \ul{none of them \textbf{satisfactory}, and none of them in agreement with any of the others.}
+
+Let’s try to accept a quite simple one:
+\coolquote{
+   A distributed system is a collection of autonomous computing elements that appears to its users as a single coherent system.
+}{
+   Andrew S. Tanenbaum
+}
+
+From this definition, we can derive two key points:
+\begin{enumerate}
+   \item \textbf{Autonomy} - Each node in the system is independent and can make decisions on its own
+   \item \textbf{Transparency} - The system appears as a single entity to the user
+\end{enumerate}
+
+\section{Autonomous Computing Elements}
+{Nodes can act independently from each other, so:\ns
+\begin{itemize}
+   \item nodes need to achieve common goals realized by \textbf{exchanging messages} with
+   each other
+   \item nodes \textbf{react to messages} leading to further communication through message passing
+\end{itemize}}
+
+Having a collection of nodes implies also that each node should know which other nodes are in the system and should contact, and how to reach them.
+In particular it is important to have a \textbf{robust naming system} to identify nodes, and to allow scalability.
+The key point of a naming system and a DNS is to \textbf{decouple} the name of a node from its physical address.
+
+
+Since each node has its own notion of time, it is not always possible to assume that there is a ``global clock'':
+there must be \textbf{synchronization} and \textbf{coordination} mechanisms to ensure that the system behaves correctly.
+
+\section{Transparency}
+The \ul{distributed system should appear as a single coherent system}, so end users should not even notice that they are dealing with the fact that processes, data, and control are dispersed across a computer network.
+
+
+This so-called \textbf{distribution transparency} is an important design goal of distributed systems.
+\note{A ---perhaps not-so-perfect--- example may be Unix-like operating systems in which resources are accessed through a unifying file-system interface Effectively hiding the differences between files, storage devices, and main memory, but also networks}
+
+
+However, striving for a single coherent system introduces relevant issues: 
+e.g., \textbf{partial failures} are inherent to any complex system, in distributed systems they are \ul{particularly difficult to hide}.
+
+\subsection{Middleware}
+
+To aid the need of easing the development of distributed applications, distributed systems are often organized to have a \textbf{separate layer} of software placed on top of the respective operating systems of the computers that are part of the system.\\
+This layer is called \textbf{middleware}. [Bernstein, 1996]
+
+In a sense, middleware is the same to a distributed system as what an operating system is to a computer:
+a manager of resources offering its applications to efficiently share and deploy those resources across a network
+
+We list below some example of possible middleware services.
+
+\subsubsection{RPC - Communication}
+
+Remote Procedure Call (RPC) allows an application to invoke a function that is implemented and executed on a remote computer as if it was locally available.
+
+Developers need merely specify the function header and the RPC subsystem generates the necessary code that establishes remote invocations. 
+
+Notable examples: Sun RPC, Java RMI, Google RPC (gRPC)
+
+\subsubsection{Service Composition}
+Enabling Service composition allows to develop new applications by taking existing programs and gluing them together, e.g. Web services.
+
+An example: Web pages that combine and aggregate data from different sources, e.g. GMaps in which maps are enhanced with extra information from other services.
+
+\subsubsection{Improving Reliability}
+
+\begin{paracol}{2}
+   
+   
+   Horus toolkit allows to build applications as a group of processes such that any message sent by one process is guaranteed to be received by all or no other process.
+   
+   As it turns out, such guarantees can greatly simplify developing distributed applications and are typically implemented as part of the middleware.
+
+   \note{A more down-to-earth example of improving reliability is the use of RAID systems to ensure that data is not lost in case of disk failure.}
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.2\columnwidth]{images/02/horus.png}
+      \caption{Horus Toolkit}
+      \label{fig:02/horus}
+   \end{figure}   
+
+\end{paracol}   
+
+\subsubsection{Supporting Transactions on Services}
+Many applications make use of multiple services that are distributed among several computers.
+
+Middleware generally offers special support for executing such services in an all-or-nothing fashion, commonly referred to as an \textbf{atomic transaction}.
+
+\note{Recall all the mess that can happen with threads, race conditions, and deadlocks? Middleware can help with that.}
+
+The application developer need only specify the remote services involved.
+
+By following a standardized protocol, the middleware makes sure that every service is invoked, or none at all.
+
+\section{Building Distributed\dots is it a good idea?}
+Building distributed systems is a challenging task, and it is not always the best choice.
+There are \textbf{four important goals} that should be met to make building a Distributed System worth the effort:
+\begin{enumerate}
+   \item \textit{\textbf{Resource} accessibility}
+   \item \textit{\textbf{Hide} Distribution}
+   \item \textit{Be \textbf{open}}
+   \item \textit{Be \textbf{scalable}}
+\end{enumerate}
+
+\subsection{Resource Accessibility}
+In a distributed system the access, and share, of remote resources is of paramount importance.
+\textbf{Resources} can be virtually anything (peripherals, storage facilities, data, \dots).
+
+Connecting users and resources makes easier to collaborate and exchange information (hint: look at the success of the Internet).
+
+File-sharing used for distributing large amounts of data, software updates, and data synchronization across multiple servers.
+
+\subsection{Hide Distribution}
+\textbf{Hiding distribution} is a fundamental goal in the design of distributed systems, and is related to an already mentioned key point, \textit{distribution transparency}, but does not limit to it.\\
+It means to hide that processes and resources are physically distributed across multiple computers possibly separated by large distances.\\
+More precisely, it means to enforce the following properties in \ref{tag:02/hide_distribution}:
+
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|l|l|}
+      \texttt{ACCESS} & Hide differences in data representation and how an object is accessed\\
+      \texttt{LOCATION} & Hide where an object is located\\
+      \texttt{RELOCATION} & Hide that an object may be moved to another location while in use\\
+      \texttt{MIGRATION} & Hide that an object may move to another location\\
+      \texttt{REPLICATION} & Hide that an object is replicated\\
+      \texttt{CONCURRENCY} & Hide that an object may be shared by several independent users\\
+      \texttt{FAILURE} & Hide the failure and recovery of an object\\
+   \end{tabular}
+   \caption{Hide Distribution properties}
+   \label{tab:02/hide_distribution}
+\end{table}
+
+\subsubsection{Access Transparency}
+Different systems have different ways to represent and access data.
+A well designed distributed system needs to hide differences in:
+\begin{itemize}
+   \item physical machine architectures
+   \item data representation by different operating systems
+\end{itemize}
+
+A distributed system may have computer systems that run
+different operating systems, each having their own file-
+naming conventions.
+
+\note{Differences in naming conventions, file operations, or in
+low-level communication mechanisms with other
+processes, etc}
+
+\subsubsection{Location and Relocation Transparency}
+
+Location transparency means that users can access
+resources even are not aware where an object is physically
+located in the system.
+
+Naming plays an important role by assigning logical names to
+resources, i.e. names not providing information about physical location.
+
+Basically, naming is an indirection process!
+
+\note{\textit{Shardcake} is a Scala library that provides location transparency for distributed systems, by exploiting ``Entity Sharding''.}
+
+An example of a such a name is the uniform resource locator
+(URL) \href{http://www.unipi.it}{http://www.unipi.it}, which gives no information about the actual location of University’s main Web server.
+
+The entire site may have been moved from one data center to another, yet users should not notice, that is an example of relocation transparency, which is becoming increasingly important in the context of cloud computing.
+\note{Actually this is not the case for UniPi hihi \smiley.}
+
+\subsubsection{Migration Transparency}
+Relocation transparency refers just to being moved across the distributed system, migration transparency is:
+\begin{itemize}
+   \item offered by a system when it supports the mobility of processes and resources initiated by users
+   \item does not affect ongoing communication and operations
+\end{itemize}
+
+A common example is communication between \textit{mobile phones}:
+regardless whether two people are actually moving, mobile phones will allow them to continue their conversation teleconferencing using devices that are equipped with mobile Internet.
+
+\subsubsection{Replication Transparency}
+Resources may be replicated to increase availability or to improve performance by \ul{\textit{placing a copy close} to the place where it is accessed}.
+
+Hide the existence of copies of a resource or that processes are operating in some form of lockstep mode so that \ul{one can take over when another fails}.
+
+To hide replication to users, it is necessary that all replicas have the same name.
+
+Systems that \ul{support replication transparency should support location transparency as well.}
+
+\subsubsection{Concurrency Transparency}
+Two independent users may each have stored their files on the same file server or may be accessing the same tables in a shared database.
+
+It is important that each user does not notice that the other is making use of the same
+resource, this phenomenon is called concurrency transparency
+
+\begin{itemize}
+   \item concurrent access to a shared resource leaves that resource in a \textbf{consistent} state
+   
+   \item consistency achieved through locking mechanisms to give users \textbf{exclusive access} to a
+   resource
+\end{itemize}
+   
+A more refined mechanism is based on \textbf{transactions}, but may strongly impact on scalability.
+
+\subsubsection{Failure Transparency}
+Failure transparency is the ability of a system to mask the failures of components from users, so a user ---or an application--- does not notice that some piece of the system failed and that the system subsequently (and automatically) \textbf{recovers} from that failure.
+
+Masking failures is one of the hardest issues in distributed systems and is even impossible when certain assumptions are made.
+
+The main difficulty in masking and transparently recovering from failures is in the inability to
+distinguish between a dead process and a slowly responding one.
+
+\note{\textit{``Is the server is actually down or is the network too badly congested ?''}
+It is often not easy to tell the difference.}
+
+\subsection{Degree of distribution transparency}
+Distribution transparency is generally considered preferable for any distributed system, however there is a \ul{\textbf{trade-off} between a \textit{high degree of transparency} and the \textit{performance} of a system}.
+
+There are situations in which attempting to blindly hide all distribution aspects from users is \textit{not} a good idea.
+
+\labelitemize{\textit{examples}}{
+   \begin{itemize}
+      \item Internet applications repeatedly try to contact a server before finally giving up, as       attempting to mask a transient server failure before trying another one may slow down the system as a whole.
+      \item Guarantee that replicas, located on different continents, must be consistent all the time,
+      may be costly
+      \note{a single update operation may take seconds to complete, that \ul{cannot be hidden from users}}
+   \end{itemize}
+}
+
+{In other situations it is \textit{not at all obvious} that hiding distribution is ``not'' a good idea.\ns
+\begin{itemize}
+   \item devices that people carry around and where the very notion of location and context awareness is becoming increasingly important
+   e.g., finding the nearest restaurant
+   \item when working real-time on shared documents concurrency transparency could hinder the cooperation
+\end{itemize}}
+
+There \ul{are also other arguments against distribution transparency}.
+Recognizing that full distribution transparency is \textit{impossible}, we should ask ourselves whether it is wise to pretend to achieve it.
+
+In some cases, it may be better to make distribution \textbf{explicit} so that:
+the user and application developer are never tricked into believing
+that there is such a thing as transparency, resulting in users much better understanding the
+behavior of a distributed system, and thus prepared to deal with its behavior.
+
+\section{Openness}
+
+An open distributed system is essentially a system that offers components that can easily be used-by, or integrated, into other systems. 
+An open distributed system itself will often consist of components that originate from elsewhere.
+
+Being open enables two key features:
+\begin{itemize}
+   \item Interoperability, composability, and extensibility
+   \item Separation of policies from mechanisms
+\end{itemize}
+
+Open means that components adhere to standard rules describing the syntax and semantics of those components usually by relying on an Interface Definition Language (IDL).
+An interface definition allows an arbitrary process that needs a certain interface, to interact with another process that provides that interface.
+This allows two independent parties to build completely different implementations of those interfaces.
+
+Proper specifications are \textbf{complete} and \textbf{neutral}.
+\textit{Complete} means that everything that is necessary to make an implementation has indeed been specified.
+However\dots many interface definitions are not at all complete so that it is necessary for a developer to add implementation-specific details.
+This is just as important is the fact that specifications \textbf{do not prescribe what an implementation should look like}, they should be \textit{neutral}.
+
+
+
+As pointed out in Blair and Stefani, completeness and neutrality are important for \textbf{interoperability} and \textbf{portability}.
+\begin{itemize}
+   \item \textbf{Interoperability} - characterizes the extent by which two implementations of
+   systems from different manufacturers can work together
+   \begin{itemize}
+      \item by relying on each other’s services
+      \item as specified by a common standard
+   \end{itemize}
+   \item \textbf{Portability} - characterizes to what extent an application developed for a
+   given distributed system can executed
+   \begin{itemize}
+      \item without modification
+      \item on a different distributed system implementing the same interfaces
+   \end{itemize}
+\end{itemize}
+
+
+Another important goal for an open distributed system is that it should be \ul{easy to \textbf{configure} the system out of different components} (possibly from different developers).
+Also, it should be easy to \textbf{add} new components or replace existing ones without affecting those components that stay in place.\\
+In other words, an open distributed system should also be \textbf{extensible}.
+
+\note{For example, in an extensible system, it should be relatively easy to add parts that run on a different operating system, or even to replace an entire file system}
+
+\subsection{Policy and Mechanism Separation}
+
+To achieve flexibility in open distributed systems
+it is crucial that the system be organized as a collection of relatively small and easily replaceable or adaptable components.
+
+This implies to provide definitions not only for the highest-level interfaces, i.e., those seen by users and applications, but also for interfaces to internal parts of the system and describe how those parts interact.
+
+This approach is an alternative to the classical monolithic approach in which components are implemented as one, huge program makes hard to replace or adapt a component without affecting the entire system.
+
+\section{Scalability}
+We were used to having relatively powerful desktop computers for office applications and storage.
+
+We are now witnessing that such applications and services are being placed ``in the cloud'',leading in turn to an increase of much smaller networked devices such as tablet computers.
+
+With this in mind, scalability has become one of the most important design goals for developers of distributed systems.
+
+\subsection{Dimensions of Scalability}
+Scalability is a complex issue and can be seen from different perspectives, such as:
+\begin{itemize}
+\item \textbf{Size} - A system can be scalable with respect to its size i.e., we can add more users and resources to the system without any noticeable loss of performance.
+\item \textbf{Geographical} - A geographically scalable system is one in which the users and resources may be distant, but communication delays are hardly noticed.
+\item \textbf{Administrative} - An administratively scalable system is one that can still be easily managed even if it spans many independent administrative organisations
+\end{itemize}
+
+\subsection{Size scalability}
+Many \textbf{users} need to be supported $\rightarrow$ limitations of centralized services.
+
+Many services are \textbf{centralized} $\rightarrow$ implemented by a single server running on a specific machine or in a group of collaborating servers co-located on a cluster in the same location.
+
+The problem with this scheme is obvious: the server, or group of servers, can become a \textbf{bottleneck} due to three root causes:
+\begin{itemize}
+   \item The computational capacity, limited by the CPUs [CPU bound]
+   \item The storage capacity, including the I/O transfer rate [I/O bound]
+   \item The network between the user and the centralized service
+   [Network bound]
+\end{itemize}
+
+\subsection{Geographical scalability}
+
+This kind of scalability relates on the difficulties in scaling existing distributed systems that are \textbf{designed for local-area networks}, many of them even based on synchronous communication e.g., a party requesting service blocks until a reply is sent back from the server implementing the service.
+
+% //TODO
+
+\subsection{Administrative scalability}
+
+% //TODO
+
+% TEST
