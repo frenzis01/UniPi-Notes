@@ -330,12 +330,15 @@ The problem with this scheme is obvious: the server, or group of servers, can be
 
 \subsection{Geographical scalability}
 
+TLDR: Solutions developed for local-area networks cannot always be easily ported to a wide-area system.
+
 This kind of scalability relates on the difficulties in scaling existing distributed systems that are \textbf{designed for local-area networks}, many of them even based on synchronous communication e.g., a party requesting service blocks until a reply is sent back from the server implementing the service.
 
-% //TODO
+Communication patterns are often consisting of many client-server interactions as may be the case with database transactions;
+this approach generally works fine in LANs where communication between two machines is often just a few hundred microseconds, but does not scale to WANs where communication may take hundreds of milliseconds.
+Besides in WANs, the probability of packet loss is much higher than in LANs, and the bandwidth is much lower.
 
 \subsection{Administrative scalability}
-
-% //TODO
-
-% TEST
+This addresses how to scale a distributed system across multiple, independent administrative domains.
+\note{A major problem that needs to be solved is that of conflicting policies with
+respect to resource usage (and payment), management, and security}
