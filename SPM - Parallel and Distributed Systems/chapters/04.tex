@@ -185,3 +185,110 @@ Creating a thread takes $\mathcal{O}(10^4)$ cycles in C/C++.
    \end{figure}
 
 \end{paracol}
+
+\subsection{False Sharing}
+Caches are organized in cache lines, and cache coherence is managed at the cache line granularity. 
+\begin{definition}
+   [False Sharing] Scenario that occurs when two threads access different variables that reside on the same cache line. The cache coherence protocol will invalidate the cache line, so actually the two threads won't share anything.
+\end{definition}
+
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/04/false_sharing.png}
+   \caption{False Sharing slide}
+   Different threads access different variables which however reside on the same cache line.
+   \label{fig:04/false_sharing}
+\end{figure}
+When False Sharing occurs, the performance of the system is degraded, since the cache line is invalidated and the cache coherence protocol keeps the cache line consistent among all copies.
+
+Looking at Fig. \ref{fig:04/false_sharing}, suppose that $T_1$ accesses $y_2$:
+the entire $y$ cache line is ---marked as?--- \textbf{invalidated}, so when $T_1$ accesses $y_1$, it will have a cache miss, and the cache line will be \st{reloaded from memory} ``moved from one core to another''\footnotemark[2]
+
+
+\footnotetext[2]{Prof. Torquati said this, not sure if saying it gets ``reloaded from mem'' is correct}.
+
+\newpage
+
+\subsubsection{Padding}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/04/false_sharing_demo.png}
+   \includegraphics{images/04/false_sharing_program.png}
+   \caption{False Sharing demo exec demo}
+   \label{fig:04/false_sharing_demo}
+   Prof. Torquati displayed that the exec time of a dummy program which increments two distinct variables in a struct went from 2.6s to 10.3s, when going from sequential to parallel execution. The overhead is due to false sharing.
+\end{figure}
+
+Fig. \ref{fig:04/false_sharing_demo} also displays a possible solution to the problem: \textbf{padding} the struct with a dummy variable, so that the two variables are placed on different cache lines. Even though looks a bit hardcoded, it works indeed!
+Exec time, went from 2.6s to 2.9s, basically the same time, since the two variables are now on different cache lines; there is only some overhead due to the threads creation.
+
+\framedt{How can i understand if false sharing is happening in a complex program?}{Test.}
+
+\subsubsection{Local variables}
+
+\begin{paracol}{2}
+
+   \colfill
+   Actually the better solution would be to use \textbf{local variables}, since they are stored in registers, and each thread has its own stack, so there is no sharing at all.
+   \colfill
+
+   \switchcolumn
+   
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/04/false_sharing_local.png}
+      \caption{Local variable stored in registers}
+      \label{fig:false_sharing_local}
+   \end{figure}
+\end{paracol}
+      
+
+\framedt{Compiler optimization}{
+   Modern compilers are able to optimize the code and avoid false sharing. If the example in Fig. \ref{fig:04/false_sharing_demo} is compiled with \texttt{g++ -O3} (instead of \texttt{-O0}), the exec time goes back to normal.
+
+   However, it is not always possible to rely on the compiler, and in fact many times it does not work. So, it is better to pad the struct or use local variables, or avoid false sharing in general.
+}
+\newpage
+\section{SIMD and Vectorization}
+\textbf{SIMD} - \textit{Single Instruction, Multiple Data}. A parallel computing model that exploits data-level parallelism.
+There are two limitations which must be kept in mind:
+\begin{enumerate}
+   \item ALUs are \textit{limited in number}, so the number of operations that can be executed in parallel is limited.
+   \item All ALUs must execute the \textit{same instruction}.
+\end{enumerate}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/04/SIMD.png}
+   \caption{SIMD and ALUs}
+   \label{fig:04/SIMD}
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/04/SIMD2.png}
+   \caption{Here the ALUs either execute an instruction ---another ALU is performing--- or stay \textbf{idle}.}
+   \label{fig:04/SIMD2}
+\end{figure}
+
+\subsection{AVX registers}
+
+\begin{lstlisting}[language=C,label={lst:04/avx},caption={Intrinsics}]
+   //AVX-Programming with C/C++ Intrinsics
+   __m256 a, b, c; // declare AVX registers
+   ... // initialize a and b
+   c = _mm256_add_ps(a, b); // c[0:8] = a[0:8] + b[0:8]
+   // or c = _mm512_add_pd(a, b); c[0:8] = a[0:8] + b[0:8]
+\end{lstlisting}
+
+\textbf{Intrinsics} are assembly-coded functions that can be used in C/C++ to exploit SIMD parallelism. They are provide a light abstraction from assembly.
+Exploiting intrinsics as in Lst. \ref{lst:04/avx} may lead to a 8x speedup, they are very powerful.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/04/intrinsics.png}
+   \caption{Intrinsics explained}
+   \label{fig:04/intrinsics}
+\end{figure}
