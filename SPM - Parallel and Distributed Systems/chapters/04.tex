@@ -292,3 +292,53 @@ Exploiting intrinsics as in Lst. \ref{lst:04/avx} may lead to a 8x speedup, they
    \caption{Intrinsics explained}
    \label{fig:04/intrinsics}
 \end{figure}
+
+\note{There are further notions on intrinsics and vectorization i did not report here}
+\section{Vectorizing code}
+\subsection{AoS vs SoA}
+
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/04/aos_soa.png}
+      \caption{AoS vs SoA}
+      \label{fig:04/aos_soa}
+   \end{figure}
+\end{paracol}
+\begin{itemize}
+   \item \textbf{AoS} - \textit{Array of Structures}: stores records consecutively in a single array.
+   \note{
+   Copilot:   
+   ``each element of the array is a struct, and the struct contains all the data.''}
+   \item \textbf{SoA} - \textit{Structure of Arrays}: 
+   uses one array per dimension. Each array stores only the values of the associated element dimension
+   \note{
+      Copilot:``each element of the array is a single data type, and the data is stored in different arrays.''
+   }
+\end{itemize}
+
+Typically AoS does not allow for vectorization, since the data is not contiguous in memory, while SoA does, since the data is contiguous, allowing to perform operations on up to \texttt{\#registers} triplets of data.
+
+\subsection{Loops - Compiler Optimization}
+The compiler is able to optimize the code and vectorize it, but it is not always possible.
+In particular, there are some guidelines concerning loops to allow the compiler to vectorize the code:
+\begin{itemize}
+   \item The loop count must be known at entry to the loop.
+   \item Conversely, the exit condition must not be data-dependent.
+   \begin{itemize}
+      \item \texttt{break,goto,switch,return} statements are forbidden
+      \item \texttt{if} is allowed and may be vectorized if it can be implemented as a masked assignment
+   \end{itemize}
+   \item No library functions calls. If a function call may be inlined it is OK.
+   \note{What does this mean? 
+   % //TODO
+   }
+   \item No read/write dependencies between iterations. e.g. the following code is \textit{not} vectorizable:
+   \begin{lstlisting}
+      A[0] = 0;for(int_i=1; i<N; ++i) A[i]= A[i-1] + 1;
+   \end{lstlisting}
+   \item No pointer aliasing, i.e. no two pointers can point to the same memory location.
+   \begin{itemize}
+      \item The type qualifier \lstinline|_restrict_| tells the compiler that the pointer is the only pointer that points to that memory location. 
+   \end{itemize}
+\end{itemize}
