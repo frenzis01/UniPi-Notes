@@ -99,7 +99,7 @@ So, what do we want from an interconnection network?
 \end{itemize}
 
 \subsubsection{Simple Communication cost model}
-\begin{equation}
+\begin{equation}\label{eq:05/comm_cost_model}
    T_{comm} = t_0 + n \times s \approx \begin{cases}
       t_0 & \textit{for small n}\\
       n \times s & \textit{for large n}
@@ -173,3 +173,44 @@ So, what do we want from an interconnection network?
       \label{fig:05/dragonfly}
    \end{figure}
 \end{paracol}
+
+\section{Computation-to-Communication Overlap}
+
+It is always udeful for the sender to execute a \textbf{non-blocking send} to the destination process: the NICE executes the data transfer in the background, and then notifies the sender process when the tranmission is completed, so that the sender can continue with its computation.
+This creates a partial or full \textit{overlap} between computation and communication.
+
+\textit{How can we achieve this overlap?}
+
+\subsection{Syncronous vs Asynchronous Communication}
+
+The \textbf{asynchrony degree} of a channel is the maximum number of messages that can be sent on the channel without waiting for the receiver to start receiving data.
+Essentially, it is the length of the queue of messages that can be sent on the channel.
+
+\begin{itemize}
+   \item \textbf{Synchronous} - the operation comples only after the message has been received/sent. i.e. a peer \textbf{blocks} until the other peer completes the operation.
+   \item \textbf{Asynchronous} - the communication operation returns immediately, without waiting for the message to be effectively sent/received.
+   \begin{itemize}
+      \item The completion/success will be tested later on
+      \item The number of messages that can be sent depends on the \textbf{asynchrony degree} of the channel.
+   \end{itemize}
+\end{itemize}
+
+Note also that sometimes \textbf{input non-determinism} must be taken into account:
+the \textit{receive} operation may return a message from any channels in the set, and the message picking algorithm is random and non-predictable.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/05/input_determism.png}
+   \caption{Input non-determinism}
+   \label{fig:05/input_determism}
+\end{figure}
+
+\section{Foster's Parallel Algorithm Design Method}
+There is no one-fits-all recipe for parallelizing sequential programs, however\dots Foster's \textbf{PCAM} approach provides some useful guidelines to keep in mind when designing parallel algorithms.
+
+\begin{itemize}
+   \item \textbf{Partitioning} - divide the problem into a large amount of small fine-grained tasksk that can be executed in parallel
+   \item \textbf{Communication} - determine the required communication pattern between the tasks (\textit{data dependencies})
+   \item \textbf{Aggolmeration} - combine identified tasks into larger coarse-grained tasks to \ul{reduce communication by improving data locality}
+   \item \textbf{Mapping} - assign tasks to processes and threads to minimize communication, enable concurrency and \textit{balance workload}
+\end{itemize}
