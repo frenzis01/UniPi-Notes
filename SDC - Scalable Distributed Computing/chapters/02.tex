@@ -342,3 +342,95 @@ Besides in WANs, the probability of packet loss is much higher than in LANs, and
 This addresses how to scale a distributed system across multiple, independent administrative domains.
 \note{A major problem that needs to be solved is that of conflicting policies with
 respect to resource usage (and payment), management, and security}
+
+\section{How to scale?}
+
+% //TODO
+
+\subsection{Hiding Communication Latencies}
+
+\subsection{Distributing Work}
+
+\subsection{Replication - Caching}
+
+
+\subsection{Pitfalls}
+Developing a scalable and distributed system is a formidable task.
+Resources \textbf{dispersion} must be taken into account at design time, otherwise the system will be complex and flawed.
+
+Whenever someone approaches designing a distributed system for the first time, it is easy to make mistakes. In fact, Peter Deutsch, in his famous fallacies of distributed computing, lists the following fallacies that are often made by developers of distributed systems:
+\begin{itemize}
+   \item Network is reliable, secure and homogeneous
+   \item The topology does not change
+   \item Latency is zero, bandwidth is infinite
+   \item Transport cost is zero
+   \item There is one administrator
+\end{itemize}
+
+\note{Some latency-sensitive applications are:
+\begin{itemize}
+   \item Online gaming
+   \item Video conferencing
+   \item Remote surgery
+   \item \dots
+\end{itemize}}
+
+% //TODO
+
+
+
+\section{Types of distributed systems}
+
+\subsection{HP(D)C - Clusters}
+Collection of similare workstations closely connected by means of a high-speed network, used to solve large-scale problems.
+Nodes typically run the same operating system and are somehow \textbf{homogeneous}.
+
+Clusters are used in the most important supercomputers in the world.
+
+\ul{Clusters are always \textit{preferrable} to a single super-powerful machine}, but not only because they are cheaper and reliable, but because they easily allow for \textbf{horizontal scalability}.
+
+\framedt{
+   Beowulf clusters
+}
+{Linux-based Beowulf clusters are cheap and easy to build, and are used in many scientific applications.}
+% //TODO Mosix
+
+\subsection{HP(D)C - Grid}
+Still HPC, but here the nodes belong to different administrative domains, and may be geographically distributed.
+Grid computing consists of distributed systems that are often constructed as a \textbf{federation} of computer systems.\\
+Clearly, the nodes in a grid are \textbf{heterogeneous} and may run different operating systems.
+
+Heterogeneity actually may be advanteageous, since different workloads may be better suited to different types of machines.
+
+\note{\textbf{Globus} is an architecture initially proposed by Foster and Kesselman, and is one of the most widely used grid middleware systems.}
+
+
+\subsection{Cloud}
+
+Cloud computing is a model outsourcing the entire infrastructure.
+The key point is the providing the facilities to dynamically construct an infrastructure and compose what is needed from available resources.\\
+This is not really about being HPC, but about being able to scale up and down as needed, and in general providing lots of resources.
+
+The father of \textit{cloud} was the the concept of \textbf{utility computing}\footnote{\textit{``utilities''} in english are water, gas, electricity, etc\dots}., by which a customer could upload tasks to a data center and be charged on
+a per-resource basis.
+
+\labelitemize{Types}{
+\begin{itemize}
+   \item \textbf{IaaS} - Infrastructure as a Service
+   \item \textbf{PaaS} - Platform as a Service
+   \item \textbf{SaaS} - Software as a Service
+   \item \textbf{FaaS} - Function as a Service
+   \item \textit{Many-other-stuff as a service}, such as Backend aaS, Database aaS, etc\dots
+\end{itemize}}
+
+{Cloud computing is very popular, but there a few issues concerning it:\ns
+\begin{itemize}
+   \item Lock-in - Once you start using a cloud provider, it is hard to switch to another one
+   \note{Prof. Dazzi says that in general, it is cheaper to push data in the cloud, but more costful to pull it.}
+   \item Security and privacy issues - You are giving your data to someone else
+   \item Dependence on the network - If the network resources ---or simply the network--- go down, you are in trouble
+\end{itemize}}
+
+\section{Pervasive systems}
+
+% //TODO 
