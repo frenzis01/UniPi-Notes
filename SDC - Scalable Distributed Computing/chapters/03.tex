@@ -50,10 +50,37 @@ Messages between nodes can be delayed due to network congestion, causing events 
 PTP (Precision Time Protocol) is a protocol used to synchronize clocks in a network with sub-microsecond accuracy. Typically used in high-frequency trading, telecommunications, and industrial automation.
 
 P TP uses a master-slave architecture, with a grandmaster clock providing time to all slaves.
-PTP timestamps are often hardware- assisted for higher precision (e.g., using Network Interface Cards (NICs) with timestamping capabilities)
+PTP timestamps are often hardware-assisted for higher precision (e.g., using Network Interface Cards (NICs) with timestamping capabilities).
+
+According to prof. Dazzi, PTP allows for more precision than NTP, but it still limited by the underlying hardware: if there isn't good hardware to support the protocol, than we can't achieve the high precision.
 
 \note{In future lessons theses two protocols will be covered in more detail}
 
 \subsection{Logical and Phyisical Clocks}
 Logical clocks do not represent the actual time, but they are used to order events in a distributed system, ensuring that causally related events are ordered correctly even if the actual phyisical clocks are not synchronized.\\
-Common examples are Lamport timestamp and vector clocks.
+Common examples are \textbf{Lamport} timestamps and vector clocks.
+
+\subsubsection{Lamport Timestamps}
+\labelitemize{Lamport}{
+   \begin{enumerate}
+      \item Each process within this system maintains a counter which is incremented with each event.
+      \item When sending a message, a process includes its current counter value.
+      \item The receiving process then updates its counter to be greater than the highest value between its own counter and the received counter, ensuring a consistent sequence of events.
+   \end{enumerate}
+}
+
+\note{If Client A writes to a file and then Client B reads from the same file, Lamport timestamps can help ensure that Client B sees the updated file contents.
+Client A’s write operation is assigned a timestamp, and when Client B reads the file, it updates its counter to reflect the most recent write.
+This ensures that all subsequent operations by Client B are correctly ordered after Client A’s write, maintaining the consistency of the file system.}
+
+\subsubsection{Vector Clocks}
+\labelitemize{Vector}{
+   \begin{enumerate}
+      \item Each process maintains a vector of counters, one for each process in the system.
+      \item When sending a message, a process increments its own counter in the vector, and includes the entire vector in the message.
+      \item The receiving process updates its vector by taking the element-wise maximum between its own vector (clock) and the received vector.
+   \end{enumerate}
+}
+
+\note{This helps in merging conflicts in collaborative editing applications such as Google Docs.
+By examining the vector clocks, the system can determine the causality of edits and merge changes appropriately, ensuring that all users see a consistent view of the document}

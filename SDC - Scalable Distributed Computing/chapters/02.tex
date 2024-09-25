@@ -344,14 +344,46 @@ This addresses how to scale a distributed system across multiple, independent ad
 respect to resource usage (and payment), management, and security}
 
 \section{How to scale?}
+Scalability problems in distributed systems appear as performance problems caused by limited capacity of servers and network. 
+Improving their capacity (e.g., by increasing memory, upgrading CPUs, or replacing network modules) is referred to as \textbf{scaling up}, while \textbf{scaling out} refers to deploying more servers.
 
-% //TODO
+There are three main strategies to \textit{scale out}, they are discussed in the following sections.
 
 \subsection{Hiding Communication Latencies}
+Applies in the case of geographical scalability, and aims at avoiding waiting for responses to remote-service requests.
+Instead waiting for a reply, do other useful work at the requester side, and when the reply arrives invoke a special \textit{handler};
+in other words, implement \textbf{asynchronous communication}.\\
+This is very much used in batch-processing systems and parallel applications, contexts where indenpendent tasks can be  scheduled for execution while another task is waiting for communication to complete.
+
+In some scenarios asynchronous communication does not fit; a solution is to move part of the computation from server to client. This motivates \textit{``hierarchical approaches''}. This is the foundation of \textbf{edge-computing}.
+
 
 \subsection{Distributing Work}
 
+Another scaling technique is partitioning and distribution: taking a component, splitting it into smaller parts, and subsequently spreading those parts across the system.
+
+A very simple example is the World Wide Web: to most users the web appears to be an enormous document-based information system, but in reality it is a distributed system in which the documents are stored on many different servers.
+
 \subsection{Replication - Caching}
+Scalability problems often appear in the form of \textbf{performance degradation}, thus it is generally a good idea to actually replicate components across a distributed system. Replication increases \textbf{availability} and also helps to \textbf{balance the load} between components, \ul{leading to better performance}.
+\note{Also, in geographically widely dispersed systems, having a copy nearby can hide much of the \textit{communication latency} problems mentioned before.}
+
+\subsubsection{Caching}
+Caching results in making a copy of a resource, generally in the proximity of the client accessing that resource. In contrast to replication, \ul{caching is a decision made by the \textit{client} of a resource and \textbf{not} by the \textit{owner} of a resource.}
+
+The most serious drawback to caching and replication in general is handling the \textbf{inconsistency} that may arise when a copy of a resource is updated.
+Incostincency occurs always, and to what extent it can be tolerated depends highly on the usage of a resource.
+\note{Seeing a cached web page, old of a few minutes, is acceptable. Old Stock-exchanges are not.}
+
+\framedt{Non-scalability}{
+   \textbf{Strong-consistency} is difficult to enforce. If two updates happen \textit{concurrently}, it is required that updates are processed in the same \textbf{order} everywhere, introducing an additional global ordering problem.
+   Besides, combining strong consistency with high availability is, in general, impossible.
+   
+   Global synchronization mechanisms are typically not scalable. So\dots
+
+   \ul{\textit{Scaling by replication may introduce inherently non-scalable solutions}}.
+}
+
 
 
 \subsection{Pitfalls}
@@ -367,16 +399,15 @@ Whenever someone approaches designing a distributed system for the first time, i
    \item There is one administrator
 \end{itemize}
 
+This happens because this issues, when developing non-distributed applications, most likely do not show up.
+
 \note{Some latency-sensitive applications are:
 \begin{itemize}
    \item Online gaming
    \item Video conferencing
    \item Remote surgery
-   \item \dots
+   \item \dots % don't remeber the 4th, but it is not important
 \end{itemize}}
-
-% //TODO
-
 
 
 \section{Types of distributed systems}
@@ -433,4 +464,20 @@ a per-resource basis.
 
 \section{Pervasive systems}
 
-% //TODO 
+The distributed systems discussed so far are largely characterized by their stability:
+nodes are fixed and have a more or less permanent and high-quality connection to a network.
+To a certain extent, this stability is realized through the various techniques for achieving distribution transparency
+
+However, matters have changed since the introduction of mobile and embedded computing devices, leading to what are generally referred to as \textbf{pervasive systems}.\\
+The separation between users and system components is much more \textit{blurred}.
+Typically there is no single dedicated interface, such as a screen/keyboard combination, and in the system there may be many \textbf{sensors} picking up various aspects of a user's behavior.
+
+Many devices in pervasive systems are characterized by being \textbf{small}, battery-powered, mobile, and a wireless connection.
+\note{These are not necessarily \textit{restrictive} aspects, consider Smartphones, for instance.}
+
+We may distinguish three types of pervasive systems, which may overlap:
+\begin{enumerate}
+   \item Ubiquitous computing systems
+   \item Mobile systems
+   \item Sensor networks
+\end{enumerate}
