@@ -152,3 +152,161 @@ So, the first drawback is that LDMEA incurs a high number of messages (3n) for e
 Besides, LDMEA also has to handle \textbf{failures}: requires additional mechanisms to handle process failures and network partitions.
 
 However, the message passing in LDMEA, aside from making it suitable for distributed systems, even though it introduces overhead, it is still better than the polling mechanism in LBA, where processes have to continuously check for ticket values.
+
+\subsection{Other approaches}
+Lamport LBA and LDMEA are just two examples of mutual exclusion algorithms. There are many other algorithms that provide mutual exclusion in distributed systems, each with its own strengths and weaknesses.
+
+Typically they are classified in three categories:
+\begin{enumerate}
+   \item Token-based algorithms
+   \item Non token-based algorithms
+   \item Quorum-based algorithms
+\end{enumerate}
+
+\newpage
+\section{Token-based Algorithms}
+A Token-Based Approach is a method used in distributed systems to manage access to a critical section. In this approach, \ul{a \textbf{unique token} circulates among the processes. Only the process that holds the token is allowed to enter the critical section}, ensuring \textbf{mutual exclusion}.
+
+\paragraph*{Advantages}
+\begin{itemize}
+   \item \textbf{Efficiency} - When the token is well-managed, the system operates efficiently.
+   \item Low Communication \textbf{Overhead} - There is minimal communication overhead when there is no contention for the token.
+\end{itemize}
+
+\paragraph*{Drawbacks}
+\begin{itemize}
+   \item Vulnerability to \textbf{Token Loss} - If the token is lost, it can disrupt the entire system.
+   \item Token Circulation \textbf{Delays} - Delays in token circulation can lead to inefficiencies and increased waiting times for processes.
+\end{itemize}
+
+\subsection{Suzuki-Kasami Algorithm}
+The process holding the token has exclusive access to the critical section. Request messages are sent to all processes when a process wants to enter.\\
+Keep in mind that Suzuki-Kasami \ul{does \textbf{not} exploit logical clocks}. 
+
+\framedt{Scenario}{
+\begin{itemize}
+   \item P1 wants to enter the critical section.
+   \item It sends a request to all other processes.
+   \item If it holds the token, it enters the critical
+   section.
+\end{itemize}
+}
+
+\subsubsection{Data Structures}
+Each \textbf{process} maintains one data structure:
+\begin{itemize}
+   \item An array \lstinline|RN_i[N]|(for Request Number), \lstinline|i| being the \lstinline|ID| of the process containing this array, where \lstinline|RN_i[j]| stores the last Request Number received by \lstinline|i| from \lstinline|j|
+\end{itemize}
+
+The \textbf{token} contains two data
+structures:
+\begin{itemize}
+	\item An array \lstinline|LN[N]|(for Last request Number), where \lstinline|LN[j]| stores the most recent Request Number of process \lstinline|j| for which the token was successfully granted
+	\item A queue \lstinline|Q|, storing the \lstinline|ID| of processes waiting for the token
+\end{itemize}
+
+\subsubsection{Algorithm}
+\paragraph*{Requesting the CS}
+When process \lstinline|i| wants to enter the CS, if it does not have the token, it:
+\begin{itemize}
+	\item increments its sequence number \lstinline|RN_[i]|
+	\item sends a request message containing new sequence number to all processes in the system
+\end{itemize}
+
+\paragraph*{Releasing the CS}
+When process \lstinline|i| leaves the CS, it:
+\begin{itemize}
+	\item Sets \lstinline|LN[i]| of the token equal to \lstinline|RN_i[i]|. This indicates that its request \lstinline|RN_i[i]| has been executed.
+	\item for every process k not in the token queue \lstinline|Q|, it appends \lstinline|k| to \lstinline|Q| if \lstinline|RN_i[k] == LN[k]+1|. This indicates that process \lstinline|k| as a pending request
+	\item if the token queue \lstinline|Q| is not empty after this update, it pops
+   a process ID \lstinline|j| from \lstinline|Q| and sends the token to \lstinline|j|
+	\item otherwise, it keeps the token
+\end{itemize} 
+
+\paragraph*{Performance}
+\begin{itemize}
+	\item Either 0 or N messages for CS invocation (no messages if process holds the token; otherwise N-1 request and 1 reply)
+	\item Synchronization delay is 0 or N (N-1 requests and 1 reply)
+\end{itemize}
+
+
+The main two \textbf{issues} are discerning \textbf{outdated requests} from current ones, and determining which site is going to get the token next.
+Besides, if a token is lost, processes can hang; token recovery mechanisms or
+timeout strategies may be implemented to handle token loss.
+
+
+On the other hand it is \textbf{efficient} in terms of message passing, as it only requires up to N messages for each CS invocation, and the synchronization delay is is 0 or N (N-1 requests and 1 reply).
+It suits high-latency networks.
+
+
+
+\section{Non-token-based Algorithms}
+
+Processes communicate directly with each other to request permission to enter the critical section.
+There is \textbf{\textit{no} central authority} or \textbf{token}, and there are messages exchanged to determine access rights.
+
+\subsection{Ricart-Agrawala Algorithm}
+\label{sec:04/ricart_agrawala}
+Its goal is to achieve mutual exclusion by having processes send requests to each other: a process sends a request message to all other processes, waiting for replies to enter the critical section.
+
+All processes communicate directly without a token in a decentralized fashion, and for each request $2(N-1)$ messages are exchanged.
+
+\textbf{Fairness} is enforced by the timestamping mechanism, where the process with the smallest timestamp has priority: requests are served based on the order of arrival, governed by logical timestamps. If two processes have the same timestamp, the process with the lower ID gets priority.
+
+Considering the previous points, the Cons are that message passing is high, and the algorithm is not suitable for high-latency and unreliable networks.
+
+\section{Quorum-based Algorithms}
+
+Instead of communicating with all processes, a process communicates with only a subset (quorum) of processes to get permission to enter the critical section.
+
+\subsection{Maekawa's Algorithm}
+A \textbf{quorum} is a subset of processes that must grant
+permission for mutual exclusion.
+Ensures that any two quorums overlap, guaranteeing access.
+
+It has a reduced number of messages compared to the Ricart-Agrawala (Sec. \ref{sec:04/ricart_agrawala} algorithm, and fits nicely environments with many \textbf{processes} and \textbf{high contention}.
+
+\section{Wrap Up}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/04/wrapup_key.png}
+   \caption{Summary of the Key features}
+   \label{fig:04/wrapup_key}
+\end{figure}
+
+\paragraph*{Message complexity}
+Message Complexity:
+\begin{itemize}
+	\item \textbf{Suzuki-Kasami} - Low message overhead during token passing.
+	\item \textbf{Ricart-Agrawala} - High message complexity due to multiple
+requests and replies.
+	\item \textbf{Maekawa} - Reduced message count by only requiring
+quorum approval.
+\end{itemize}
+
+\paragraph*{Scalability Considerations}
+
+\begin{itemize}
+   \item \textbf{Token}-Based - Scales well with fewer processes; token management becomes complex as the number of processes increases.
+   
+   \item \textbf{Non-token} Based - Scalability issues arise with an increasing number of processes due to high message overhead.
+   
+   \item \textbf{Quorum}-Based - Efficient for many processes, but the quorum size must be managed carefully to avoid performance degradation.
+\end{itemize}
+
+\paragraph*{Potential Strategies}
+
+\begin{itemize}
+	\item \textbf{Suzuki-Kasami} - Implement token recovery mechanisms to recreate lost tokens.
+	\item \textbf{Ricart-Agrawala} - Use timeouts to handle unresponsive processes.
+	\item \textbf{Maekawa} - Adjust quorum sizes dynamically based on active processes.
+\end{itemize}
+
+\paragraph*{Takeaway}
+
+\begin{itemize}
+	\item \textbf{Suzuki-Kasami} - Efficient token management but vulnerable to loss.
+	\item \textbf{Ricart-Agrawala} - Fairness and decentralization but high message complexity.
+	\item \textbf{Maekawa} - Reduced communication overhead with quorum mechanisms but requires careful management to avoid deadlocks.
+\end{itemize}
