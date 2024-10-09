@@ -1,0 +1,200 @@
+\chapter{Deadlocks}
+
+\begin{definition}
+   [Deadlock]
+   A deadlock occurs when a set of processes is waiting for resources held by other processes in the set, resulting in a circular wait where no process can proceed.
+\end{definition}
+
+{There are Four \textit{Necessary} Conditions (\textit{Coffman} Conditions) in order to have a deadlock:\ns
+\begin{itemize}
+	\item \textbf{Mutual Exclusion}: Resources cannot be shared.
+	\item \textbf{Hold and Wait}: Processes holding resources can request new ones.
+	\item \textbf{No Preemption}: Resources cannot be forcibly taken away.
+	\item \textbf{Circular Wait}: A closed chain of processes exists, where each holds a resource needed by the next.
+\end{itemize}
+If any of the previous conditions is not met, a deadlock cannot occur.}
+
+{There are three main approaches to handle deadlocks, which act at different points in the deadlock cycle, but in reality the last one is the only true and available solution; Prevention and Avoidance typically come at a way too high cost:\ns
+\begin{itemize}
+   \item \textbf{Prevention}: Ensures that at least one of the necessary conditions does not hold.
+   \begin{itemize}
+      \item Acquire all resources before starting.
+      \item Preempt a process holding a needed resource.
+   \end{itemize}
+   This approach typically leads to \ul{resource underutilization and low throughput}.
+   \item \textbf{Avoidance}: Checks dynamically if granting a resource would lead to a deadlock.
+   \begin{itemize}
+   	\item Banker's Algorithm (used in centralized systems).
+	   \item Safe state evaluation in distributed environments.
+   \end{itemize}
+   Avoidance requires \textit{global state awareness}.
+   \item \textbf{Detection and Recovery}: Identifies a deadlock state and then recovers from it.
+   \begin{itemize}
+      \item Once detected, deadlocks can be resolved by aborting one or more processes or preempting resources
+   \end{itemize}
+\end{itemize}}
+
+\section{RAG - Resource Allocation Graph}
+The Resource Allocation Graph is a directed graph that models the allocation of resources to processes. It is composed of two types of nodes, processes and resources, and two types of edges, request and assignment. 
+A cycle in the graph indicates a deadlock.
+
+\subsection{WFG - Wait-For Graph}
+A Wait-For Graph is a directed graph, a simplified RAG, that models the wait-for relationship between processes. It is composed of processes as nodes and edges representing the wait-for relationship. A cycle in the graph indicates a deadlock.
+
+\section{Detecting Deadlocks}
+\subsection{Centralized Deadlock Detection}
+A central node gathers information from all other nodes and constructs a global wait-for graph.
+It is very simple, but not scalable, and the node can become a single point of failure.
+\subsection{Hierarchical Deadlock Detection}
+The system is divided into regions, with each region responsible for local deadlock detection.  Regional coordinators communicate with higher-level nodes for global detection.
+
+This approach provides better scalability than centralized detection, but, on the other hand, coordination between regions can be complex.
+\subsection{Distributed Deadlock Detection}
+
+Here all nodes participate in deadlock detection by sharing partial information about resources and processes, and each node detects deadlocks locally and communicates with others to detect global deadlocks.
+
+There is no single point of failure, and the approach scales well with larger systems, but poses more complex message passing and increased overhead.
+
+\section{Resolving Deadlocks}
+\begin{itemize}
+	\item \textbf{Process Termination} - Abort one or more processes involved in the deadlock.
+	\item \textbf{Resource Preemption} - Forcefully take a resource from one process to give it to another.\\
+	It is complex to implement without causing inconsistencies. It requires the ability to roll back (restore) the state of the preempted process.
+	\item \textbf{Rollback} - Roll back the state of one or more processes to a safe point before the deadlock occurred.
+\end{itemize}
+
+\subsection{System Model for Deadlock Detection}
+The distributed system is composed of asynchronous processes that communicate via message passing.
+A WFG models the state of the system.
+
+\begin{itemize}
+	\item Nodes:
+	\begin{itemize}
+      \item 
+      Processes.
+   \end{itemize}
+	\item Edges:
+	\begin{itemize}
+      \item 
+      Directed edges from P1 to P2 indicate
+      that P1 is waiting for P2 to release a
+      resource.
+   \end{itemize}
+	\item Deadlock occurs when there’s a cycle in the WFG
+\end{itemize}
+\labelitemize{
+   Assumptions
+}{
+   \begin{itemize}
+      \item Only reusable resources.
+      \item Exclusive resource access.
+      \item One copy of each resource.
+      \item Two process states: Running (active) or Blocked (waiting for resources).
+   \end{itemize}
+}
+
+Thew challenges in this system are \textbf{WFG maintenance}, which involves tracking resource dependencies across distributed nodes, and \textbf{cycle detection}, which involves searching cycles in the WFG. 
+In particular, such search should find \textit{all} cycles in \textit{finite} time. Besides no false ---aka \textit{phantom}--- deadlocks should be reported.
+
+{Having the Deadlocks detected, the system can then proceed to resolve them by \textbf{rollback}, \textbf{preemption}, or \textbf{termination}.\ns
+\begin{itemize}
+	\item Break the wait-for dependencies between deadlocked processes.
+	\item Roll back or abort one or more processes to free up resources.
+	\item Clean up the wait-for graph after resolution to avoid phantom deadlocks.
+	\item Untimely and inappropriate cleaning of broken wait-for dependencies is the main reason why many deadlock detection algorithms reported in the literature are incorrect
+\end{itemize}}
+
+\section{Deadlock Models}
+\subsection{Single Resource Model}
+In this model, each process requires a single resource to proceed. The deadlock detection algorithm is simple and efficient, but it is not very realistic.
+Since the maximum out-degree of a node in a WFG for the single resource model can be 1, the presence of a cycle in the WFG shall indicate that there is a deadlock
+
+\subsection{AND Model}
+A process can request multiple resources simultaneously, and the request is granted only if all resources are available.
+A cycle in the WFG ---gues what--- implies a deadlock.\\
+In the AND model, if a cycle is detected in the WFG, it implies a deadlock but \textit{\textbf{not} vice versa}. That is, a process may not be a part of a cycle, it can still be deadlocked.
+
+\subsection{OR Model}
+In the OR model, a process can make a request for numerous resources simultaneously and the request is satisfied if any one of the requested resources is granted.\\
+Presence of a cycle in the WFG of an OR model does \textbf{not} imply a deadlock in the OR model.
+
+In the OR model, the presence of a \textbf{knot} indicates a deadlock. In a WFG,a vertex $v$ is in a knot if for all $u::u$ is reachable from $v:v$ is reachable from$u$. No paths originating from a knot shall have dead ends.
+
+Note that, \ul{there can be a deadlocked process that is \textbf{not} a part of a knot}.\\
+So, in an OR model, a blocked process $P$ is deadlocked if it is either in a knot or it can only reach processes on a knot.
+
+\section{Deadlock Detection Algorithms}
+\subsection{Path-Pushing Algorithm}
+Distributed deadlocks are detected by
+maintaining an explicit global WFG
+\begin{itemize}
+	\item to build a global WFG for each site of the
+distributed system
+	\item Nodes propagate local WFG to other nodes.
+	\item After the local data structure of each site is
+updated, WFG are updated
+	\item Deadlocks are detected by identifying circular
+dependencies.
+\end{itemize}
+
+\subsection{Edge-Chasing}
+Here, a process sends probes to check if it is part of a deadlock.
+Whenever a process that is executing receives a probe message, it simply discards this message and continues. Only blocked processes propagate probe messages along their outgoing edges. If the probe returns to the initiating process, a deadlock is detected.
+
+\begin{itemize}
+	\item P1 sends a \textit{probe} to P2, which forwards it to P3.
+	\item When the \textit{probe} returns to P1, a deadlock is detected
+\end{itemize}
+
+A probe is a message used in edge-chasing algorithms to \ul{trace the path of resource dependencies}.
+
+\subsection{Diffusion Computation Algorithm}
+\begin{itemize}
+	\item An algorithm for deadlock detection based on diffusion computation.
+	\item When a process is blocked, it propagates queries to other processes, otherwise it drops queries
+	\item Queries are discarded by a running process and are echoed back by blocked processes in the following way:
+   \begin{itemize}
+   	\item When a blocked process first receives a query message for a particular deadlock detection initiation, it does not send a reply message until it has received a reply message for every query it sent
+   	\item to its successors in the WFG).
+   	\item For all subsequent queries for this deadlock detection initiation, it immediately sends back a reply message.
+   	\item The initiator of a deadlock detection detects a deadlock when it has received a reply for every query it has sent out.
+   \end{itemize}
+\end{itemize}
+
+\subsection{Global state detection-based algorithms}
+
+exploit the following facts:
+\begin{itemize}
+	\item a consistent snapshot of a distributed system can be
+   obtained without freezing the underlying computation,
+   and
+	\item a consistent snapshot may not represent the system
+   state at any moment in time, but if a stable property
+   holds in the system before the snapshot collection is
+   initiated, this property will still hold in the snapshot.
+\end{itemize}
+
+Therefore, distributed deadlocks can be detected by taking
+a snapshot of the system and examining it for the condition
+of a deadlock
+
+
+
+\subsection{Deadlock Detection in Dynamic and Real-time Systems}
+
+In distributed systems with dynamic resources (e.g., cloud systems), resource requests and releases are constantly changing. Deadlock detection algorithms must adapt to these changes and avoid outdated information.
+
+This clearly poses consistent challenges such as false detections, the need for constant
+updates, and handling frequent resource changes.
+
+
+In real-time distributed systems, deadlocks must be detected and resolved quickly to meet timing constraints.\\
+Detection algorithms must have low latency and minimal overhead
+
+\section{Assignment}
+
+Study and eventually prepare a few slides on
+\begin{itemize}
+   \item Misra-Chandy-Haas Algorithm for AND model
+   \item Misra-Chandy-Haas Algorithm for OR model
+\end{itemize}
