@@ -78,7 +78,7 @@ Consider the following example:
    \begin{itemize}
       \item \textbf{Computation}: Each PE can add two numbers stored in its local memory in 1 sec
       \item \textbf{Communication}: A PE can send data from its local memory to the local memory of any other PE in 3 sec (independently of the data size!)
-      \item \textbf{Input and Output}: At the beginning of the program, the whole input array A is stored in PE #0. At the end, the result must be gathered in PE \#0
+      \item \textbf{Input and Output}: At the beginning of the program, the whole input array A is stored in PE \#0. At the end, the result must be gathered in PE \#0
       \item \textbf{Synchronization}: All PEs operate in a lock-step manner; i.e., they can either compute, communicate, or be idle (no computation-to-communication overlap!).
    \end{itemize}
 }
@@ -116,6 +116,8 @@ We can determine which is the optimal speedup for a given problem. It is the red
 
 It states that \ul{no matter how many processors are used in a parallel run, the program's speedup will be limited by its fraction of sequential code.}\\
 The Amdahl’s law gives an \textbf{upper bound} on the speedup that can be achieved.
+The speedup is limited by the part of the task that cannot be parallelized. Even if you have a large number of processors, the sequential portion of the task becomes the bottleneck.
+For example, if 90\% of the task can be parallelized, the maximum speedup (no matter how many processors) is limited to 10x, because the remaining 10\% has to be done sequentially.
 
 \begin{definition}
    [Amdahl's Law]
@@ -129,4 +131,10 @@ However, note that Amdahl's law is not always applicable. In fact, it is based o
 
 \subsection{Gustafson's Law}
 
-Gustafson's law takes into account scenarios where the problem size scales with the number of processors (\textbf{weak scalability}).þ
+Gustafson's law takes into account scenarios where the problem size scales with the number of processors (\textbf{weak scalability}).
+Unlike Amdahl's Law, Gustafson's Law assumes that the problem size grows with the number of processors, meaning that parallel processors are used to solve bigger problems rather than trying to reduce the execution time of a fixed problem size.As the problem grows, the parallelizable portion becomes more significant, leading to better utilization of the available processors.\\
+The law asserts that the parallelizable part grows linear in p while the non-parallelizable part remains constant.
+
+\begin{equation}
+   S(p) \leq f + p(1-f) = p + f\cdot(1-p)
+\end{equation}
