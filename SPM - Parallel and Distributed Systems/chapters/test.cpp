@@ -17,13 +17,13 @@ int main(int argc, char* argv[]) {
   std ::vector<std ::thread> threads;
 
   // for all threads
-  for (uint64_t id = 0; id < num threads; id++)
+  for (uint64_t id = 0; id < num_threads; id++)
     // emplace the thread object in vector threads
     // using argument forwarding, this avoids unnecessary
     // move operations to the vector after thread creation
     threads.emplace_back(
         // call say hello with argument id
-        say hello, id);
+        say_hello, id);
 
   // join each thread at the end
   for (auto& thread : threads) thread.join();
