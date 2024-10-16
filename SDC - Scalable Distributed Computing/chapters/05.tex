@@ -198,3 +198,13 @@ Study and eventually prepare a few slides on
    \item Misra-Chandy-Haas Algorithm for AND model
    \item Misra-Chandy-Haas Algorithm for OR model
 \end{itemize}
+
+In Misra-Chandy-Haas algorithm a process suspecting a deadlock sends a \textbf{probe} $\langle P_0,P_i,P_k\rangle$, where:
+\begin{itemize}
+   \item $P_0$ is the process that initiated the probe
+   \item $P_i$ is the process that at the current iteration sent the probe to $P_k$
+   \item $P_k$ is the process that $P_i$ is waiting for
+\end{itemize}
+When the probe returns to $P_0$, a deadlock is detected and confirmed.
+
+The key difference between the AND and OR models is in the way the \ul{probe is propagated}. In the AND model, the probe is propagated along \textbf{all} outgoing edges, while in the OR model, the probe is propagated along \textbf{only one} outgoing edge.

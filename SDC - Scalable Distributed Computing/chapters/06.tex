@@ -1,0 +1,96 @@
+\chapter{Self-stabilization}
+
+\section{Self-stabilization}
+In a distributed system a large number of systems are widely distributed and frequently communicate, so there is a chance to end up in an \textbf{illegitimate} state in case, for instance, a message is lost.\\
+Among the previously mentioned algorithm and scenarios, consider \textit{token-based} systems: what if the token is lost? Drama \frownie
+
+\note{Note that the meaning of \textit{illegitimate} and \textit{legitimate} depends on the application.}
+
+
+\begin{definition}
+   [Self-stabilization]
+   Regardless of the initial state, the system is guaranteed to converge to a legitimate state in a \textbf{finite} number of steps by itself \textbf{without} any \textbf{outside intervention}.
+\end{definition}
+
+\subsection{Challenges}
+The main challenge in self-stabilization is that nodes in a distributed system do not have a \textit{global memory} that they can access instantaneously.
+Each node has to rely on local knowledge and messages from neighbors to make decisions, but their actions must achieve a \textit{global objective}.
+
+\section{System Model}
+A Distributed system (DS) model comprises a set of $n$ machines called \textit{processors} that communicate with each other.
+\begin{itemize}
+   \item Denote the $i^{th}$ processor in the system by $P_i$.
+   \item Neighbors of a processor are processors that are \textit{directly} connected to it.
+   \item Neighbors communicate by sending and receiving messages.
+   \item DS is a \textbf{graph} in which each processor is represented by a node and every pair of neighbouring nodes are connected by link.
+   \item FIFO queues are used to model channels for asynchronous delivery of messages: $Q_{ij}$ contains all messages sent by a processor $P_i$ to its neighbor $P_j$ that have not yet been received.
+   \item \ul{Each processor is characterized by its state}.
+   \item A full description of a DS at a particular time consists of the state of every processor and the content of every queue.
+\end{itemize}
+Note that this model is quite simplistic. In reality messages are almost \textit{never} delivered in FIFO order: \ul{communications over networks are unpredictable and unreliable}.
+
+\subsection{System Configuration}
+The term \textbf{system configuration} is used to describe a DS.
+A configuration is denoted by $c = {s_1,s_2,\ldots,s_n,q_{1,2},q_{1,3},\ldots,q_{n,n-1}}$ where $s_i$ is the state of processor $P_i$ and $q_{i,j}$ ($i \neq j$) is the content of the queue from $P_i$ to $P_j$.
+
+\subsection{Network Assumptions}
+\begin{itemize}
+   \item Let $N$ be an upper bound on $n$ (the number of processors).
+   \note{$N$ is important because we may consider dynamic systems}
+   \item Let $\gamma$ denote the \textbf{diameter} of the network, i.e., the maximum number of links in any path between any pair of processors.
+   \note{Knowing the diameter may provide a bound on the number of hops required for a message to reach any processor from any other processor, ultimately giving a rough upper bound for latency.}
+   \item A network is \textbf{static} if the communication\dots
+   % // TODO 
+\end{itemize}
+
+\section{Self-stabilizing formally said}
+We define self-stabilization for a system $S$ with respect to a predicate $P$ over its set of global states, where $P$ is intended to identify its correct execution.
+
+States satisfying $P$ are called \textbf{legitimate} (safe) states, and those that do not are called \textbf{illegitimate} (unsafe) states.
+
+A system $P$ is self-stabilizing with respect to predicate $P$ if it satisfies the following two properties:
+
+Closure $P$ is closed under the execution of $S$, that is, once $P$ is established in $S$, it cannot be falsified.
+
+\textbf{Convergence} starting from an arbitrary global state, $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
+
+
+\subsection{Issues in the design of self-stabilizing systems}
+% // TODO
+
+\subsection{Dijkstra's Token Ring Algorithm}
+His system consisted of a set of $n$ finite-state machines connected in the form of a ring.
+
+He defines a \textit{privilege} of a machine as the ability to change its current state.
+This ability is based on a boolean preicate that consists of its current state and the states of its neighbors.
+
+When a machine has a privilege it is able to change its current state, which is referred to as a \textbf{move}.\\
+Furthermore, when multiple machines enjoy a privilege at the same time, the choice of the machine that is entitled to make a move is made by a central demon, which arbitrarily decides the order in which the machines are allowed to move.
+% // TODO check
+
+A legitimate state must satisfy the following constraints:
+\begin{itemize}
+   \item There must be at least one privilege in the system (liveness, no deadlock).
+   \item Every from move from a legal state must again put the system into a legal state (closure).
+   \item During an infinite execution, each machine should enjoy a privilege an infinite number of times (no starvation).
+   \item Given any two legal states, there is a series of moves that change one legal state to the other (reachability).
+\end{itemize}
+
+% // TODO 
+
+\subsubsection{Observations}
+
+The number of states in each of the the individual units that each machine must have for the self-stabilization is an important issue. Dijkstra offered three solutions for a directed ring with $n$ machines, 0,1, \dots, n-1, each having $K$ states, $K \geq n, K=4, K=3.$
+
+% // TODO
+
+\section{To be or not to be\dots Uniform}
+In a distributed system, it is desirable and also possible to have each machine use the same algorithm.
+However, to design self-stabilizing systems, it is often necessary to have different machines use different algorithms.
+% // TODO
+
+Uniformity may lead to not being able to decide who is entitled to make a move, which may lead to a deadlock.
+\nl
+
+Generally, the presence of a central demon is assumed in self-stabilizing systems.
+% // TODO
