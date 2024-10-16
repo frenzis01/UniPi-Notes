@@ -1,12 +1,12 @@
 \chapter{Introduction}
-\section{19 - Settembre}
-\subsection{Info and Contact}
+\section*{19 - Settembre}
+\subsection*{Info and Contact}
 % Ricevimento Lunedì 14:30 - 16:00/16:30
 
 \href{https://pages.di.unipi.it/corradini/Didattica/AP-23/}{Pagina del corso}
 % \href{http://didawiki.di.unipi.it/doku.php/magistraleinformaticanetworking/ae/ae2023/start}{Didawiki Corso}
-
-\subsection{Framwork}
+\section{Introduction}
+\subsection{Framework}
 A software \textbf{framework} is a collection of common code providing generic functionality that can selectively overryidden or specialized by user code prvoiding specific functionality.
 
 When using \textit{framworks} htere is an \textbf{inversion of control}.
@@ -24,7 +24,7 @@ A design pattern is characterized by:
 	\item \textbf{Solution} - It must resolve all \textit{forces}
 \end{itemize}
 
-\section{20 - Settembre}
+\section*{20 - Settembre}
 Useful tool, to see preprocessor output, compiling, ecc.
 \subsection{Programming Languages}
 A \textbf{PL} is defined via \textbf{syntax}, \textbf{semantics} and \textbf{pragmatics}\footnote{the way in which the PL is intended to be used in practice}.
@@ -48,9 +48,10 @@ Paradigms belong to languages \textit{pragmatics}, not to the way the language i
 \begin{enumerate}
     \item \textbf{Imperative}
     \item \textbf{Object-oriented}
-    \item \textbf{Concurrent} - Processes, communication, ...
-    \item \textbf{Functional}
-    \item \textbf{Logic} - Assertions, relations, \textit{strange sorceries}...
+    \item \textbf{Concurrent} - Processes, communication, \dots 
+    \item \textbf{Functional} - values, expressions,
+    functions, higher-order functions, \dots
+    \item \textbf{Logic} - Assertions, relations, \textit{strange sorceries}\dots 
 \end{enumerate}
 
 Modern PLs, provide constructs and solutions to program in all these paradigms
@@ -62,9 +63,9 @@ Modern PLs, provide constructs and solutions to program in all these paradigms
     \item Implementing $M_L$ on an existing host machine $M_O$ via compilation or interpretation (or both) makes programs written in \textbf{L} executables 
 \end{itemize}
 
-An \textbf{Abstract Machine} $M_L$ for $L$ is a collection of data structures and algorithms which can perform the storage and execution of programs written in L.\\
+An \textbf{Abstract Machine} $M_L$ for $L$ is a \ul{collection of data structures and algorithms which can perform the storage and execution of programs written in L.}\\
 Viceversa, $M$ defines a language $L_M$ including all programs which can be executed by the interpreter $M$.\\
-There is a bidirectional correspondance between machines and languages components.\\
+There is a \ul{bidirectional correspondance} between machines and languages components.\\
 \begin{center}
 $
 \begin{array}{ccc}
@@ -81,15 +82,21 @@ $
 \includegraphics[width=0.7\textwidth]{images/interpreter_structure.png}
 \end{center}
 
-In computer science one of the main focuses is \textbf{abstraction},
-as can be seen in this hierarchical scheme.
-\begin{center}
-\includegraphics[width=0.5\textwidth]{images/machines_hierarchy.png}
-\end{center}A software component is a unit of composition with
-contractually specified interfaces and explicit context
-dependencies only. A software component can be
-deployed independently and is subject to
-composition by third parties.
+In computer science one of the main focuses is \textbf{abstraction}, and this applies also to the implementation of AMs, leading to an onion-like structure, or \textbf{hierarchical} structure,
+as can be seen in the scheme in \ref{fig:machines_hierarchy}.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/machines_hierarchy.png}
+    \caption{AM Hierarchical Structure}
+    \label{fig:machines_hierarchy}
+\end{figure}
+
+% A software component is a unit of composition with
+% contractually specified interfaces and explicit context
+% dependencies only. A software component can be
+% deployed independently and is subject to
+% composition by third parties.
 
 \subsection*{Implementing PLs - Wrap Up}
 \begin{itemize}
@@ -100,14 +107,24 @@ composition by third parties.
 
 \subsubsection{Pure Interpretation}
 
-...PIC HERE
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/am_pure_int.png}
+    \caption{Pure Interpretation}
+    \label{fig:am_pure_int.png}
+\end{figure}
 
 $M_L$ is interpreted over $M_O$.
 It isn't very efficient, mainly because of fetch-decode phases
 
 \subsubsection{Pure Compilation}
 
-...PIC HERE
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/am_pure_comp.png}
+    \caption{Pure Compilation}
+    \label{fig:am_pure_comp.png}
+\end{figure}
 
 $L$ programs are translated into $L_O$, the machine laguange of $M_O$,
 hence, $M_L$ is not realized at all and the programs are directly executed on $M_O$.\\
@@ -116,10 +133,29 @@ but produced code is larger
 
 \subsubsection{Both}
 
-...PIC HERE
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/am_both.png}
+    \caption{Both}
+    \label{fig:am_both}
+\end{figure}
 
-All real languages use both \textit{interpretation} and \textit{compilation}, 
+All real languages use both \textit{interpretation} and \textit{compilation}, the \textit{``pure''} cases are only limit cases.
 
 Some languages, e.g. Java, use an intermediate Abstract Machine, called a \textit{Virtual Machine},
 which increases \textit{Portability} and \textit{Interoperability}.
 
+\begin{itemize}
+	\item Compilation leads to better performance in general
+	    \begin{itemize}
+		    \item Allocation of variables without variable lookup at run time
+		    \item Aggressive code optimization to exploit hardware features
+	    \end{itemize}
+	\item Interpretation facilitates interactive debugging and testing
+	    \begin{itemize}
+		    \item Interpretation leads to better diagnostics of a programming
+		    \item roblem
+		    \item Procedures can be invoked from command line by a user
+		    \item Variable values can be inspected and modified by a user
+	    \end{itemize}
+\end{itemize}

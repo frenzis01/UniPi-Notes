@@ -1,69 +1,71 @@
+\include{../preamble.tex}
 % Tipo di documento. L'uso di twoside implica che i capitoli inizino sempre con la prima pagina a sinistra, eventualmente lasciando una pagina vuota nel capitolo precedente. Se questa cosa è fastidiosa, è possibile rimuoverlo. 
 % \documentclass[a4paper, twoside,openright]{report}
-\documentclass[a4paper,openright]{report}
+% \documentclass[a4paper,openright]{report}
 
-\usepackage{graphicx} % Required for inserting images
-\setkeys{Gin}{width=0.6\columnwidth}
+% \usepackage{graphicx} % Required for inserting images
+% \setkeys{Gin}{width=0.6\columnwidth}
 
-\usepackage[utf8]{inputenc}
+% \usepackage[utf8]{inputenc}
 
-\usepackage{hyperref}
+% \usepackage{hyperref}
 
-\usepackage{wrapfig}
+% \usepackage{wrapfig}
 
-\usepackage{enumitem}
-\renewcommand{\labelitemi}{$\diamond$}
-\renewcommand{\labelitemiii}{$\circ$}
-\setlist[enumerate,2]{label=\roman*.}
-\setlist[enumerate,3]{label=(\alph*)}
+% \usepackage{enumitem}
+% \renewcommand{\labelitemi}{$\diamond$}
+% \renewcommand{\labelitemiii}{$\circ$}
+% \setlist[enumerate,2]{label=\roman*.}
+% \setlist[enumerate,3]{label=(\alph*)}
 
-\usepackage{paracol}
-\usepackage{multicol}
+% \usepackage{paracol}
+% \usepackage{multicol}
 
-\usepackage{geometry}
+% \usepackage{geometry}
 
-\usepackage{color}
+% \usepackage{color}
 
+
+% \usepackage{amsmath}
+% \usepackage{bm}
+% \usepackage{amsfonts}
+
+% % Uso dei colori
+% \usepackage[dvipsnames]{xcolor}
+% \usepackage{parskip}
+
+% \usepackage{tikz}
+% \usetikzlibrary{automata, arrows}
+
+% \usepackage{booktabs}
+
+% % needed for labelitemize
+% \usepackage{rotating}
+% \usepackage{adjustbox}
+
+% % Smiley faces package
+% \usepackage{wasysym}
+
+
+% \newcommand{\colfill}{\vspace{\fill}}
+
+% \geometry{margin=0.6in}
+
+% \setlist[description]{itemsep=0em,topsep=0.5em,parsep=0em}
+% \setlist[itemize]{itemsep=0em}
+% \setitemize{noitemsep}
+% \setenumerate{noitemsep}
+% \setlist{noitemsep}
+
+% \hypersetup{
+%     colorlinks=true,
+%     linkcolor=black,
+%     filecolor=mauve,
+%     urlcolor=blue,
+% }
 \usepackage{listings, listings-rust}
-
-\usepackage{amsmath}
-\usepackage{bm}
-\usepackage{amsfonts}
-
-% Uso dei colori
-\usepackage[dvipsnames]{xcolor}
-\usepackage{parskip}
-
-\usepackage{tikz}
-\usetikzlibrary{automata, arrows}
 \usetikzlibrary{arrows.meta}
 
-\usepackage{booktabs}
-
-% needed for labelitemize
-\usepackage{rotating}
-\usepackage{adjustbox}
-
-% Smiley faces package
-\usepackage{wasysym}
-
-
-\newcommand{\colfill}{\vspace{\fill}}
-
-\geometry{margin=0.6in}
-
-\setlist[description]{itemsep=0em,topsep=0.5em,parsep=0em}
-\setlist[itemize]{itemsep=0em}
-\setitemize{noitemsep}
-\setenumerate{noitemsep}
-\setlist{noitemsep}
-
-\hypersetup{
-    colorlinks=true,
-    linkcolor=black,
-    filecolor=mauve,
-    urlcolor=blue,
-}
 
 \definecolor{gray}{gray}{0.3}
 \definecolor{dkgreen}{rgb}{0,0.5,0}
@@ -75,29 +77,6 @@
 \definecolor{darkred}{rgb}{0.3,0,0}
 
 
-\newenvironment{notes}{
-\par
-\color{gray}
-\small}
-
-\newcommand{\note}[1]{\begin{notes}{#1}\end{notes}}
-\newcommand{\lst}[1]{\lstinline{#1}}
-\newcommand{\nl}[0]{\parskip = \baselineskip}
-
-\newlength{\currentparindent}
-\newcommand{\labelitemize}[2]{
-    \setlength{\currentparindent}{\parindent}
-    \setlength{\parindent}{0pt}
-    
-    \begin{minipage}{0em} % Adjust the width as needed
-        \makebox[0em][c]{\rotatebox{90}{\small #1}}
-    \end{minipage}
-    \begin{minipage}{\dimexpr\columnwidth-1cm\relax}
-        #2
-    \end{minipage}
-    \setlength{\parindent}{\currentparindent}
-    % \undef{\currentparindent}
-}
 
 
 \lstdefinestyle{javaBlock}{frame=false,

@@ -6,16 +6,24 @@
 Let's consider the instructions \textbf{format}.
 Each instr may have different \textit{"forms"} supporting different kinds of operands.
 For example there are different forms of \lst{iload} (i.e. push).
+\note{\begin{itemize}
+    \item \lst{iload_0} pushes the first local variable
+    \item \lst{iload_1} pushes the second local variable
+    \item \lst{iload_2} pushes the third local variable
+    \item \dots
+\end{itemize}}
 
 Runtime memory contains
-- Local variable array (frame)
-– Operand stack (frame)
-– Object fields (heap)
-– Static fields (method area)
+\begin{itemize}
+	\item Local variable array (frame)
+	\item Operand stack (frame)
+	\item Object fields (heap)
+	\item Static fields (method area)
+\end{itemize}
 
 Note that Java instructions are explicitly typed through \textbf{opCodes}, e.g. \lst{dload},\lst{iload},\lst{fload}.\\
 \textbf{opCodes} are bytes, allowing only for 256 distinct ones;
-hence it is impossible to have for each instruction on opCode per type.
+hence it is impossible to have for each instruction one opCode per type.
 The JVM specification indicates a selection of which types to support for each op instruction, and not supported types have to be converted; resulting in the Instruction Set Architecture to present non-orthogonality.\\
 Types like \lst{byte}, \lst{char} and \lst{short} are usually converted to \lst{int} when performing computations.
 
@@ -38,7 +46,7 @@ There are 4 others kinds of method invocation:
     \item \lst{invokedynamic}: introduced in Java 7 to support dynamic typing\footnote{lambda functions related?}
 \end{itemize}
 
-(...)
+\note{In the slides (``JVM Instruction Set'') there are many examples on how code snippets are translated into bytecode.}
 
 \section{JIT}
 \textit{AOT} \textbf{Ahead of Time} \textit{Compilation} leads to better performance in general, exploiting hardware features and variables allocation without runtime lookup;
