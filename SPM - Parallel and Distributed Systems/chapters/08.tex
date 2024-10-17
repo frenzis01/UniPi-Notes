@@ -299,25 +299,32 @@ A reader may access the data concurrently with
 other readers, while a writer needs exclusive access to the shared data.
 This is a common pattern with a simple  ---not trivial--- solution.
 
-Using a normal std::mutex to protect the accesses to the critical section \textbf{does prevent} the concurrent access of multiple readers, so it is not a viable solution.
-The Standadrd library offers a solution with \lstinline|std::shared_mutex|, which allows multiple readers to access the data concurrently, while a writer needs exclusive access to the shared data.
-
-\begin{lstlisting}
-   auto reader = [&](int count, int id) {
-      for(int i=0;i<count; ++i) {
-         std::shared_lock<std::shared_mutex> lock(smutex);
-         std::printf("Reader%d has read %d\n", id, shared_counter);
-      }
-   };
-   auto writer = [&](int count, int id) {
-      for(int i=0;i<count; ++i) {
-         std::unique_lock<std::shared_mutex> lock(smutex);
-         ++shared_counter;
-         std::printf("Writer%d has written %d\n", id, shared_counter);
-      }
-   };  
-      \end{lstlisting}
+\begin{paracol}{2}
    
+   \colfill
+   Using a normal \lstinline|std::mutex| to protect the accesses to the critical section \textbf{does prevent} the concurrent access of multiple readers, so it is not a viable solution.
+   The Standard library offers a solution with \lstinline|std::shared_mutex|, which allows multiple readers to access the data concurrently, while a writer needs exclusive access to the shared data.
+   \colfill
+   
+   \switchcolumn   
+   
+   \begin{lstlisting}[caption={spm3/reader-writer.cpp}]
+auto reader = [&](int count, int id) {
+   for(int i=0;i<count; ++i) {
+      std::shared_lock<std::shared_mutex> lock(smutex);
+      std::printf("Reader%d has read %d\n", id, shared_counter);
+   }
+};
+auto writer = [&](int count, int id) {
+   for(int i=0;i<count; ++i) {
+      std::unique_lock<std::shared_mutex> lock(smutex);
+      ++shared_counter;
+      std::printf("Writer%d has written %d\n", id, shared_counter);
+   }
+};  
+\end{lstlisting}
+               
+\end{paracol}
 
 \subsubsection{Thread Pool}
 Instead of creating threads on the fly, we can create a pool of threads that are ready to execute tasks. This is useful when the overhead of creating threads is high, and we want to reuse threads for multiple tasks.
