@@ -56,7 +56,11 @@ Closure $P$ is closed under the execution of $S$, that is, once $P$ is establish
 
 
 \subsection{Issues in the design of self-stabilizing systems}
-% // TODO
+Some of the main issues are:
+\begin{itemize}
+   \item Number of states in each of the individual units in a distributed systems
+   \item %// TODO
+\end{itemize}
 
 \subsection{Dijkstra's Token Ring Algorithm}
 His system consisted of a set of $n$ finite-state machines connected in the form of a ring.
@@ -78,6 +82,43 @@ A legitimate state must satisfy the following constraints:
 
 % // TODO 
 
+\subsection{First Solution}
+
+Machine 0 is exceptional, and the other machines are identical.
+% // TODO
+
+\subsection{Second Solution}
+We can improve the first solution.
+
+The second solution uses only three state machines ${0,1,2}$.
+In the first solution there is only one exceptional machine, the one with state 0.
+Here, the machines with state 0 and n-1 are exceptional, the former referred to as bottom machine, the second as top machine.
+
+\begin{itemize}
+   \item \textbf{Bottom} machine
+   \begin{lstlisting}
+      if (S+1) mod 3 == R then
+         S := (S-1) mod 3 
+   \end{lstlisting}
+   \item \textbf{Top} machine
+   \begin{lstlisting}
+      if L == R and (L+1) mod 3 != S then
+         S := (L+1) mod 3 
+   \end{lstlisting}
+   \item Other machines
+   \begin{lstlisting}
+      if (S+1) mod 3 == L then
+         S := L
+      if (S+1) mod 3 == R then
+         S := R
+   \end{lstlisting}
+\end{itemize}
+
+This schema forces the system to always have at least one privilege, hence to self-stabilize.
+Actually the number of privileged machines converges linearly to 1.
+% // TODO check
+
+
 \subsubsection{Observations}
 
 The number of states in each of the the individual units that each machine must have for the self-stabilization is an important issue. Dijkstra offered three solutions for a directed ring with $n$ machines, 0,1, \dots, n-1, each having $K$ states, $K \geq n, K=4, K=3.$
@@ -94,3 +135,24 @@ Uniformity may lead to not being able to decide who is entitled to make a move, 
 
 Generally, the presence of a central demon is assumed in self-stabilizing systems.
 % // TODO
+
+
+
+\section{Costs of Self-Stabilization}
+Clearly, the aim of the designer of a self-stabilizing system is to reduce the convergence span and the response span.
+
+The Time-complexity measure for self-stabilizing systems is the number of \textbf{rounds}.
+
+% // TODO
+
+\section{Designing Self-Stabilizing Systems}
+Self-stabilization is characterized in terms of a ``malicious adversary''  that may disrupt the system.
+
+In case the adversary succeeds, a self-stabilizing system is able to recover from the disruption and return to a legitimate state.
+\nl
+
+
+A common technique is \textbf{layering}, as it happens for internet protocols.
+This is thanks to the \textit{transitivity} property of self-stabilization: if a system is self-stabilizing and a subsystem is self-stabilizing, then the composed system is self-stabilizing.\\
+If $P \rightarrow Q$ ($P$ stabilizes $Q$) and $Q \rightarrow R$, then $P \rightarrow R$.
+
