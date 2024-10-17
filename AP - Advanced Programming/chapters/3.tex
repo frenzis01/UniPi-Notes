@@ -61,7 +61,7 @@ JIT can exploit new optimization possibilities, e.g. \textit{deoptimization} and
 A JIT takes bytecode as input and outputs machine code that the CPU executes directly.\\
 Wrapping up:
 \begin{itemize}
-    \item Code starts executing interpreted with no delay
+    \item Code \ul{starts executing interpreted with no delay}
     \item Methods that are found commonly executed (\textit{hot}) are JIT compiled
     \item Once compiled code is available, the execution switches to it.
 \end{itemize}
@@ -72,12 +72,19 @@ To identify \textit{hot} methods, there is a \textbf{threshold} on two \textit{p
     \item Times a brach back to the start of a loop is taken in the method
 \end{enumerate}
 
-A tradeoff between
-"fast-to-start-but-slow-to-execute" interpreter vs "slow-to-
-start-but-fast-to-execute" compiled code
-is managed by a multi tier system.
+JIT aims for a tradeoff between "fast-to-start-but-slow-to-execute" interpreter vs "slow-to- start-but-fast-to-execute" compiled code, which may be efficiently implemented by a \textbf{multi tier system}, consisting of \textit{interpreter}, \textit{quick compiler}, and \textit{optimizing compiler.}
 
-(...)
+\begin{itemize}
+	\item Java code starts execution in the interpreter.
+	\item When a method becomes warm ($threshold: \approx 1.500$), it's
+enqueued for compilation by the quick compiler.
+	\item Execution switches to that compiled code when it's ready.
+	\item Method executing in the second tier is still instrumented:
+when it becomes hot ($threshold: \approx 10.000$), then it's
+enqueued for compilation by the optimizing compiler.
+	\item Execution continues in the second-tier compiled code until
+the faster code is available.
+\end{itemize}
 
 \subsection{Deoptimization and Speculation}
 Usually method executions pass in three phases:
@@ -89,7 +96,7 @@ Usually method executions pass in three phases:
     \node[shape=rectangle,draw=white] (C) at (7,0) {Optimizing compiter};
     \path [->] (A) edge node[left] {} (B);
     \path [->] (B) edge node[left] {} (C);
-    \path [->] (C) edge node[left] {} (B);    
+    % \path [->] (C) edge node[left] {} (B);    
 \end{tikzpicture}
 
 But sometimes \textbf{deoptimization} can happen, i.e. :
@@ -102,6 +109,18 @@ But sometimes \textbf{deoptimization} can happen, i.e. :
 
     \path [->] (A) edge node[left] {} (B);
     \path [->] (B) edge node[left] {} (C);
-    \path [->] (C) edge [bend left] node {} (B);
+    \path [->] (B) edge [bend left] node {} (A);
     \path [->] (C) edge [bend left] node {} (A);
 \end{tikzpicture}
+
+{There are Two main possible causes for deoptimization:\ns
+\begin{itemize}
+	\item Corner cases in code
+	\item \textit{Speculation}: the compiler makes some assumption to generate better (faster) code, but if an assumption is invalidated, then the thread that executes a method that
+    makes such assumption, \textit{}deoptimizes in order to not execute code that's
+    erroneous (being based on wrong assumptions).
+\end{itemize}}
+
+Note that deoptimization is only possible at
+locations known as \textbf{safepoints}; 
+the JVM has to be able to reconstruct the state of execution so the interpreter can resume the thread where the compiled execution stopped.

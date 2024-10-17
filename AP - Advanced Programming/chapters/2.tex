@@ -237,15 +237,15 @@ There are 4 \textbf{Classloaders}:
 \subsubsection{Runtime Constant Pool}
 
 \begin{itemize}
-	\item The constant_pool table in the .class file is
+	\item The \lstinline|constant_pool| table in the \texttt{.class} file is
 	      used to construct the run-time constant pool
 	      upon class or interface creation.
 	\item All references in the run-time constant pool are
 	      initially symbolic.
 	\item Symbolic references are derived from
-	      the.class file in the expected way
+	      the \texttt{.class} file in the expected way
 	\item Class names are those returned by
-	      Class.getName()
+	      \lstinline|Class.getName()|
 	\item Field and method references are made of name,
 	      descriptor and class name
 \end{itemize}
