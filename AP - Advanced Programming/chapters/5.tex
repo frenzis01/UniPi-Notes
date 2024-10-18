@@ -1,16 +1,19 @@
 \chapter{Java Beans}
-\section{3 - Ottobre}
+\section*{3 - Ottobre}
+\section{Components applied to Java}
 "A \textbf{Java Bean} is a \textit{reusable} software component that can be
 manipulated visually in a builder tool."
 
-Typically a Bean has a GUI representation but is not necessary.
-What is necessary instead for a class to be recognized as a bean is that it:
+Typically a Bean has a GUI representation but is not necessary; there exist \textit{invisible beans} as well.
+{What is necessary instead for a class to be recognized as a bean is that it:\ns
 \begin{itemize}
     \item has a public constructor with no arguments
     \item implements \lstinline{java.io.Serializable}
-    \item is in a \lstinline{jar} file with a \textit{manifest} file that contains:
-    \lstinline{Java-Bean: True}
-\end{itemize}
+    \item is in a \lstinline{jar} file with a \textit{manifest} file that contains: \lstinline{Java-Bean: True}
+    \note{Actually this ain't true. The JVM itself does not require this manifest entry to recognize a class as a JavaBean. The JVM relies on the class’s structure and interfaces (like having a no-argument constructor and implementing Serializable). 
+    Tools like IDEs and builders might require the manifest entry to recognize a class as a JavaBean.\\
+    In my assignments, i didn't need to add this entry to the manifest file. \smiley}
+\end{itemize}}
 
 Beans can be \textbf{assembled} to build a new bean or application, writing clue code to wire beans together.
 \textit{Connection-oriented} programming is based on the \textbf{Observer} or (\textit{Publish-Subscribe}) paradigm.
@@ -22,10 +25,14 @@ Beans provide support for some standard features:
     \textbf{Bounded} properties generate an \textit{event} of type \lstinline{PropertyChangeEvent},
     while \textbf{constrained} can only change value if none of the registered \textit{observers} "poses a veto",
     by raising an \textit{exception} when they receive the \lstinline{PropertyChangeEvent} object.
+
+    A subject should register an observer implementing \lstinline|PropertyChangeListener| and use| \lstinline|firePropertyChange| to notify the observer, allowing him to \textbf{veto} the change, in case constrained.
     \item \textbf{Events}: The \textbf{Observer} pattern is based on \textit{Events} and \textit{Events listeners}.
-    An \textit{event} is an object created by an \textit{event source} and propagated to the registered \textit{event listeners}.
+    An \textit{event} is an object created by an \textit{event source} and propagated to the registered \textit{event listeners}.\\
     Sometimes event \textbf{adaptors} can be placed between source and listener, 
     which might implement queuing mechanism, filter events, demuxing from many sources to a single listener.
+
+    In general the \textit{Observer} pattern aims at defining a one-to-many dependency among objects so that when one object changes state, all of its dependents are notified and updated automatically.
     \begin{itemize}
         \item \textbf{Design Patterns for Events}
         \begin{lstlisting}
@@ -33,8 +40,8 @@ Beans provide support for some standard features:
     public void remove<EventListType>(<EventListType> a)
         \end{lstlisting}
     \end{itemize}
-    \item \textbf{Customization}
-    \item \textbf{Persistence}
+    \item \textbf{Customization}: in the builder the user can customize the appearance and behaviour of the bean.
+    \item \textbf{Persistence}: a bean can be customized in an application builder and then have its customized state saved away and reloaded later. 
     \item \textbf{Introspection}: process of analyzing a bean to determine capabilities.
     There are implicit methods based on \textit{reflection}, \textit{naming conventions} and \textit{design patterns},
     but can be simplified by explicitly defining info for the builder tool in the \lstinline{<BeanName>BeanInfo} class.
