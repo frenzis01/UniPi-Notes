@@ -12,14 +12,21 @@ Bertrand Meyer suggests some guidelines regarding Object-Oriented software const
 \end{enumerate}
 
 \section{Definitions}
-{\itshape A \textbf{software component} is a unit of composition with
-contractually specified \textbf{interfaces} and explicit context
-dependencies only. A software component can be
-deployed independently and is subject to
-composition by third parties.}
+\begin{definition}
+    [Software Component]
+    A \textbf{software component} is a unit of composition with
+    contractually specified \textbf{interfaces} and explicit context
+    dependencies only. A software component can be
+    deployed independently and is subject to
+    composition by third parties.
+\end{definition}
 
-A \textbf{contract}, A specification attached to an \textbf{interface} (component specification) that
-mutually binds the clients and providers of the components.
+Let's break down this definition, and explain the key concepts it mentions.
+
+
+A \textbf{contract} is a specification attached to an \textbf{interface} (component specification) that
+mutually binds the clients and providers of the components.\\
+However, contracts in general specify more than dependencies and interfaces, they also specify how the component can be deployed, instatiated, and how its instances behave, ultimately summing up to more than a simple set of per-interface interfaces.
 
 \textbf{Context dependencies} are specification of the deployment
 environment and run-time environment.
@@ -42,33 +49,52 @@ creating the need for a intermediary.
 Concepts should be laguage/paradigm agnostic, laying the ground for language interoperability.
 \nl
 
-The ancestors of Components are \textbf{Modules}, whose support has been introduced in Java 9,
-but isn't very common.
+The ancestors of Components are \textbf{Modules}, whose support has been introduced in Java 9, but aren't very common.
 Some concepts related to modules can be found in more modern notions such as classes, components and packages.\\
 For example, objects inside a module are visible to each other, but not visible from outside unless exported.
-Modules worked {---} pretty much like classes {---} as abstraction mechanism $\rightarrow$ \textit{collection of data with operations defined on them}.
+Modules worked ---pretty much like classes--- as abstraction mechanism $\rightarrow$ \textit{collection of data with operations defined on them}.
 In OOP the concept of \textbf{inheritance}, unknown in modules, is introduced.
 \nl
 
 
 \section{Components and Programming Concepts}
-Components can be anything and can contain anything, they can be \textit{collections of} classes, objects, functions/algorithms, data structures.
+Components can be anything and can contain anything, they can be \textit{collections of} classes, objects, functions/algorithms, data structures.\\
+{They support:\ns
+\begin{itemize}
+	\item \textbf{Unification} of data and function
+	\item \textbf{Encapsulation}: no visible state
+	\item \textbf{Identity}: each software entity has a unique identity
+	\item Use of interfaces to represent specification dependencies
+\end{itemize}}
 
+\subsection{OOP vs COP Comparison}
 \begin{center}
 \textit{¡Note that \textbf{OOP} $\neq$ \textbf{COP}!}
 \end{center}
 
-OOP isn't focused on \textbf{reuse}, instead its focus in onto appropriate domain and problem representation.
+OOP \textit{isn't} focused on \textbf{reuse}, instead its focus in onto appropriate domain and problem representation. Objects, classes, inheritance and polymorphism are concepts/tools typically exploited in OOP.\\
+COP (more precisely CBSE\footnote{Component-based software engineering}), on the other hand, is focused on \textbf{reuse} and \textbf{composition} of software components. It is a way to build software systems by assembling prefabricated components.
+In general it provides methods and tool for:
+\begin{itemize}
+	\item Building systems from components
+	\item Building components as reusable units
+	\item Performing maintenance by replacement of
+	      components and introducing new components
+	      into the system
+	\item System architecture detailed in terms of
+	      components
+\end{itemize}
 
+\subsection{Component forms}
 \begin{itemize}
     \item \textbf{Component Specification} describes the behavior (as a set of \textit{Interfaces}) of a set of Component Objects and defines a unit of implementation.
     \item \textbf{Component Implementation} is a realization of \textit{Component Specification} which can be independently deployed\footnote{It does \textbf{not} mean that it cannot have \textit{dependencies} nor that it must be a \textit{single file}}.
     \item \textbf{Installed Component} is an installed (i.e. \textit{deployed}) copy of a \textit{Component Implementation}.
     \note{A Component Implementation is deployed by registering it with the runtime environment}
-    \item \textbf{Component Object} is an instance of a \textit{Component Implementation}.
+    \item \textbf{Component Object} is an instance of a \textit{Installed Component}.
     It is a runtime concept, an object with its own data and unique identity.
     Ideally, it is the "thing that performs the implemented behaviour".
-    An \textit{Installed Component} may have multiple \textit{Component Objects}
+    An \textit{Installed Component} may have multiple \textit{Component Objects}.
 \end{itemize}
 
 Some examples of successful components are Plugin architectures, Microsoft's Visual Basic, Operating Systems, Java Beans, and others.
