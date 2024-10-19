@@ -18,19 +18,18 @@ When PM is taken into account, it is crucial to consider when happens the \textb
 In general the earlier the binding happens, the better (for debugging reasons).
 If the binding spans over more phases (e.g. \textit{overriding} in Java), as a convention we consider the \textbf{binding time} the last phase.
 
-\section{Classification}
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{images/polymorphism.png}
     \caption{Polymorphism classification}
     \label{fig:polymorphism_classification}
 \end{figure}
-\subsection{Overloading}
+\section{Overloading}
 \textbf{Overloading} is present in every language for basic operators $+-*...$,
 and sometimes is supported for user-defined functions, 
 and in some languages it is even allowed the overloading of primitive operator by user-defined functions.\\
 Since this falls under the \textbf{ad hoc} polymorphism family,
-the code to be executd is determined by the type of the arguments;
+the code to be executed is determined by the type of the arguments;
 the binding can either happen at \textit{compile} or at \textit{runtime},
 depending on the typing of the language,
 whether it is static or dynamic.
@@ -45,9 +44,64 @@ whether it is static or dynamic.
     double sqr(double x) { return x * x; }
 \end{lstlisting}
 
-\note{Haskell introduces \textbf{type classes} for handling
-overloading in presence of type inference}
+\subsection{Haskell and Rust}
+\lstset{language=Haskell, basicstyle=\footnotesize\ttfamily}
+\begin{paracol}{2}
 
+    Haskell introduces \textbf{type classes} for handling
+    overloading in presence of type inference.\\
+    A type class defines a set of functions that can be implemented by different types. For example, the \lstinline|Eq| type class defines the equality operator (\lstinline|==|) which can be used to compare integers, characters, and other types.
+    
+    Haskell's compiler can automatically determine the types of expressions without explicit type annotations. Type classes work seamlessly with \textbf{type inference} to ensure that the correct function implementation is chosen based on the inferred types.
+    \switchcolumn
+    
+    
+    \begin{lstlisting}
+        -- Define a custom data type
+        data Color = Red | Green | Blue
+        
+        -- Make Color an instance of Eq
+        instance Eq Color where
+        Red == Red = True
+        Green == Green = True
+        Blue == Blue = True
+        _ == _ = False
+        
+        -- Example usage
+        main :: IO ()
+        main = do
+        print (Red == Red)   -- Output: True
+        print (Red == Green) -- Output: False
+    \end{lstlisting}
+\end{paracol}
+    
+
+\lstset{language=Rust}
+In Rust instead has \textbf{Traits} which are similar to type classes in Haskell: they define a set of methods that a type must implement.
+
+\begin{lstlisting}
+use std::ops::Add;
+// Define a custom struct
+#[derive(Debug)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+
+// Implement the Add trait for Point
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, other: Point) -> Point {
+        Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+\end{lstlisting}
+
+\lstset{style=javaBlock}
 \section{Coercion}
 \textbf{Coercion} is the automatic (implicit) conversion of an object to a different type, opposed to casting which is explicit instead.
 Coercion allows a code snippet to be applied of arguments of different (convertible) types.
@@ -58,13 +112,14 @@ Sometimes coercion is allowed only if there is no \textbf{information loss}.
     double d = sqrt(5) // applied to int
 \end{lstlisting}
 
-´\section{Inclusion Polymorphism}
+\section{Inclusion Polymorphism}
 Inclusion polymorphism is also known as \textit{subtyping polymorphism} or \textit{\textbf{inheritance}}.
 It is ensured by \textit{Barbara Liskov}'s \textbf{substitution principle}:
 \begin{center}
     \textit{A subtype object can be used in any context where a supertype object is expected}
 \end{center}
-Methods and fields defined in a superclass may be invoked and accessed by subclasses if not redefined (see \textit{Overriding}).
+Methods and fields defined in a superclass may be invoked and accessed by subclasses if not redefined (see \textit{Overriding}).\\
+Note, again, that this refers to \ul{using superclass methods, not overriding them.}
 
 \section{Overriding}
 In Java a method $m$ of a
@@ -72,7 +127,7 @@ class $A$ can be redefined
 in a subclass $B$ of $A$.
 
 Overriding introduces ad hoc polymorphism in the universal polymorphism of inheritance.
-Notice that overriding requires the final binding to happen at runtime:
+Notice that even though written in the subclass definition, overriding requires the final binding to happen at runtime:
 it happens through the lookup done by \lstinline{invokevirtual} in the JVM.
 
 \section{C++ v Java}
@@ -94,18 +149,21 @@ int main() {
 }
 \end{lstlisting}
 The equivalent code in Java compiles, because in java invokes the function \lstinline{onFoo()} with no arguments defined in the superclass A.
-In C++ instead, the function onFoo(int i) defined in B is found and stops the search, but there is arguments type mismatch, thus it doesn't compile.
+In C++ instead, the function \lstinline|onFoo(int i)| defined in B is found and stops the search, but there is arguments type mismatch, thus it doesn't compile.
 This happens because in C++ the method lookup is based on the method \textit{name}, not on its \textit{signature}.
 
-\section{C++ Templates}
+The solution is to add using \lstinline|A::onFoo;| to class B.
+
+\section{Parametric Polymorphism}
+\subsection{Templates vs Generics}
 \lstset{language=C++}
 
 They are similar to \textit{Generics} in Java, 
 they are used as function and class templates
 each concrete instantiation produces a copy of the generic code, specialized for that type:
-monomorphization.
+\textbf{monomorphization}.
 In java Generics, instead, \textbf{type erasure} happens at runtime, i.e. type variables \lstinline{T} are replaced by \lstinline{Object} variables.\\
-Templates support parametric polymorphism and type parameters can also be primitive types (unlike Java generics)
+Templates support parametric polymorphism and\ul{ type parameters can also be primitive types (unlike Java generics)}
 \begin{lstlisting}
     template <class T> // or <typename T>
     T sqr(T x) { return x * x; }

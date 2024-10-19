@@ -1,13 +1,13 @@
 \chapter{Annotations}
 \section*{9 - Ottobre}
 In java, \lstinline{static,private,...} modifiers are \textit{meta-data} describing properties of program elements.
-\textbf{Annotations} can be understood as (user-) definable modifiers.
-They are composed by one or two parts:
+\ul{\textbf{Annotations} can be understood as (user-) definable modifiers}.
+{They are composed by one or two parts:\ns
 \begin{enumerate}
     \item \textbf{name}
     \item finite number of \textbf{attributes} i.e. \lstinline{name=value}.
     There may be no attributes.
-\end{enumerate}
+\end{enumerate}}
 The syntax is the following:
 \begin{lstlisting}
     @annName            // e.g. Override
@@ -41,3 +41,6 @@ It can be used as follows:
     public static void m2() { /* ... */ }
 }
 \end{lstlisting}
+
+Clearly, reflection can be used to access annotations at runtime using \lstinline|getAnnotations()|, if they have been \textbf{retained} by the compiler;
+in fact, annotations are not retained by default, but they can be forced to be retained by using the \lstinline{@Retention} annotation, which takes a \lstinline{RetentionPolicy} as argument, either \lstinline{SOURCE}, \lstinline{CLASS} or \lstinline{RUNTIME}.
