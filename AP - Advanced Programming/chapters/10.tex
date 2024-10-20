@@ -1,9 +1,9 @@
 \chapter{Standard Templates Library}
 \section*{17 - Ottobre}
 The goal of STL is to represent algorithms in as general form as possible without compromising efficiency.
-There is an extensive use of \textbf{templates}, \textbf{overloading} and \textbf{iterators},
+There is an extensive use of \textbf{templates}, \textbf{overloading}\note{Same function name, the algorithm to be executed is determined by the type of the arguments} and \ul{\textbf{iterators}},
 which are used for decoupling algorithms from containers,
-and can be seen as an abstraction of pointers.\\
+and can be seen as an \ul{abstraction of pointers}.\\
 STL is very different from the \textit{Java Collection Library} since it does \textbf{not} use \textit{dynamic binding} and is \textbf{not} \textit{object oriented};
 instead the STL uses only \textit{static binding} and \textit{inlining}.
 
@@ -22,7 +22,6 @@ instead the STL uses only \textit{static binding} and \textit{inlining}.
    \centering
    \includegraphics[width=0.7\textwidth]{images/STL_containers.png}
    \label{fig:STL_containers}
-   \caption{TIKZ RE-DO : STL Containers}
 \end{figure}
 
 \section{Iterators}
@@ -110,6 +109,7 @@ To achieve transparency to third-party algorithms STL assumes \textit{constant} 
 Each category defines only the functions which take constant time. Not all iterators are defined for all
 containers, e.g. since \textit{random access} takes \textit{linear} time on lists,
 there is no \textit{random access} iterator on \textit{lists}.
+\note{Any C++ pointer type, T*, obeys all the laws of the random access iterator category}
 
 \subsection{Invalidation}
 When a container is \textit{modified},
@@ -118,7 +118,9 @@ no "exception" is thrown,
 iterators can still be used,
 but their behaviour is \textbf{undefined}.
 \textit{\textbf{Not} every operation} invalidates iterators,
-it depends on the operation and on the container.\nl
+\ul{it depends on the operation and on the container}.
+For example, inserting an element in a \lstinline|list| allows all iterators to remain valid, while inserting an element in a \lstinline|vector| invalidates all of them, since reallocation is necessary.
+\nl
 
 The main limiting aspect of STL's iterators is that they provide a \textbf{linear view} of the container,
 allowing the definition of operations only on one-dimensional containers;
@@ -129,7 +131,7 @@ thus, if it is needed to access the organization of the container (e.g. tree cus
 \subsection{Inheritance}
 STL relies on typedefs combined with namespaces to
 implement genericity, the programmer always refers to \lstinline|container::iterator| to know the type of the iterator.
-Note that there is no relation among iterators for different containers (!), if not a semantically abstract one.
+Note that there is \ul{no relation among iterators for different containers }(!), if not a semantically abstract one.
 The reason for this is \textbf{performance}: 
 without \textit{inheritance}, types are resolved at compile time and the compiler may produce better and optimized code.
 On the other hand sacrificing inheritance may lead to
@@ -147,6 +149,14 @@ The compiler tends to (automatically?)
 inline methods with small bodies and without iteration; 
 it is able to determine types at compile
 time and usually does inlining of function objects.
+
+\lstset{language=C++}
+\begin{lstlisting}
+  template <class T>
+  inline T sqr(T x) { return x * x; }
+\end{lstlisting}
+
+\lstset{style=JavaBlock}
 
 \subsection{Memory management}
 STL abstract from the specific memory model using a concept named \textbf{allocators}.
