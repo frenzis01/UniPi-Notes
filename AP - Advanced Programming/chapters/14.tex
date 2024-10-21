@@ -6,13 +6,16 @@ Often type constructors can be thought of as
 defining \textit{"boxes"} for values, and \lstinline|Functors| with \lstinline|fmap| allow to apply functions
 inside such \textit{"boxes"}.\\
 \lstinline|Monad| is a constructor class introducing
-operations for \textit{putting a value} into a "box" (\lstinline|return|) and \textit{composing} functions that return "boxed" values (\lstinline|bind|)
+operations for \textit{putting a value} into a "box" (\lstinline|return|) and \textit{composing} functions that return "boxed" values (\lstinline|bind|).\\
+\textbf{``Monads"} are type constructors that are instances of \lstinline|Monad|
 
-\note{
-   \textbf{"Monads"} are type constructors that are instances of \lstinline|Monad|
-}
+\note{A \textit{Type constructor} is a generic type with one or more type variables}
+
 
 \subsection{\texttt{Maybe}}
+\lstinline{data Maybe a = Nothing | Just a} is a type constructor with a single type variable \lstinline|a|.
+A value of type \lstinline|Maybe a| is either \lstinline|Nothing| or \lstinline|Just x| for some \lstinline|x::a|.
+
 A function \lstinline|f :: a -> Maybe b| is a partial function from
 \lstinline|a| to \lstinline|b|.
 \begin{lstlisting}
@@ -43,22 +46,23 @@ of a monad.
 (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
 \end{lstlisting}
 
-\lstinline|do{}| is an alternative equivalent syntax,
-more \textit{imperative-like}.
 \begin{lstlisting}
    bothGrandfathers p =
-      father p >>= 
-      (\dad -> father dad >>= 
-         (\gfl -> mother p >>= 
-            (\mom -> father mom >>= 
-               (\gf2 -> return (gfl, gf2)))))
+   father p >>= 
+   (\dad -> father dad >>= 
+   (\gfl -> mother p >>= 
+   (\mom -> father mom >>= 
+   (\gf2 -> return (gfl, gf2)))))
+\end{lstlisting}
    
+\lstinline|do{}| is an alternative equivalent syntax,more \textit{imperative-like}.
+\begin{lstlisting}
    bothGrandfathers p = do
-      dad <- father p
-      gfl <- father dad
-      mom <- mother p
-      gf2 <- father mom
-      return (gfl, gf2)
+   dad <- father p
+   gfl <- father dad
+   mom <- mother p
+   gf2 <- father mom
+   return (gfl, gf2)
 \end{lstlisting}
 
 \section{Monads as *}
@@ -93,40 +97,41 @@ let’s see this for \lstinline|lists|
       (>>) :: m a -> m b -> m b -- "then"
       ... -- + something more + a few axioms
 \end{lstlisting}
-A value of type m a is a “computation returning a value of type a”
+A value of type m a is a ``computation returning a value of type a''
 
-For any value, there is a computation which “does nothing” and
-produces that result. This is given by function return
+For any value, there is a computation which ``does nothing'' and
+produces that result. This is given by function \lstinline|return|.
 
-Given two computations x and y, one can form the computation
-x >> y which intuitively “runs” x, throws away its result, then runs
-y returning its result
+Given two computations \lstinline|x| and \lstinline|y|, one can form the computation
+\lstinline|x >> y| which intuitively ``runs'' \lstinline|x|, throws away its result, then runs \lstinline|y| returning its result.
 
-Given computation x, we can use its result to decide what to do next.
-Given f: a -> m b, computation x >>= f runs x, then applies
-f to its result, and runs the resulting computation.
+Given computation \lstinline|x|, we can use its result to decide what to do next.
+Given \lstinline|f: a -> m b|, computation \lstinline|x >>= f| runs \lstinline|x|, then applies
+\lstinline|f| to its result, and runs the resulting computation.
 
-Note that we can define then using bind:
+Note that we can define \lstinline|then| using \lstinline|bind|:
 \begin{lstlisting}
    x >> y = x >>= (\_ -> y)
 \end{lstlisting}
 
 
-eturn, bind and then define basic ways to compose computations
-• They are used in Haskell libraries to define more complex composition
-operators and control structures (sequence, for-each loops, ...)
-• If a type constructor defining a library of computations is monadic, one
+return, bind and then define basic ways to compose computations.
+They are used in Haskell libraries to define more complex composition
+operators and control structures (sequence, for-each loops, \dots).\\
+If a type constructor defining a library of computations is monadic, one
 gets automatically benefit of such libraries
 
 Example: MAYBE
-• f:a -> Maybe b is a partial function
-• bind applies a partial function to a possibly undefined value, propagating
-undefinedness
+\begin{itemize}
+	\item \lstinline|f:a -> Maybe b| is a partial function
+	\item \lstinline|bind| applies a partial function to a possibly undefined value, propagating undefinedness
+\end{itemize}
 Example: LISTS
-• f:a -> [b] is a non-deterministic function
-• bind applies a non-deterministic function to a list of values, collecting all
-possible results
+\begin{itemize}
+	\item \lstinline|f:a -> [b]| is a non-deterministic function
+	\item \lstinline|bind| applies a non-deterministic function to a list of values, collecting all possible results
 
+\end{itemize}
 \section{IO Monad}
 \subsection{FP pros \& cons}
 \labelitemize{
@@ -169,7 +174,8 @@ possible results
       \item Concurrency control
    \end{itemize}
 
-   }
+}
+
 Besides, recall that the whole point of a running a program is to \textbf{interact}
 with the external environment and affect it
 
@@ -187,29 +193,10 @@ The answer is not trivial for Haskell.
 However it is not an impossible problem.
 Haskell's approach is to exploit the concept of \textbf{Monads}.
 
-Recall that the bind operator >>= forces a \textbf{sequence} between the evaluation of terms;
+Recall that the bind operator \lstinline|>>=| forces a \textbf{sequence} between the evaluation of terms;
 the IO monad exploits this and defines monadic values which are called \textbf{actions}, and prescribes how to compose
 them \textit{sequentially}
 
-\begin{figure}[htbp]
-   \centering
-   \begin{tikzpicture}
-      % Define the styles for the rectangles
-   \tikzstyle{rect} = [draw, rectangle, minimum width=4cm, minimum height=2cm, text width=3.5cm, align=center]
-
-   % Draw the first rectangle with text A
-   \node[rect] (rectA) at (0,0) {Text A\\Line 2\\Line 3};
-
-   % Draw the second rectangle with text B
-   \node[rect] (rectB) at (6,0) {Text B\\Line 2\\Line 3};
-
-   % Draw the bidirectional double arrow between the rectangles
-   \draw[-{Straight Barb[left]}] (rectA.east) -- (rectB.west);
-  \draw[-{Straight Barb[right]}] (rectB.west) -- (rectA.east);
-   \end{tikzpicture}
-   \caption{<caption>}
-   \label{<label>}
-\end{figure}
 
 \subsection*{Before Monads}
 Before Monads there were \textbf{Streams}, which allowed a program to send stream of requests to OS and receive stream of responses,
@@ -226,7 +213,7 @@ input/output before delivering a result of type \lstinline|t|
    \item 
    \lstinline|return| returns the value without making I/O
    \item
-   \lstinline|then (>>)| [and also \lstinline|\lstinline|bind (>>=)||] composes two
+   \lstinline|then (>>)| (and also \lstinline|bind (>>=)|) composes two
    actions sequentially into a larger action
    \item
    The only way to perform an action is to call it at
@@ -235,9 +222,9 @@ input/output before delivering a result of type \lstinline|t|
    which is the standard entry point for Haskell programs.
 \end{itemize}
 
-An \textbf{action} is a \textit{first-class} value,
+\ul{An \textbf{action} is a \textit{first-class} value,
 and \textbf{evaluating} has \textit{no effect}: \textbf{performing} the
-action has the \textit{effect}.
+action has the \textit{effect}}.
 \note{The actual meaning of this statement is unclear even to the professor \smiley }
 
 \begin{lstlisting}
@@ -268,9 +255,44 @@ Performing compound action \lstinline|a >>= \x->b| :
    \label{fig:bind_combinator}
 \end{figure}
 
-The \textbf{then} combinator \lstinline|(>>)| instead does sequencing when there is no value to pass:
+The \textbf{then} combinator \lstinline|(>>)| instead does sequencing when there is no value to pass (for instance a sequence of \lstinline|putChar|s):
 \begin{lstlisting}
+   (>>) :: IO a -> IO b -> IO b
    m >> n = m >>= (\_ -> n)
+
+   echoDup :: IO ()
+   echoDup = getChar >>= \c ->
+      putChar c >>
+      putChar c
+\end{lstlisting}
+
+\subsection{\texttt{do} notation}
+The ``do'' notation is a syntactic sugar for \lstinline|>>=| and \lstinline|>>|, and it is used to write monadic code in a more imperative style, making it easier to read and write.
+
+\begin{paracol}{2}
+\begin{lstlisting}
+-- Do Notation
+getTwoCharsDo :: IO(Char,Char)
+getTwoCharsDo = do { c1 <- getChar ;
+   c2 <- getChar ;
+   return (c1,c2) }
+\end{lstlisting}
+\switchcolumn
+\begin{lstlisting}
+-- Plain Syntax
+getTwoChars :: IO (Char,Char)
+getTwoChars = getChar >>= \c1 ->
+   getChar >>= \c2 ->
+   return (c1,c2)
+\end{lstlisting}
+
+\end{paracol}
+
+\begin{lstlisting}
+   do { x } = x
+   do { x; stmts } = x >> do { stmts }
+   do { v<-x; stmts } = x >>= \v -> do { stmts }
+   do {let ds; stmts } = let ds in do { stmts }
 \end{lstlisting}
 
 \subsection{Restrictions}
@@ -300,7 +322,7 @@ during the program, so it doesn’t matter \textit{\textbf{when}} we
 read it.\\
 This situation arises sufficiently often that Haskell
 implementations offer one last unsafe I/O primitive:
-\lstinline|unsafePerformIO|.
+\lstinline|unsafePerformIO|
 \begin{lstlisting}
    unsafePerformIO :: IO a -> a
    configFileContents :: [String]

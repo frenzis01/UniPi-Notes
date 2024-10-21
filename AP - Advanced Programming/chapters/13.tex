@@ -396,3 +396,18 @@ and then simply use the \textit{overloaded} symbol \lstinline|fmap|, instead of 
       fmap f (Just s) = Just(f s)
       fmap f Nothing = Nothing
 \end{lstlisting}
+
+\note{Alternatively we could also write \lstinline|fmap = map|, \lstinline|fmap = mapTree|, fmap = \lstinline|mapMaybe|}
+
+The following is an example on how to use the obtained fmap:
+\begin{lstlisting}
+   ghci> fmap (\x->x+1) [1,2,3]
+   [2,3,4]
+   it :: [Integer]
+   ghci> fmap (\x->x+1) (Node(Leaf 1, Leaf 2))
+   Node (Leaf 2,Leaf 3)
+   it :: Tree Integer
+   ghci> fmap (\x->x+1) (Just 1)
+   Just 2
+   it :: Maybe Integer
+\end{lstlisting}
