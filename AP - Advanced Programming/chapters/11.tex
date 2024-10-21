@@ -138,7 +138,8 @@ f (x,y) = x+y --argument must match pattern (x,y)
 Let's recall that Haskell is a \textbf{lazy} language,
 thus functions and data constructor don't evaluate arguments until they actually need them.
 
-\paragraph{List comprehension}
+\subsection{List comprehension}
+
 \begin{lstlisting}
    myData = [1,2,3,4,5,6,7]
    twiceData = [2 * x | x <- myData]
@@ -157,7 +158,7 @@ length xs = sum [1 | _ <- xs] -- anonymous (dont care) var
 removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]
 \end{lstlisting}
 
-\subsection*{Datatype declearations}
+\subsection{Datatype declarations}
 \begin{lstlisting}
    data Color = Red | Yellow | Blue
    data Atom = Atom String | Number
@@ -223,6 +224,8 @@ take' n (x:xs) = x : take' (n-1) xs
 \subsection{Higher-Order functions}
 Functions that take other functions as arguments or return a function as a result are \textbf{higher-order} functions.
 
+Note also that any curried function with more than one argument is higher-order: applied to one argument it returns a function.
+
 \begin{lstlisting}
 applyTwice :: (a -> a) -> a -> a    -- function as arg and res
 applyTwice f x = f (f x)
@@ -252,6 +255,7 @@ applyTwice' f = f.f                 -- equivalent definition
 \end{lstlisting}
 
 \begin{lstlisting}
+-- Even these are higher order functions, since they return a function when applied to one argument
 (+) :: Num a => a -> a -> a
 > let f = (+) 5 // partial application
 >:t f ==> f :: Num a => a -> a
@@ -263,7 +267,7 @@ elem :: (Eq a, Foldable t) => a -> t a -> Bool
 > isUpper '0' ==> False
 \end{lstlisting}
 
-\subsubsection{Combinators}
+\subsection{Combinators}
 \lstinline|map| \textit{combinator} applies argument function to each element in
 a collection.
 \begin{lstlisting}
@@ -377,7 +381,7 @@ Despite this, it provides a more efficient variant of foldl called \lstinline|fo
 \textit{Strictly} means that the compiler evaluates the accumulator at \textit{each step} of the folding process, ensuring that intermediate values are not built up as \textit{unevaluated thunks} i.e. Haskell's term for delayed computations.
 Due to its \textit{strictness} \lstinline|fold'| is less likely to cause \textbf{space leaks} (see note below), and it generally has better performance for many common folding operations.
 
-\note{\textbf{"Space leaks"} mahy happen when a program retains references to data that should no longer be needed, preventing the garbage collector from reclaiming memory. 
+\note{\textbf{"Space leaks"} may happen when a program retains references to data that should no longer be needed, preventing the garbage collector from reclaiming memory. 
 This can lead to inefficient memory usage and, in some cases, cause the program to run out of memory.
 This (generally) occurs only when handling large data sources or \textit{infinite data structures} (which are allowed in Haskell);
 space leaks may be very hard to debug,
