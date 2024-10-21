@@ -12,10 +12,16 @@ the code to be executed is determined by the type of the arguments,
 leading to have \textit{early binding} in \textit{statically} typed languages
 or \textit{late binding} in \textit{dynamically} typed languages.
 
-In Haskell we can write the following, but what is the type?
+In Haskell we can write the following, but what is the type? May be float, int, double, etc.
 \begin{lstlisting}
    sqr x = x * x
 \end{lstlisting}
+
+\note{
+   \tiny
+   Actually in Haskell, we have \ul{type classes}
+   \texttt{sqr :: Num a => a -> a}
+}
 
 When considering overloading besides arithmetic, we find that some functions are \textbf{fully polymorphic}:
 \begin{lstlisting}
@@ -81,6 +87,14 @@ These implies rewriting calls to pass appropriate implementations for plus and t
    \lstinline|member:: Eq w => w -> [w] -> Bool|
 \end{enumerate}
 
+So, considering our previous examples, the type of \lstinline|member| parameters is any type \lstinline|w| that supports equality, i.e. that belongs to the \lstinline|Eq| type class.
+\lstinline|reverse| instead, works for any list of any type.
+\begin{lstlisting}
+   member :: Eq w => w -> [w] -> Bool
+   sort :: Ord w => [w] -> [w]
+   reverse :: [w] -> [w]
+\end{lstlisting}
+
 \labelitemize{
    \textit{implementation summary}
 }{
@@ -113,7 +127,11 @@ These implies rewriting calls to pass appropriate implementations for plus and t
 \subsection{Subclasses}
 \begin{paracol}{2}
    \vspace{\fill}
-   
+   \begin{lstlisting}[label={lst:hs_eqnum}]
+      memsq :: (Eq a, Num a) => a -> [a] -> Bool
+      memsq x xs = member (square x) xs
+   \end{lstlisting}
+   We could treat the Eq and Num type classes separately as in \ref{lst:hs_eqnum}, but we expect that every instance of Num is also an instance of Eq.
    A subclass declaration expresses this relationship:
    \begin{lstlisting}
       class Eq a => Num a where
@@ -226,12 +244,6 @@ most general types that could have been declared
    \label{fig:typeinference_constraints_abstraction}
 \end{figure}
 
-\begin{itemize}
-   \item Type of \lstinline|f| (\lstinline|t_0|) must $domain \longrightarrow range$
-   \item \textbf{Domain} is type of abstracted variable \lstinline|x| (\lstinline|t_1|)
-   \item \textbf{Range} is type of function body \lstinline|e| (\lstinline|t_2|)
-   \item \textbf{Constraint}: \lstinline|t_0 = t_1 -> t_2|
-\end{itemize}
 
 \begin{figure}[htbp]
    \centering
@@ -245,10 +257,14 @@ most general types that could have been declared
    \includegraphics[width=0.4\columnwidth]{images/typeinference_step5.png}
    \label{fig:typeinference_step5}
 \end{figure}
+\newpage
 
 \subsubsection{Steps summary}
 \begin{enumerate}
    \item Parse program to build parse tree
+   \begin{itemize}
+      \item Each node is a function application \lstinline|@|, variable $x$, or constant
+   \end{itemize}
    \item Assign type variables to nodes in tree
    \item Generate constraints:
    \begin{enumerate}
