@@ -1,0 +1,108 @@
+\chapter{Raft}
+
+
+\section{Logs use case}
+Bear in mind that a \ul{\textbf{log} is a \textit{sequence} of records}, it is meaningless if not ordered.
+Operations have an effect when executed in an order $s$, and may have a different one in another order $s'$.
+
+In distributed systems, it is not trivial to keep logs consistent.
+On local machines, timestamp ordering is enough, but in distributed systems, clocks are not synchronized, hence we need a more sophisticated approach, typically involving the sequencing of operations, not necessarily based on timestamps.
+
+\section{Consesus - (Again)}
+Consesus is the backbone of consistency, fault tolerance, and coordination in distributed systems;
+it enables systems to operate reliably and predictably, even in the presence of failures and network partitions.
+
+\subsection{Why is it relevant}
+%  // TODO
+
+\framedt{Converging}{
+   Amongst other things, consesus is used to ensure \textit{\textbf{data integrity}, i.e. prevents \textbf{data divergence} in replicated systems}.
+   That is that different data (replicas) will eventually converge to the same value.
+
+   \textit{But to which of the replicas should the others converge?}\\
+   Consesus!   
+
+}
+
+% \\ TODO
+
+\framedt{Paxos and paper}{
+   Even though it was a standard until a few years ago, people realized that Paxos was too complex to implement, and could fit best raw paper than actual software.
+   Too many aspects were left to the implementer, and it was hard to get it right.
+}
+
+\section{Raft}
+Raft achieves consesus through an \textit{elected leader} that coordinates the other nodes.
+An entity participating to a Raft cluster can either take the role of the leader or the role of follower;
+in the latter case, it may become leader through a ``candidacy'' process.\\
+The leader regularly informs the followers of its existence by sending a heartbeat message.
+\begin{itemize}
+   \item There exist a timeout for the heartbeats from the leader
+   \item In case no heartbeat is received the follower changes its status to candidate and starts a leader election.
+\end{itemize}
+
+Note that the \ul{\textbf{underlying assumption} is that \textit{everybody knows everybody}}.
+
+\subsection{Key points}
+\begin{itemize}
+   \item \textbf{Leader election} - Raft uses a randomized timeout to elect a leader.
+   \item \textbf{Log replication} - The leader replicates its log to the followers.
+   \item \textbf{Safety and Liveness} - Raft ensures safety and liveness under failure conditions.
+\end{itemize}
+
+\subsection{Log Replication}
+Log replication is a fundamental mechanism in Raft to ensure that all nodes in the cluster have the same data.
+
+The leader is responsible for replicating its log to the followers. Such log contains a series of commands that must be applied in the same order by all nodes in the cluster.
+
+Only the leader can append entries to the log, and each entry is committed once it is replicated to a majority of the nodes.
+\nl
+
+In case the leader crashes it is important to ensure that a new one is elected, and that it has the same log as the previous one.
+
+% // TODO
+
+\subsection{Leader election}
+There are three states in Raft:
+\begin{itemize}
+   \item \textbf{Leader} - The leader is responsible for managing the replication of the log.
+   \item \textbf{Follower} - The follower replicates the leader's log.
+   \item \textbf{Candidate} - The candidate is a node that is trying to become the leader.
+\end{itemize}
+
+\framedt{Becoming the leader}{
+   \begin{enumerate}
+      \item When the current leader fails (e.g. crashes or becomes unreachable), a new leader is elected.
+      \item Follower nodes can become candidates and initiate electionss if they don't receive a heartbeat from the leader within a specified time (election timeout).
+      \item Leader election is the foundation of Raft's fault tolerance.
+   \end{enumerate}
+}
+
+Once a leader is elected, the leader appends new log entries and replicates them to all followers.
+A log entry is considered committed when it is replicated to a majority of nodes. Followers always accept entries from the current leader to maintain consistency.
+
+\tikzset{every loop/.style={min distance=10mm,in=50,out=490,looseness=10}}
+\begin{figure}[htbp]
+   \centering
+   \begin{tikzpicture}[
+      state/.style={rectangle, rounded corners, draw=black, very thick, minimum height=3em, inner sep=3pt, text centered},
+      arrow/.style={-{Latex[length=3mm, width=2mm]}, thick},
+      every node/.style={font=\sffamily}
+  ]
+  
+  % States
+  \node[state] (follower) {Follower};
+  \node[state, right=4cm of follower] (candidate) {Candidate};
+  \node[state, right=4cm of candidate] (leader) {Leader};
+  
+  % Arrows
+  \draw[arrow] (follower) -- node[above] {Suspects leader failure} (candidate);
+  \draw[arrow] (candidate) -- node[above] {win election} (leader);
+  \draw[arrow, bend left] (leader) to node[above] {heartbeat timeout} (follower);
+  \draw[arrow, bend left] (leader) to node[below] {step down} (follower);
+  \draw[arrow, loop above] (candidate) to node[above] {election timeout} (candidate);
+  
+  \end{tikzpicture}
+   \caption{State diagram}
+   \label{fig:state_diagram}
+\end{figure}

@@ -126,13 +126,18 @@ Paxos is completely asynchronous, so it does \textbf{not} assume that all nodes 
 If faulty nodes are $f$ and total nodes are $n \geq 2f + 1 $, then Paxos can tolerate $f$ faulty nodes, since it exploits strict majority.
 
 \subsection{Challenges and Applications}
-\proscons{Challenges}{\begin{itemize}
+\proscons{Challenges}{Applications}{\begin{itemize}
    \item Complexity in understanding and implementing the algorithm
    \item Overhead due to message exchanges
    \item Network partitions and node failures can affect Liveness
-\end{itemize}}{Applications}{
-   Google chubby
-   //TODO
+\end{itemize}}
+   
+{
+   \begin{itemize}
+      \item 
+      Google chubby
+      //TODO
+   \end{itemize}
 }
 
 \section{Key Takeaways}
