@@ -1,15 +1,16 @@
 \chapter{Streams}
+
+Streams were introduced to support functional-style operations on streams of elements, such as map-reduce transformations on collections.\\
 Let's consider the properties of \textbf{Streams}, and we'll clearly see how they are different from Collections.
 \begin{itemize}
-   
    \item \textbf{No storage}\\
    A stream is \textit{not} a data structure that
    stores elements; instead, it conveys elements
    from a \textit{source} \footnote{e.g. a data structure, an array, a
-   generator function, an I/O channel,...} through a
-   pipeline of computational operations.
+   generator function, an I/O channel,...} through a pipeline of computational operations.
    \item \textbf{Functional} in nature\\
    An operation on a stream produces a \textit{result}, but does \textit{not} modify its source.
+   \note{In fact ---if I recall correctly--- modifying a stream while iterating over it with \lstinline|forEach| would result in messed up behavior; more precisely, a \lstinline|ConcurrentModificationException|}
    \item \textbf{Laziness-seeking}
    Many stream operations can be
    implemented lazily, exposing opportunities for optimization.
@@ -33,13 +34,12 @@ Let's consider the properties of \textbf{Streams}, and we'll clearly see how the
 \end{itemize} 
 \section{Pipelines}
 
-A typical pipeline contains
+{A typical pipeline contains\ns
 \begin{enumerate}
    \item A \textbf{source}, producing (by need) the elements of the stream
    \item Zero or more \textbf{intermediate} operations, producing streams
-   \item A \textbf{terminal} operation, producing side-effects or non-
-   stream values
-\end{enumerate}
+   \item A \textbf{terminal} operation, producing side-effects or non-stream values
+\end{enumerate}}
 \note{
    Example of typical pattern: \texttt{filter / map / reduce}
 } 
@@ -84,12 +84,12 @@ Suppose we want to concatenate a stream of strings:
 The above works, but is highly inefficient: it builds one new string for each element, since \lstinline|Strings| are immutable in Java.\\
 It would be better to "accumulate" the elements in a mutable object (e.g. a \lstinline|StringBuilder|, a \lstinline|collection|, ...).
 In our aid comes the \textbf{mutable reduction operation} which is called \lstinline|collect()|, which requires
-three functions:
+{three functions:\ns
 \begin{enumerate}
    \item a \textbf{supplier} function to \textit{construct} new instances of the result container,
    \item an \textbf{accumulator} function to \textit{incorporate} an input element into a result container,
    \item a \textbf{combining} function to \textit{merge} the contents of one result container into another.
-\end{enumerate}
+\end{enumerate}}
 \begin{lstlisting}
    <R> R collect( Supplier<R> supplier,
                   BiConsumer<R, ? super T> accumulator,
@@ -137,7 +137,7 @@ If operations \textit{don’t} have side-effects, \textit{thread-safety} is
 \textbf{guaranteed} even if \textit{non-thread-safe collections} are
 used (e.g. \lstinline|ArrayList|).
 
-Also \textit{concurrent mutable reduction} is supported for parallel streams, however
+Also \textit{concurrent mutable reduction} (collect) is supported for parallel streams, however
 Order of processing stream elements depends on
 serial/parallel execution and intermediate operations,
 and may not be predictable.
@@ -162,11 +162,11 @@ One should use Parallelism
    \item Either or both:
    \begin{itemize}
       \item Operations are computationally expensive
-      \item Operations are applied to many elements of
+      \item Operations are applied to many elements of efficiently splittable data structures
    \end{itemize}
-   efficiently splittable data structures
 \end{itemize}
 \emph{"Always measure before and after \emph{parallelizing}!"}
+
 
 \subsection{Critical Issues}
 \begin{itemize}

@@ -1,4 +1,5 @@
-\chapter{Lambdas}
+\chapter{Lambdas in KJava}
+The purpose of lambdas was enabling ---without requiring recompilation of existing binaries--- functional programming in Java, that is being able to pass behaviors as well as data to functions, and to introduce lazy evaluation with stream processing.
 \section{Java 8}
 \lstset{style=javaBlock}
 \begin{lstlisting}
@@ -10,7 +11,8 @@
    intSeq.forEach(System.out::println); //method reference
 \end{lstlisting}
 
-Note that local variables used inside the body of a lambda must be \lstinline|final| or \textit{effectively} \lstinline|final|, or have to be static.
+Note that class variables used inside the body of a lambda must be \lstinline|final| or \textit{effectively} \lstinline|final|, or have to be static.
+This is \ul{fundamental design choice, as it makes \textbf{closures}\footnote{A closure is a function that captures the lexical context in which it was defined.} not necessary}.
 \begin{lstlisting}
    int var = 10; // must be [effectively] final
    intSeq.forEach(x -> System.out.println(x + var));
@@ -29,8 +31,26 @@ public class SVCExample { // static variable capture
    \end{lstlisting}
 
 \section{Functional Interfaces}
-Java 8 \textit{lambdas} are instances of \textit{functional
-interfaces},
+\subsection{Implementation}
+The Java 8 compiler conceptually first converts a lambda
+expression into a function, compiling its code; 
+then it generates code to call the compiled function where
+needed.\\
+For example, \lstinline|x -> System.out.println(x)| could be
+converted into a generated static function
+\begin{lstlisting}
+   public static void genName(Integer x) {
+      System.out.println(x);
+   }
+\end{lstlisting}
+
+
+\ul{But what \textbf{type} should be generated for this function? How
+should it be called? What class should it go in?}
+
+\subsection{Functional Interfaces}
+
+Java 8 \textit{lambdas} are instances of \textit{functional interfaces},
 which are java interfaces with exactly \textit{one} \textit{\textbf{abstract}} method.
 
 \begin{lstlisting}
@@ -47,13 +67,19 @@ which are java interfaces with exactly \textit{one} \textit{\textbf{abstract}} m
       V call() throws Exception;
    }
 \end{lstlisting}
+{Functional Interfaces can be used as target type of lambda
+expressions, i.e.\ns
+\begin{itemize}
+	\item As type of variable to which the lambda is assigned
+	\item As type of formal parameter to which the lambda is passed
+\end{itemize}}
 
 The lambda is invoked by calling the only abstract method
 of the functional interface;
 lambdas can be interpreted as instances of anonymous
 inner classes implementing the functional interface.
 
-For instance, recalling the forEach presented earlier, the corresponding interface is the following.
+For instance, recalling the \lstinline|forEach| presented earlier, the corresponding interface is the following.
 Note that it must be checked that the lambda matches the \lstinline|forEach| signature defined in the interface:
 \begin{lstlisting}
 intSeq.forEach(x -> System.out.println(x));
@@ -64,6 +90,13 @@ interface Iterable<T>{ //java.lang
       for (T t : this)
          action.accept(t);
 \end{lstlisting}
+
+Lambdas could, in principle, be compiled as instances of anonymous inner classes, but there is no default strategy for compiling lambdas indicated in neither JLS8 nor JVMS8. The compiler can choose to compile them as anonymous inner classes, or it can choose to use \lstinline|invokedynamic| to implement them, as it is usually done nowdays.
+
+\subsubsection{Default Methods}
+Adding new abstract methods to interfaces breaks existing implementations of such interface.
+To avoid this, Java 8 introduced \textit{default methods} in interfaces, which are methods with a body that can be overridden by implementing classes,
+enforcing backward compatibility with existing solutions.
 
 \subsubsection{Method References}
 \textbf{Method references} can be used to pass an existing
