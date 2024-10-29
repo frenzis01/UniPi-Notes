@@ -1,0 +1,155 @@
+\chapter{CAP Theorem}
+\begin{definition}
+   [CAP Theorem]
+   It is impossible for a distributed data store to simultaneously provide more than two out of the following three guarantees:
+   \begin{itemize}
+   	\item \textbf{Consistency}\\
+            Every read receives the most recent write or an error
+   	\item \textbf{Availability}\\
+            Every request receives a (non-error) response, without the guarantee that contains the most recent write
+   	\item \textbf{Partition tolerance}\\
+            The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes
+   \end{itemize}
+\end{definition}
+
+\note{Also known as Brewer's theorem, the CAP theorem was formulated by Eric Brewer in 2000.}
+
+{When a network partition failure happens should we decide to either\ns
+\begin{itemize}
+	\item Cancel the operation and thus decrease the availability but ensure consistency
+	\item Proceed with the operation and thus provide availability but risk inconsistency
+\end{itemize}}
+\coolquote{
+   The CAP theorem implies that in the presence of a network partition, one has to choose between consistency and availability.
+}{Prof. Dazzi}
+
+\section{Trade off}
+CAP theorem describes the trade-offs involved in distributed systems: a proper understanding of CAP theorem is essential to make decisions about the future of distributed system design.
+Misunderstanding can lead to erroneous or inappropriate design choices.
+
+{The CAP theorem suggests there are three kinds of distributed
+systems:\ns
+\begin{itemize}
+	\item \textbf{CP} $\leftarrow$ Consistent when Partitioned
+	\item \textbf{AP} $\leftarrow$ Available when Partitioned
+	\item \st{\textbf{CA} $\leftarrow$ Consistent and Available Not Partitioned}\\
+	This cannot exist in a distributed system; network partitions are inevitable. 
+\end{itemize}}
+
+Both AP and CP systems can offer a degree of consistency, and availability, as well as partition tolerance.
+
+\section{Consistency}
+AP systems provide best effort consistency, meaning that they will eventually become consistent, but not necessarily at the time of the request.\\
+Examples are web caching and DNS.
+
+\begin{itemize}
+	\item \textbf{Strong} Consistency - all users see the same data at the same time
+	\item \textbf{Weak} Consistency - Reads may return stale data
+	\item \textbf{Eventual} Consistency - If no new updates are made to object, eventually all accesses will return the last updated value
+   \begin{itemize}
+   	\item \textit{Causal} consistency - Processes that have causal
+   	      relationship will see
+   	      consistent data
+   	\item \textit{Read-your-write}
+   	      consistency - A process always accesses
+   	      the data item after it’s update
+   	      operation and never sees an
+   	      older value
+   	\item \textit{Session} consistency - As long as session exists,
+   	      system guarantees read-your-
+   	      write consistency
+   	      Guarantees do not overlap
+   	      sessions
+   
+   	\item \textit{Monotonic read} consistency - If a process has seen a particular value of data item, any subsequent processes will never return any previous values
+   
+   	\item \textit{Monotonic write} consistency - The system guarantees to serialize the writes by the same process
+   	\item[] These two properties may be combined
+   \end{itemize}
+\end{itemize}
+
+% // TODO slides 30-40
+
+\section{Example Scenarios}
+\subsection{Dynamic Tradeoff - Dynamic Reservation}
+In an airline reservation system when most of seats are available it is ok to rely on somewhat out-of-date data, availability
+is more critical.
+
+When the plane is close to be filled instead, it needs
+more accurate data to ensure the plane is not
+overbooked, consistency becomes more critical.
+
+Neither strong consistency nor guaranteed
+availability, but it may significantly increase the
+tolerance of network disruption.
+
+\section{Partitioning}
+\begin{itemize}
+	\item Data Partitioning - Different data may require different
+   consistency and availability.\\
+   Example:
+   A Shopping cart requires high availability, responsive, can
+sometimes suffer anomalies, while Product information need to be available, slight variations in inventory are sufferable.
+Checkout, billing, shipping records must be consistent.
+	\item Operational Partitioning - Different operations may require different consistency and availability.\\
+   Example:
+   A user login requires high availability, responsive, can sometimes suffer anomalies, while a transaction requires consistency.\\
+   In general,
+   \begin{itemize}
+   	\item \textit{Reads} -  high availability; e.g. ``query''
+	   \item \textit{Writes} -  high consistency, lock when writing; e.g. ``purchase''
+   \end{itemize}
+	\item Functional Partitioning
+	% // TODO
+	\item User Partitioning
+	\item Hierarchical Partitioning
+\end{itemize}
+
+
+\section{PACELC Theorem}
+
+\begin{definition}
+   [PACELC Theorem]
+   The PACELC theorem is an extension of the CAP theorem that considers latency and consistency in distributed systems.
+   \begin{itemize}
+   	\item \textbf{P} - Partition tolerance
+   	\item \textbf{A} - Availability
+   	\item \textbf{C} - Consistency
+   	\item \textbf{E} - Else
+   	\item \textbf{L} - Latency
+   	\item \textbf{C} - Consistency
+   \end{itemize}
+\end{definition}
+
+\framedt{PACELC in other terms}{
+   \begin{itemize}
+   	\item If there is a partition (P), how does the system trade off availability and consistency (A and C);
+      \item else (E), when the system is running normally in the absence of partitions, how does the system trade off latency (L) and consistency (C)?
+   \end{itemize}
+}
+
+\section{Takeaways}
+
+\begin{itemize}
+	\item Consistency Models Define Expectations: Each model sets specific rules on how data should
+behave across distributed nodes, defining when data changes become visible across the
+system.
+	\item Trade-offs Are Inevitable: No single model can satisfy all consistency, availability, and partition
+tolerance (CAP theorem), so systems often need to choose between strong consistency and
+high availability, especially during network partitions.
+	\item Choosing the Right Model Depends on Use Case: Strong consistency is essential for
+scenarios demanding strict accuracy (e.g., banking), while eventual or weak consistency is more
+practical for applications prioritizing availability and low latency (e.g., social media).
+	\item Causal and Sequential Consistency Balance Practicality and Order: These models allow for
+some flexibility while still preserving the order of events, making them useful in collaborative
+applications or messaging systems.
+	\item Eventual Consistency is the Backbone of High Scalability: Systems prioritizing high availability
+and partition tolerance, like DNS or e-commerce platforms, often rely on eventual consistency,
+accepting slight delays in consistency for better performance.
+	\item CAP and PACELC Guide Model Selection: CAP helps in understanding consistency trade-offs
+during partitions, while PACELC addresses trade-offs between latency and consistency even in
+the absence of partitions, providing a more nuanced framework for design decisions.
+\item Practical Knowledge Matters: Understanding how each model impacts system performance,
+reliability, and usability is crucial for system architects and developers to make informed
+decisions, especially in large-scale distributed environments.
+\end{itemize}
