@@ -121,7 +121,7 @@ persistent storage of data and of the availability of
 
 \section{Loosely Coupled Systems}
 Good \textit{OO Systems} should be organised as
-network of interacting objects,
+a network of interacting objects,
 keeping in mind as a goal to have \textit{high \textbf{cohesion}}, \textit{low \textbf{coupling}}.\\
 Low coupling has as key advantages
 \begin{itemize}
@@ -131,11 +131,10 @@ Low coupling has as key advantages
 \end{itemize}
 
 \subsection{Dependecy Injection}
-When discussing \textbf{IoC} in Frameworks, \textit{"Control"} does not refer only to control flow, but also control over \textit{dependencies},\textit{coupling}, \textit{configuration}.
+When discussing \textbf{IoC} in Frameworks, \textit{"Control"} does not refer only to control flow, but also control over \textit{dependencies}, \textit{coupling}, \textit{configuration}.
 
 We can make a few considerations on IoC with respect to dependencies:
 \begin{itemize}
-   \item 
    \item something outside a component handles:
    \begin{itemize}
       \item configuration (properties)
@@ -151,7 +150,7 @@ We can make a few considerations on IoC with respect to dependencies:
 \end{itemize}
 
 \section{Trade Monitor}
-Let's discuss this  example to see how all of this comes into practice.
+Let's discuss this example to see how all of this comes into practice.
 \begin{center}
    \textit{A trader wants that the system rejects trades when the exposure reaches a certain limit}
 \end{center}
@@ -263,8 +262,10 @@ the desired decoupling, but let's compare the two solutions:
    \item With dependency injection there is \textit{no explicit request}: the
    component appears in the application class.
 \end{itemize}
-Inversion of control a bit harder to understand, however,
-it is easier to find dependencies of component if \textit{Dependency Injection} is used
+Inversion of control is a bit harder to understand.
+With Service Locator the application still depends on the
+locator, besides, it is easier to find dependencies of component if \textit{Dependency Injection} is used.
+% // TODO better understand service locator vs dependency injection
 \begin{center}
    \color{darkgray}
    Check \textit{constructors} and \textit{setters}\\vs\\Check \textit{all invocations} to
@@ -319,20 +320,17 @@ will be concrete algorithms of the \textit{family}.
    \textit{Principles}
 }{
    \begin{enumerate}
-      \item The unification principle [Template Method Design Pattern]
+      \item The \textbf{unification} principle [\textit{Template Method} Design Pattern]
       \begin{enumerate}
-         \item It uses inheritance to implement the hot spot subsystem
-         \item Both the template methods and hook methods are defined in
-         the same abstract base class
-         \item Hook methods are implemented in subclasses of the base class
+         \item Exploits \textit{inheritance} to implement the hot spot subsystem
+         \item Both the \ul{template methods and hook methods are defined in the same abstract base class}
+         \item \ul{Hook methods are implemented in subclasses of the base class}
          
       \end{enumerate}
-      \item The separation principle [Strategy Design Pattern]
+      \item The \textbf{separation} principle [\textit{Strategy} Design Pattern]
       \begin{enumerate}
-         \item It uses delegation to implement the hot spot subsystem
-         \item The template methods are implemented in a concrete context
-         class; the hook methods are defined in a separate abstract class
-         and implemented in its subclasses
+         \item It uses \textit{delegation} to implement the hot spot subsystem
+         \item The \ul{template methods are implemented in a \textbf{concrete} context class}; the \ul{hook methods are defined in a separate \texttt{abstract class} and implemented in its subclasses}
          \item The template methods delegate work to an instance of the
          subclass that implements the hook methods
       \end{enumerate}
@@ -346,13 +344,13 @@ Its intent is to define the skeleton of an algorithm in an operation,
 A \textbf{template method} belongs to an \textit{abstract} class and it defines an algorithm in terms of \textit{abstract} operations that subclasses \textbf{override}
 to provide \textit{concrete behavior}.
 
-Template methods call, among others, the following operations:
+{Template methods call, among others, the following operations:\ns
 \begin{enumerate}
    \item \textbf{concrete} operations of the abstract class $\longrightarrow$ fixed parts of the algorithm
    \item \textbf{primitive} operations, $\longrightarrow$ abstract operations that subclasses have to implement
    \item \textbf{hook} operations $\longrightarrow$ provide default behavior that subclasses may override if necessary.\\
    A hook operation often does nothing by default.
-\end{enumerate}
+\end{enumerate}}
 
 \begin{figure}[htbp]
    \centering
@@ -371,7 +369,9 @@ Let's consider the result of applying \textit{unification principle} to the exam
 }
 \begin{lstlisting}
    -- hotspots
-   function solve (Problem p) returns Solution { -- templatemethod
+   -- templatemethod
+   abstract public class DivConqTemplate
+   function solve (Problem p) returns Solution {
       if isSimple(p)
          return simplySolve(p);
       else
@@ -380,13 +380,17 @@ Let's consider the result of applying \textit{unification principle} to the exam
             sol[i] = solve(sp[i]);
          return combine(sol);
    }
+   abstract protected boolean isSimple (Problem p);
+   abstract protected Solution simplySolve (Problem p);
+   abstract protected Problem[] decompose (Problem p);
+   abstract protected Solution combine(Problem p, Solution[] ss) ;
 \end{lstlisting}
 \lstset{style=javaBlock}
 
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/dp_templatemethod_divide.png} 
-   \caption{The generic schema of a Divide-and-Conquer \textit{Template Method} designed Framework}
+   \caption{The generic schema of a Divide-and-Conquer \textit{Template Method} designed Framework, with the concrete implementations for various sorting algorithms.}
    \label{fig:dp_templatemethod_code}
 \end{figure}
 
@@ -396,13 +400,41 @@ Its intent is to allow to select (part of) an algorithm at runtime, leading the 
 invoking methods of the interface for the hot spots of the
 algorithm.
 
-\subsubsection{Applying \textit{Separation Principle}}
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/dp_strategy_code.png}
-   \caption{Result of applying the Separation principle on the example code}
-   \label{fig:dp_strategy_code}
+   \includegraphics{images/strategyUML.png}
+   \caption{Strataegy UML Class Diagram}
+   \label{fig:strategyUML}
 \end{figure}
+\newpage
+\subsubsection{Applying the \textit{Separation Principle}}
+   The client delegates the hot spots to an object implementing the strategy.
+
+   The implementations of \lstinline|DivCongStrategy| are similar to the previous case.
+   
+   \begin{lstlisting}
+public final class DivConqContext {
+   public DivConqContext(DivCongStrategy dc) {
+this.dc = dc;
+}
+
+public Solution solve (Problem p)
+{ Problem[] pp;
+if (dc.isSimple(p)) { return dc.simplySolve(p); }
+else { pp = dc.decompose(p); }
+Solution[] ss = new Solution[pp.length];
+for (int i = 0; i < pp.length; i++)
+{  ss[i] = solve(pp[i]); }
+return dc.combine(p, ss);
+}
+
+public void setAlgorithm(DivCongStrategy dc) {
+   this.dc = dc;
+   }
+   
+   private DivCongStrategy dc;
+   }
+\end{lstlisting}
 
 \begin{figure}[htbp]
    \centering
@@ -425,7 +457,14 @@ Recalling what said earlier, we try to address:
 Where the \emph{evolution} consists of examining \textbf{existing designs} for family members, identifying the \textbf{frozen} and \textbf{hot spots} of the family, and ultimately \textbf{generalizing} the program structure to enable \textit{code reusing} for frozen spots and
 multiple \textit{different implementations} for each hot spot.
 
-We will consider an example based on binary tree traversals, and discuss each generalization step.
+\ul{In the slides} there is an example based on binary tree traversals, with a discussion on each generalization step.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/bintree_composite.png}
+   \caption{Binary tree using the Composite design pattern}
+   \label{fig:}
+\end{figure}
 
 \subsection{Identifying Frozen and Hot spots}
 \textbf{Frozen Spots}, which are fixed for the whole family:
@@ -481,3 +520,17 @@ Let's identify possible \textbf{Hot Spots}, which have to be fixed in each eleme
 Even if in the \textit{Visitor} pattern, as in the \textit{Template Method} pattern, an abstract class is defined and later implemented by subclasses which provide concrete behaviour,
 in the \textit{Visitor} pattern such classes are \textit{\textbf{intended}} to be used directly by \textit{clients},
 while in the \textit{Template Method} pattern they are \textit{\textbf{intended}} to be called by the \textit{Frozen Spots} inside the abstract class itself, not by \textit{clients}.
+
+\subsection{Wrap Up and Comparison}
+
+The \textbf{Visitor} Pattern
+consists of "Visitees" or "Hosts" and "Visitors". Hosts are objects within an object tree, and Visitors contain operations to be performed on these Hosts.
+
+Hosts expose an \texttt{Accept()} method, which takes a Visitor object, and Visitors expose a \texttt{Visit()} method which has an overload for each Host. When the \texttt{Accept()} method is called on the Host, and a Visitor passed, a \texttt{Visit()} method is called on the visitor.
+
+Using this pattern, \ul{operations} become \textit{Double Dispatch},\ul{ meaning they are executed based on two classes: the Host and the Visitor}.
+\nl
+
+The \textbf{Strategy} Pattern consists of a ``Context'' and a ``Strategy''. Contexts are \st{objects within a tree} related classes, and a Strategy is a class containing a series of operations to be used by the Contexts.
+
+Strategy provides an interface of which Context objects are aware. When a Context object is created, a Strategy is also created (if not static) and given to the Context. Operations can then be selected from the selected Strategy as desired.
