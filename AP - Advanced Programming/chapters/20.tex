@@ -398,6 +398,16 @@ in its attribute \lstinline|__closure__|
 
 \section{Classes}
 
+\framedt{From Python documentation}{
+   ``Python classes provide all the standard features of Object Oriented
+Programming: the class inheritance mechanism allows multiple base
+classes, a derived class can override any methods of its base class or
+classes, and a method can call the method of a base class with the same
+name. Objects can contain arbitrary amounts and kinds of data. As is true
+for modules, classes partake of the dynamic nature of Python: they are
+created at runtime, and can be modified further after creation''
+}
+
 A \textbf{class} is a \textit{blueprint} for a new data type with specific internal \textbf{attributes}
 (like a struct in C) and internal functions (\textbf{methods}).
 
@@ -407,11 +417,35 @@ A \textbf{class} is a \textit{blueprint} for a new data type with specific inter
       ...
       <statement-n>
 \end{lstlisting}
-Where \lstinline|statements| are either assignments or function definitions
+\newpage
+\begin{paracol}{2}
+   
+   \colfill
+   Where \lstinline|statements| are either assignments or function definitions, which live in the newly created namespace.\\
+   Class instances introduce a new \textbf{namespace} nested in the class
+   namespace; 
+   Python's visibility rules make all names of the class \textit{visible}.
+   \colfill
 
-Class instances introduce a new \textbf{namespace} nested in the class
-namespace; 
-Python's visibility rules make all names of the class \textit{visible}.
+   \begin{lstlisting}
+      class Point:
+         x = 0
+         y = 0
+         def str():
+            return "x = " + str(Point.x) + ", y = " + str(Point.y)
+      #--------
+      >>> p1 = Point()
+      >>> p2 = Point()
+      >>> p1.x
+      0
+      >>> Point.y = 3 // modifes class namespace
+      >>> p2.y
+      3
+      >>> p1.y = 5   // creates a new instance attribute
+      >>> p2.y
+      3
+   \end{lstlisting}
+\end{paracol}
 
 An \textbf{instance method} is a class method which takes \lstinline|self| (\textit{"implicit parameter"}, similar to \lstinline|this| in Java) as first argument, and it  must access the object's attributes through the self reference
 (eg. \lstinline|self.x|) and the class attributes using \lstinline|className.<attrName>| (or
@@ -427,7 +461,7 @@ className.methodname(obj,args)
 
 In Python a \textbf{constructor} is a special instance method with name \lstinline|__init__|, and since there is \textit{\underline{no overloading}} for constructors, there can be only \textit{one constructor} per class.
 
-Since instances are themselves namespaces, so we can add functions (and variables?) to them; and by applying the usual rules, they can hide \textit{"instance methods"}.
+Since instances are themselves namespaces, so we can add functions (and variables?) to them; and by applying the usual rules, they can hide \textit{``instance methods''}.
 
 \begin{paracol}{2}
    
@@ -449,10 +483,10 @@ Since instances are themselves namespaces, so we can add functions (and variable
 >>> p = Point(1,1)
 >>> p.x
 1
->>> p.move(1,1)
+>>> p.move(1,1) # inner move invoked
 >>> p.x
 0
->>> p.__class__.move(p,2,2)
+>>> p.__class__.move(p,2,2) # outer
 >>> p.x
 2
 \end{lstlisting}
@@ -460,8 +494,19 @@ The two \lstinline|move()| invocations result in different behaviours
 \end{paracol}
 
 \subsection{Overloading and Inheritance}
+
+\begin{paracol}{2}
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/python_overloading.png}
+      \caption{Python overloading methods for operators}
+      \label{fig:python_overloading}
+   \end{figure}
+\end{paracol}
 A class may overload the default python operators \lstinline|+,-,in, ...|,
-by defining methods like \lstinline|__sub__(self, other),__add__(self, other),...|
+by defining methods like \lstinline|__sub__(self, other),__add__(self, other),...|.
+Besides, by overloading the \lstinline|__str__| method, the class can define its own string representation.
 
 
 A class can be defined as a derived class, resulting in its namespace to be nested in the one of \lstinline|baseClass|, which is used as the next scope for non-local resolutions:  
@@ -474,7 +519,15 @@ Python supports \textbf{multiple inheritance}, i.e.
 \begin{lstlisting}
    class derived(baseClass1,baseClass2,...):
 \end{lstlisting}
-This induces the \textit{Diamond problem}, solved by an \href{https://www.python.org/download/releases/2.3/mro/}{algorithm that linearizes the set of all directly or indirectly inherited classes}.
+This induces the \textit{Diamond problem}, solved by an \href{https://www.python.org/download/releases/2.3/mro/}{algorithm that linearizes the set of all directly or indirectly inherited classes}, it is called \textbf{method resolution order}.
+When a class D is derived from B, and B is derived from A, and they all share a ---overridden--- method \lstinline|dothing()|, the MRO algorithm will establish the lookup order, which is \lstinline|D,B,A|.
+
+Note however that this may still lead to issues in case D is derived from (A,B) and B is derived from A, in which case the order would be \lstinline|D,A,B,A|, which is incosistent and leads to an MRO error.
+
+I found an interesting \href{https://stackoverflow.com/questions/56361048/what-is-the-diamond-problem-in-python-and-why-its-not-appear-in-python2}{suggested reading}
+on Stack Overfloe.
+
+
 
 \subsection{Encapsulation and Name Mangling}
 Private instance variables do \textit{not} exist in Python,
@@ -493,16 +546,34 @@ so there are two main workarounds for this:
 argument, preceded by the \lstinline|@staticmethod| decorator.
 They are defined inside a class but they \textit{cannot} access instance attributes and methods.
 
-\textbf{Class methods} are similar to static methods but they have a first parameter which is the class name.
+\textbf{Class methods} are similar to static methods but\ul{ they have a first parameter which is the class name}.
 Definition must be preceded by the \lstinline|@classmethod| decorator.
 
 \subsection{Iterators}
-An \textbf{iterator} is an object which allows a programmer to traverse through all the
-elements of a collection (iterable object), regardless of its specific implementation.
-\begin{enumerate}
-   \item \lstinline|__iter__| returns the iterator object itself
-   \item \lstinline|next| method returns the next value of the iterator or throws \lstinline|StopIteration| exception if not possible.
-\end{enumerate}
+\begin{paracol}{2}
+   An \textbf{iterator} is an object which allows a programmer to traverse through all the
+   elements of a collection (iterable object), regardless of its specific implementation.
+   \begin{enumerate}
+      \item \lstinline|__iter__| returns the iterator object itself
+      \item \lstinline|next| method returns the next value of the iterator or throws \lstinline|StopIteration| exception if not possible.
+   \end{enumerate}
+   
+   \switchcolumn
+
+   \begin{lstlisting}
+   >>> list = [1,2,3]
+   >>> it = iter(list)
+   >>> it
+   <listiterator object at 0x00A1DB50>
+   >>> it.next()
+   1
+   >>> it.next()
+   2
+   >>> it.next()
+   3
+   >>> it.next() -> raises StopIteration
+   \end{lstlisting}
+\end{paracol}
 
 \textbf{Generators} are a simple and powerful tool for creating iterators:
 they are written like regular functions but use the \lstinline|yield| statement whenever they want to return data.
@@ -512,6 +583,14 @@ What makes generators so compact is that the \lstinline|__iter__()| and
    def reverse(data):
       for index in range(len(data)-1, -1, -1):
          yield data[index]
+
+   >>> for char in reverse('golf'):
+   ... print(char)
+   ...
+   f
+   l
+   o
+   g
 \end{lstlisting}
 
 \section{Typing}
@@ -556,7 +635,6 @@ Since \textit{almost every operation} in CPython can cause a refcount to change 
 and since synchronization primitives are quite \textit{expensive} on
 contemporary hardware, handling refcounts with some kind of
 synchronization would cause \underline{spending almost all the time on synchronization}.
-
 \begin{paracol}{2}
 \colfill
 
@@ -579,7 +657,7 @@ especially on multicore hardware.
 \switchcolumn
 \begin{figure}[htbp]
    \centering
-   \includegraphics[width=0.9\columnwidth]{images/python_concurrency.png}
+   \includegraphics[width=0.7\columnwidth]{images/python_concurrency.png}
    \label{fig:python_concurrency}
 \end{figure}
 \end{paracol}
