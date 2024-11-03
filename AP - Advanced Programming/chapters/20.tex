@@ -1,22 +1,30 @@
 \chapter{Python}
-Python is very concise and good for scripting.
-It is the most used general purpose language, and there are many nice Machine Learning libraries.
 
+\begin{definition}
+   [Scripting Language]
+   
+   A scripting language is a type of programming language typically used for automating tasks which can be done by a human operator. Scripting languages are often interpreted, rather than compiled; besides, the programmer usually neglects the actual resources used by the program, delegating such task to the underlying system.
+   
+\end{definition}
+
+Python is very concise and good for scripting.
+It is the most used general purpose language, and there are many nice Machine Learning libraries.\\
 Its two key aspects are that it is \textbf{interpreted} ($\neq compiled$) and \textbf{dynamically typed}.
 
 Aside from these two main aspects, we can discuss a few others:\\
 even if not as much as Java, it's \textbf{object} oriented;
 Python supports both \textbf{imperative} and \textbf{functional} paradigms.\\
 Python \textbf{Iterators} can be associated with \texttt{List}s in Haskell and \texttt{Stream}s in Java.
-Other Python features are:
+{Other Python features are:\ns
 \begin{itemize}
    \item Powerful subscripting (slicing)
    \item Higher-order functions
    \item Flexible signatures, which compensate the lack of complex polymorphism
    \item Java-like exceptions
    \item (bad) Multithreading support
-\end{itemize}
+\end{itemize}}
 
+\section{Typing and other python features}
 Let's discuss how Python addresses \textbf{typing}:
 \begin{enumerate}
    \item Variables come into existence when first assigned to
@@ -31,17 +39,15 @@ Variables come into existence when first assigned and a variable can refer to an
 besides all types are (almost) treated the same way.
 Even if this allows for concise syntax and intuitive code writing, it also implies a main drawback: \underline{\textbf{type errors} are only caught at \textit{runtime}}.
 
-\section{Some Python aspects}
 \begin{itemize}
    \item \textbf{Indentation} matters, and is used opposed to brackets \texttt{\{\}}
-   \item A variable is created when some value is assigned to it
-   \item Assignments in Python \textbf{do not} create a copy
+   \item A variable is created the \textit{first time} some value is assigned to it
+   \item Assignments in Python \textbf{do not} create a copy, it sets the name to hold a reference to some object.
    \note{Even for \texttt{Integer}s!}
    \item Objects are deleted by the garbage collector once they become unreachable
    \begin{itemize}
       \item \texttt{CPython} uses \textit{reference counting} along with \texttt{Mark \& Sweep} for garbage collection
    \end{itemize}
-   \item 
    \end{itemize}
 
 \section{Data Types and operators}
@@ -52,16 +58,40 @@ Strings can be enclosed in \texttt{''}, \texttt{""}, \texttt{""" """},
 with the third that allows multiline strings (\textit{cool!}).
 
 \subsection{Sequence types}
-\texttt{Tuples}, \texttt{Strings} and \texttt{Lists} are the sequence types in Python, they are \textit{immutable} except for Lists.
-
-They all support \textbf{slicing}, concatenation (\lstinline|+|) and membership (\lstinline|in|).
-
-\textbf{Slicing} returns a subsequence of the original sequence, a \textbf{copy}.
-Start copying
-at the first index, and stop copying \textit{before} the second index.
-
 \lstset{language=python}
-\begin{lstlisting}
+
+\begin{paracol}{2}
+   \colfill
+   \texttt{Tuples}, \texttt{Strings} and \texttt{Lists} are the sequence types in Python, they are \textit{immutable} except for Lists.
+   They all support \textbf{slicing}, concatenation (\lstinline|+|) and membership (\lstinline|in|).
+   
+   \textbf{Slicing} returns a subsequence of the original sequence, a \textbf{copy}.
+   Start copying
+   at the first index, and stop copying \textit{before} the second index.
+   
+   \colfill
+   \switchcolumn
+
+   \begin{lstlisting}
+   t1 = (2,3.14,False) 
+   t1 = ( (2,3.14), [], "5tr1ng") 
+   
+   l1 = [2,3.14,False]
+   l2 = [ [2,3.14], [], "5tr1ng"]
+   
+   l3 = list(t1) # [2,3.14,False]
+   t3 = tuple(l1) # (2,3.14,False)
+   
+   t1[0] = 3 # Error: tuples are immutable
+   t1[0] == 2 # OK: access is allowed
+   t1[-2] == 3.14 # OK: negative indexes
+   l1[0] = 3 # OK: lists are mutable
+   \end{lstlisting}
+   
+\end{paracol}
+
+
+\begin{lstlisting}[caption={Slicing examples}]
    >>> t = (23, 'abc', 4.56, (2,3), 'def')
    >>> t[1:4] # ('abc', 4.56, (2,3))
    >>> t[1:-1] # negative indices ('abc', 4.56, (2,3))
@@ -71,15 +101,40 @@ at the first index, and stop copying \textit{before} the second index.
    >>> t[:] # no indexes: creates a copy (23, 'abc', 4.56, (2,3), 'def')
 \end{lstlisting}
 
-Lists, since they are \textbf{mutable}, support some specific operators \lstinline|append(),insert(),extend(),index(),count(),remove(),sort()...| 
+\begin{paracol}{2}
+   \colfill
+   Lists, since they are \textbf{mutable}, support some specific operators \lstinline|append(),insert(),extend(),index(),count(),remove(),sort()...| 
+   
+   Lists also support \textbf{List Comprehension} pretty similarly to Haskell, allowing also filtered and nested comprehensions.
+   
+   \texttt{[\ul{expression} for \ul{name} in \ul{list} if \ul{filter}]}
+   \colfill
+   
+   \switchcolumn
 
-Lists also support \textbf{List Comprehension} pretty similarly to Haskell, allowing also filtered and nested comprehensions.
-\begin{lstlisting}
-   >>> li = [3, 2, 4, 1]
-   >>> [elem*2 for elem in
-      [item+1 for item in li] if elem > 1]
-   [8, 6, 10]
-\end{lstlisting}
+   \begin{lstlisting}
+      >>> li = [('a', 1), ('b', 2), ('c', 7)]
+      >>> [ n * 3 for (x, n) in li]
+      [3, 6, 21]
+      
+      >>> li = [3, 2, 4, 1]
+      >>> [elem*2 for elem in
+         [item+1 for item in li] if elem > 1]
+      [8, 6, 10]
+   \end{lstlisting}
+\end{paracol}
+
+\begin{filecontents*}{assignments.py}
+   >>> (x, y) = (2, 3)
+   >>> [x, y] = [2, 3]
+   >>> (x, y) = [2, 3]
+   >>> (x, y) = "23"
+\end{filecontents*}
+
+\framedt{Fun fact}{
+All these assignments work! Even the last one, where the string is unpacked into the two variables. 
+\lstinputlisting[xleftmargin=2em]{assignments.py}
+}
 
 \subsection{Sets and Dictionaries}
 \textbf{Sets} support membership, and common set operations, but not indexing:
@@ -99,29 +154,111 @@ Lists also support \textbf{List Comprehension} pretty similarly to Haskell, allo
 \end{lstlisting}
 
 \textbf{Dictionaries} are very similar to \lstinline|maps| in Java, and they map a key of an \underline{\textit{immutable hashable}} type,
-and support the following operations on the $\langle key,value \rangle$pairs:
+{and support the following operations on the $\langle key,value \rangle$pairs:\ns
 \begin{enumerate}
    \item define
    \item modify
    \item view
    \item lookup
    \item delete
-\end{enumerate}
+\end{enumerate}}
+
+\begin{lstlisting}[caption={Usage example}]
+   freq = {} # frequency of words in text [Python3]
+   line = input()
+   for word in line.split():
+      freq[word] = freq.get(word,0)+1
+   words = list(freq.keys())
+   words.sort()
+   for w in words:
+      print ("%s:%d" % (w,freq[w]))
+\end{lstlisting}
+
+
+\subsection{For Loops anti-pattern}
+Don't use \lstinline|range()| to iterate over a sequence solely to
+have the index and elements available at the same time.\\
+Avoid:
+\begin{lstlisting}
+   for i in range(len(sequence)):
+      print(i, sequence[i])
+\end{lstlisting}
+Instead:
+\begin{lstlisting}
+   for i, item in enumerate(sequence):
+      print(i, item)
+\end{lstlisting}
+
+
+This is an example of an anti-pattern in Python
 
 \section{Higher-order functions}
 Functions can be returned as result and passed as arguments to other functions, for example the predefined \lstinline|map| and \lstinline|filter| combinators.
 When handling higher-order functions there's a heavy use of iterators, which support laziness.
 
-Typically List comprehensions can replace the \lstinline|map| and \lstinline|filter| combinators.
+Typically \textit{List comprehensions} can replace the \lstinline|map| and \lstinline|filter| combinators.
 
+\begin{filecontents*}{functions.py}
+   def my_function():
+      """Summary line: do nothing, but document it.
+      Description: No, really, it doesn't do anything.
+      """
+      pass
+
+   print(my_function.__doc__)
+   # Summary line: Do nothing, but document it.
+   #
+   # Description: No, really, it doesn't do anything.
+\end{filecontents*}
+
+\framedt{Defining functions and their documentation}{
+   The documentation for a function can be accessed through the \lstinline|__doc__| attribute.
+   The comment after the function header is bound to the \lstinline|__doc__| special attribute.
+   \lstinputlisting[xleftmargin=2em]{functions.py}
+}
 \begin{lstlisting}
+   >>> print(map.__doc__) % documentation
    map(func, *iterables) --> map object
    Make an iterator that computes the function using
    arguments from each of the iterables. Stops when the
    shortest iterable is exhausted
 
-   >>> map(lambda x:x+1, range(4))  # lazyness: 
-   <map object at 0x10195b278>      # returns an iterator
+   >>> map(lambda x:x+1, range(4))     # lazyness: 
+   <map object at 0x10195b278>         # this is an iterator
+   >>> list(map(lambda x:x+1, range(4))) # [1, 2, 3, 4]
+   >>> [x+1 for x in range(4)] # [1, 2, 3, 4]
+   >>> list(map(lambda x, y : x+y, range(4), range(10))) # [0, 2, 4, 6]
+   >>> [x+y for x,y in zip(range(4),range(10))] # [0, 2, 4, 6]
+\end{lstlisting}
+
+\subsection{Modules for functional programming}
+The \texttt{functools} module provides some useful functions for higher-order programming, like \texttt{reduce()} and \texttt{partial()}.
+
+\begin{lstlisting}
+   >>> from functools import reduce
+   >>> reduce(lambda x,y: x+y, range(1,101)) # 5050
+   >>> reduce(lambda x,y: x+y, range(1,101), 100) # 5150
+\end{lstlisting}
+
+\texttt{itertools} provides a collection of iterators/generators for efficient looping, like \texttt{count()}, \texttt{cycle()}, \texttt{repeat()}, \texttt{chain()}, \texttt{islice()}, \texttt{takewhile()}, \texttt{dropwhile()}, \texttt{groupby()}, \texttt{combinations()}, \texttt{permutations()}.
+They are inspired by constructs from APL, Haskell, and SML.
+
+\begin{lstlisting}
+   >>> from itertools import count
+   >>> for i in count(10,3): # infinite sequence
+   ...    if i > 20: break
+   ...    print(i)
+   10
+   13
+   16
+   19
+   
+   # other examples
+   >>> count(10) --> 10 11 12 13 14 ...
+   >>> cycle('ABCD') --> A B C D A B C D ...
+   >>> repeat(10, 3) --> 10 10 10
+   >>> takewhile(lambda x: x<5, [1,4,6,4,1]) --> 1 4
+   >>> accumulate([1,2,3,4,5]) --> 1 3 6 10 15
 \end{lstlisting}
 
 \subsection{Decorators}
@@ -135,10 +272,52 @@ and may include \textit{measuring execution time}, caching \textit{intermediate 
 
 \begin{lstlisting}
    def do_twice(func):
-   def wrapper_do_twice():
-      func() # the wrapper calls the
-      func() # argument twice
-      return wrapper_do_twice
+      def wrapper_do_twice():
+         func() # the wrapper calls the
+         func() # argument twice
+         return wrapper_do_twice
+\end{lstlisting}
+
+\note{Decorators exploit Python higher-order
+features:
+\begin{itemize}
+	\item Passing functions as argument
+	\item Nested definition of functions
+	\item Returning function
+\end{itemize}}
+
+\begin{lstlisting}[caption={``Pie'' syntax}]
+   def my_decorator(func):
+      def wrapper():
+         print("Something is happening before the function is called.")
+         func()
+         print("Something is happening after the function is called.")
+      return wrapper
+   
+   # Note that here 'say whee' is typed x3, it is kinda heavy
+   def say_whee():
+      print("Whee!")
+   say_whee = my_decorator(say_whee)
+
+   # Equivalently
+   @my_decorator
+   def say_whee():
+      print("Whee!")
+   
+\end{lstlisting}
+
+However, besides passing arguments the wrapper also forwards the results of the decorated function, and the \lstinline|functools| module provides a \lstinline|wraps| decorator to copy the original function's metadata to the wrapper function.
+This exploits \lstinline|*args| and \lstinline|**kwargs| to pass a variable number of arguments to a function, which are respectively a tuple and a dictionary.
+
+\begin{lstlisting}[caption={General decorator structure}]
+   def decorator(func):
+      @functools.wraps(func) #supports introspection
+      def wrapper_decorator(*args, **kwargs):
+         # Do something before
+         value = func(*args, **kwargs)
+         # Do something after
+         return value
+      return wrapper_decorator
 \end{lstlisting}
 
 \section{Namespaces and Scopes}
@@ -172,6 +351,28 @@ at runtime at least three namespaces are directly accessible, searched in the fo
    \item the outermost scope is the namespace containing \textbf{built-in names}
 \end{enumerate}
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/python_scope.png}
+   \caption{Scoping example}
+   \label{fig:python_scope}
+\end{figure}
+
+\begin{lstlisting}[caption={Scoping issues}]
+   def test(x):
+      print(x)
+      for x in range(3):
+         print(x)
+      print(x)
+   >>> test("Hello!")
+   Hello!
+   0
+   1
+   2
+   2  # 'x' changed! No more 'Hello!'
+\end{lstlisting}
+
+\subsection{Closures}
 Python supports \textbf{closures}: 
 even if the scope of the
 outer function is reclaimed on return, the non-local variables referred to by the nested function are saved
@@ -194,20 +395,6 @@ in its attribute \lstinline|__closure__|
    (<cell at 0x1033ace88: int object at 0x10096dce0>,)
 \end{lstlisting}
 
-\subsection{Scope issues}
-\begin{lstlisting}
-   def test(x):
-      print(x)
-      for x in range(3):
-         print(x)
-      print(x)
-   >>> test("Hello!")
-   Hello!
-   0
-   1
-   2
-   2  # 'x' changed!
-\end{lstlisting}
 
 \section{Classes}
 
