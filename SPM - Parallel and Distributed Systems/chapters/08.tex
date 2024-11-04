@@ -335,3 +335,243 @@ The synchronization is handled through mutex and condition variables, in a Produ
 In the \ul{implementation provided (\texttt{threadPool.hpp}) the task queue is \textbf{unbounded}!}
 If the producers are much faster than the Workers, the tasks queue becomes huge, and the memory blows up \frownie.\\
 To avoid this we can either increase the number of Worker threads (if we have enough cores), or we can implement a \textbf{bounded queue}.
+
+\section{Lock-Free Programming}
+With locks and mutexes, we can ensure that only one thread accesses a critical section at a time. However, this comes at a cost: the overhead of acquiring and releasing the lock, and the possibility of deadlocks.\\
+Aside from the operational overhead, the lock approach sometimes forces to spend a lot of time waiting for the lock to be released, even when the critical section is accessed for a very short time.
+
+\subsection{Atomic Counting}
+C++11 introduces atomic data types that can be safely manipulated in a concurrent context without acquiring time-consuming locks.
+The atomic data types are implemented using hardware instructions that guarantee atomicity.
+
+\begin{lstlisting}[caption={spmcode4/atomic\_counting.cpp}]
+   auto lock_count =
+        [&] (volatile uint64_t* counter, const auto& id) {
+        for (uint64_t i = id; i < num_iters; i += num_threads) {
+            std::lock_guard<std::mutex> lock_guard(mutex);
+            (*counter)++;
+        }
+    };
+   auto atomic_count =
+   [&] (volatile std::atomic<uint64_t>* counter, const auto& id) {
+   for (uint64_t i = id; i < num_iters; i += num_threads)
+       (*counter)++;
+   };
+
+   // > elapsed time (mutex_multithreaded): 5.98232s
+   // > elapsed time (atomic_multithreaded): 1.02452s
+\end{lstlisting}
+
+\lstinline|std::atomic<T>| is a template class that provides atomic operations on the type \lstinline|T|. The operations are implemented using hardware instructions that guarantee atomicity.\\
+\begin{itemize}
+	\item \lstinline|std::atomic| is neither copyable nor movable
+	\item \lstinline|T| must be copyable and movable
+	\item \lstinline|T| cannot have a user-defined copy constructor
+	\item Operations (i.e., the methods of the \lstinline|std::atomic| class)
+	      \begin{itemize}
+		      \item \lstinline|load|/\lstinline|store|: to get and set the content of a \lstinline|std::atomic|
+		      \item \lstinline|exchange|: stores a new value and returns the old value
+		            of the variable
+		      \item \lstinline|compare| and exchange: it does an atomic exchange
+		            only if the value is equal to the provided expected value
+		      \item \lstinline|wait|/\lstinline|notify| (from C++20) behavior similar to condition
+		            variables
+	      \end{itemize}
+\end{itemize}
+
+\begin{paracol}{2}
+   \begin{lstlisting}
+   // While there are still rows to compute
+   while (lower < rows) {
+      // Update lower row with global lower row
+      {
+         std::lock_guard<std::mutex> lock_guard(mutex);
+         lower = global_lower;
+         global_lower += chunk_size;
+      }
+   }
+   \end{lstlisting}
+   
+   \switchcolumn
+   
+   \begin{lstlisting}
+   // While there are still rows to compute
+   while (lower < rows) {
+      // Update lower row with global lower row
+      lower = std::atomic_fetch_add(&global_lower, chunk_size);
+   }
+   \end{lstlisting}
+
+\end{paracol}
+
+\begin{paracol}{2}
+   
+   Not all \lstinline|std::atomic| operations are supported on all types. For example, \lstinline|std::atomic<bool>| does not support \lstinline|fetch_add|, but only \lstinline|fetch_or|, \lstinline|fetch_and|, \lstinline|fetch_xor|, and \lstinline|exchange|.
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/08/atomic_ops.png}
+      \caption{Atomic operations supported by std::atomic}
+      \label{fig:08/atomic_ops}
+   \end{figure}
+\end{paracol}
+
+\subsubsection{CAS - Compare and Swap}
+Every C++ atomic data type features a CAS (Compare And Swap) operation for implementing arbitrary atomic assignments.
+There are two methods for CAS which \ul{should \textit{always} be both performed in loops}:
+\begin{itemize}
+   \item \lstinline|compare_exchange_weak(T& expected, T desired)|: It may fail spuriously, but it is more efficient
+   \note{i.e. may return false even if the comparison yields true}
+   \item \lstinline|compare_exchange_strong(T& expected, T desired)|: It unlikely fails spuriously, but it is less efficient
+\end{itemize}
+
+\begin{enumerate}
+	\item Compare the value expected with the value stored in the atomic
+	\item If yes, then it sets the atomic to the value desired, otherwise writes the actual value stored in atomic into expected
+	\item Return \textit{true} if the swap operation in step 2 was successful, \textit{false} otherwise
+\end{enumerate}
+
+\begin{paracol}{2}
+\begin{lstlisting}[caption={Finding the max in an array}]
+   auto false_max = [&] (volatile std::atomic<uint64_t> &counter,
+                          const auto& id) -> void {
+        for (uint64_t i = id; i < num_iters; i += num_threads) {
+            if(i > counter) counter = i;
+		}
+    };
+    auto correct_max = [&] (volatile std::atomic<uint64_t> &counter,
+                            const auto& id) -> void {
+        for (uint64_t i = id; i < num_iters; i += num_threads) {
+            auto previous = counter.load();
+            while (previous < i &&
+                !counter.compare_exchange_weak(previous, i)) {}
+        }
+    };
+\end{lstlisting}
+
+\switchcolumn
+
+The problem with the first uncorrect max implementation is that it is not thread-safe: the \lstinline|load| (reading \lstinline|i<counter|) and \lstinline|store| (writing \lstinline|counter=i|) operations are atomic per se, but anything may happen in between them.\\
+For this reason we need to use the CAS operation, which is a \textit{read-modify-write} operation.
+\end{paracol}
+
+\section{Memory Consistency Concepts}
+The intuition says that a memory read should return \textit{the latest value written} in a memory location.
+What does ``\textit{the latest value written}'' mean in a CMP system when executing multiple threads?\\
+It depends on the ordering of memory operations, precisely the order in which memory operations
+performed by one thread become visible to other threads.
+\note{Modern CMPs reorder memory operations in different/strange ways for performance reasons}
+Memory consistency defines the allowed behavior of reads and writes (i.e., loads and stores) to
+different addresses in a parallel system.
+
+We should care about memory ordering mostly because it helps to program lock-free concurrent code.
+
+Memory consistency deals with when writes to a variable X propagate to other processors relatively to reads and writes to other addresses.
+
+\begin{lstlisting}
+   // initially, A = B = flag = 0
+   // Thread1 
+   Store A = 1;
+   Store B = 1;
+   Store flag = 1;
+   
+   // Thread2
+   while (Load flag==0); // spin
+   Load A;
+   Load B;
+   print A and B;
+\end{lstlisting}
+
+If there are caches in the system, from the viewpoint of the cache coherence protocol, the printing of \lstinline|A=B=0| can be perfectly fine, due to the ordering of instructions, even if we expect that Thread2 should print \lstinline|A=B=1|.
+
+\textbf{Memory consistency} defines correct program behavior and is part of the specification of architectures.
+\textbf{Cache coherence} is a different concept, it deals with the objective of ensuring that the memory
+system in a parallel computer behaves as if the caches were not present; coherence is \textit{not} directly visible at the software level, but only as a side effect, e.g. false sharing, superlinear speedup\dots
+
+\subsection{Memory Ordering}
+The \textbf{program order} defines a sequence of reads and writes.\\
+There are four types of memory operation ordering that can be guaranteed (or not) by the platform:
+\begin{enumerate}
+   \item $W_X \rightarrow R_Y$: write to $X$ must commit before the subsequent read of $Y$
+   \note{i.e., when a write comes before a read in program order, the write must commit (i.e, its result must be visible) by the time the read occurs}
+	\item $R_X \rightarrow R_Y$: read from $X$ must commit before the subsequent read from $Y$
+	\item $R_X \rightarrow W_Y$: read from $X$ must commit before the subsequent write to $Y$
+	\item $W_X \rightarrow W_Y$: write to $X$ must commit before the subsequent write to $Y$
+\end{enumerate}
+
+\subsubsection{Sequential Consistency - SC}
+The most intuitive memory model is \textbf{Sequential Consistency} (SC). It is the most restrictive memory model; it was introduced by Leslie Lamport in 1979.
+\begin{definition}
+   [Sequential Consistency]
+   A multiprocessor is sequentially consistent if the result of any execution is the same as if the operations of all the processors were executed in some sequential order, and the operations of each individual processor appear in this sequence in the order specified by its program.
+\end{definition}
+
+Alternatively, \textit{There exists a \textbf{total} order of all loads and stores across all threads such that the value returned by each load is equal to the value of the most recent store to that location}
+
+SC maintains all four memory operation orderings.
+
+\subsubsection{Relaxed Memory Consistency}
+The disadvantage to SC is that the firmware may not apply optimizations in the code, which can lead to a significant performance loss. In all modern systems, some reordering and optimizations are enforced.
+
+Relaxed memory consistency models allow the compiler and hardware to violate certain memory ordering rules to improve performance.\\
+Ideally, it aims to gain performance by hidinh memory latency, i.e. overlapping memory access operations with other operations when they are independent.
+
+Modern architectures exploit \textit{Write Buffers}, which allow to write to a buffer instead of directly to memory, and \textit{Read Buffers}, which allow to read from a buffer instead of directly from memory.\\
+The $W_X \rightarrow R_Y$ ordering is relaxed to hide write latency, hence the processor $k$ may move its own reads ahead of its own writes.
+This is fine from the viewpoint of a single-thread control flow.
+
+\begin{paracol}{2}
+   \colfill
+   \textit{Total Store Order} (TSO) and \textit{Processor Consistency} (PC) relax $W_X \rightarrow R_Y$ in different ways.
+   \nl
+   
+   Partial Store Ordering (PSO) relaxes also $W_X \rightarrow W_Y$.
+   The processor might reorder write operations in the Write Buffer: one write might be a cache miss, while the other might be a cache hit whose management costs less.
+   \note{This is a valid optimization if a program consists of a single instruction stream}
+   \colfill
+   
+   \switchcolumn
+
+   \begin{lstlisting}
+      Thread1
+      on P0
+      A = 1;
+      flag=1;
+      
+      Thread2
+      on P1
+      while (flag==0) ; //spin
+      print A;
+   \end{lstlisting}
+
+   Under PSO, P1 may observe the flag change before the write to A is visible, hence printing 0.
+   This behavior would not be allowed by TSO and SC.
+\end{paracol}
+
+Even more aggressive reordering may allow to overlap multiple reads and writes, Execute reads as early as possible and writes as late as possible to hide memory latency.
+An example is the \textit{Weak Ordering} (WO) model, which \ul{relaxes all orderings}.
+\texttt{ARM} and \texttt{POWER} architectures are based on a relaxed memory model.
+
+\subsubsection{Solving this nightmare}
+Every architecture provides synchronization primitives to make memory ordering stricter.
+\textbf{Memory barrier} instructions (also ``fences'') prevent reordering, but they are expensive:
+\begin{itemize}
+   \item All memory operations must be completed before any memory operation after the barrier can begin
+   \item There are different flowers of fences: load fence (RMB), store fence (WMB), mem fence (MB)
+\end{itemize}
+Besides, there are also the synchronization primitives discussed before which enable ordering on a specific memory address, such as \lstinline|test_and_set|, \lstinline|compare_and_swap|, and all \lstinline|read-modify-write| (RMW) operations.
+
+However, recall also that \ul{if a program is \textit{Data-Race-Free} (DRF), then its behavior is sequentially consistent}, because the reordering won't affect program correctness.
+\ul{Properly syncronized programs} via mutexes, barriers, atomics, etc. \ul{are \textbf{DRF}}.
+
+\coolquote{SC does not guarantee DRF!}{prof. Torquati}
+
+
+\subsubsection{Programming Languages}
+We talked about the underlying architecture as the culprit of reordering, but the programming language can also play a role in this.
+\ul{The \textbf{compiler} may reorder instructions for performance reasons independengly from the low-
+level architectures}.
+
+It is generally accepted that a compiler can reorder ordinary reads from and writes to memory almost arbitrarily, provided \ul{the reordering cannot change the observed single-threaded execution of the code}.
