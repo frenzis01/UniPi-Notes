@@ -29,7 +29,29 @@
  tabsize=3,
  morekeywords=[2]{Arrays, List, ArrayList, Set, HashSet, Map, HashMap, LinkedList, Queue, PriorityQueue, Stack, Vector, Iterator, Object, map,flatMap, String, forEach, stream, System, out}
 }
-\lstset{style=javaBlock}
+
+\lstdefinestyle{javaBlockAnn}{frame=false,
+	language=Java,
+	basicstyle={\small\ttfamily},
+	columns=flexible,
+	keywordstyle=\color{pblue},
+	keywordstyle=[2]\color{pblue},
+	% commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	tabsize=3,
+	showspaces=false,
+	showtabs=false,
+	breaklines=true,
+	showstringspaces=false,
+	breakatwhitespace=true,
+	commentstyle=\color{pgreen},
+	moredelim=[il][\textcolor{pgrey}]{$$},
+	moredelim=[is][\textcolor{pgrey}]{\%\%}{\%\%},
+	morekeywords=[2]{Arrays, List, ArrayList, Set, HashSet, Map, HashMap, LinkedList, Queue, PriorityQueue, Stack, Vector, Iterator, Object, map,flatMap, String, forEach, stream, System, out}
+}
+	%   keywordstyle=\color{pblue},
+   
+\lstset{style=javaBlockAnn}
 
 \title{Advanced Programming - Appunti}
 \author{Francesco Lorenzoni}

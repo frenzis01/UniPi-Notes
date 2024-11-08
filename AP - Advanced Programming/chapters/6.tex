@@ -1,5 +1,5 @@
 \chapter{Reflection}
-\section*{9 - Ottobre}
+% \section*{9 - Ottobre}
 \section{Introduction and Definitions}
 
 \textbf{Reflection} is the ability of a program to manipulate as data something representing the state of the program during its own execution.
@@ -14,8 +14,8 @@ allowed to \textbf{read only}, or also to \textbf{change} itself.
     \item \textbf{Reification} is the mechanism of encoding execution state into data, which is needed by both \textit{introspection} and \textit{intercession}
 \end{itemize}
 
-\textbf{Structural} reflection  is concerned with the ability of the \textbf{language} to provide a complete \textit{reification} of both the \textit{program} executed and its \textit{abstract data types}.\\
-\textbf{Behavioral} reflection is concerned instead with the reification of its\footnote{referred to a \textbf{language}} \textit{semantics} \& \textit{implementation} (processor) and the data and implementation of the \textit{run-time system}.
+\ul{\textbf{Structural} reflection}  is concerned with the ability of the \textbf{language} to provide a complete \ul{\textit{reification} of both the \textit{program} executed and its \textit{abstract data types}.}\\
+\ul{\textbf{Behavioral} reflection} is concerned instead with the \ul{reification of its\footnote{referred to a \textbf{language}} \textit{semantics} \& \textit{implementation} (processor) and the data and implementation of the \textit{run-time system}}.
 
 \section{Uses and drawbacks}
 \subsection{Uses}
@@ -49,7 +49,7 @@ but not \textit{code modification}.
 \subsection{Introspection}
 
 \begin{paracol}{2}
-    
+    \colfill
     {The JVM mantains for every type an associated object of type \lstinline{java.lang.Class} which "\textit{reflects}" the type it represents,
     acting as entry point for reflection,
     since it provides all info needed:\ns
@@ -59,6 +59,7 @@ but not \textit{code modification}.
         \item Methods, fields, constructors, etc.
     \end{itemize}
     }
+    \colfill
 
     \switchcolumn
 
@@ -76,7 +77,7 @@ To retrieve such \lstinline{java.lang.Class} object it is sufficient to do \lsti
 
 Using \lstinline{java.util.reflect.*} it is possible also to retrieve class \textbf{Members} i.e. \textit{fields, constructors} and \textit{methods}.
 The extensive \lstinline{java.util.reflect.*} API provides many \textit{methods} to achieve this which will not be reported here.\\
-There is a class for each Member
+There is a class for each \texttt{Member}
 \begin{itemize}
     \item \lstinline{java.util.reflect.Field}: access type info and set/get values.
     \item \lstinline{java.util.reflect.Method}: type info for parameters and return type;
@@ -118,15 +119,15 @@ By now we have talked only about \textbf{introspection} in java,
 but reflection can be used also to create objects of a type not known at compile time,
 or to access members (access fields or invoke methods) unknown at compile time.
 
-{Certain operations are forbidden by privacy rules and fail if invoked through reflection:\ns
+{Certain operations are \textbf{forbidden} by privacy rules and fail if invoked through reflection:\ns
 \begin{itemize}
 	\item Changing a final field
 	\item Reading or writing a private field
-	\item Invoking a private method…
+	\item Invoking a private\dots
 \end{itemize}}
 
-However The programmer can request that Field, Method, and
-Constructor objects to be "accessible".
+However the programmer can request that \texttt{Field}, \texttt{Method}, and
+\texttt{Constructor} objects to be ``accessible''.
 In this case you can invoke method or access field, even if
 inaccessible via privacy rules!
 \lstinline|AccessibleObject| Class is the superclass of \lstinline|Field|,
@@ -143,7 +144,7 @@ security manager allows it}
 \end{itemize}}
 
 \section{Case of use}
-Reflection may be used for \textbf{Unit Testing} to test methods and their result. JUnit is a framework that makes use of reflection to test methods, exploiting constructs similar to the generic driver below:
+Reflection may be used for \textbf{Unit Testing} to test methods and their result. JUnit is a framework that makes use of reflection to test methods, exploiting constructs similar to the generic driver below, which however use annotations to mark methods to be tested, instead of naming conventions.
 
 \begin{lstlisting}
 public static void testDriver( String testClass ) {
@@ -158,3 +159,70 @@ public static void testDriver( String testClass ) {
     }
 }
 \end{lstlisting}
+
+\subsection{JUnit}
+JUnit is a testing framework for Java, created by Erich Gamma and Kent Beck.
+The \textbf{annotations} listed below are used to mark methods that need to be tested, while \textbf{assertions} are used to verify the correctness of the test ---even one failed \lstinline|assert| and the test fails---, and \textbf{Test Runners} are used to run the tests.
+
+\begin{itemize}
+    \item \lstinline|@Test| - Marks a method as a test method.
+    \item \lstinline|@Before| - Executed before each test.
+    \item \lstinline|@After| - Executed after each test.
+    \item \lstinline|@BeforeClass| - Executed once, before the start of all tests.
+    \item \lstinline|@AfterClass| - Executed once, after all tests have been finished.
+\end{itemize}
+
+\begin{paracol}{2}
+    
+    \begin{lstlisting}{caption={JUnit will use reflection to find methods annotated and execute them}}
+public class ExampleTest {
+    @Before
+    public void setUp() {
+        // Code to set up test environment
+    }
+
+    @Test
+    public void testSomething() {
+        // Test code
+    }
+
+    @After
+    public void tearDown() {
+        // Code to clean up after test
+    }
+}
+    \end{lstlisting}
+    
+    
+    \switchcolumn
+    \begin{lstlisting}[basicstyle=\footnotesize\ttfamily]
+import java.lang.reflect.Method;
+public class SimpleJUnitRunner {
+ public static void main(String[] args) throws Exception {
+  Class<?> testClass = ExampleTest.class;
+  Object testInstance = testClass.getDeclaredConstructor().newInstance();
+
+  Method setUpMethod = null;
+  Method tearDownMethod = null;
+
+  for (Method method : testClass.getDeclaredMethods()) {
+   if (method.isAnnotationPresent(Before.class)) {
+    setUpMethod = method;
+   } else if (method.isAnnotationPresent(After.class)) {
+    tearDownMethod = method;
+   } else if (method.isAnnotationPresent(Test.class)) {
+    if (setUpMethod != null) {
+     setUpMethod.invoke(testInstance);
+    }
+
+    method.invoke(testInstance);
+
+    if (tearDownMethod != null) {
+     tearDownMethod.invoke(testInstance);
+    }
+   }
+  }
+ }
+}
+    \end{lstlisting}
+\end{paracol}
