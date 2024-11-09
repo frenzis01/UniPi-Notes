@@ -1,0 +1,65 @@
+\chapter{Partitioning}
+
+\textbf{Partitioning} becomes necessary when dealing with \textbf{large data sets} and high \textbf{query throughput}. It is a technique that divides a large data set into smaller, more manageable parts. This is done to improve the performance of the system. Partitioning can be done in various ways, such as horizontal partitioning, vertical partitioning, and functional partitioning. In this chapter, we will discuss the different types of partitioning and their benefits.
+
+``Partition'' is the most common term, but it may vary depending on the technology:
+\begin{itemize}
+   \item \textbf{Shard} in MongoDB, Elasticsearch, and Cassandra.
+   \item \textbf{Region} in HBase.
+   \item \textbf{Bucket} in Couchbase.
+   \item \textbf{Split} in Bigtable.
+   \item // TODO verify	
+\end{itemize} 
+
+\section{Partitioning concepts}
+First, partitions must be \textbf{defined}, in the sense that each piece of data must be assigned to a partition. This can be done in various ways, such as hashing, range partitioning, or list partitioning.
+
+Then, each partition should have its own \textbf{characteristics}, i.e. should support a known set of operations, since it acts as a small per se database.
+
+// TODO last point
+
+\subsection{Combining partitioning with replication}
+Partitioning can be combined with replication to improve the performance and reliability of the system. Replication is the process of creating multiple copies of the data and storing them on different nodes. This ensures that the data is available even if one of the nodes fails. By combining partitioning with replication, you can achieve high availability and fault tolerance.
+
+This can be achieved in various ways:
+\begin{enumerate}
+   \item Node Storage of Multiple Partitions
+   \begin{itemize}
+      \item Nodes can store more than one partition, and each partition can be stored on multiple nodes.
+   \end{itemize}
+   \item Leader and Follower assignment
+   \begin{itemize}
+      \item Each node stores a partition, and one of the nodes is designated as the leader. The leader is responsible for handling all write operations, while the followers replicate the data from the leader.
+   \end{itemize}
+   \item Replication and Partitioning
+   \begin{itemize}
+      \item The two techniques are enforced independently.
+   \end{itemize}
+\end{enumerate}
+% //TODO
+
+The Goal of partitioning is to spread data and query load \textbf{evenly} among the nodes.
+Unfair partitioning can lead to \textbf{hot spots}, where some nodes are overloaded while others are underutilized.\\
+Randomizing the partitioning function can help to avoid hot spots, but it can also make it difficult to locate data, requiring to query all nodes to get a value.
+
+A first improvement might be to provide a range-key assignment allowing to locate data, as it happens in libraries, where books are ordered by author or title.\\
+In this way you know the boundaries of where to search. This is very easy to implement and to understand,
+however, it is \textit{not} optimal:
+data may not be evenly distributed among the possible keys.
+
+\section{Avoiding Hot spots}
+So with key-range partitioning, the problem is that some keys may be more popular than others due to access patterns, leading to hot spots.\\
+In, for instance, a sensor database, all today's writes would end up in the same ``today's partition'', while the rest of the partitions would be idle.
+\nl
+
+A solution might be to change-key structure.
+% // TODO
+
+\subsection{Hash partitioning}
+A better solution is to use \textbf{hash partitioning}, where a hash function is used to map keys to partitions.\\
+However we must be careful because \textbf{inconsistent} hashing can lead to hot spots, as the hash function may not distribute keys evenly.
+
+Note also that hash partitioning is very bad for range queries, as even similar data is spread randomly across the partitions.
+
+
+

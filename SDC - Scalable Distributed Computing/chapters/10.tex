@@ -108,3 +108,16 @@ With multi-leader replication, the system must resolve the conflict, and the use
 }
 
 % // Prof SKIPPING a few slides starting from "consistent and converging to a state"
+
+
+% // TODO
+\subsection{Topologies}
+\begin{itemize}
+   \item \textbf{Circular} - each node receives writes and forwards writes
+   \item \textbf{Star topology} - root node forwards writes to all other nodes 
+   \item \textbf{All-to-all} - every leader sends writes to every other leader
+\end{itemize}
+
+Note that this is not hardware (neither virtual) network, but a logical network of replication, made up by how we manage the information flow.
+
+In whatever topology it is important to \textbf{monitor staleness}, which is monitoring obsolete replicas, i.e. how far behind a follower is from the leader.
