@@ -574,4 +574,27 @@ We talked about the underlying architecture as the culprit of reordering, but th
 \ul{The \textbf{compiler} may reorder instructions for performance reasons independengly from the low-
 level architectures}.
 
-It is generally accepted that a compiler can reorder ordinary reads from and writes to memory almost arbitrarily, provided \ul{the reordering cannot change the observed single-threaded execution of the code}.
+It is generally accepted that a compiler can reorder ordinary reads from and writes to memory almost arbitrarily, provided \ul{the reordering cannot change the observed single-threaded execution of the code}.\nl
+
+{\ul{C++ provides six memory orderings options for atomic types}, with the default being the stricter \lstinline|std::memory_order_seq_cst|, i.e. sequential consistency.\ns
+\begin{enumerate}
+	\item \textbf{Sequential consistency}, loads/stores atomic operations happen in the order specified by the program
+	\item \textbf{Acquire}, only valid for atomic load operations. It prevents all loads/stores in the current thread from being moved to a position before the current atomic load operation.
+	\item \textbf{Release}, only valid for atomic store operations. It prevents all loads/stores in the current thread from being moved to a position after the current atomic store operation.
+	\item \textbf{Relaxed}, no restrictions in memory reordering of surrounding load/store operations. Only the atomicity of the actual operation is guaranteed.
+	\item \textbf{Acquire-Release}, only valid for atomic exchange and compare-exchange operations (i.e. RMW operations). It is a combination of the Acquire and Release modes, simultaneosly loads the current value in Acquire mode and stores a new value in the atomic variable in Release mode.
+\end{enumerate}}
+
+\begin{itemize}
+	\item \textbf{Store} operations can have \lstinline|std::memory_order_relaxed|, \lstinline|std::memory_order_release|, or
+	      \lstinline|std::memory_order_seq_cst| ordering values
+	\item \textbf{Load} operations can have \lstinline|std::memory_order_relaxed|, (\lstinline|std::memory_order_consume| **),
+	      \lstinline|std::memory_order_acquire|, or \lstinline|std::memory_order_seq_cst| ordering values
+	\item \textbf{RMW} operations can have \lstinline|std::memory_order_relaxed|, (\lstinline|std::memory_order_consume| **),
+	      \lstinline|std::memory_order_acquire|, \lstinline|std::memory_order_release|, \lstinline|std::memory_order_acq_rel| or
+	      \lstinline|std::memory_order_seq_cst| ordering values
+   \item[**] \lstinline|std::memory_order_consume| is somewhat deprecated and not recommended for use since C++17
+\end{itemize}
+
+The SC semantics requires a single total ordering over all atomic operations with ordering \lstinline|std::memory_order_seq_cst|. It is the most expensive memory ordering, it requires global synchronization between all threads (enforced by the C++ compiler).
+
