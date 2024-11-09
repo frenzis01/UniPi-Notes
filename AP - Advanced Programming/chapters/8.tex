@@ -1,13 +1,42 @@
 \chapter{Polymorphism}
-Polymorphism basically means \textit{"many forms"}, where \textit{forms} are \textbf{types}.
+Polymorphism basically means \textit{``many forms''}, where \textit{forms} are \textbf{types}.
 Thus there may be \textit{polymorphic} function names, or \textit{polymorphic} types.
 
-There are many "flavors" of polymorphism, many variations.
-Two main kinds opposed to each other are \textit{ad hoc} and \textit{universal} polymorphism, which however, may coexist:
-\begin{itemize}
-    \item \textbf{ad hoc} PM indicates that a single function name denotes different algorithms, determined by the actual types.
-    \item \textbf{universal} PM indicates a single algorithm (solution) applicable to objects of different types.
-\end{itemize}
+\begin{paracol}{2}
+    
+    There are many ``flavors'' of polymorphism, many variations.
+    Two main kinds opposed to each other are \textit{ad hoc} and \textit{universal} polymorphism, which however, may coexist:
+    \begin{itemize}
+        \item \textbf{ad hoc} PM indicates that a single function name denotes different algorithms, determined by the actual types.
+        \item \textbf{universal} PM indicates a single algorithm (solution) applicable to objects of different types.
+    \end{itemize}
+
+    In example \ref{lst:polymorphism_coexist} we can see how the two kinds of polymorphism can coexist in the same code:
+    \lstinline|setValue(T v1)| uses the same algorithm, but applied to object of different types \textit{universal}, but at the same time, provides ad hoc polymorphism due to ``overloading'', i.e. the same function name applied to different types, denoting different algorithms.
+
+    \switchcolumn
+
+    \begin{lstlisting}[label={lst:polymorphism_coexist},caption={Coexistence of ad hoc and universal polymorphism},captionpos=b]
+class Box<T,V> {
+    private T v1;
+    private V v2;
+
+    public void setValue(T v1) {
+        this.v1 = v1;
+        ...
+    }
+    public void setValue(V v2) {
+        this.v2 = v2;
+        ...
+    }
+    public void setValue() {
+        this.v1 = null;
+        this.v2 = null;
+    }
+}
+    \end{lstlisting}
+\end{paracol}
+
 
 When PM is taken into account, it is crucial to consider when happens the \textbf{binding} between a function name and the actual code to be executed:
 \begin{itemize}
@@ -24,7 +53,7 @@ If the binding spans over more phases (e.g. \textit{overriding} in Java), as a c
     \caption{Polymorphism classification}
     \label{fig:polymorphism_classification}
 \end{figure}
-\section{Overloading}
+\section{Overloading - Same name, different types}
 \textbf{Overloading} is present in every language for basic operators $+-*...$,
 and sometimes is supported for user-defined functions, 
 and in some languages it is even allowed the overloading of primitive operator by user-defined functions.\\
@@ -101,8 +130,8 @@ impl Add for Point {
 }
 \end{lstlisting}
 
-\lstset{style=javaBlock}
-\section{Coercion}
+\lstset{style=javaBlockAnn}
+\section{Coercion - Implicit conversion}
 \textbf{Coercion} is the automatic (implicit) conversion of an object to a different type, opposed to casting which is explicit instead.
 Coercion allows a code snippet to be applied of arguments of different (convertible) types.
 Sometimes coercion is allowed only if there is no \textbf{information loss}.
@@ -112,16 +141,46 @@ Sometimes coercion is allowed only if there is no \textbf{information loss}.
     double d = sqrt(5) // applied to int
 \end{lstlisting}
 
-\section{Inclusion Polymorphism}
+\subsection{Java}
+Java allows coercion between primitive types, but not between primitive types and objects.
+However, among ---some--- objects, Java \textbf{autoboxing} and unboxing is allowed, which is automatic conversion between primitive types and their corresponding wrapper classes.
+\begin{lstlisting}
+    Integer i = 5; // autoboxing
+    int j = i;     // unboxing
+\end{lstlisting}
+
+In Java there is also \textbf{upcasting} and \textbf{downcasting}, which allow coercion between superclass and subclass types.
+\begin{lstlisting}
+Dog dog = new Dog();
+Animal animal = dog; // Upcasting
+...
+Animal animal = new Dog();
+Dog dog = (Dog) animal; // Downcasting
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Other examples of coercion in Java},captionpos=t]
+    int num = 10;
+    if (num) { // num is implicitly converted to boolean
+    ...
+
+    double d = 9.78;
+    int i = (int) d; // Explicit casting from double to int
+
+    int num = 100;
+    String str = "Number: " + num; // int to String
+\end{lstlisting}
+
+\section{Inclusion Polymorphism - Inheritance}
 Inclusion polymorphism is also known as \textit{subtyping polymorphism} or \textit{\textbf{inheritance}}.
 It is ensured by \textit{Barbara Liskov}'s \textbf{substitution principle}:
-\begin{center}
+\begin{definition}[Liskov Substitution Principle]
     \textit{A subtype object can be used in any context where a supertype object is expected}
-\end{center}
+\end{definition}
 Methods and fields defined in a superclass may be invoked and accessed by subclasses if not redefined (see \textit{Overriding}).\\
-Note, again, that this refers to \ul{using superclass methods, not overriding them.}
+Note, again, that this refers to \ul{using superclass methods, not overriding them.}\\
+Override would possibly break the substitution principle, because the subclass method may have a different behavior than the superclass method.
 
-\section{Overriding}
+\section{Overriding - Same name, same types, but in subclasses}
 In Java a method $m$ of a
 class $A$ can be redefined
 in a subclass $B$ of $A$.
@@ -130,7 +189,7 @@ Overriding introduces ad hoc polymorphism in the universal polymorphism of inher
 Notice that even though written in the subclass definition, overriding requires the final binding to happen at runtime:
 it happens through the lookup done by \lstinline{invokevirtual} in the JVM.
 
-\section{C++ v Java}
+\section{C++ vs Java}
 \begin{lstlisting}[language=C++]
 class A {
  public:
@@ -158,7 +217,7 @@ The solution is to add using \lstinline|A::onFoo;| to class B.
 \subsection{Templates vs Generics}
 \lstset{language=C++}
 
-They are similar to \textit{Generics} in Java, 
+\textbf{Templates} are similar to \textit{Generics} in Java, 
 they are used as function and class templates
 each concrete instantiation produces a copy of the generic code, specialized for that type:
 \textbf{monomorphization}.
@@ -168,7 +227,7 @@ Templates support parametric polymorphism and\ul{ type parameters can also be pr
     template <class T> // or <typename T>
     T sqr(T x) { return x * x; }
 \end{lstlisting}
-Assuming to invoke \lstinline{sqr(T x)} on variables of different types, the compiler will generated a specific code for each type used.
+Assuming to invoke \lstinline{sqr(T x)} on variables of different types, the compiler will generate a specific code for each type used.
 This works even on user-defined types;
 check the following code for an example:
 \begin{lstlisting}
@@ -201,6 +260,7 @@ v = GetMax<int>(i, m);  // ok
 \textbf{Macros} can be exploited to achieve \textit{polymorphism} and can have the same effect of the templates,
 but notice that macros are executed by the preprocessor\footnote{Macro expansion can be seen using the option \textit{-E} when compiling} and are only \textbf{textual substition},
 there is no parsing, no static analysis checks or whatsoever.
+\note{But which type of polymorphism is this? }
 \begin{lstlisting}
 #define sqr(x) ((x) * (x))
 int a = 2;
@@ -211,7 +271,7 @@ int aa = sqr(a++); // int aa = ((a++) * (a++));
 // compilation fails because fact is not defined
 \end{lstlisting}
 
-\section*{16 - Ottobre}
+% \section*{16 - Ottobre}
 
 \subsection{Specialization}
 A template can be \textbf{specialized} by defining a template with the same name but with more specific parameters (\textit{partial specialization}) or with no parameters (\textit{full specialization}).
@@ -246,4 +306,4 @@ the compiler treats the template as a function, thus it generates its code \text
 Note that in C/C++ while method \textit{prototypes} usually are in a separate \lstinline{.h} file,
 the compiler needs the template \textit{declaration} and \textit{definition} in the same place to instatiate it. 
 
-\lstset{style=javaBlock}
+\lstset{style=javaBlockAnn}

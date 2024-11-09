@@ -1,5 +1,27 @@
 \chapter{Generics}
-\textbf{Generics} are instance of \textit{Universal Polymorphism} with \textit{explicit parameters} (see Fig \ref{fig:polymorphism_classification}).
+\textbf{Generics} are an instance of \textit{Universal Polymorphism} with \textit{explicit parameters} (see Fig \ref{fig:polymorphism_classification}).
+
+In fact they allow the same algorithm to be used with different types, which, however, must be explicitly declared.\\
+In other languages, such as Haskell, \textit{type inference} allows the compiler to deduce the type of the parameters without the need for explicit declaration, implementing \textit{implicit} polymorphism.
+\begin{paracol}{2}
+   \begin{lstlisting}[caption={Java's explicit universal polymorphism}]
+public <T> void printArray(T[] array) {
+  for (T element : array) {
+    System.out.println(element);
+  }
+}    
+   \end{lstlisting}
+ 
+   \switchcolumn
+
+   \begin{lstlisting}[language=Haskell,caption={Haskell's implicit universal polymorphism}]
+printList :: Show a => [a] -> IO ()
+printList [] = return ()
+printList (x:xs) = do
+   print x
+   printList xs         
+   \end{lstlisting}
+\end{paracol}
 
 \section{Methods}
 Methods can use the type parameters of the class
@@ -52,7 +74,7 @@ consider the following example:
 
    {\color{red}\textbf{\textit{NO!}}}
 \end{center}
-In a formal way, \textit{subtyping is invariant} for Generic classes.
+In a formal way, \ul{\textit{subtyping is invariant} for Generic classes}.
 Informally, given \lstinline|A,B| concrete types, \lstinline|MyClass<A>| has no relationship to \lstinline|MyClass<B>|,
 even if \lstinline|A,B| have one.\\
 On the other hand if \lstinline|A extends B| and are \textit{generic} classes, 
@@ -64,7 +86,7 @@ For example, \lstinline|ArrayList<Integer> extends List<Integer>|.
 }
 \nl
 
-\subsection{Covariance}
+\subsection{Covariance - ``More specific output''}
 Let's now discuss \textbf{covariance} and \textbf{contravariance}, with the aid of a few examples.
 
 \begin{lstlisting}
@@ -101,7 +123,7 @@ However, you cannot write any subtype of \texttt{Fruit} in a covariant \texttt{F
 
 This implicitly happens with \textit{wildcards} in Java, while in other languages such as C\# and Scala, when a class is declared as \textit{covariant}, limitations are applied to the class itself.
 
-\subsection{Contravariance}
+\subsection{Contravariance - ``More general input''}
 \begin{lstlisting}
 WO_List<Integer> lisInt = new ...;
 WO_List<Number> lisNum = new ...;
@@ -117,12 +139,55 @@ It is ok to \textit{write} a \textbf{subtype} in the place of from a \textbf{sup
 
 \framedt{Copilot example}{
 
-   So, let's go back to fruit. Imagine you have a contravariant function that accepts a list of \texttt{Fruit} and processes it. This function can also accept a list of \texttt{Apples}, because \texttt{Apples} are a subtype of \texttt{Fruit}. However, you cannot pass a list of \texttt{Fruit} to a function that expects a list of \texttt{Apples}, because the function might expect specific behaviors or properties of \texttt{Apples} that \texttt{Fruit} might not have.
-   However, you cannot assign a \texttt{Fruit} processor to a \textit{contravariant \texttt{Apple} processor}, because the \texttt{Apple} processor might expect specific behaviors or properties of \texttt{Apples} that not all \texttt{Fruit} possess. So, the assignment is restricted to ensure type safety.
+   So, let's go back to fruit. Imagine you have a contravariant function \lstinline|FruitJuicer.juice(List<Fruit> v)| that accepts a list of \texttt{Fruit} and processes it. This function can also accept a list of \texttt{Apples}, because \texttt{Apples} are a subtype of \texttt{Fruit}. 
+
+   Hence, you can use the \texttt{Fruit} processor \lstinline|FruitJuicer.juice()| in place of a \textit{contravariant \texttt{Apple} processor}, because it can process any fruit! Including apples\smiley.
+
+   What you can't do, is reading, because you can't read an \texttt{Apple} from a \texttt{Fruit} list, since it could be a \texttt{Banana}.
+
    
-   In summary, contravariance allows you to use a more specific type (like \texttt{Apple}) where a more general type (like \texttt{Fruit}) is expected, but not the other way around. This ensures that the specific requirements of the subtype are always met.
+   In summary, contravariance allows you to use a more generic type (like \texttt{Fruit}) where a more specific type (like \texttt{Apple}) is expected, if the only operation is writing (processing).
+
+   Note however, that in this scenario, the class \lstinline|FruitJuicer| would be a ``subtype'' of \lstinline|AppleJuicer|, because it can \textit{substitute} it.
 }
+
+\subsection{Covariance vs Contravariance}
+
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/variance1.png}
+      \caption{Covariant Fruit Bag}
+      \label{fig:variance1}
+   \end{figure}
+   \begin{lstlisting}
+   If A:B then I<A>:I<B>
+   \end{lstlisting}
+   \coolquote{
+      ``Be conservative in what you do''
+   }{}
+
+   Covariance in \textbf{output} types.
    
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/variance2.png}
+      \caption{Contravariant Apple Juicer}
+      \label{fig:variance2}
+   \end{figure}
+   \begin{lstlisting}
+   If A:B then I<B>:I<A>
+   \end{lstlisting}
+   \coolquote{
+      ``Be liberal in what you accept from others''
+   }{}
+
+   Contravariance in \textbf{input} types.
+
+\end{paracol}
+
 \subsection{Wildcards}
 \textbf{Wildcards} are strongly related to the topic of \textit{covariance} and \textit{contravariance}.\\
 As briefly mentioned before, wildcards are the only relationship between generic classes.
@@ -144,7 +209,7 @@ List<? extends Fruit> fruits = apples;
 fruits.add(new Strawberry()); // COMPILING FAILS
 \end{lstlisting}
 
-\section*{17 - Ottobre}
+% \section*{17 - Ottobre}
 \subsubsection*{Other languages}
 In the case of \textbf{C\#}, generic classes can be marked with the keyword \lstinline|out| (\textit{covariant}) or \lstinline|in| (\textit{contravariant}),
 otherwise the class is invariant.
@@ -202,7 +267,7 @@ since at runtime generics are all of the same type due to \textit{type-erasure}.
       mylist instanceof ArrayList<Integer>         // fails
       mylist instanceof ArrayList<?>               // OK
    \end{lstlisting}
-   \item Cannot Create arrays of parameterized types
+   \item Cannot create arrays of parameterized types
    \item Cannot create, catch, or throw objects of parameterized types
    \item Cannot overload a method where the formal parameter types of each overload erase to the same raw type.
    \begin{lstlisting}

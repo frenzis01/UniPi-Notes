@@ -1,5 +1,5 @@
 \chapter{Annotations}
-\section*{9 - Ottobre}
+% \section*{9 - Ottobre}
 In java, \lstinline{static,private,...} modifiers are \textit{meta-data} describing properties of program elements.
 \ul{\textbf{Annotations} can be understood as (user-) definable modifiers}.
 {They are composed by one or two parts:\ns
@@ -43,4 +43,4 @@ It can be used as follows:
 \end{lstlisting}
 
 Clearly, reflection can be used to access annotations at runtime using \lstinline|getAnnotations()|, if they have been \textbf{retained} by the compiler;
-in fact, annotations are not retained by default, but they can be forced to be retained by using the \lstinline{@Retention} annotation, which takes a \lstinline{RetentionPolicy} as argument, either \lstinline{SOURCE}, \lstinline{CLASS} or \lstinline{RUNTIME}.
+in fact, \ul{annotations are not retained by default, but they can be forced to} by using the \lstinline{@Retention} annotation, which takes a \lstinline{RetentionPolicy} as argument, either \lstinline{SOURCE}, \lstinline{CLASS} or \lstinline{RUNTIME}.
