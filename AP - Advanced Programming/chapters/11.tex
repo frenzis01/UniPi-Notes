@@ -6,7 +6,7 @@ The computation proceeds by substituting parameters into expressions.\nl
 
 Functional programming languages such as \textit{Lisp, Scheme, FP, ML, Miranda} and \textit{Haskell} aim to implement Church's lambda calculus in the form of a programming language which does everything needed by \textbf{composing functions}, thus no \textit{mutable \textbf{state}} and no \textit{side effects}.
 
-FPL\footnote{Short for \textit{\textbf{F}unctional \textbf{P}rogramming \textbf{L}anguages}} needs some key features which are often absent in \textit{imperative} languages:
+{FPL\footnote{Short for \textit{\textbf{F}unctional \textbf{P}rogramming \textbf{L}anguages}} needs some key features which are often absent in \textit{imperative} languages:\ns
 \begin{itemize}
    \item $1^{st}$-class order and \textbf{high-order} functions:
    Functions can be \textit{denoted}, passed as \textit{arguments} to other functions, \textit{returned} as result of function invocation
@@ -21,9 +21,9 @@ FPL\footnote{Short for \textit{\textbf{F}unctional \textbf{P}rogramming \textbf{
    data structures cannot be modified (\textit{no state!}), they have to be re-created.
    \item \textbf{Structured function returns} allow to pass more meaningful information to the caller, avoiding the need for ``side-effects".
    \item \textbf{Gargabe collection}
-\end{itemize}
+\end{itemize}}
 
-\section*{23 - Ottobre}
+% \section*{23 - Ottobre}
 \section{FP language families}
 \begin{enumerate}
    \item \textbf{LISP}: currently most used for \textit{AI} after Python.
@@ -133,7 +133,7 @@ f (x,y) = x+y --argument must match pattern (x,y)
 \end{lstlisting}
 
 
-\section*{24 - Ottobre}
+% \section*{24 - Ottobre}
 \section{More on Haskell features}
 Let's recall that Haskell is a \textbf{lazy} language,
 thus functions and data constructor don't evaluate arguments until they actually need them.
@@ -347,7 +347,7 @@ Let's provide some examples:
 
 From a theoretical point of view recursion and iteration are equivalently expressive,
 and typically one is preferred over the other depending on the problem being faced to make the code more intuitive.
-In general a procedure call is \textit{much more expensive} than a conditinoal branch,
+In general a procedure call is \textit{much more expensive} than a conditional branch,
 however FP compilers can perform many optimizations and produce better code, especially for known blocks;
 for this reason the use of combinators such as \lstinline|map,reduce,filter, foreach,...| is strongly encouraged.
 
@@ -371,7 +371,7 @@ Let's provide the classic example of Fibonacci to illustrate how to convert a no
          else fibhelper (f2, f1 + f2, i + 1)
       in fibhelper(0,1,0)
 \end{lstlisting}
-Notice that fibTR takes only $\mathcal{O}(n)$ since it builds the Fibonacci sequence starting from 1 to $n$,
+Notice that \lstinline|fibTR| takes only $\mathcal{O}(n)$ since it builds the Fibonacci sequence starting from 1 to $n$,
 while the more canonical approach calculates multiple times the same values,
 and starts from $n$ until 1 is reached.
 

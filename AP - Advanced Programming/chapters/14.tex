@@ -1,16 +1,15 @@
 \chapter{Monads}
-\section{Type Constructors}
 
-\subsection{Towards Monads}
+
+\section{Towards Monads}
 Often type constructors can be thought of as
 defining \textit{"boxes"} for values, and \lstinline|Functors| with \lstinline|fmap| allow to apply functions
-inside such \textit{"boxes"}.\\
+inside such \textit{``boxes''}.\\
 \lstinline|Monad| is a constructor class introducing
-operations for \textit{putting a value} into a "box" (\lstinline|return|) and \textit{composing} functions that return "boxed" values (\lstinline|bind|).\\
+operations for \textit{putting a value} into a ``box'' (\lstinline|return|) and \textit{composing} functions that return ``boxed'' values (\lstinline|bind|).\\
 \textbf{``Monads"} are type constructors that are instances of \lstinline|Monad|
 
 \note{A \textit{Type constructor} is a generic type with one or more type variables}
-
 
 \subsection{\texttt{Maybe}}
 \lstinline{data Maybe a = Nothing | Just a} is a type constructor with a single type variable \lstinline|a|.
@@ -28,51 +27,200 @@ A function \lstinline|f :: a -> Maybe b| is a partial function from
    Just mom -> father mom -- Nothing or a Person
 \end{lstlisting}
 
-\subsection{Bind operator}
+\section{Defining Monads}
 
 
-We introduce a higher order operator to
+\framedt{Types and Monads}{
+   What actually is a type?\\
+   It may be considered a set of rules, or ``methods'' in Object-Oriented terms.
+   A Monad is yet another type defined by four rules:
+   \begin{itemize}
+      \item bind \lstinline|>>=|
+      \item then \lstinline|>>|
+      \item \lstinline|return|
+      \item \lstinline|fail|
+   \end{itemize}
+}
+
+\note{Check out \href{http://www.idryman.org/blog/2014/01/23/yet-another-monad-tutorial/}{idryman.org/blog/2014/01/23/yet-another-monad-tutorial/}}
+
+\subsection{\texttt{>>=} Bind operator}
+
+\begin{paracol}{2}
+   
+   \begin{lstlisting}
+      class Monad m where
+      (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+   \end{lstlisting}
+   
+   So, \lstinline|>>=| operator takes as first input a Monad containing type \lstinline|a| (a ``monadic value \lstinline|a|'') and, as second input, a first-order function taking as input \lstinline|a| and returning a Monad containing type \lstinline|b|.
+
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/monads_bind.png}
+      \caption{Bind operator schema}
+      \label{fig:monads_bind}
+   \end{figure}
+\end{paracol}
+
+Hence we are introducing a higher order operator to
 compose partial functions in order to
-“propagate” undefinedness automatically.
+``propagate'' undefinedness automatically.
 
 The bind operator will be part of the definition
 of a monad.
 
 \begin{lstlisting}
-   y >= g = case y of
-        Nothing -> Nothing
-        Just x -> g x
-
-(>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+   y >>= g = case y of     -- y "bind" g
+            Nothing -> Nothing
+            Just x -> g x
 \end{lstlisting}
 
+\subsubsection{Example 1 - Grandfathers}
 \begin{lstlisting}
    bothGrandfathers p =
-   father p >>= 
-   (\dad -> father dad >>= 
-   (\gfl -> mother p >>= 
-   (\mom -> father mom >>= 
-   (\gf2 -> return (gfl, gf2)))))
+      father p >>= 
+         (\dad -> father dad >>= 
+            (\gf1 -> mother p >>= 
+               (\mom -> father mom >>= 
+                  (\gf2 -> return (gf1, gf2)))))
 \end{lstlisting}
    
-\lstinline|do{}| is an alternative equivalent syntax,more \textit{imperative-like}.
+\lstinline|do{}| is an alternative equivalent syntax, more \textit{imperative-like}.
 \begin{lstlisting}
    bothGrandfathers p = do
-   dad <- father p
-   gfl <- father dad
-   mom <- mother p
-   gf2 <- father mom
-   return (gfl, gf2)
+      dad <- father p
+      gf1 <- father dad
+      mom <- mother p
+      gf2 <- father mom
+      return (gf1, gf2)
 \end{lstlisting}
 
-\section{Monads as *}
-\subsection{...containers}
+\subsubsection{Example 2 - Try catch}
+\begin{lstlisting}
+int errno = 0;
+if (errno = io_function1( input1, &output1) == 0) {
+    /* do some logic */
+    if (errno = io_function2( input2, &output2) == 0) {
+        /*
+         * some more logic
+         * and maybe more nested functions
+         */
+    } else {
+      /* handle error 2 */
+    }
+} else {
+    /* handle error 1 */
+}
+
+\end{lstlisting}
+
+All the logic in this code may be represented by the Maybe monad in Haskell, where the \lstinline|Nothing| value represents any possible error.
+
+\begin{itemize}
+   \item If the first input \lstinline|M a| is \lstinline|Just x|, run the second input (the function) with value \lstinline|x|
+   \item If the first input is \lstinline|Nothing|, just return \lstinline|Nothing|
+\end{itemize}
+
+When you combine several Maybe Monad handling functions together, if one of the upstream function went wrong by returning \lstinline|Nothing|, all the downstream function(s) won’t be executed
+
+\begin{lstlisting}
+   data  Maybe a  =  Nothing | Just a
+
+   instance  Monad Maybe  where
+       (Just x) >>= k      = k x
+       Nothing  >>= _      = Nothing   
+\end{lstlisting}
+
+\subsubsection{Example 3 - Nested Even numbers}
+\begin{lstlisting}
+   maybeHalf :: Int -> Maybe Int         -- Haskell type definition
+   maybeHalf a                           -- Actual function body
+            | even a = Just (div a 2)
+            | otherwise = Nothing
+
+
+*Main> Just 10 >>= maybeHalf
+Just 5
+*Main> Just 10 >>= maybeHalf >>= maybeHalf
+Nothing
+*Main> Just 10 >>= maybeHalf >>= maybeHalf >>= maybeHalf
+Nothing
+            
+\end{lstlisting}
+
+User can use the defined data type Just a or Nothing to \ul{\textbf{lift} the information} (correct or error) to upper Monad.
+
+\subsection{\texttt{>>} then operator}
+
+The bind operator \texttt{>>=}, wraps the data and passes it to the downstream handler, but sometimes, we don't care about the wrapped value and just want to pass the state downstream. For example, performing side effects.
+
+\begin{lstlisting}
+   class Monad m where
+       (>>) :: m a -> m b -> m b
+       x >> y = x >>= \_ -> y   
+\end{lstlisting}
+
+Unlike bind operator \lstinline|>>=| which unwraps the value passed between user defined functions, then operator ignores the wrapped value (it uses \lstinline|_| as variable) and only captures the states \lstinline|x| and \lstinline|y|.
+
+\begin{paracol}{2}
+   
+   \begin{lstlisting}
+   main = putStr "What is your name?"
+      >> readLn
+      >>= \a -> putStr "How old are you?"
+      >> readLn
+      >>= \b -> print (a,b)
+      
+   \end{lstlisting}
+   
+   \switchcolumn
+\begin{lstlisting}
+   
+   main = do putStr "What is your name?"
+   a <- readLn
+   putStr "How old are you?"
+   b <- readLn
+   print (a,b)
+\end{lstlisting}
+   
+\end{paracol}
+
+\subsection{\texttt{return} and \texttt{fail}}
+\begin{lstlisting}
+class Monad m where
+   return :: a -> m a
+   fail :: String -> m a 
+\end{lstlisting}
+The \lstinline|return| function is the wrapper that we have used so far, and \lstinline|fail| is the function to represent, as you can guess, failure. The definition of return and fail in Monad is the one above.
+
+\lstinline|fail| can take an additional string to report the failure message. With bind, then, return, and fail functions, we then know the whole definition of the Monad type!
+
+\begin{lstlisting}
+instance  Monad Maybe  where
+   (Just x) >>= k      = k x
+   Nothing  >>= _      = Nothing
+
+   (Just _) >>  k      = k
+   Nothing  >>  _      = Nothing
+
+   return              = Just
+   fail _              = Nothing
+
+
+\end{lstlisting}
+
+\section{Monads as Containers and Computations}
 \begin{lstlisting}
    class Monad m where -- definition of Monad type class
       return :: a -> m a
       (>>=) :: m a -> (a -> m b) -> m b -- "bind"
-      ... -- + something more + a few axioms
+      (>>) :: m a -> m b -> m b -- "then"
+      return :: a -> m a
+      fail :: String -> m a
 \end{lstlisting}
+\subsection{...containers}
 
 The monadic constructor can be seen as a container:
 let’s see this for \lstinline|lists|
@@ -82,24 +230,19 @@ let’s see this for \lstinline|lists|
    return :: a -> [a] -- container with single element
    return x = [x]
    concat :: [[a]] -> [a] -- flattens two-level containers
-      Example: concat [[1,2],[],[4]] = [1,2,4]
+      -- Example: concat [[1,2],[],[4]] = [1,2,4]
    (>>=) :: [a] -> (a -> [b]) -> [b]
    xs >>= f = concat(map f xs)
-   Exercise: define map and concat using bind and return
+      -- collect up all the results of f (which are lists)
+      -- and combine them into a new list
+   -- Exercise: define map and concat using bind and return
 \end{lstlisting}
 
 \subsection{... computations}
 
-\begin{lstlisting}
-   class Monad m where -- definition of Monad type class
-      return :: a -> m a
-      (>>=) :: m a -> (a -> m b) -> m b -- "bind"
-      (>>) :: m a -> m b -> m b -- "then"
-      ... -- + something more + a few axioms
-\end{lstlisting}
-A value of type m a is a ``computation returning a value of type a''
+A value of type \lstinline|m a| may be seen as a ``computation returning a value of type a''.
 
-For any value, there is a computation which ``does nothing'' and
+For any value, there is an empty computation which ``does nothing'' and
 produces that result. This is given by function \lstinline|return|.
 
 Given two computations \lstinline|x| and \lstinline|y|, one can form the computation
@@ -109,15 +252,13 @@ Given computation \lstinline|x|, we can use its result to decide what to do next
 Given \lstinline|f: a -> m b|, computation \lstinline|x >>= f| runs \lstinline|x|, then applies
 \lstinline|f| to its result, and runs the resulting computation.
 
-Note that we can define \lstinline|then| using \lstinline|bind|:
-\begin{lstlisting}
-   x >> y = x >>= (\_ -> y)
-\end{lstlisting}
-
+\note{Note that we can define \lstinline|then| using \lstinline|bind|:
+   \lstinline|x >> y = x >>= (\_ -> y)|
+}
 
 return, bind and then define basic ways to compose computations.
 They are used in Haskell libraries to define more complex composition
-operators and control structures (sequence, for-each loops, \dots).\\
+operators and control structures (sequence, for-each loops, \dots).
 If a type constructor defining a library of computations is monadic, one
 gets automatically benefit of such libraries
 
@@ -233,11 +374,37 @@ action has the \textit{effect}}.
    (>>=) :: IO a -> (a -> IO b) -> IO b
    (>>=) m k = \w -> case m w of (r,w') -> k r w'
 \end{lstlisting}
+\note{\lstinline|w| \ul{is the \textit{world} (state) of the computation}}
 
 By writing \lstinline|case m w ...| we force the evaluation of \lstinline|m|,
 resulting in the application of \lstinline|k| to \lstinline|r w'| to be performed (evaluated?) \textit{after} the evaluation of \lstinline|m|.  
 
-\subsection{\texttt{>>=} and \texttt{>>}combinators}
+Let's break this a bit more:
+\begin{enumerate}
+	\item \lstinline{(>>=) m k}:
+   This defines the bind operator \lstinline{(>>=)} for the \lstinline{IO} monad. It takes two arguments:
+   \begin{itemize}
+     \item \lstinline{m}: an \lstinline{IO} action that produces a value of type \lstinline{a}.
+     \item \lstinline{k}: a function that takes a value of type \lstinline{a} and returns an \lstinline{IO} action producing a value of type \lstinline{b}.
+   \end{itemize}
+	\item \lstinline{\w -> ...}:
+   This is a lambda function (anonymous function) that takes a single argument \lstinline{w}, which represents the world state.
+	\item \lstinline{case m w of (r, w') -> k r w'}:
+   This is a \lstinline{case} expression that evaluates the result of applying the \lstinline{IO} action \lstinline{m} to the world state \lstinline{w}.
+   \begin{itemize}
+     \item \lstinline{m w} produces a tuple \lstinline{(r, w')}, where \lstinline{r} is the result of the \lstinline{IO} action and \lstinline{w'} is the new world state.
+     \item The \lstinline{case} expression matches this tuple and binds \lstinline{r} to the result and \lstinline{w'} to the new world state.
+   \end{itemize}
+	\item \lstinline{k r w'}:
+   After extracting \lstinline{r} and \lstinline{w'}, the function \lstinline{k} is applied to \lstinline{r}, producing a new \lstinline{IO} action.
+   This new \lstinline{IO} action is then applied to the new world state \lstinline{w'}.
+\end{enumerate}
+
+In summary, the bind operator \texttt{(>>=)} sequences two \texttt{IO} actions. It runs the first action \texttt{m}, takes its result \texttt{r}, and passes it to the function \texttt{k} to produce the next \texttt{IO} action, which is then run with the updated world state \texttt{w’}.
+
+
+
+\subsection{\texttt{>>=} and \texttt{>>} combinators}
 Operator is called \textbf{bind} because it binds the result
 of the left-hand action in the action on the right.
 Performing compound action \lstinline|a >>= \x->b| :

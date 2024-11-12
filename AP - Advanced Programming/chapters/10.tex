@@ -1,7 +1,7 @@
 \chapter{Standard Templates Library}
 % \section*{17 - Ottobre}
 The goal of STL is to represent algorithms in as general form as possible without compromising efficiency.
-There is an extensive use of \textbf{templates}, \textbf{overloading}\note{Same function name, the algorithm to be executed is determined by the type of the arguments} and \ul{\textbf{iterators}},
+There is an extensive use of \textbf{templates}, \textbf{overloading}\footnote{Same function name, the algorithm to be executed is determined by the type of the arguments} and \ul{\textbf{iterators}},
 which are used for decoupling algorithms from containers,
 and can be seen as an \ul{abstraction of pointers}.\\
 STL is very different from the \textit{Java Collection Library} since it does \textbf{not} use \textit{dynamic binding} and is \textbf{not} \textit{object oriented};
@@ -32,8 +32,9 @@ In \textbf{Java} iterators are supported by the \textit{JCF}\footnote{\textit{Ja
 They are related to an \textbf{instance} of a class and are usually defined as \textit{nested classes},
 more precisely \textit{non-static private member classes}.\\
 Collections equipped with iterators must \lstinline|implements Iterable<T>| interface.
+\nl
 
-\section*{18 - Ottobre}
+% \section*{18 - Ottobre}
 
 In \textbf{C++} there is no \lstinline|next/hasNext()| function, standard \lstinline|++ --| operators are used instead.\\
 \lstset{language=C++}
@@ -122,14 +123,14 @@ but their behaviour is \textbf{undefined}.
 For example, inserting an element in a \lstinline|list| allows all iterators to remain valid, while inserting an element in a \lstinline|vector| invalidates all of them, since reallocation is necessary.
 \nl
 
-The main limiting aspect of STL's iterators is that they provide a \textbf{linear view} of the container,
-allowing the definition of operations only on one-dimensional containers;
-thus, if it is needed to access the organization of the container (e.g. tree custom visist), the only way-to-go is to define a custom iterator which behaves as desired.
+The main \textit{limiting aspect} of STL's iterators is that \ul{they provide a \textbf{linear view} of the container},
+allowing the definition of operations only on \ul{one-dimensional containers};
+thus, if it is needed to access the organization of the container (e.g. tree custom visits), the only way-to-go is to define a custom iterator which behaves as desired.
 
 \section{C++ specific features}
 
 \subsection{Inheritance}
-STL relies on typedefs combined with namespaces to
+STL relies on \lstinline|typedef|s combined with namespaces to
 implement genericity, the programmer always refers to \lstinline|container::iterator| to know the type of the iterator.
 Note that there is \ul{no relation among iterators for different containers }(!), if not a semantically abstract one.
 The reason for this is \textbf{performance}: 
