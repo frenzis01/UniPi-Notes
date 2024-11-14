@@ -44,16 +44,21 @@ A function \lstinline|f :: a -> Maybe b| is a partial function from
 
 \note{Check out \href{http://www.idryman.org/blog/2014/01/23/yet-another-monad-tutorial/}{idryman.org/blog/2014/01/23/yet-another-monad-tutorial/}}
 
+\newpage
 \subsection{\texttt{>>=} Bind operator}
 
 \begin{paracol}{2}
-   
+   \colfill
    \begin{lstlisting}
       class Monad m where
       (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
    \end{lstlisting}
    
    So, \lstinline|>>=| operator takes as first input a Monad containing type \lstinline|a| (a ``monadic value \lstinline|a|'') and, as second input, a first-order function taking as input \lstinline|a| and returning a Monad containing type \lstinline|b|.
+
+   \ul{Operator is called \textbf{bind} because it binds the result
+   of the left-hand action in the action on the right.}
+   \colfill
 
    \switchcolumn
    \begin{figure}[htbp]
@@ -405,8 +410,8 @@ In summary, the bind operator \texttt{(>>=)} sequences two \texttt{IO} actions. 
 
 
 \subsection{\texttt{>>=} and \texttt{>>} combinators}
-Operator is called \textbf{bind} because it binds the result
-of the left-hand action in the action on the right.
+\ul{Operator is called \textbf{bind} because it binds the result
+of the left-hand action in the action on the right.}
 Performing compound action \lstinline|a >>= \x->b| :
 \begin{enumerate}
    \item performs action \lstinline|a|, to yield value \lstinline|r|
@@ -464,7 +469,14 @@ getTwoChars = getChar >>= \c1 ->
 
 \subsection{Restrictions}
 In pure Haskell, there is no way to transform a value of type
-\lstinline|IO a| into a value of type \lstinline|a|.\\
+\lstinline|IO a| into a value of type \lstinline|a|.
+\begin{lstlisting}
+   unbox :: Maybe Int -> Int
+   unbox (Just x) = x
+   unbox Nothing  = 0   
+\end{lstlisting}
+While for \lstinline|Maybe| monad we can define a function \lstinline|unbox|, for \lstinline|IO| monad we cannot define a function \lstinline|unboxIO|, since the \lstinline|IO| type constructor is abstract and doesn't allow direct pattern matching of its contents in a pure function. 
+
 Suppose you wanted to read a configuration file at the
 beginning of your program:
 \begin{lstlisting}
@@ -475,7 +487,7 @@ beginning of your program:
 \end{lstlisting}
 The problem is that \lstinline|readFile| returns an \lstinline|IO String|, not a
 \lstinline|String|.
-\labelitemize{Possible workarounds}{
+{possible workarounds are:\ns
    \begin{enumerate}
       \item Write entire program in IO monad. But then we
       lose the simplicity of \textbf{pure} code.
@@ -496,8 +508,8 @@ implementations offer one last unsafe I/O primitive:
    configFileContents = lines(unsafePerformIO(readFile "config"))
 \end{lstlisting}
 
-The operator has a deliberately long name to
-\textit{discourage} its use.
+\ul{The operator has a deliberately long name to
+\textit{discourage} its use}.
 Besides, its use comes with a proof obligation:
 a promise to the compiler that the \textit{timing} of this operation
 relative to all other operations doesn’t matter.

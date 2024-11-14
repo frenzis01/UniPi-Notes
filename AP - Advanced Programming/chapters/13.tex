@@ -50,7 +50,7 @@ operators are not privileged built-ins.
 Haskell's solutions fits perfectly within type inference framework.
 
 The intuition is that a sorting function may allow to be passed a comparison \lstinline|cmp| operator as argument,
-thus making the function parametric.
+thus making the function parametric, instead of having it rely on overloaded operators.
 \begin{lstlisting}
    qsort:: (a -> a -> Bool) -> [a] -> [a]
    qsort cmp [] = []
@@ -70,21 +70,84 @@ These implies rewriting calls to pass appropriate implementations for plus and t
    z = parabola'(floatPlus, floatTimes) 3.14
 \end{lstlisting}
 
+There's more, let's try to actually define such dictionary along with getters to get the appropriate implementation.
+\begin{lstlisting}
+   -- Dictionary type
+   data NumDict a = MkNumDict (a->a->a) (a->a->a)
+   -- Accessor functions
+   get times :: NumDict a -> (a->a->a)
+   get times (MkNumDict times plus) = times
+   get plus :: NumDict a -> (a->a->a)
+   get plus (MkNumDict times plus) = plus
+\end{lstlisting}
+
+Hence we can define the parabola function to take a dictionary as argument, and we can call it passing to a dictionary of the appropriate type.
+\begin{lstlisting}
+   -- Dictionary-passing style
+   poly2 :: NumDict a -> a -> a
+   poly2 dict x = let times = get times dict
+         plus = get plus dict
+      in times x (plus x x)
+
+   -- Dictionary creation
+   intDict = MkNumDict int times int plus
+   floatDict = MkNumDict float times float plus
+
+   -- Passing dictionaries
+   y = poly2 intDict 10
+   z = poly2 floatDict 2.71
+\end{lstlisting}
+The function \lstinline|poly2| is a polymorphic function that provides the desired behavior
+of the overloaded function poly.
+Of course, this series of transformations would be tedious for a programmer
+to carry out. To avoid this tedium, Haskell’s type class mechanism automates the
+rewriting process, as we will see in the following sections.
+
+
+Consider that the type class mechanism in Haskell is made of comprised of three components: type class
+declarations, type class instance declarations, and qualified types.
 \begin{enumerate}
-   \item Type class declarations
+   \item \textbf{Type class declarations}
    \begin{enumerate}
-      \item Define a set of operations, give it a name
+      \item Define a set of operations and give it a name
       \item Example: \lstinline|Eq a| type class
-      • operations \lstinline|==| and \lstinline|\=| with \lstinline|type a -> a -> Bool|
+      \begin{itemize}
+      	\item operations \lstinline|==| and \lstinline|\=| with \lstinline|type a -> a -> Bool|
+      \end{itemize}
+      \begin{lstlisting}
+         class Num a where
+         (*) :: a -> a -> a
+         (+) :: a -> a -> a
+         negate :: a -> a
+         ... <other numeric operations> ...
+      \end{lstlisting}
    \end{enumerate}
-   \item Type class instance declarations
+   \item \textbf{Type class instance declarations}
    \begin{enumerate}
       \item Specify the implementations for a particular type
       \item For \lstinline|Int| instance, \lstinline|==| is defined to be integer equality
    \end{enumerate}
-   \item Qualified types (or Type Constraints)
-   Concisely express the operations required on otherwise polymorphic type
-   \lstinline|member:: Eq w => w -> [w] -> Bool|
+   \begin{lstlisting}
+         instance Num Int where
+         (*) = int_times
+         (+) = int_plus
+         negate x = int_negate x
+         ... <other numeric operations> ...
+
+         instance Eq Int where
+            i == j = int eq i j
+            i /= j = not (int eq i j
+   \end{lstlisting}
+   \item \textbf{Qualified types} (or Type Constraints)
+   Concisely express the operations required \st{on otherwise polymorphic type} to convert an overloaded
+   function into a polymorphic one.\\
+   The \lstinline|Eq t =>| prefix of this type is what makes it qualified.
+   \begin{lstlisting}
+      member:: Eq w => w -> [w] -> Bool
+      double :: Num t => t -> t
+      poly :: Num t => t -> t
+   \end{lstlisting}
+   If a function is \textit{not} qualified, then \ul{it must be purely polymorphic and work for any type whatsoever.}
 \end{enumerate}
 
 So, considering our previous examples, the type of \lstinline|member| parameters is any type \lstinline|w| that supports equality, i.e. that belongs to the \lstinline|Eq| type class.
@@ -109,6 +172,19 @@ So, considering our previous examples, the type of \lstinline|member| parameters
 }
 
 \subsection{Compositionality}
+\textbf{Compositionality} in type classes refers to the ability to \ul{combine and reuse type classes to build more complex abstractions}, allowing to define new type classes that inherit functionalities from existing ones.
+
+You can define new type classes that combine multiple existing ones. For example, you might create a \lstinline|ShowRead| type class that requires both \lstinline|Show| and \lstinline|Read| instances, enabling both string conversion and parsing
+\begin{lstlisting}
+   class (Show a, Read a) => ShowRead a where
+      showRead :: a -> String
+      showRead x = show x ++ " " ++ show (read (show x) :: a)
+
+\end{lstlisting}
+
+
+This also applies to type classes instance declarations.
+When you declare an instance for a type, you can combine multiple type classes to ensure that the type satisfies all the required constraints. For example, if you have a type that needs to be both \lstinline|Eq| and \lstinline|Show|, or you have two types which need to be both \lstinline|Eq| as in the example below, you can declare an instance for both type classes at once.
 \begin{lstlisting}
    class Eq a where
    (==) :: a -> a -> Bool
