@@ -1,0 +1,88 @@
+\chapter{Transactions}
+
+\begin{definition}
+   [Transaction]
+   A \textbf{transaction} is a sequence of operations that are executed as a single unit of work. A transaction can consist of multiple operations, such as reads, writes, and updates.
+   A transaction has to be \textbf{atomic}: all the operations in the transaction are executed successfully or none of them are.\\
+   Besides, when a transaction is executed on some data, none of the other transactions can alter that data until the transaction is completed.
+\end{definition}
+
+Transactions are clearly crucial in a distributed system, as they build a framework for allowing to maintain data consistency across multiple nodes.
+
+% // TODO lesson 12/11
+
+
+% Lesson 14/11
+Transactions come at a cost, since in a distributed system even a simple mechanism such as a mutex may become costly to implement.
+
+\section{Error Handling}
+Transactions hence provide all-or-nothing guarantees, simplyfing error handling, since partial failures are not to be managed.
+
+
+\section{Deeper into DBs}
+
+Most SQL DBs support transactions.
+NoSQL databases.
+
+\section{ACID Properties}
+
+\begin{itemize}
+    \item \textbf{Atomicity}: all operations in a transaction are executed successfully or none of them are.
+    \item \textbf{Consistency}: the database is in a consistent state before and after the transaction.
+    \item \textbf{Isolation}: the transaction is executed in isolation from other transactions.
+    \item \textbf{Durability}: once a transaction is committed, the changes are permanent.
+    \note{Perfect durability is unattainable}
+\end{itemize}
+
+These were coined by Jim Gray in 1983.
+
+\subsection{Single-Object and Multi-Object Transactions}
+If a transaction involves multiple objects, it is a multi-object transaction, which causes \textbf{performance} and \textbf{deadlock} issues.
+
+
+Databases hide concurrency issues by providing transaction isolation.
+Isolation allows the application to pretend that no concurrency is happening.
+Serializable isolation guarantees that the transactions are executed in a serial order, which is the most strict isolation level.
+% // TODO check last sentence
+
+Serializable isolation comes with a performance cost which makes it less common in practice.
+Weaker isolation levels are common, but are harder to understand and may lead to subtle bugs.
+
+\subsection{Read Committed}
+In Read Committed isolation level, a transaction can only read, and overwrite, committed data.
+This is the default isolation level in most databases.
+
+\begin{definition}
+   [Dirty Read]
+   A \textbf{dirty read} occurs when a transaction reads data that has been written by another transaction that has not yet been committed.
+\end{definition}
+
+
+\begin{definition}
+   [Dirty Write]
+   A \textbf{dirty write} occurs when a transaction overwrites data that has been written by another transaction that has not yet been committed.
+\end{definition}
+
+In this model, \ul{\textbf{no} dirty reads nor dirty writes are allowed}.
+
+% This model is not enough to prevent \textbf{non-repeatable reads} and \textbf{phantom reads}.
+This model is more reliable than Non-transactional models, but still allowing to avoid ``paying'' for transactions.
+
+\begin{definition}
+   [Non-repeatable Read]
+   A \textbf{non-repeatable read} occurs when a transaction reads the same data twice and gets different results.
+\end{definition}
+
+Non-repeatable reads are possible in Read Committed isolation level, 
+
+
+% \begin{definition}
+%    [Phantom Read]
+%    A \textbf{phantom read} occurs when a transaction reads a set of records that satisfy a certain condition, but when it reads the same records again, the set of records has changed.
+
+\subsection{Snapshot Isolation}
+Snapshot isolation is a more relaxed isolation level than serializable isolation, but it is still stricter than Read Committed isolation.
+
+In snapshot isolation, a transaction reads a snapshot of the database at the beginning of the transaction and writes to the database at the end of the transaction.
+
+The snapshot allows transactions to see all the data that was commited at the start of the transaction.

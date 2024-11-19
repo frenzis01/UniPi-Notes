@@ -61,5 +61,53 @@ However we must be careful because \textbf{inconsistent} hashing can lead to hot
 
 Note also that hash partitioning is very bad for range queries, as even similar data is spread randomly across the partitions.
 
+\subsubsection{Secondary Indexes}
+% Copilot generated
+Secondary indexes are a way to avoid hot spots in hash partitioning.\\
+The idea is to create a separate index that maps the secondary key to the primary key, and then use the primary key to locate the data.\\
+This way, the secondary key is hashed and distributed evenly across the partitions, while the primary key is used to locate the data.
 
 
+% // TODO
+
+
+\begin{itemize}
+   \item Document-based partitioning
+   \item Term-based partitioning 
+\end{itemize}
+
+\section{Rebalancing}
+Rebalancing is the process of moving data between partitions to ensure that the data is evenly distributed among the nodes. This is necessary when the data distribution changes, for example, when new nodes are added to the system or when the data distribution becomes uneven due to hot spots. Rebalancing can be done in various ways, such as automatic rebalancing, manual rebalancing, and dynamic rebalancing.
+
+\framedt{Challenges in rebalancing}{
+   \begin{itemize}
+      \item Fair load distribution
+      \item Continuous operation during rebalancing
+      \item Minimizing data movement
+   \end{itemize}
+}
+
+\subsection{Optimizing rebalancing - Kademlia and P2P recalls}
+
+Assigning keys to nodes computing $h(key) mod \#{nodes} \rightarrow node$ is intuitive but leads to a tremendous amount of data movement when nodes are added or removed, since all modulo values must be recomputed.\\
+A better solution is to use a \textbf{distributed hash table} (DHT) such as \textbf{Kademlia} or \textbf{Chord}, which allows to find the node responsible for a key in $O(\log n)$ steps.
+
+A simple intuition exploited by both Kademlia and Chord is to fix the granularity of the keyspace prior to partitioning.
+
+In other words, having a fixed number of partitions may help to avoid data movement when nodes are added or removed.
+% //TODO expand this
+
+
+\subsection{Dynamic partitioning}
+Dynamic partitioning is a technique that allows the system to adapt to changes in the data distribution. This is done by monitoring the data distribution and rebalancing the data when necessary. Dynamic partitioning can be done in various ways, such as automatic rebalancing, manual rebalancing, and dynamic rebalancing.
+
+\begin{itemize}
+   \item \textbf{Automatic} rebalancing - System automatically rebalances the data when necessary without any human intervention.
+   May be unpredictable and expensive, but requires less maintanance.
+   \item \textbf{Manual} rebalancing - Administrator manually rebalances the data when necessary. May be better since and admin may have a more \textit{comprehensive} view of the distributed system, while a machine may be limited by network partitioning, discovery, etc.
+   \item \textbf{Hybrid} approach - Combines automatic and manual rebalancing. The system automatically rebalances the data when necessary, but the administrator can override the system's decisions. 
+\end{itemize}
+
+
+\section{Takeaways}
+Data partitioning enhances scalability by distributing data across multiple nodes, and when combined with replication, it can improve the performance and reliability of the system. However, partitioning can introduce challenges such as hot spots and rebalancing. To address these challenges, you can use techniques such as hash partitioning, secondary indexes, and dynamic partitioning. By carefully designing the partitioning strategy, you can achieve high availability, fault tolerance, and scalability in your system.
