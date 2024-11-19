@@ -92,7 +92,17 @@ there is no \textbf{implicit boxing}\footnotemark.
       let x = 3; // 'let' allocates a variable on the stack
       let y = Box::new(3); // y is a reference to 3 on the heap
       println!("x == y is {}", x == *y); // "x == y is true"
-      }
+   }
+
+   fn main() {
+      let x = 3; // 'let' allocates a variable on the stack
+      let y = Box::new(3); // y is a reference to 3 on the heap
+      let z = Box::new(x); // z and x are two separate things
+      println!("x == *y is {}", x == *y); // "x == y is true"
+      println!("z == y is {}", z == y); // "z == y is true" because Rust automatically dereferences the Box
+      x = 6;
+      println!("x == z == {}", *z); // evaluates to three
+   }
 \end{lstlisting}
 
 To avoid the overhead of a Garbage collection mechanism and the possible subtle errors introduced a programmer to whom memory management is delegated, Rust provides \textit{deterministic management of
@@ -266,6 +276,14 @@ More generally indicates that there are multiple ways to access a resource on th
    let r1 = &s;
    let r2 = &s;
    println!("{} {}", r1, r2); // ok by rule B3
+
+   let mut x = 3; 
+   let y = &mut x;
+   println!(" *y is {}", *y); // "*y is 3"
+   *y = *y + 2;
+   println!(" *y is {}", *y);
+   // y is no more accessed, so borrowing ends
+   println!(" x is {}", x);
 \end{lstlisting}
 
 \subsection{Strings}
@@ -282,12 +300,12 @@ More generally indicates that there are multiple ways to access a resource on th
    Method \lstinline|String::from()| allocates memory on the heap: it takes an argument of type \lstinline|&str| and returns a \lstinline|String|.
 }
 
-A String object has three components:
+{A String object has three components:\ns
 \begin{enumerate}
    \item a reference to the heap location containing the character sequence
    \item capacity (unsigned integer)
    \item length (unsigned integer)
-\end{enumerate}
+\end{enumerate}}
 \lstinline|String| does not implement \lstinline|Copy|, thus assignment is subject to move semantics;
 assignment creates a copy of length, capacity and reference,
 but not of the char sequence in the heap.
@@ -349,7 +367,7 @@ The compiled tries to infer output lifetimes according to the following rules, b
 \end{lstlisting}
 Here the lifetime of the parameters depends on whether \lstinline|s1| or \lstinline|s2| is returned,
 so the compiler cannot infer the lifetime of the output parameters;
-hence, an \textbf{explicitly named lifetime} for input parameters is requires, as in the following snippet.
+hence, an \textbf{explicitly named lifetime} for input parameters is required, as in the following snippet.
 \begin{lstlisting}
    fn longest<'a>(s1: &'a str, s2: &'a str) -> &'a str {
       if s1.len() > s2.len() { s1 }
@@ -469,10 +487,11 @@ bound by one or more traits, so within such a function, the
 generic value can only be used through those traits,
 allowing for generic function to be \textbf{type-checked} when
 defined, as it happens in Java, unlike C++ templates.\\
-• However, implementation of Rust generics uses \textit{monomorphization} and is similar to
-typical implementation of C++ templates, where a separate copy
+However, \ul{implementation of Rust generics uses \textit{monomorphization} and is similar to
+typical implementation of C++ templates}, where a separate copy
 of the code is generated for each instantiation, in contrast with the
-type erasure scheme of Java.
+type erasure scheme of Java.\\
+\ul{Note that Rust lacks \textit{higher-kinded types}}, as previously discussed in Sec. \ref{sec:rust_hkt}.
 \begin{itemize}
 	\item \texttt{Clone} - allows to create a deep copy of a value using the method
 clone(). The duplication process might involve running arbitrary
@@ -561,16 +580,16 @@ The reason the deref method returns a reference to a value, and that the plain d
 Deref coercion was added to Rust so that programmers writing function and method calls don't need to add as many explicit references and dereferences with \lstinline|&| and \lstinline|*|. The deref coercion feature also lets us write more code that can work for either references or smart pointers.
 
 \subsection{RC and RefCell}
-\lstinline|Rc<T>| supports \textbf{immutable} access to resource with
-reference counting.
+\lstinline|Rc<T>| \ul{supports \textbf{immutable} access to resource with
+reference counting.}
 Method \lstinline|Rc::clone()| \emph{doesn't clone!}
 It simply returns a new reference, incrementing the counter,
 whose value can be obtained by \lstinline|Rc::strong_count|;
 \ul{when the counter is 0 the resource is reclaimed}.
 
 
-\lstinline|RefCell<T>| supports shared access to a mutable
-resource through the \textbf{interior mutability} pattern.
+\lstinline|RefCell<T>| supports \ul{shared access to a mutable
+resource through the \textbf{interior mutability} pattern}.
 It provides two methods \lstinline|borrow()| and \lstinline|borrow_mut()| which
 return a smart pointer (\lstinline|Ref<T>| or \lstinline|RefMut<T>)|.
 \lstinline|RefCell<T>| keeps track of how many \lstinline|Ref<T>| and
@@ -599,6 +618,7 @@ With \lstinline|move| before \lstinline{||} \lstinline|FnOnce| is enforced.
    let x = 5;
    let greater_than_x = |y| y > x; // Parameters within ||
    println!("{}",greater_than_x(3)); // prints "false"
+   
    let vector = vec![1, 2, 3, 4, 5]; // stream-like
    vector.iter()
       .map(|x| x + 1)
@@ -639,7 +659,7 @@ Looking at Listing \ref{lst:rust_arcmutex} on the right:\ns
    \colfill
    \switchcolumn
 
-\begin{lstlisting}[caption={Fixed code with \lstinline|Arc<Mutex<T>>| and \lstinline|move|},label={lst:rust_arcmutex}]
+\begin{lstlisting}[caption={Fixed code with \lstinline|Arc<Mutex<T>>| and \lstinline|move|, but some code duplication is present},label={lst:rust_arcmutex}]
 use std::sync::{Arc, Mutex};
 use std::thread;
 
@@ -676,15 +696,48 @@ fn main() {
 
 \end{paracol}
 
-
+\begin{paracol}{2}
+\colfill
 Listing \ref{lst:rust_broken} does not compile because Rust does not allow shared mutable state between threads. 
-The closure \lstinline|task| tries to capture \lstinline|counter| by mutable reference because it needs to increment it, but Rust notices it may outlive the borrowed value \lstinline|counter|, so it does not compile.
+   The closure \lstinline|task| tries to capture \lstinline|counter| by mutable reference because it needs to increment it, but Rust notices it may outlive the borrowed value \lstinline|counter|, so it does not compile.
+   
+   Rust’s borrowing rules prevent multiple mutable references to the same data at the same time. When you try to spawn two threads with the same closure, both threads would need mutable access to \lstinline|counter|, which is not allowed.
+   
+   Rust prevents this bug by forcing us to make our intentions explicit. We can fix this by using the \lstinline|Arc<Mutex<T>>|, along with the \lstinline|move| keyword to move the ownership of the closure to the thread.
 
-Rust’s borrowing rules prevent multiple mutable references to the same data at the same time. When you try to spawn two threads with the same closure, both threads would need mutable access to \lstinline|counter|, which is not allowed.
+   Notice that using only \lstinline|move| to move the ownership of the closure to the thread is not enough, because the closure still captures \lstinline|counter| by mutable reference. We need to use \lstinline|Arc<Mutex<T>>| to fix this issue, as in Listing \ref{lst:rust_arcmutex}.
+\colfill
+   \switchcolumn
 
-Rust prevents this bug by forcing us to make our intentions explicit. We can fix this by using the \lstinline|Arc<Mutex<T>>|, along with the \lstinline|move| keyword to move the ownership of the closure to the thread.
+   \begin{lstlisting}[caption={Same as Lst.\ref{lst:rust_arcmutex}, but with a function to spawn tasks, avoiding code duplication},label={lst:rust_arcmutex_spawn}]
+use std::sync::{Arc, Mutex};
+use std::thread;
 
-Notice that using only \lstinline|move| to move the ownership of the closure to the thread is not enough, because the closure still captures \lstinline|counter| by mutable reference. We need to use \lstinline|Arc<Mutex<T>>| to fix this issue, as in Listing \ref{lst:rust_arcmutex}.
+fn spawn_task(counter: Arc<Mutex<i32>>) -> thread::JoinHandle<()> {
+    thread::spawn(move || {
+        for _ in 0..100_000 {
+            let mut num = counter.lock().unwrap();
+            *num += 1;
+        }
+    })
+}
+
+fn main() {
+    let counter = Arc::new(Mutex::new(0));
+    
+    let thread1 = spawn_task(Arc::clone(&counter));
+    let thread2 = spawn_task(Arc::clone(&counter));
+    
+    thread1.join().unwrap();
+    thread2.join().unwrap();
+
+    println!("{}", *counter.lock().unwrap());
+}
+   \end{lstlisting}
+   
+\end{paracol}
+
+
 
 \subsection{\texttt{Sync} and \texttt{Send}}
 \lstinline|Send| and \lstinline|Sync| are two strongly related traits regarding multithreading: 

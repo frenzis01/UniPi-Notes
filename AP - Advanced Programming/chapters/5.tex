@@ -1,8 +1,10 @@
 \chapter{Java Beans}
-\section*{3 - Ottobre}
+% \section*{3 - Ottobre}
 \section{Components applied to Java}
-"A \textbf{Java Bean} is a \textit{reusable} software component that can be
-manipulated visually in a builder tool."
+\begin{definition}
+    [Java Bean]
+    A \textbf{Java Bean} is a \textit{reusable} software component that can be manipulated visually in a builder tool.
+\end{definition}
 
 Typically a Bean has a GUI representation but is not necessary; there exist \textit{invisible beans} as well.
 {What is necessary instead for a class to be recognized as a bean is that it:\ns
@@ -10,13 +12,13 @@ Typically a Bean has a GUI representation but is not necessary; there exist \tex
     \item has a public constructor with no arguments
     \item implements \lstinline{java.io.Serializable}
     \item is in a \lstinline{jar} file with a \textit{manifest} file that contains: \lstinline{Java-Bean: True}
-    \note{Actually this ain't true. The JVM itself does not require this manifest entry to recognize a class as a JavaBean. The JVM relies on the class’s structure and interfaces (like having a no-argument constructor and implementing Serializable). 
+    \note{Actually this ain't true. The JVM itself does not require this manifest entry to recognize a class as a JavaBean. The JVM relies on the class' structure and interfaces (like having a no-argument constructor and implementing Serializable). 
     Tools like IDEs and builders might require the manifest entry to recognize a class as a JavaBean.\\
     In my assignments, i didn't need to add this entry to the manifest file. \smiley}
 \end{itemize}}
 
-Beans can be \textbf{assembled} to build a new bean or application, writing clue code to wire beans together.
-\textit{Connection-oriented} programming is based on the \textbf{Observer} or (\textit{Publish-Subscribe}) paradigm.
+Beans can be \textbf{assembled} to build a new bean or application, writing glue code to wire beans together.\\
+\textit{Connection-oriented} programming is based on the \textbf{Observer} (or \textit{Publish-Subscribe}) paradigm.
 \textit{Observers} come into play when there is a $1:N$ dependency between objects and one of them changes state, creating the need for the others to be notified and updated.
 Beans must be able to run in a \textit{design environment} allowing the user to customize aspect and behaviour.
 Beans provide support for some standard features:
@@ -44,15 +46,15 @@ Beans provide support for some standard features:
     \item \textbf{Persistence}: a bean can be customized in an application builder and then have its customized state saved away and reloaded later. 
     \item \textbf{Introspection}: process of analyzing a bean to determine capabilities.
     There are implicit methods based on \textit{reflection}, \textit{naming conventions} and \textit{design patterns},
-    but can be simplified by explicitly defining info for the builder tool in the \lstinline{<BeanName>BeanInfo} class.
+    but can be simplified by explicitly defining info for the builder tool in the \lstinline{<BeanName>BeanInfo} class, so that \ul{design-time information is separated from run-time information}.
     Such class allows exposition of features, specifying customizer class, segregate feats in normal/expert mode, and some other stuff.
     \begin{itemize}
-        \item \textbf{Design Patterns for Simple Methods}
+        \item \textbf{Design Patterns for Simple Properties}
         \begin{lstlisting}
     public <PropertyType> get<PropertyName>();
     public void set<PropertyName>(<PropertyType> a);
         \end{lstlisting}
-        \item \textbf{Design Patterns for Simple Methods}
+        \item \textbf{Design Patterns for Indexed Properties}
         \begin{lstlisting}
     public java.awt.Color getSpectrum (int index);
     public java.awt.Color[] getSpectrum ();
@@ -61,4 +63,5 @@ Beans provide support for some standard features:
         \end{lstlisting}
     \end{itemize}
     
+    \note{The slides go on with further information on the observer design pattern and how to implement Bounded and constrained properties change}
 \end{enumerate}

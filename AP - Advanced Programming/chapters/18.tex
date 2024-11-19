@@ -61,7 +61,7 @@ The JMM guarantees that the write of a volatile variable is visible when it is r
 An \textit{implementation} should guarantee that the new value is flushed from the cache to the RAM, if a read happens "after" a write.
 
 \begin{center}
-   What does it mean that \textit{"a read happens after a write"}?
+   What does it mean that \textit{``a read happens after a write''}?
 \end{center}
 This will be discussed later on in Sec \ref{sec:behaviour_actions}, however,
 When threads do \textit{not} use any synchronization mechanism,
@@ -116,7 +116,7 @@ For \textit{datarace-free}\footnote{Also called \textit{\underline{corretly}} or
    Sequential consistency must be sacrificed to allow optimizations, 
    but it still holds for datarace-free program
    \item \ul{Promise for security}\\
-   Values should not appear "out of thin air", allowing for information leakage
+   Values should not appear ``out of thin air'', allowing for information leakage
    \note{Even for non-datarace-free programs!}
    \item \ul{Promise for compilers}\\
    HW and SW optimizations should be applied without violating (both) the first two requirements
@@ -174,7 +174,7 @@ This was an accepted guess before the JMM introduced with Java 5 (2004),
 but currently such claims at runtime are forbidden.
 
 \subsection{Synchronization order}
-{Each execution of a program is associated with a \textbf{synchronization order} $\leq_{so}$ which is a total order over all synchronization actions satisfying:\ns
+{Each execution of a program is associated with a \textbf{synchronization order} $\leq_{so}$ which is \ul{a total order over all \textit{synchronization} actions} satisfying:\ns
 \begin{enumerate}
    \item Consistency with program order
    \item Read to a volatile variable $v$ returns the value of the write to $v$ that is ordered last before the read by the synchronization order.
@@ -183,11 +183,15 @@ but currently such claims at runtime are forbidden.
 {$a \leq_{sw} b$ is read ``action $a$ synchronizes with action $b$''. This holds if $a \leq_{so} b$ \ul{and}:\ns
 \begin{itemize}
    \item $a$ unlocks a monitor and $b$ locks it
-   \item $a$ writes to a volatile variable and $b$ reads it
+   \item $a$ writes to a \lstinline|volatile| variable and $b$ reads it
 \end{itemize}
 }
 
-Relation \textit{happens-before} $\leq_{hb}$ is the ---(smallest relation)--- transitive closure of the \textit{program order} $\leq_{po}$ and the \textit{synchronizes-with} relation.
+Relation \textit{\textbf{happens-before}} $\leq_{hb}$ is the ---(smallest relation)--- \textbf{transitive closure} of the \textit{program order} $\leq_{po}$ and the \textit{synchronizes-with} $\leq_{sw} relation.$
+$A \leq_{hb} B$ means that $A$ is guaranteed to be \textit{visible} to $B$ in the execution.\\
+If $A \leq_{po} B$ (same thread), or $A \leq_{sw} B$ (synchronization), then $A \leq_{hb} B$.\\
+It is the transitive closure in the sense that if $A \leq_{hb} B$ and $B \leq_{hb} C$, then $A \leq_{hb} C$.
+
 \subsection{Formally Defining Data Races}
 \begin{definition}
    [Data Race]
@@ -198,7 +202,6 @@ A program is said to be \textbf{correctly synchronized} ---or datarace-free--- i
 
 The first requirement for the JMM is to ensure sequential consistency for correctly synchronized or datarace free programs\\
 \ul{Programmers should not worry about code transformations for datarace-free programs}.
-TODO
 
 % \labelitemize{\textit{Executions - Formal Definition}}
 % {
@@ -220,6 +223,7 @@ $E = (P,A,\leq_{po},\leq_{so},W,V,\leq_{sw},\leq_{hb})$ is a \textbf{well-formed
 \begin{enumerate}
    \item Each read of a var $x$ sees a write to $x$, and all reads and writes of volatile variables are volatile actions
    \item Synchronization order is consistent with program order and mutual exclusion
+   \note{If thread $T_1$ performs synchronization actions $A$ and $B$ in that order, then $A$ must appear before $B$ in the synchronization order}
    \item The execution obeys intra-thread consistency
    \item The execution obeys intra-thread and happens-before consistency (each read of $v$ sees the last preceding write to $v$)
 \end{enumerate}
@@ -227,15 +231,25 @@ $E = (P,A,\leq_{po},\leq_{so},W,V,\leq_{sw},\leq_{hb})$ is a \textbf{well-formed
 Now, which \textit{well-formed executions} are \textbf{legal}?
 \textbf{Legal executions} are built iteratively:
 in each iterations, the JMM commits a set of memory actions;
-actions can be committed if they occur in some well-behaved\dots
+actions can be committed if they occur in some well-behaved execution that also contains the actions
+committed in previous iterations.
+The JMM must ensure that appropriate executions are prohibited.
 
 A well-formed $E = (P,A,\leq_{po},\leq_{so},W,V,\leq_{sw},\leq_{hb})$ is validated by \textit{commiting} actions in A;
 if all actions of A are committed, then E is legal.
+``Committing actions'' means progressively building up a valid execution by considering subsets of actions, starting with none and ending with the entire set AA
+
 There must exists a sequence of subsets of a
 \[
   C_0 \subset C_1 \subset \dots \subset C_n = A 
 \]
-and one $\{E_i\}_{i\leq n}$ of well-formed executions such that each $E_i$ ``witnesses'' the actions in $C_i$
+Where each $C_i$ is a progressively larger subset of committed actions in $A$. $C_0 = \emptyset$ and $C_n = A$ (all actions are committed in the final step).
+
+For each $C_i$ there is one $\{E_i\}_{i\leq n}$ of well-formed executions such that each $E_i$ ``witnesses'' the actions in $C_i$, meaning that $E_i$ show how those actions can be legally executed under the JMM.
+\ul{Any reads, writes, or synchronization in $C_i$ must be consistent with the program order, synchronization order, and happens-before relationships in $E_i$.}
+
+If you can construct such a sequence of subsets $C_i$ and corresponding well-formed executions $E_i$, then the entire execution EE is legal under the JMM.
+
 \note{
    % // TODO
 I did not understand this witnessing part honestly\dots}
@@ -309,7 +323,7 @@ visible.
 }
 
 \subsection{Reordering}
-s said, the compiler, the JVM and the CPU can reorder any
+As said, the compiler, the JVM and the CPU can reorder any
 sequence of instructions as long as the result does not change for
 the single thread.
 Clearly, \lstinline|synchronized| and \lstinline|volatile| constructs reduce the possibility of reordering, but we can dig deeper.

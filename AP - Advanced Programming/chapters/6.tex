@@ -17,17 +17,32 @@ allowed to \textbf{read only}, or also to \textbf{change} itself.
 \ul{\textbf{Structural} reflection}  is concerned with the ability of the \textbf{language} to provide a complete \ul{\textit{reification} of both the \textit{program} executed and its \textit{abstract data types}.}\\
 \ul{\textbf{Behavioral} reflection} is concerned instead with the \ul{reification of its\footnote{referred to a \textbf{language}} \textit{semantics} \& \textit{implementation} (processor) and the data and implementation of the \textit{run-time system}}.
 
+\framedt{Abstract Data Types}{
+    {An abstract data type (ADT) is a conceptual model for data types, defined by their behavior from the perspective of a user, rather than their implementation. Because of ADT,\ul{ a user doesn’t have to bother about how that data type has been implemented}. Moreover, ADT also takes care of the implementation of the functions on a data type. Generally, in ADT, \ul{a user knows what to do without disclosing how to do it}. These kinds of models are defined in terms of their data items and associated operations. Here are the key aspects of an ADT:\ns
+
+    \begin{itemize}
+    	\item \textbf{Behavioral Definition} - An ADT is defined by the operations that can be performed on it and the behavior of these operations. This includes the possible values the data type can hold and the operations’ effects.
+	    \item \textbf{Interface Specification} - The ADT specifies a set of operations (like insertion, deletion, or retrieval) without detailing how these operations are implemented. This allows for flexibility in how the data type is realized in different programming languages or systems.
+	    \item \textbf{Implementation Independence} - The actual implementation of the ADT can vary. For example, a stack ADT can be implemented using arrays or linked lists, but the interface (push, pop, etc.) remains the same.
+	    \item \textbf{Encapsulation} - ADTs encapsulate the data and the operations that can be performed on the data, hiding the implementation details from the user. This promotes modularity and reusability.
+    \end{itemize}
+    }
+
+    In C++ and Java, ADTs are implemented using classes. Note that typically three types of ADTs are used: \textit{stacks}, \textit{queues}, and \textit{lists}.
+}
+
 \section{Uses and drawbacks}
 \subsection{Uses}
 \begin{itemize}
     \item \textit{Class Browsers} need to be able to enumerate the number of classes
     \item \textit{Visual Development Environments} can exploit type info available in reflection to aid the developer in writing correct code
     \item \textit{Debuggers} need to be able to examine private members on classes
-    \item \textit{Test Tools} exploit reflection to ensure a high level of code coverage in a test suite
+    \item \textit{Test Tools} exploit reflection to ensure a high level of code coverage in a test suite e.g. \texttt{JUnit}
     \item \textit{Extensibility Features} an app may make use of external, user-defined classes by creating instances of extensibility objects.
 \end{itemize}
 
 \subsection{Drawbacks}
+\label{sec:reflection_drawbacks}
 If it is possible to perform an operation without using reflection, then it is
 preferable to avoid using it. Reflection is powerful, but it has some drawbacks:
 \begin{itemize}
@@ -58,16 +73,17 @@ preferable to avoid using it. Reflection is powerful, but it has some drawbacks:
     abstractions and may change behavior with upgrades of the platform,
     destroying portability.
 \end{itemize}
+\newpage
 
 \section{Reflection in Java}
-Java supports \textbf{introspection} and \textbf{reflective invocation},
-but not \textit{code modification}.
+Java supports \textbf{introspection} and \textbf{reflective invocation}, but not \textit{code modification}:
+Java does not support modifying the actual bytecode of classes at runtime through its reflection API. While you can inspect and invoke methods, \ul{you cannot change the method implementations or add new methods to a class dynamically}.
 
 \subsection{Introspection}
 
 \begin{paracol}{2}
     \colfill
-    {The JVM mantains for every type an associated object of type \lstinline{java.lang.Class} which "\textit{reflects}" the type it represents,
+    {The JVM mantains for every type an associated object of type \lstinline{java.lang.Class} which \textit{``reflects''} the type it represents,
     acting as entry point for reflection,
     since it provides all info needed:\ns
     \begin{itemize}
@@ -151,7 +167,7 @@ inaccessible via privacy rules!
 \lstinline|AccessibleObject| Class is the superclass of \lstinline|Field|,
 \lstinline|Method|, and \lstinline|Constructor|
 \note{Request granted if no security manager, or if the existing
-security manager allows it}
+security manager allows it, otherwise \lstinline|setAccessible(true)| would throw a \lstinline|SecurityException|}
 
 {\lstinline|AccessibleObject| provides the methods:\ns
 \begin{itemize}
@@ -244,7 +260,8 @@ public class SimpleJUnitRunner {
 }
     \end{lstlisting}
 \end{paracol}
-\newpage
+
+
 \section{Annotations}
 % \section*{9 - Ottobre}
 In java, \lstinline{static,private,...} modifiers are \textit{meta-data} describing properties of program elements.
@@ -262,8 +279,8 @@ The syntax is the following:
     @annName{name_1 = constExp_1, ..., name_k = constExp_k}
 \end{lstlisting}
 \lstinline{constExp} are expression which can be evaluated at \textit{compile time}.
-Besides, attributes have a \textit{type}, thus the supplied values have to
-convertible to that type.\\
+Besides, \ul{attributes have a \textit{type}, thus the supplied values have to
+convertible to that type}.\\
 Annotations can be applied to almost any syntactic element, from packages to parameters and any type use.
 
 \subsection{Defining annotations}

@@ -1,14 +1,14 @@
 \chapter{Component-Based software}
-\section*{2 - Ottobre}
+% \section*{2 - Ottobre}
 Component software indicates \textbf{composite systems} made of \textbf{software components}.
 In short, component software allows reuse, improving reliability\footnote{Industries may even require to use \textit{certified} components} and reducing costs.\\
 Bertrand Meyer suggests some guidelines regarding Object-Oriented software construction (1997):
 \begin{enumerate}[noitemsep]
-    \item modular
-    \item reliable
-    \item efficient
-    \item portable
-    \item timely
+    \item Modular
+    \item Reliable
+    \item Efficient
+    \item Portable
+    \item Timely
 \end{enumerate}
 
 \section{Definitions}
@@ -26,27 +26,29 @@ Let's break down this definition, and explain the key concepts it mentions.
 
 A \textbf{contract} is a specification attached to an \textbf{interface} (component specification) that
 mutually binds the clients and providers of the components.\\
-However, contracts in general specify more than dependencies and interfaces, they also specify how the component can be deployed, instatiated, and how its instances behave, ultimately summing up to more than a simple set of per-interface interfaces.
+However, contracts in general specify more than dependencies and interfaces, they also specify how the component can be deployed, instatiated, and how its instances behave, ultimately summing up to more than a simple set of per-interface methods.
 
 \textbf{Context dependencies} are specification of the deployment
 environment and run-time environment.
 This goes beyond the simple interfaces required and provided which are specified in the contract.
 Context dependencies include required tools, platform and resources.
+\note{e.g. Database, libraries, frameworks, config files, environment variables, etc.}
 
 \textbf{Deployed independently} means that a component can be plugged or unplugged from an architecture, even at runtime in some cases.
-It is common-practice to deploy "small components" called connectors,
+It is common-practice to deploy ``small components'' called connectors,
 to resolve situations where two components supposed to interact do not provide identical interfaces,
 creating the need for a intermediary.
+\note{Even though the component may be packaged and deployed independently (e.g. as JAR files), it still needs the context dependencies to be satisfied.}
 
-\textbf{composition by third party} means that a component may interact with third parties components without knowing the internals of such components.
+\textbf{Composition by third party} means that a component may interact with third parties components without knowing the internals of such components.
 
 \section{Concepts of Component Model}
 \begin{itemize}
-    \item \textbf{Component interface} describes the operations implemented and exposed by the component
-    \item \textbf{Composition mechanism} How components can be composed to work together to accomplish a task
-    \item \textbf{Component platform} A platfom for the development of the compnents
+    \item \textbf{Component interface} - describes the operations implemented and exposed by the component
+    \item \textbf{Composition mechanism} - How components can be composed to work together to accomplish a task
+    \item \textbf{Component platform} - A platfom for the development of the components
 \end{itemize}
-Concepts should be laguage/paradigm agnostic, laying the ground for language interoperability.
+Concepts should be language/paradigm agnostic, laying the ground for language interoperability.
 \nl
 
 The ancestors of Components are \textbf{Modules}, whose support has been introduced in Java 9, but aren't very common.
@@ -72,9 +74,9 @@ Components can be anything and can contain anything, they can be \textit{collect
 \textit{¡Note that \textbf{OOP} $\neq$ \textbf{COP}!}
 \end{center}
 
-OOP \textit{isn't} focused on \textbf{reuse}, instead its focus in onto appropriate domain and problem representation. Objects, classes, inheritance and polymorphism are concepts/tools typically exploited in OOP.\\
+\ul{OOP \textit{isn't} focused on \textbf{reuse}, instead its focus is onto appropriate domain and problem representation}. Objects, classes, inheritance and polymorphism are concepts/tools typically exploited in OOP.\\
 COP (more precisely CBSE\footnote{Component-based software engineering}), on the other hand, is focused on \textbf{reuse} and \textbf{composition} of software components. It is a way to build software systems by assembling prefabricated components.
-In general it provides methods and tool for:
+In general it provides methods and tools for:
 \begin{itemize}
 	\item Building systems from components
 	\item Building components as reusable units

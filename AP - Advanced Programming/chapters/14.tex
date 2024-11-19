@@ -3,7 +3,7 @@
 
 \section{Towards Monads}
 Often type constructors can be thought of as
-defining \textit{"boxes"} for values, and \lstinline|Functors| with \lstinline|fmap| allow to apply functions
+defining \textit{``boxes''} for values, and \lstinline|Functors| with \lstinline|fmap| allow to apply functions
 inside such \textit{``boxes''}.\\
 \lstinline|Monad| is a constructor class introducing
 operations for \textit{putting a value} into a ``box'' (\lstinline|return|) and \textit{composing} functions that return ``boxed'' values (\lstinline|bind|).\\
@@ -23,8 +23,8 @@ A function \lstinline|f :: a -> Maybe b| is a partial function from
    maternalGrandfather :: Person -> Maybe Person
    maternalGrandfather p =
    case mother p of
-   Nothing -> Nothing
-   Just mom -> father mom -- Nothing or a Person
+      Nothing -> Nothing
+      Just mom -> father mom -- Nothing or a Person
 \end{lstlisting}
 
 \section{Defining Monads}
@@ -51,7 +51,7 @@ A function \lstinline|f :: a -> Maybe b| is a partial function from
    \colfill
    \begin{lstlisting}
       class Monad m where
-      (>>=) :: Maybe a -> (a -> Maybe b) -> Maybe b
+      (>>=) :: m a -> (a -> m b) -> m b
    \end{lstlisting}
    
    So, \lstinline|>>=| operator takes as first input a Monad containing type \lstinline|a| (a ``monadic value \lstinline|a|'') and, as second input, a first-order function taking as input \lstinline|a| and returning a Monad containing type \lstinline|b|.
@@ -228,20 +228,39 @@ instance  Monad Maybe  where
 \subsection{...containers}
 
 The monadic constructor can be seen as a container:
-let’s see this for \lstinline|lists|
+let’s see this for \lstinline|lists|.
+{Lists in Haskell are monads because they model non-deterministic computations:\ns
+\begin{itemize}
+	\item A single value in the monadic context ([x]) represents a single result.
+	\item A list of values in the monadic context ([x1, x2, x3]) represents multiple possible results.
+\end{itemize}}
+We can see that lists behave like monads by implementing the \lstinline|Monad| type class for lists, i.e. defining the \lstinline|return| and \lstinline|>>=| functions for lists.
+\lstinline|return'| creates the monadic context (a list), while \lstinline|>>=-| chains computations.
+
+\note{Note that \lstinline|List| is in fact instance of  \lstinline|Monad|}
 
 \begin{lstlisting}
-   map :: (a -> b) -> [a] -> [b] -- seen. "fmap" for Functors
-   return :: a -> [a] -- container with single element
-   return x = [x]
-   concat :: [[a]] -> [a] -- flattens two-level containers
-      -- Example: concat [[1,2],[],[4]] = [1,2,4]
-   (>>=) :: [a] -> (a -> [b]) -> [b]
-   xs >>= f = concat(map f xs)
-      -- collect up all the results of f (which are lists)
-      -- and combine them into a new list
+   return' :: a -> [a] -- container with single element
+   return' x = [x]
+   (>>=-) :: [a] -> (a -> [b]) -> [b]
+   xs >>=- f = concat'(map' f xs)
+   
    -- Exercise: define map and concat using bind and return
+   map' :: (a -> b) -> [a] ->  [b] -- seen. "fmap" for Functors
+   -- (return . f) x = return (f x) = [f x]
+   map' f xs = xs >>=- (return' . f)
+   concat' :: [[a]] -> [a] -- flattens two-level containers
+   concat' [] = []
+   concat' (xs:xss) = xs ++ concat' xss
+   
+   -- concat' :: Foldable t => t [a] -> [a]
+   -- concat' xss = foldr (++) [] xss
 \end{lstlisting}
+
+Also \lstinline|Maybe a| is a \textit{container} for zero or one value (used for computations that might fail).
+Also \lstinline|IO a| is instance of \lstinline|Monad|, and may be seen as a container for computations involving side effects: you can think of the computation as ``contained'' until it gets executed.
+\lstinline|Either a b| is a container for a value \lstinline|Right b| or an error \lstinline|Left a|.
+Lists instead somehow encapsulate ``multiple results'', or ``non-deterministic computations''.
 
 \subsection{... computations}
 
@@ -261,7 +280,7 @@ Given \lstinline|f: a -> m b|, computation \lstinline|x >>= f| runs \lstinline|x
    \lstinline|x >> y = x >>= (\_ -> y)|
 }
 
-return, bind and then define basic ways to compose computations.
+\lstinline|return|, \lstinline|bind| and \lstinline|then| define basic ways to compose computations.
 They are used in Haskell libraries to define more complex composition
 operators and control structures (sequence, for-each loops, \dots).
 If a type constructor defining a library of computations is monadic, one
@@ -332,8 +351,8 @@ for instance:
    res = putchar 'x' + putchar 'y'
 \end{lstlisting}
 Seems easy right?
-Well, in fact no, because in lazy languages like Haskell,
-the evaluation order is \textbf{undefined};
+Well, in fact no, because \ul{in lazy languages like Haskell,
+the evaluation order is \textbf{undefined}};
 so, in the previous example, which char will be printed first, \lstinline|x| or \lstinline|y|?
 The answer is not trivial for Haskell.
 However it is not an impossible problem.
@@ -526,7 +545,7 @@ thus, claims that Haskell is type safe are valid only when \lstinline|unsafePerf
    return.
    \item IO actions are first-class.
    They can be passed to functions, returned from functions, and
-   stored in data structures; so, it is easy to define new "glue" combinators.
+   stored in data structures; so, it is easy to define new ``glue'' combinators.
    \item The IO Monad allows Haskell to be pure while efficiently
    supporting side effects.
    \item The type system separates the \textit{pure} from the \textit{effectful} code.

@@ -44,9 +44,7 @@ converted into a generated static function
    }
 \end{lstlisting}
 
-
-\ul{But what \textbf{type} should be generated for this function? How
-should it be called? What class should it go in?}
+\ul{But what \textbf{type} should be generated for this function? How should it be called? What class should it go in?}
 
 \subsection{Functional Interfaces}
 
@@ -94,7 +92,7 @@ interface Iterable<T>{ //java.lang
 Lambdas could, in principle, be compiled as instances of anonymous inner classes, but there is no default strategy for compiling lambdas indicated in neither JLS8 nor JVMS8. The compiler can choose to compile them as anonymous inner classes, or it can choose to use \lstinline|invokedynamic| to implement them, as it is usually done nowdays.
 
 \subsubsection{Default Methods}
-Adding new abstract methods to interfaces breaks existing implementations of such interface.
+Adding new abstract methods such as \lstinline|sort()|, \lstinline|removeIf()|, \lstinline|forEach()|, etc. to interfaces breaks existing implementations of such interface (e.g. \lstinline|List|).
 To avoid this, Java 8 introduced \textit{default methods} in interfaces, which are methods with a body that can be overridden by implementing classes,
 enforcing backward compatibility with existing solutions.
 

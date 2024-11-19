@@ -1,5 +1,5 @@
 \chapter{JVM}
-\section*{25 - Settembre}
+% \section*{25 - Settembre}
 \section{Runtime System}
 Every language defines and \textbf{execution model}, which is (partially) implemented by a \textbf{runtime system},
 providing runtime \textbf{support} needed by both \textit{compiled} and \textit{interpreted} programs.
@@ -53,8 +53,8 @@ The \textbf{Java Runtime Environmnet} includes \textbf{JVM} and \textbf{JCL} (\t
 
 \section{JVM}
 \textbf{JVM} is an \textit{abstract} machine, defined by the documentation,
-which \texttt{omits implementation details} on stuff like memory layout of runtime data area, garbage-collection, internal optimization, and even the representation of the \lstinline{null} constant.
-The JVM specification, instead, defines precisely a machine indipendent \textit{"class file format"} that all JVM implementations must support;
+which \ul{\textit{omits implementation details}} on stuff like memory layout of runtime data area, garbage-collection, internal optimization, and even the representation of the \lstinline{null} constant.
+The JVM specification, instead, defines precisely a machine indipendent \textit{``class file format''} that all JVM implementations must support;
 it also imposes strong \textbf{synctatic} and \textbf{structural constraints} on the code in a class file.
 \nl
 
@@ -72,7 +72,7 @@ The \textbf{operand stack} is used to:
 \end{center}
 
 \subsection{Data types}
-\lstinline{.class} file are platform independent external represantions, which are represented internally by the JVM using simpler data types, which are implementation dependent.
+\lstinline{.class} file are platform independent external representations, which are represented internally by the JVM using simpler data types, which are implementation dependent.
 \begin{itemize}
     \item \textbf{Primitive types}
     \begin{itemize}
@@ -108,14 +108,17 @@ JVM doesn't pose strong implementation constraints by defining a precise abstrac
 
 \subsection{per-thread Data Areas}
 \begin{itemize}
-    \item \textbf{pc} pointer to next instruction in \textit{method area}
-    \note{\textit{undefined }if current method is \textit{native}. When a native function is invoked, execution continues using the native stack. However, a native function, can invoke a Java method, in which case the pc is set to the first instruction of the invoked method, in Java stack.}
+    \item \textbf{pc} pointer to next instruction in \textit{method area}\\
+    \textit{undefined }if current method is \textit{native}. When a native function is invoked, execution continues using the native stack. However, a native function, can invoke a Java method, in which case the pc is set to the first instruction of the invoked method, in Java stack.
+    
     \item \textbf{Java stack}: stack of \textit{frames} (or \textit{activation records)}
-    \item \textbf{Native stack}: used for invocation of natve functions through the \textit{Java Native Interface} (\textit{JNI})
+    \item \textbf{Native stack}: used for invocation of natve functions through the \textit{Java Native Interface} (\textit{JNI})\\
+    Native methods are written in languages like C or C++ and invoked from Java code using the Java Native Interface (JNI).\\
+    They are used, for instance, by \texttt{java.lang.System}, \texttt{java.io.File}, \texttt{java.nio.channels.Selector}, and others. In general they are exploited for I/O operations, Thread management (thread creation may be performed at OS level), and networking (\texttt{java.net}).
 \end{itemize}
 
 \subsubsection{Frames}
-Considering the \textbf{structure} of \textbf{frames}, each one is composed by:
+{Considering the \textbf{structure} of \textbf{frames}, each one is created upon method invocation, and  is composed by:\ns
 \begin{itemize}
     \item \textbf{Local Variable Array} (32 bits) containing:
     \begin{enumerate}
@@ -125,7 +128,7 @@ Considering the \textbf{structure} of \textbf{frames}, each one is composed by:
     \end{enumerate}
     \item \textbf{Operand stack}
     \item Reference to \textbf{Constant Pool} of current class
-\end{itemize}
+\end{itemize}}
 
 Differently from C/C++, where the \textbf{linking} phase is done before running an executable,
 java computes linking \textbf{dynamically} at \textbf{runtime};
@@ -148,7 +151,7 @@ Memory for objects never deallocated
     \item Code cache for JIT
 \end{itemize}
 
-\textit{Just In Time} (JIT) compilation refers to profiling as "hot" code areas of bytecode which may be executed many times, and storing the compiled native code in a cache in the \textit{Non-heap} memory.
+\textit{Just In Time} (JIT) compilation refers to profiling as ``hot'' code areas of bytecode which may be executed many times, and storing the compiled native code in a cache in the \textit{Non-heap} memory.
 
 \subsubsection{Method-area}
 Here \lstinline{class} files are loaded.
@@ -165,7 +168,7 @@ For each class a classloader reference and the following info from the \lstinlin
 This should a \textbf{permanent} area of the memory, but it may be \textbf{edited} when a new class is loaded or when a symbolic link is resolved by dynamic linking.
 
 
-\section*{26 - Settembre}
+% \section*{26 - Settembre}
 \subsubsection{Constant Pool}
 Contains constants and symbolic references for dynamic binding.
 It is possible to see the constant pool of a compiled \lstinline{.class} file using the command:
@@ -214,25 +217,38 @@ Displaying something resembling to:
 
 \end{paracol}
 
+Recall that \ul{variables are \textbf{not} here}.
+\begin{itemize}
+    \item \textbf{Local} variables and method \textbf{parameters} are in the \textbf{local variable array} of the current frame
+    \item \textbf{Class} variables (\texttt{static} fields) are in the method area 
+    \item \textbf{Instance} variables are in the heap as part of the object instance
+\end{itemize}
+
 \subsection{Loading}
 \textbf{Loading} is finding the binary representation of a class or interface type with a given name and creating a class or interface from it.\\
-Class (or Interface) $C$ creation is \textit{triggered} by other classes \textbf{referencing} $C$ or by methods (e.g. reflection).
+Class (or Interface) $C$ creation is \textit{triggered} by other classes \textbf{referencing} $C$ or by methods (e.g. reflection\footnote{This contributes to the performance footprint of reflection, discussed later in Sec. \ref{sec:reflection_drawbacks}}).
 If not previously loaded, \lst{loader.loadClass} is invoked.
 \nl
 
-There are 4 \textbf{Classloaders}:
+{There are 4 \textbf{Classloaders}:\ns
 \begin{enumerate}
-    \item \textbf{Bootstrap CL}: loads basic Java APIs
-    \item \textbf{Extension CL}: loads classes from standard Java extension APIs
-    \item \textbf{System CL}: loads application classes from \textit{classpath} 
-    \note{(default application CL)}
-    \item \textbf{User Defined CLs}: can be used for:
+    \item \textbf{Bootstrap CL}: loads basic Java APIs, located in \texttt{JAVA\_HOME/jre/lib}
+    \item \textbf{Extension CL}: loads classes from standard Java extension APIs, in \texttt{JAVA\_HOME/lib/ext}
+    \item \textbf{System CL}: loads application classes specified by the \textit{-classpath} option or \texttt{CLASSPATH} environment variable.
+    \item \textbf{User Defined CLs} may be implemented by extending the ClassLoader class, and can be used for:
     \begin{itemize}
         \item runtime classes reloading
         \item loading network, encrypted files or on-the-fly generated classes
         \item supporting separation between different groups of loaded classes as required by web servers
     \end{itemize}
-\end{enumerate}
+\end{enumerate}}
+
+{The process spreads onto three steps:\ns
+\begin{enumerate}
+    \item \textbf{Loading}: read the class file and convert it into a \lstinline|Class| object
+    \item \textbf{Linking}: verification, preparation, and resolution
+    \item \textbf{Initialization}: the class's static initializers and static fields are initialized
+\end{enumerate}}
 
 \subsubsection{Runtime Constant Pool}
 
@@ -251,12 +267,12 @@ There are 4 \textbf{Classloaders}:
 \end{itemize}
 
 \subsection{Linking}
-\textbf{Linking} includes \textit{verification, preparation, resolution}.
+\ul{\textbf{Linking} includes \textit{verification, preparation, resolution}}.
 \begin{enumerate}
-    \item \textbf{Verification} multiple checks at runtime, e.g. operand stack under/overflows, validity of variable uses and stores, validity arguments type.
+    \item \textbf{Verification} -  multiple checks at runtime, e.g. operand stack under/overflows, validity of variable uses and stores, validity arguments type.
     Details later on
-    \item \textbf{Preparation} Allocation of storage 
-    \item \textbf{Resolution}\footnote{Optional, it may be postponed till first use by an instruction} resolve symbol references by loading referred classes/interfaces
+    \item \textbf{Preparation} -  Allocation of storage (for \texttt{static} fields) 
+    \item \textbf{Resolution} - \footnote{Optional, it may be postponed till first use by an instruction} resolve symbol references by loading referred classes/interfaces
 \end{enumerate}
 
 \textbf{Verification} is a relevant part of JVM Specification, it is described in 170pp over a total of ~600pp.

@@ -59,6 +59,8 @@ allowing the semantic value of \lstinline|iterator| to change according to the c
 Typically iterators are implemented as \lstinline|struct| and provide a visit of the container,
 retaining information about the \textbf{state} of the visit, e.g. pointer to next element, remaining elements, and so on.
 Note that in case of \textit{trees} or \textit{graphs} the visit's state may not be trivial to be represented.
+Trees ---for instance--- could be visited in \textit{pre-order} (\texttt{\ul{N},L,R}), \textit{in-order} (\texttt{L,\ul{N},R}), \textit{post-order} (\texttt{L,R,\ul{N}}) or \textit{level-order} (BFS).
+\note{In the \textit{reversed} versions, the order of the children is reversed, so right subtree first, and then the left one.}
 \begin{lstlisting}
   template <class T>
   struct v_iterator {
@@ -115,7 +117,7 @@ there is no \textit{random access} iterator on \textit{lists}.
 \subsection{Invalidation}
 When a container is \textit{modified},
 iterators \textit{may} become \textbf{invalid}:
-no "exception" is thrown,
+no \textit{exception} is thrown ---as it happens in Java with \lstinline|ConcurrentModificationException|---,
 iterators can still be used,
 but their behaviour is \textbf{undefined}.
 \textit{\textbf{Not} every operation} invalidates iterators,
@@ -131,7 +133,7 @@ thus, if it is needed to access the organization of the container (e.g. tree cus
 
 \subsection{Inheritance}
 STL relies on \lstinline|typedef|s combined with namespaces to
-implement genericity, the programmer always refers to \lstinline|container::iterator| to know the type of the iterator.
+implement genericity, the programmer always refers to\\ \lstinline|container::iterator| to know the type of the iterator.
 Note that there is \ul{no relation among iterators for different containers }(!), if not a semantically abstract one.
 The reason for this is \textbf{performance}: 
 without \textit{inheritance}, types are resolved at compile time and the compiler may produce better and optimized code.

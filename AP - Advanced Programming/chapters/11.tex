@@ -64,7 +64,7 @@ Functional programming languages such as \textit{Lisp, Scheme, FP, ML, Miranda} 
 \vspace{\fill}
 \switchcolumn
 \vspace{\fill}
-\labelitemize{Other types}{
+\labelitemize{\textit{Other types}}{
    \begin{itemize}[label=$\circ$]
       \item Patterns
       \item Declarations
@@ -196,7 +196,7 @@ note that \textbf{Indendation} in case statement \textit{MATTERS}
 \subsection{Function Types}
 \lstinline{f :: A -> B} means that:
  \begin{align*}
-   \forall x \in A & f(x) =
+   \forall x \in A \quad & f(x) =
    \begin{cases}
       \exists y = f(x) \in B \\
       \textit{run forever}
@@ -301,8 +301,9 @@ And can be applied in the following way
 \end{lstlisting}
 
 reduce (\lstinline|foldl|,\lstinline|foldr|): takes a collection, an initial value,
-and a function, and combines the elements in the
+and a binary (two inputs) function , and combines the elements in the
 collection according to the function.
+Note also that the output  type \lstinline|b| does not necessarily match the input type \lstinline|a| of the initial list, so we can mess around quite a bit \smiley.
 
 \begin{lstlisting}
 -- folds values from end to beginning of list
@@ -318,7 +319,35 @@ foldr1 :: Foldable t => (a -> a -> a) -> t a -> a
 foldl1 :: Foldable t => (a -> a -> a) -> t a -> a
 \end{lstlisting}
 
-Let's provide some examples:
+\begin{paracol}{2}
+   
+   Let's provide some examples:
+   \begin{lstlisting}
+      sum = foldr (+) 0
+      and = foldr (&&) True
+      or = foldr (||) False
+      length = foldr (\x -> (+) 1) 0
+      length' = foldr (const $ (+) 1) 0 
+      -- Here we use const to ignore the first argument
+      
+      map = foldr ((:) . f) []
+   \end{lstlisting}
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/fold.png}
+      \caption{
+         The difference between \lstinline|foldl| and \lstinline|foldr| is that the accumulator and element are swapped in the function passed, and that the order of the elements is reversed.
+      }
+      \label{fig:fold}
+   \end{figure}
+
+\end{paracol}
+With \lstinline|foldr| we start from the end of the list (we actually recursively go there), and we build up the result from the rightmost element to the leftmost one.
+With \lstinline|foldl| instead we start from the beginning of the list and we build up the result from the leftmost element to the rightmost one.
+
 \begin{lstlisting}
    sum' :: (Num a) => [a] -> a
    sum' xs = foldl (\acc x -> acc + x) 0 xs
@@ -381,7 +410,7 @@ Despite this, it provides a more efficient variant of foldl called \lstinline|fo
 \textit{Strictly} means that the compiler evaluates the accumulator at \textit{each step} of the folding process, ensuring that intermediate values are not built up as \textit{unevaluated thunks} i.e. Haskell's term for delayed computations.
 Due to its \textit{strictness} \lstinline|fold'| is less likely to cause \textbf{space leaks} (see note below), and it generally has better performance for many common folding operations.
 
-\note{\textbf{"Space leaks"} may happen when a program retains references to data that should no longer be needed, preventing the garbage collector from reclaiming memory. 
+\note{\textbf{``Space leaks''} may happen when a program retains references to data that should no longer be needed, preventing the garbage collector from reclaiming memory. 
 This can lead to inefficient memory usage and, in some cases, cause the program to run out of memory.
 This (generally) occurs only when handling large data sources or \textit{infinite data structures} (which are allowed in Haskell);
 space leaks may be very hard to debug,

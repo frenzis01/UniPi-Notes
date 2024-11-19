@@ -1,6 +1,8 @@
 \chapter{Generics}
 \textbf{Generics} are an instance of \textit{Universal Polymorphism} with \textit{explicit parameters} (see Fig \ref{fig:polymorphism_classification}).
 
+Consider arrays, which are \textit{homogeneous} collections of elements. An \lstinline|Array| type can work for any type \lstinline|T| because its implementation doesn't depend on any type-specific behavior: \ul{the \texttt{Array} implementation is uniform across all types}.
+
 In fact they allow the same algorithm to be used with different types, which, however, must be explicitly declared.\\
 In other languages, such as Haskell, \textit{type inference} allows the compiler to deduce the type of the parameters without the need for explicit declaration, implementing \textit{implicit} polymorphism.
 \begin{paracol}{2}
@@ -62,7 +64,6 @@ Unlike C++ where \textit{overloading} is resolved and can \textbf{fail} after
 instantiating a template, in Java \textbf{type checking} ensures that
 overloading will succeed.
 
-\newpage
 \section{Inheritance and Arrays}
 \subsection{SubTyping (Inheritance)}
 There are two major issues which came up along with generics.
@@ -206,7 +207,7 @@ Wildcards improve type-safety, allowing a program to fail at \textit{compile-tim
 \begin{lstlisting}
 List<Apple> apples = new ArrayList<Apple>();
 List<? extends Fruit> fruits = apples;
-fruits.add(new Strawberry()); // COMPILING FAILS
+fruits.add(new Strawberry()); // COMPILING FAILS :)
 \end{lstlisting}
 
 % \section*{17 - Ottobre}

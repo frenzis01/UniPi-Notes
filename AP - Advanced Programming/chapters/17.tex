@@ -41,7 +41,7 @@ A framework embodies some \textit{abstract design}, with
 more behavior built in.
 In order to use it you need to insert your behavior into various places in the framework either by subclassing or by plugging in your own classes,
 then 
-the framework’s code, which handles the program's \textbf{control flow} (the "\texttt{main} execution"), then calls your code at these points.\\
+the framework’s code, which handles the program's \textbf{control flow} (the ``\texttt{main} execution''), then calls your code at these points.\\
 This realizes a very general concept, emphasizing \textbf{inversion of
 control} as opposed to libraries,
 where the user's code calls the library one,
@@ -71,10 +71,10 @@ While an \texttt{IDE} can support several frameworks
 } 
 
 \subsection{Features}
-Consist of \textbf{parts} that are found in many apps of that type
+Consists of \textbf{parts} that are found in many apps of that type
 \begin{itemize}
    \item \textbf{Libraries} with APIs (classes with methods etc.)
-   \item Ready-made extensible programs ("\textbf{engines}")
+   \item Ready-made extensible programs (``\textbf{engines}'')
    \item Sometimes also \textbf{tools} (e.g. for development, configuration,
    content)
 \end{itemize}
@@ -119,37 +119,29 @@ For examples \texttt{EJB} containers are responsible of the
 persistent storage of data and of the availability of
 \texttt{EJB}’s for all authorized clients.
 
-\section{Loosely Coupled Systems}
+\section{Dependency Injection}
 Good \textit{OO Systems} should be organised as
 a network of interacting objects,
 keeping in mind as a goal to have \textit{high \textbf{cohesion}}, \textit{low \textbf{coupling}}.\\
-Low coupling has as key advantages
+{Low coupling has as key advantages\ns
 \begin{itemize}
    \item Extensibility
    \item Testability
    \item Reusability
-\end{itemize}
+\end{itemize}}
 
-\subsection{Dependecy Injection}
-When discussing \textbf{IoC} in Frameworks, \textit{"Control"} does not refer only to control flow, but also control over \textit{dependencies}, \textit{coupling}, \textit{configuration}.
+When discussing \textbf{IoC} in Frameworks, \textit{``Control''} does not refer only to control flow, but also \ul{control over \textit{dependencies}, \textit{coupling}, \textit{configuration}}.
+A component gives up control to a framework and agrees to play by some rules.
 
-We can make a few considerations on IoC with respect to dependencies:
-\begin{itemize}
-   \item something outside a component handles:
-   \begin{itemize}
-      \item configuration (properties)
-      \item wiring / dependencies (components)
-   \end{itemize}
-   \item component-oriented
-   \item removes coupling
-   \begin{itemize}
-      \item coupling of configuration and dependencies to the point of use
-      \item coupling of component to concrete dependent components
-   \end{itemize}
-   \item somewhat contrary to encapsulation
-\end{itemize}
+\ul{\textbf{Dependency Injection} (DI) is a design pattern for achieving Inversion of Control} (IoC), where the responsibility of creating and managing dependencies is moved from the objects themselves to an external system (often the framework).
 
-\section{Trade Monitor}
+
+In traditional programming, objects often create their dependencies manually using the \lstinline|new| keyword. This can lead to tightly coupled code, making testing, maintenance, and scaling more difficult. Dependency Injection reverses this by delegating the responsibility of dependency creation to an external mechanism.\\
+So, a class (consumer) requires certain objects (dependencies) to function properly, and instead of instantiating these objects directly, we have to are ``inject'' them into the class from the outside.
+
+In the following section we discuss an example of a \textit{TradeMonitor} class, and how to refactor it to use \textit{Dependency Injection}.
+
+\subsection{Trade Monitor}
 Let's discuss this example to see how all of this comes into practice.
 \begin{center}
    \textit{A trader wants that the system rejects trades when the exposure reaches a certain limit}
@@ -163,7 +155,7 @@ accessing \textit{current exposure} and \textit{exposure limit} from a \texttt{D
       int limit = limitDao.GetLimit(symbol);
       int exposure = limitDao.GetExposure(symbol);
       return (exposure + amount > limit) ? false : true;
-      }
+   }
 \end{lstlisting}
 How can we limit dependencies among the two components?
 \subsection{Interfaces - Refactoring 1}
@@ -234,7 +226,7 @@ However ote that an external \texttt{Assembler} sets up the registry.
    \end{itemize}
 }
 
-\section{Dependency Injection}
+\subsection{Different techniques}
 
 \begin{figure}[htbp]
    \centering
@@ -273,14 +265,13 @@ locator, besides, it is easier to find dependencies of component if \textit{Depe
 \end{center}
 
 \section{Designing Frameworks}
-Frameworks are normally implemented in an object-
-oriented language such as Java.
+Frameworks are normally implemented in an object-oriented language such as Java.
 It is important to learn to analyze a potential software family, identifying
 its possible common and variable aspects, and evaluating
 alternative framework architectures.
 \nl
 
-A possible idea is to start from a known divide-and-conquer algorithm such as:
+A possible idea is to start from a known divide-and-conquer algorithm such as the one in Lst. \ref{lst:divideandconquer_example} and try to generalize it to a framework.
 \begin{lstlisting}[label={lst:divideandconquer_example},caption={Example pseudocode of a Divide-and-Conquer algorithm}]
    function solve (Problem p) returns Solution { 
       if isSimple(p)
@@ -301,13 +292,15 @@ will be concrete algorithms of the \textit{family}.
 \subsection{Terminology}
 \begin{itemize}
    \item \textbf{Frozen Spot}\\
-   common (shared) aspect of the software family
+   common (shared) aspect of the software family, unmodifiable defined by the framework
    \item \textbf{Hot Spot}\\
-   variable aspect of the family
+   variable aspect of the family, defined by the user.
+   A hot spot is represented by a group of abstract \textit{\textbf{hook} methods}.
    \item \textbf{Template method}\\
-   concrete method of base (abstract) class implementing behavior common to all members of the family
-   \item A hot spot is represented by a group of abstract \textit{\textbf{hook} methods}.
-   \item A template method calls a \textit{hook method} to invoke a function that is specific to one family member {---}Inversion of Control{---}.
+   concrete method of base (abstract) class implementing behavior common to all members of the family, such as the \texttt{solve} method in the example
+   A template method calls a \textit{hook method} to invoke a function that is specific to one family member ---Inversion of Control---.
+   \item \textbf{Hook method}\\
+   abstract method of the base class, to be implemented by subclasses, such as \texttt{isSimple}, \texttt{simplySolve}, \texttt{decompose}, \texttt{combine} in the example
    \item A hot spot is realized in a framework as hot spot subsystem:
    \begin{figure}[htbp]
       \centering
@@ -409,31 +402,26 @@ algorithm.
 \newpage
 \subsubsection{Applying the \textit{Separation Principle}}
    The client delegates the hot spots to an object implementing the strategy.
-
    The implementations of \lstinline|DivCongStrategy| are similar to the previous case.
    
    \begin{lstlisting}
-public final class DivConqContext {
-   public DivConqContext(DivCongStrategy dc) {
-this.dc = dc;
-}
-
-public Solution solve (Problem p)
-{ Problem[] pp;
-if (dc.isSimple(p)) { return dc.simplySolve(p); }
-else { pp = dc.decompose(p); }
-Solution[] ss = new Solution[pp.length];
-for (int i = 0; i < pp.length; i++)
-{  ss[i] = solve(pp[i]); }
-return dc.combine(p, ss);
-}
-
-public void setAlgorithm(DivCongStrategy dc) {
-   this.dc = dc;
-   }
-   
-   private DivCongStrategy dc;
-   }
+      public final class DivConqContext {
+         public DivConqContext(DivCongStrategy dc) { this.dc = dc; }
+         
+         public Solution solve (Problem p) {
+             Problem[] pp;
+            if (dc.isSimple(p)) { return dc.simplySolve(p); }
+            else { pp = dc.decompose(p); }
+            Solution[] ss = new Solution[pp.length];
+            for (int i = 0; i < pp.length; i++)
+               {  ss[i] = solve(pp[i]); }
+            return dc.combine(p, ss);
+         }
+         
+         private DivCongStrategy dc;
+         public void setAlgorithm(DivCongStrategy dc) { this.dc = dc;}
+      
+      }
 \end{lstlisting}
 
 \begin{figure}[htbp]
@@ -480,7 +468,7 @@ multiple \textit{different implementations} for each hot spot.
       since it may represent the end of a left subtree visit, a right subtree visit or a root.}
 \end{enumerate}
 
-Let's identify possible \textbf{Hot Spots}, which have to be fixed in each element of the family.
+{Let's identify possible \textbf{Hot Spots}, which have to be fixed in each element of the family.\ns
 \begin{enumerate}
    \item Variability in the visit operation’s \textbf{action}:
    a function of the current node’s value and the accumulated result
@@ -490,9 +478,8 @@ Let's identify possible \textbf{Hot Spots}, which have to be fixed in each eleme
    \item Variability in the \textbf{tree navigation} technique. 
    Should support any access order.
    \note{not only left-to-right, depth-first, total traversals}
-\end{enumerate}
+\end{enumerate}}
 
-\newpage
 \section{Visitor Pattern}
 \begin{paracol}{2}
    \colfill
@@ -511,9 +498,9 @@ Let's identify possible \textbf{Hot Spots}, which have to be fixed in each eleme
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics[width=0.9\columnwidth]{images/visitorpattern_treecode.png}
-      \caption{Visitor Pattern applied to the BinTree visit}
-      \label{fig:visitorpattern_treecode}
+      \includegraphics[width=0.9\columnwidth]{images/visitorpattern_uml.png}
+      \caption{Visitor Pattern UML generic Diagram}
+      \label{fig:visitorpattern_uml}
    \end{figure}
 \end{paracol}
 
@@ -521,10 +508,16 @@ Even if in the \textit{Visitor} pattern, as in the \textit{Template Method} patt
 in the \textit{Visitor} pattern such classes are \textit{\textbf{intended}} to be used directly by \textit{clients},
 while in the \textit{Template Method} pattern they are \textit{\textbf{intended}} to be called by the \textit{Frozen Spots} inside the abstract class itself, not by \textit{clients}.
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/visitorpattern_treecode.png}
+   \caption{Visitor Pattern applied to the BinTree visit}
+   \label{fig:visitorpattern_treecode}
+\end{figure}
 \subsection{Wrap Up and Comparison}
 
 The \textbf{Visitor} Pattern
-consists of "Visitees" or "Hosts" and "Visitors". Hosts are objects within an object tree, and Visitors contain operations to be performed on these Hosts.
+consists of ``Visitees'' or ``Hosts'' and ``Visitors''. Hosts are objects within an object tree, and Visitors contain operations to be performed on these Hosts.
 
 Hosts expose an \texttt{Accept()} method, which takes a Visitor object, and Visitors expose a \texttt{Visit()} method which has an overload for each Host. When the \texttt{Accept()} method is called on the Host, and a Visitor passed, a \texttt{Visit()} method is called on the visitor.
 

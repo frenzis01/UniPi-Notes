@@ -17,7 +17,8 @@ Let's consider the properties of \textbf{Streams}, and we'll clearly see how the
    Stream operations are divided into \textbf{intermediate} 
    (\textit{stream-producing}) operations {---}which are \textit{always lazy}{---} and
    \textbf{terminal}
-   (\textit{value- }or \textit{side-effect-producing}) operations.
+   (\textit{value- }or \textit{side-effect-producing}) operations.\\
+   Intermediate operations such as \lstinline|map()| or \lstinline|filter()| are not provessed immediately, they instead create a \textit{pipeline} of operations holding the transformation logic that is only executed when a terminal operation (\lstinline|collect()|, \lstinline|forEach()|) is invoked.
    \item Possibly \textbf{unbounded}\\
    While collections have a \textit{finite size}, streams need \textit{not}.
    Short-circuiting operations such as \lstinline|limit(n)| or

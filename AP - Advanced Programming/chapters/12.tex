@@ -4,6 +4,9 @@ Due to Haskell's \textbf{laziness}, functions and data constructors don’t eval
 arguments until they need them.
 In several languages there are forms of lazy evaluations (\texttt{if-then-else}, shortcutting \texttt{\&\&} and \texttt{||}).
 
+Lambda calculus is a formal system in mathematical logic for expressing computation based on function abstraction and application using variable binding and substitution.
+Haskell is based on lambda calculus, and it is a \textbf{purely functional} language.
+
 \section{Syntax}
 
 \lstset{
@@ -38,6 +41,8 @@ First projection: $fst = \lambda x. \lambda y. x$.
 \subsection*{\texorpdfstring{\bm{$\beta $}}{}-Reduction}
 $\beta $-reduction, i.e. \textit{function application}, also called \textbf{redex}:
 \[(\lambda x.t)t' = t[t'/x]\]
+This basically consists of substituting $t'$ for $x$ in $t$. Another example may be 
+\lstinline|(lambda n.n * 2)7 -> 7*2|
 \labelitemize{
    \color{gray} \textit{Examples}
 }{
@@ -175,8 +180,8 @@ an expression passed as
 argument is bound to the formal parameter, but it is
 evaluated \textit{only if} its value is \textbf{needed}.
 Besides, 
-the argument is evaluated \textit{only} the \textbf{first time}, using
-the \textbf{memoization} technique: the result is saved and
+\ul{the argument is evaluated \textit{only} the \textbf{first time}, using
+the \textbf{memoization} technique}: the result is saved and
 further uses of the argument do not need to re-evaluate it.
 
 Combined with \textbf{lazy data constructors}, this allows to
@@ -196,7 +201,7 @@ $a$ is an \texttt{l-value} denoting a location, while $b$ is any syntactically c
 \begin{itemize}
    \item \textbf{Value model}: $b$ value is copied into the location of $a$.
    \note{Most imperative languages use this model.}
-   \item \textbf{Reference model}: a reference -to the location of- $b$ is copied onto $a$. TThis results in shared data values via multiple references.
+   \item \textbf{Reference model}: a reference -to the location of- $b$ is copied onto $a$. This results in shared data values via multiple references.
    \note{Haskell, LISP, ML, Scheme, and Smalltalk use this model.}
    \item[-] Java uses the value model for built-in types and the reference model for class instances
    \item[-] C\# uses value model for value types, reference model for reference types

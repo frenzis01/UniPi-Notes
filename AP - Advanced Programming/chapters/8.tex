@@ -40,7 +40,7 @@ class Box<T,V> {
 
 When PM is taken into account, it is crucial to consider when happens the \textbf{binding} between a function name and the actual code to be executed:
 \begin{itemize}
-    \item compile time; \textit{static/early binding}
+    \item compile time; \textit{early/static binding}
     \item linking time
     \item execution time; \textit{late/dynamic binding}
 \end{itemize}
@@ -151,11 +151,11 @@ However, among ---some--- objects, Java \textbf{autoboxing} and unboxing is allo
 
 In Java there is also \textbf{upcasting} and \textbf{downcasting}, which allow coercion between superclass and subclass types.
 \begin{lstlisting}
-Dog dog = new Dog();
-Animal animal = dog; // Upcasting
-...
-Animal animal = new Dog();
-Dog dog = (Dog) animal; // Downcasting
+    Dog dog = new Dog();
+    Animal animal = dog; // Upcasting
+    ...
+    Animal animal = new Dog();
+    Dog dog = (Dog) animal; // Downcasting
 \end{lstlisting}
 
 \begin{lstlisting}[caption={Other examples of coercion in Java},captionpos=t]
@@ -246,7 +246,7 @@ Complex cc = sqr(c); // legal and produces a function "Complex sqr(Complex x) {.
 \end{lstlisting}
 
 It is important to check for type ambiguosity;
-in the following example, it is highlighted a case where it's not clear whether it is \lstinline{i} to be converted to \lstinline{long} or \lstinline{m} to \lstinline{i}.
+in the following example, it is highlighted a case where it's not clear whether it is \lstinline{i} to be converted to \lstinline{long} or \lstinline{m} to \lstinline{int}.
 \begin{lstlisting}
 template <class T>
 T GetMax(T a, T b) {  return (a > b) ? a : b; }

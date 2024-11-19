@@ -1,5 +1,5 @@
 \chapter{Introduction}
-\section*{19 - Settembre}
+% \section*{19 - Settembre}
 \subsection*{Info and Contact}
 % Ricevimento Lunedì 14:30 - 16:00/16:30
 
@@ -7,11 +7,11 @@
 % \href{http://didawiki.di.unipi.it/doku.php/magistraleinformaticanetworking/ae/ae2023/start}{Didawiki Corso}
 \section{Introduction}
 \subsection{Framework}
-A software \textbf{framework} is a collection of common code providing generic functionality that can selectively overryidden or specialized by user code prvoiding specific functionality.
+A software \textbf{framework} is a collection of common code providing generic functionality that can selectively overridden or specialized by user code providing specific functionality.
 
-When using \textit{framworks} htere is an \textbf{inversion of control}.
+When using \textit{frameworks} there is an \textbf{inversion of control}.
 Differently from what happens when using libraries,
-the program-flow is dictated by the framework, not the caller.
+the program-flow is dictated by the framework, not by the caller.
 
 \subsection{Design Patterns}
 A \textbf{design pattern} is a general reusable solution to a commonly occurring problem within a given context in software design. 
@@ -24,20 +24,20 @@ A design pattern is characterized by:
 	\item \textbf{Solution} - It must resolve all \textit{forces}
 \end{itemize}
 
-\section*{20 - Settembre}
-Useful tool, to see preprocessor output, compiling, ecc.
+% \section*{20 - Settembre}
+% Goldbolt is a useful tool, to see preprocessor output, compiling, ecc.
 \subsection{Programming Languages}
 A \textbf{PL} is defined via \textbf{syntax}, \textbf{semantics} and \textbf{pragmatics}\footnote{the way in which the PL is intended to be used in practice}.
 \subsubsection{Syntax}
 Used by the compiler for \textit{scanning} and \textit{parsing}.
 The \textit{lexical} grammar defines the syntax of token (e.g. "for" blocks, constants)
 \subsubsection{Semantics}
-Semantics might be described using natural language, which even if precise, allows amibguousity.
-Formal approches to semantics definition are:
+Semantics might be described using natural language, which even if precise, allows ambiguousity.
+\textbf{Formal} approches to semantics definition are:
 \begin{enumerate}
-    \item Denotational - Mapping every syntactic entity with a mathematical entity
-    \item Operational - Defining a computation relation in a form $e \Rightarrow v$, where $e$ is a program
-    \item Axiomatic - Based on Hoare-triples $\textit{Precondition} \wedge \textit{Program}\Rightarrow \textit{Postcondition}$ 
+    \item \textit{Denotational} - Mapping every syntactic entity with a mathematical entity
+    \item \textit{Operational} - Defining a computation relation in a form $e \Rightarrow v$, where $e$ is a program
+    \item \textit{Axiomatic} - Based on Hoare-triples $\textit{Precondition} \wedge \textit{Program}\Rightarrow \textit{Postcondition}$ 
 \end{enumerate}
 However, they rarely scale to fully-fledged programming languages.
 \subsubsection{Pragmatics}
@@ -153,8 +153,7 @@ which increases \textit{Portability} and \textit{Interoperability}.
 	    \end{itemize}
 	\item Interpretation facilitates interactive debugging and testing
 	    \begin{itemize}
-		    \item Interpretation leads to better diagnostics of a programming
-		    \item roblem
+		    \item Interpretation leads to better diagnostics of a programming problem
 		    \item Procedures can be invoked from command line by a user
 		    \item Variable values can be inspected and modified by a user
 	    \end{itemize}
