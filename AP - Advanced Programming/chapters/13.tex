@@ -508,9 +508,10 @@ it is:
 \subsection{\texttt{Functor}}
 This pattern can be captured in a constructor
 class \lstinline|Functor|. 
-A \textbf{constructor class} is simply a type class where
+We can think of a functor as a type of container where we are permitted to apply a single function to every object in the container.
+\ul{A \textbf{constructor class} is simply a type class where
 the predicate is over a type constructor rather
-than on a type:
+than on a type}:
 \begin{lstlisting}
    class Functor g where
       fmap :: (a -> b) -> g a -> g b

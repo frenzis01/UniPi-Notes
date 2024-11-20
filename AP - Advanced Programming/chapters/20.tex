@@ -103,7 +103,7 @@ with the third that allows multiline strings (\textit{cool!}).
 
 \begin{paracol}{2}
    \colfill
-   Lists, since they are \textbf{mutable}, support some specific operators \lstinline|append(),insert(),extend(),index(),count(),remove(),sort()...| 
+   Lists, since they are \textbf{mutable}, support some specific operators \lstinline|append()|, \lstinline|insert()|, \lstinline|extend()|, \lstinline|index()|, \lstinline|count()|, \lstinline|remove()|, \lstinline|sort()|\dots 
    
    Lists also support \textbf{List Comprehension} pretty similarly to Haskell, allowing also filtered and nested comprehensions.
    
@@ -279,7 +279,7 @@ and may include \textit{measuring execution time}, caching \textit{intermediate 
 \end{lstlisting}
 
 \note{Decorators exploit Python higher-order
-features:
+features:\ns
 \begin{itemize}
 	\item Passing functions as argument
 	\item Nested definition of functions
@@ -417,7 +417,6 @@ A \textbf{class} is a \textit{blueprint} for a new data type with specific inter
       ...
       <statement-n>
 \end{lstlisting}
-\newpage
 \begin{paracol}{2}
    
    \colfill
@@ -426,6 +425,8 @@ A \textbf{class} is a \textit{blueprint} for a new data type with specific inter
    namespace; 
    Python's visibility rules make all names of the class \textit{visible}.
    \colfill
+
+   \switchcolumn
 
    \begin{lstlisting}
       class Point:
@@ -496,17 +497,17 @@ The two \lstinline|move()| invocations result in different behaviours
 \subsection{Overloading and Inheritance}
 
 \begin{paracol}{2}
+   A class may overload the default python operators \lstinline|+,-,in, ...|,
+   by defining methods like \lstinline|__sub__(self, other),| \lstinline|__add__(self, other),...|.
+   Besides, by overloading the \lstinline|__str__| method, the class can define its own string representation.
    \switchcolumn
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/python_overloading.png}
+      \includegraphics[width=0.9\columnwidth]{images/python_overloading.png}
       \caption{Python overloading methods for operators}
       \label{fig:python_overloading}
    \end{figure}
 \end{paracol}
-A class may overload the default python operators \lstinline|+,-,in, ...|,
-by defining methods like \lstinline|__sub__(self, other),__add__(self, other),...|.
-Besides, by overloading the \lstinline|__str__| method, the class can define its own string representation.
 
 
 A class can be defined as a derived class, resulting in its namespace to be nested in the one of \lstinline|baseClass|, which is used as the next scope for non-local resolutions:  
@@ -520,12 +521,12 @@ Python supports \textbf{multiple inheritance}, i.e.
    class derived(baseClass1,baseClass2,...):
 \end{lstlisting}
 This induces the \textit{Diamond problem}, solved by an \href{https://www.python.org/download/releases/2.3/mro/}{algorithm that linearizes the set of all directly or indirectly inherited classes}, it is called \textbf{method resolution order}.
-When a class D is derived from B, and B is derived from A, and they all share a ---overridden--- method \lstinline|dothing()|, the MRO algorithm will establish the lookup order, which is \lstinline|D,B,A|.
+When a class D is derived from B, and B is derived from A, and they all share a ---overridden--- method \lstinline|do_thing()|, the MRO algorithm will establish the lookup order, which is \lstinline|D,B,A|.
 
 Note however that this may still lead to issues in case D is derived from (A,B) and B is derived from A, in which case the order would be \lstinline|D,A,B,A|, which is incosistent and leads to an MRO error.
 
 I found an interesting \href{https://stackoverflow.com/questions/56361048/what-is-the-diamond-problem-in-python-and-why-its-not-appear-in-python2}{suggested reading}
-on Stack Overfloe.
+on Stack Overflow.
 
 
 

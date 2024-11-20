@@ -32,7 +32,7 @@ A \textbf{PL} is defined via \textbf{syntax}, \textbf{semantics} and \textbf{pra
 Used by the compiler for \textit{scanning} and \textit{parsing}.
 The \textit{lexical} grammar defines the syntax of token (e.g. "for" blocks, constants)
 \subsubsection{Semantics}
-Semantics might be described using natural language, which even if precise, allows ambiguousity.
+Semantics are the meaning of the language constructs, they may be described using natural language, which even if precise, allows ambiguousity.
 \textbf{Formal} approches to semantics definition are:
 \begin{enumerate}
     \item \textit{Denotational} - Mapping every syntactic entity with a mathematical entity
@@ -78,9 +78,15 @@ $
 $   
 \end{center}
 
-\begin{center}
-\includegraphics[width=0.7\textwidth]{images/interpreter_structure.png}
-\end{center}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/interpreter_structure.png}
+    \caption{fetch-decode-execute cycle. \textit{``operands''} are the data to be processed} 
+    \label{fig:interpreter_structure}
+\end{figure}
+
+In Java, the \textit{Java Virtual Machine} is the \textit{Abstract Machine} for Java, and the Java language is the \textit{Machine Language} for the JVM.
+
 
 In computer science one of the main focuses is \textbf{abstraction}, and this applies also to the implementation of AMs, leading to an onion-like structure, or \textbf{hierarchical} structure,
 as can be seen in the scheme in \ref{fig:machines_hierarchy}.
@@ -114,8 +120,10 @@ as can be seen in the scheme in \ref{fig:machines_hierarchy}.
     \label{fig:am_pure_int.png}
 \end{figure}
 
-$M_L$ is interpreted over $M_O$.
-It isn't very efficient, mainly because of fetch-decode phases
+The source program L is executed by $M_L$.
+$M_L$ is not native to $M_O$; it is instead interpreted by $M_O$.
+$M_L$ is interpreted over $M_O$, so every instruction of $L$ corresponds into a sequence of instructions in $L_O$. Such decoding is not a proper ``translation'', because the code in $L_O$ corresponding to an instruction of $L$ is directly executed by the interpreter, it does not ``output'' a translated program.\\
+It isn't very efficient, mainly because of fetch-decode phases.
 
 \subsubsection{Pure Compilation}
 
@@ -128,8 +136,9 @@ It isn't very efficient, mainly because of fetch-decode phases
 
 $L$ programs are translated into $L_O$, the machine laguange of $M_O$,
 hence, $M_L$ is not realized at all and the programs are directly executed on $M_O$.\\
+The Compiler may be executed on a different abstract machine and still produce code for $M_O$, but this ain't mandatory.
 \textit{Compilation} is more efficient than \textit{Interpretation}, 
-but produced code is larger
+but produced code is larger.
 
 \subsubsection{Both}
 
@@ -141,9 +150,12 @@ but produced code is larger
 \end{figure}
 
 All real languages use both \textit{interpretation} and \textit{compilation}, the \textit{``pure''} cases are only limit cases.
+So we use an \textit{Intermediate Representation} (IR) to compile the code, and then interpret the IR.
+If IR is close to the source language, we say that we have a compiled implementation, otherwise we have an interpreted implementation.
 
 Some languages, e.g. Java, use an intermediate Abstract Machine, called a \textit{Virtual Machine},
 which increases \textit{Portability} and \textit{Interoperability}.
+Java compilers generate bytecode (\texttt{.class} files) that is interpreted by the Java virtual machine (JVM), meaning that the JVM reads the bytecode and executes the instructions one by one, translating them into native machine code on the fly. The JVM may translate bytecode into machine code by just-in-time (JIT) compilation.
 
 \begin{itemize}
 	\item Compilation leads to better performance in general

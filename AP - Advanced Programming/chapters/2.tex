@@ -60,13 +60,21 @@ it also imposes strong \textbf{synctatic} and \textbf{structural constraints} on
 
 The \textbf{JVM} is not \textit{register-based}, instead it is a \textit{multi-threaded \textbf{stack}\footnote{Not to be confused with the stack of activation records!} based machine}.
 Id est the JVM pops intructions from the top of \textbf{operand stack} of the current frame, and pushes their result on the top of the \textbf{operand stack}. 
-The \textbf{operand stack} is used to:
+{The \textbf{operand stack} is used to:\ns
 \begin{itemize}
     \item Pass arguments to functions
     \item Return results from a function
     \item Store intermediate values while evaluating expressions
     \item Store local variables
-\end{itemize}
+\end{itemize}}
+For instance, when a new variable is created the operand stack is used to store the value of the new variable. In case the variable is not a primitive, the operand stack stores a reference to the object, which gets stored in the heap.
+\begin{lstlisting}
+    int i = 5;
+    // becomes in Bytecode:
+    0: bipush      5    // used to add a byte as an integer to the operand stack, 
+                        // in this case 5 as added to the operand stack.
+    2: istore_0         // stores the value of the operand stack in the local variable array in position 0
+\end{lstlisting}
 \begin{center}
     \includegraphics[width=0.4\textwidth]{images/Java_hierarchy.png}
 \end{center}
@@ -169,6 +177,7 @@ This should a \textbf{permanent} area of the memory, but it may be \textbf{edite
 
 
 % \section*{26 - Settembre}
+\newpage
 \subsubsection{Constant Pool}
 Contains constants and symbolic references for dynamic binding.
 It is possible to see the constant pool of a compiled \lstinline{.class} file using the command:
@@ -235,7 +244,7 @@ If not previously loaded, \lst{loader.loadClass} is invoked.
     \item \textbf{Bootstrap CL}: loads basic Java APIs, located in \texttt{JAVA\_HOME/jre/lib}
     \item \textbf{Extension CL}: loads classes from standard Java extension APIs, in \texttt{JAVA\_HOME/lib/ext}
     \item \textbf{System CL}: loads application classes specified by the \textit{-classpath} option or \texttt{CLASSPATH} environment variable.
-    \item \textbf{User Defined CLs} may be implemented by extending the ClassLoader class, and can be used for:
+    \item \textbf{User Defined CLs} may be implemented by extending the \lstinline|ClassLoader| class, and can be used for:
     \begin{itemize}
         \item runtime classes reloading
         \item loading network, encrypted files or on-the-fly generated classes

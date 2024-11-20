@@ -57,7 +57,7 @@ A function \lstinline|f :: a -> Maybe b| is a partial function from
    So, \lstinline|>>=| operator takes as first input a Monad containing type \lstinline|a| (a ``monadic value \lstinline|a|'') and, as second input, a first-order function taking as input \lstinline|a| and returning a Monad containing type \lstinline|b|.
 
    \ul{Operator is called \textbf{bind} because it binds the result
-   of the left-hand action in the action on the right.}
+   of the left-hand action in the action on the right.}It chains computations while managing the context.
    \colfill
 
    \switchcolumn
@@ -262,6 +262,19 @@ Also \lstinline|IO a| is instance of \lstinline|Monad|, and may be seen as a con
 \lstinline|Either a b| is a container for a value \lstinline|Right b| or an error \lstinline|Left a|.
 Lists instead somehow encapsulate ``multiple results'', or ``non-deterministic computations''.
 
+\begin{lstlisting}[caption={\textit{``If I have a box of boxes of apples\lstinline| (m (m a))| then I can take the apples from each, and put them in a new box \lstinline|(m a)|.''} }]
+   join :: (Monad m) => m (m a) -> m a
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Bind operator in Haskell.}]
+   (>>=) :: (Monad m) => m a -> (a -> m b) -> m b
+   xs >>= f = join (fmap f xs) 
+       -- how we would get bind (>>=) in Haskell if it were join and fmap
+       -- that were chosen to be primitive
+\end{lstlisting}
+What bind \lstinline|>>=|does is to take a container of type \lstinline|(m a)| and a function of type \lstinline|(a -> m b)|. It first maps the function over the container, (which would give an \lstinline|m (m b)|) and then applies \lstinline|join| to the result to get a container of type \lstinline|(m b)|. 
+We can see it as \textit{``If I have a box of apples \lstinline|(m a)| and for each apple, you will give me a box of blueberries \lstinline|(a -> m b)| then I can get a box with all the blueberries together \lstinline|(m b)|''}
+
 \subsection{... computations}
 
 A value of type \lstinline|m a| may be seen as a ``computation returning a value of type a''.
@@ -284,7 +297,32 @@ Given \lstinline|f: a -> m b|, computation \lstinline|x >>= f| runs \lstinline|x
 They are used in Haskell libraries to define more complex composition
 operators and control structures (sequence, for-each loops, \dots).
 If a type constructor defining a library of computations is monadic, one
-gets automatically benefit of such libraries
+gets automatically benefit of such libraries.\\
+In other words, the point of recognising something as a monad is that we can use it in a generic way, with generic functions that work for all monads.
+
+\begin{lstlisting}[caption={Example of a simple IO computation}]
+   main :: IO ()
+   main = putStrLn "Enter a line of text:"
+            >> getLine >>= \x -> putStrLn (reverse x)
+   
+   -- or using do notation
+   main = do putStrLn "Enter a line of text:"
+          x <- getLine
+          putStrLn (reverse x)
+\end{lstlisting}
+
+We could also write a control structure \lstinline|sequence| which takes a list of computations and runs them in sequence, returning a list of results.
+\begin{lstlisting}
+   sequence :: (Monad m) => [m a] -> m [a]
+   sequence []     = return []
+   sequence (x:xs) = x >>= \v -> sequence xs >>= \vs -> return (v:vs)
+
+   sequence :: (Monad m) => [m a] -> m [a]
+   sequence []     = return []
+   sequence (x:xs) = do v <- x
+                        vs <- sequence xs
+                        return (v:vs)
+\end{lstlisting}
 
 Example: MAYBE
 \begin{itemize}

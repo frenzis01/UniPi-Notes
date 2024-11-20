@@ -465,6 +465,23 @@ fn main() {
 \end{lstlisting}
 
 \subsection{Traits}
+
+\begin{lstlisting}
+   trait Stack<T> {
+      fn new() -> Self;
+      fn is_empty(&self) -> bool;
+      fn push(&mut self, data: Box<T>);
+      fn pop(&mut self) -> Option<Box<T>>;
+   }
+
+   impl<T> Stack<T> for SLStack<T> { ...
+
+   // bounded polymorphism
+   fn generic_push<T, S: Stack<T>+Clone>(stk: &mut S,
+      data: Box<T>) {
+      stk.push(data);
+   }
+\end{lstlisting}
 \textbf{Traits} are equivalent to \textit{Type Classes} in Haskell and to \textit{Concepts} in
 C++20, similar to Interfaces in Java.
 A trait can include \textit{abstract} and \textit{concrete} (default)
