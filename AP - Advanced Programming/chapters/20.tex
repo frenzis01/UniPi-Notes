@@ -523,7 +523,14 @@ Python supports \textbf{multiple inheritance}, i.e.
 This induces the \textit{Diamond problem}, solved by an \href{https://www.python.org/download/releases/2.3/mro/}{algorithm that linearizes the set of all directly or indirectly inherited classes}, it is called \textbf{method resolution order}.
 When a class D is derived from B, and B is derived from A, and they all share a ---overridden--- method \lstinline|do_thing()|, the MRO algorithm will establish the lookup order, which is \lstinline|D,B,A|.
 
-Note however that this may still lead to issues in case D is derived from (A,B) and B is derived from A, in which case the order would be \lstinline|D,A,B,A|, which is incosistent and leads to an MRO error.
+\framedt{Diamond Problem}{
+   The \textit{Diamond Problem} is an ambiguity that arises in this scenario:\\
+   If B and C inherit from A, and D inherits from both B and C, and D calls a method defined in A, from which class is it inherited, B or C?
+
+
+}
+
+Note however that this may still lead to issues (not because of the Diamond Problem, it is different!) in case D is derived from (A,B) and B is derived from A, in which case the order would be \lstinline|D,A,B,A|, which is incosistent and leads to an MRO error.
 
 I found an interesting \href{https://stackoverflow.com/questions/56361048/what-is-the-diamond-problem-in-python-and-why-its-not-appear-in-python2}{suggested reading}
 on Stack Overflow.
