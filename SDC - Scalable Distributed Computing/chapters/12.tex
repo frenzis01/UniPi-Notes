@@ -9,7 +9,6 @@
 
 Transactions are clearly crucial in a distributed system, as they build a framework for allowing to maintain data consistency across multiple nodes.
 
-% // TODO lesson 12/11
 
 
 % Lesson 14/11
@@ -30,11 +29,20 @@ NoSQL databases.
     \item \textbf{Atomicity}: all operations in a transaction are executed successfully or none of them are.
     \item \textbf{Consistency}: the database is in a consistent state before and after the transaction.
     \item \textbf{Isolation}: the transaction is executed in isolation from other transactions.
+    \note{In other words, transactions appear to run serially}
     \item \textbf{Durability}: once a transaction is committed, the changes are permanent.
     \note{Perfect durability is unattainable}
 \end{itemize}
 
 These were coined by Jim Gray in 1983.
+
+\subsection{Durability}
+Durability is the property that ensures that once a transaction is committed, the changes are permanent.
+
+This is a mess to ensure and in general is not possible to guarantee, but it is possible to make it very unlikely that a transaction is lost.
+
+The issue is related to hardware faults, power outages, broken firmware, \dots
+Given the absence of a one-size-fits-all solution, typically the approach involves a combination of writing to disk, replicating to remote machines, and backups.
 
 \subsection{Single-Object and Multi-Object Transactions}
 If a transaction involves multiple objects, it is a multi-object transaction, which causes \textbf{performance} and \textbf{deadlock} issues.
@@ -43,11 +51,11 @@ If a transaction involves multiple objects, it is a multi-object transaction, wh
 Databases hide concurrency issues by providing transaction isolation.
 Isolation allows the application to pretend that no concurrency is happening.
 Serializable isolation guarantees that the transactions are executed in a serial order, which is the most strict isolation level.
-% // TODO check last sentence
 
 Serializable isolation comes with a performance cost which makes it less common in practice.
 Weaker isolation levels are common, but are harder to understand and may lead to subtle bugs.
 
+\section{Avoiding Transactions}
 \subsection{Read Committed}
 In Read Committed isolation level, a transaction can only read, and overwrite, committed data.
 This is the default isolation level in most databases.
@@ -75,7 +83,12 @@ This model is more reliable than Non-transactional models, but still allowing to
 
 Non-repeatable reads are possible in Read Committed isolation level, 
 
-
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/12/readcommitted_issue.png}
+   \caption{Read committed issue: Alice might think that her whole balance is 900, whilst it is 1000.}
+   \label{fig:12/readcommitted_issue}
+\end{figure}
 % \begin{definition}
 %    [Phantom Read]
 %    A \textbf{phantom read} occurs when a transaction reads a set of records that satisfy a certain condition, but when it reads the same records again, the set of records has changed.
@@ -86,3 +99,31 @@ Snapshot isolation is a more relaxed isolation level than serializable isolation
 In snapshot isolation, a transaction reads a snapshot of the database at the beginning of the transaction and writes to the database at the end of the transaction.
 
 The snapshot allows transactions to see all the data that was commited at the start of the transaction.
+
+% // TODO there is some other stuff about explicit locks, I'm not sure how important it is, the slides are a bit messed up
+
+\note{It is possible to use at databases some techniques for locking the database, using locks or atomic operations. 
+However it is costful}
+
+\section{Write Skew and Phantoms}
+
+\begin{paracol}{2}
+   
+   \begin{definition}
+      [Write Skew]
+      A \textbf{write skew} occurs when two transactions read the same data, then update ---possibly separate--- objects based on the read data, and then commit, causing a conflict.
+   \end{definition}
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/12/write_skew.png}
+      \caption{Both doctors read that \lstinline|currently_on_call >= 2| and ``leave the hospital'', causing no doctor to be on call \frownie.}
+      \label{fig:12/write_skew}
+   \end{figure}
+\end{paracol}
+
+There are some techniques to avoid write skew, such as using row locks or atomic operations, but we did not discuss them pretty much.
+
+
