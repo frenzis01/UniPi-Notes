@@ -33,10 +33,13 @@ This is also known in data-analysis as \textit{split-apply-combine}.
 
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/14/mapreduce_overview.png}
+   \includegraphics[width=0.4\columnwidth]{images/14/mapreduce_overview.png}
    \caption{MapReduce overview}
    \label{fig:14/mapreduce_overview}
 \end{figure}
+
+
+\newpage
 \section{Instatiating MapReduce}
 \begin{figure}[htbp]
    \centering
@@ -45,7 +48,27 @@ This is also known in data-analysis as \textit{split-apply-combine}.
    \label{fig:14/mapreduce_wordcount}
 \end{figure}
 
-% //TODO
+\begin{itemize}
+   \item One \texttt{JobTracker} to which client applications
+   submit MapReduce jobs
+   \item JobTracker pushes work to available \texttt{TaskTracker} nodes in the cluster keeping the work close to the data
+   \item With a \textbf{rack-aware} file system the \texttt{JobTracker} knows which node contains the data.
+   \note{If the work cannot be hosted on the actual node where the data resides, priority is given to nodes in the same rack}
+\end{itemize}
+
+If a \texttt{TaskTracker} fails or times out, that part of the job is rescheduled.
+
+A heartbeat is sent from the \texttt{TaskTracker} to the \texttt{JobTracker} every few minutes to check its status. The
+\texttt{JobTracker} and \texttt{TaskTracker} status and information can be viewed from a web browser.
+
+\subsection{Issues}
+The allocation of work to \texttt{TaskTracker}s is based on \textbf{slots}:
+every \texttt{TaskTracker} has a fixed number of slots for map tasks and reduce tasks, and the \texttt{JobTracker} allocates tasks to the \texttt{TaskTracker} based on the number of free slots.\\
+Hence there is no consideration concerning the actual workload of tasks, which may be heterogeneous, leading to an unbalanced workload amond the nodes.
+
+If even one node is slow, the whole job is slow, as the \texttt{JobTracker} waits for the slowest task to finish.
+\note{With speculative execution enabled, however, a single task can be executed on multiple
+slave nodes.}
 
 \section{Hadoop}
 Hadoop is an open-source framework for distributed storage and processing of large datasets. It allows to use frameworks such as MapReduce to process data across large clusters.
@@ -89,8 +112,9 @@ Hadoop has been the first widely used solution, but nowdays also other solutions
       \caption{Spark logo}
       \label{fig:14/spark_logo}
    \end{figure}
+   \switchcolumn
+   Spark is a fast and general-purpose cluster computing system. It provides high-level APIs in Java, Scala, Python, and R, and an optimized engine that supports general execution graphs. It also supports a rich set of higher-level tools including Spark SQL for SQL and structured data processing, MLlib for machine learning, GraphX for graph processing, and Spark Streaming (quite outdated, the updated version is \textit{``Spark structured streaming''}).
 \end{paracol}
-Spark is a fast and general-purpose cluster computing system. It provides high-level APIs in Java, Scala, Python, and R, and an optimized engine that supports general execution graphs. It also supports a rich set of higher-level tools including Spark SQL for SQL and structured data processing, MLlib for machine learning, GraphX for graph processing, and Spark Streaming (quite outdated, the updated version is \textit{``Spark structured streaming''}).
 
 \framedt{Lazy vs Eager evalutation}{
    \begin{definition}
@@ -130,6 +154,16 @@ Every Spark application consists of a \textit{driver} program running the \texti
 
 \note{Note that since an RDD is a single \textit{immutable} distributed collection of objects, it fits nicely in the functional programming paradigm.}
 
+\begin{paracol}{2}
+   \begin{lstlisting}[language=Python, caption={Creating an RDD}]
+      data = [1, 2, 3, 4, 5]
+      distData = sc.parallelize(data)
+      distFile = sc.textFile("data.txt")
+   \end{lstlisting}
+   \switchcolumn
+   RDDs may be created by parallelizing an existing collection in your driver program, or by referencing an external dataset such as a shared file system, HDFS, HBase, or any data source offering a Hadoop InputFormat.
+\end{paracol}
+   
 RDD can be persisted in memory, allowing it to be reused efficiently across parallel operations.
 \ul{RDDs automatically recover from node failures}.
 \note{RDDs can be created from Hadoop InputFormats (such as HDFS files) or by transforming other RDDs.}
@@ -149,6 +183,25 @@ When Spark runs a function in parallel as a set of tasks on different nodes, it 
    \item \textbf{Actions} - return a value to the driver program after running a computation on the dataset.
    When an action is called, Spark computes the result of the transformation chain.
 \end{itemize}}
+
+\begin{paracol}{2}
+   \begin{lstlisting}
+      lineLengths = lines.map(lambda s: len(s))
+      totalLength = lineLengths.reduce(lambda a, b: a + b)
+      # lineLengths gets consumed by the reduce
+      # we can instruct Spark to persist the RDD
+      # lineLengths.persist() # place before reduce
+
+   \end{lstlisting}
+   
+   \switchcolumn
+
+   \lstinline|lineLengths| holds the result of the \lstinline|map| \textbf{transformation}, which however is not computed instantaneously ---due to \textit{lazyness}---, and \lstinline|totalLength| holds the result of the \lstinline|reduce| \textbf{action}.
+   At this point, 
+   Spark breaks the computation into tasks to run on
+   separate machines, and each machine runs both its part of the map and a local reduction, returning only its answer to the driver program.
+\end{paracol}
+
 
 Note that being RDDs immutable allows for three key advantages:
 \begin{enumerate}
@@ -174,5 +227,3 @@ This is much simpler than setting up hadoop.
       print "%s: %i" % (word, count)
    sc.stop()
 \end{lstlisting}
-
-% // TODO Rack Awareness
