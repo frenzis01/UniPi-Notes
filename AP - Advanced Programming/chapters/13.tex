@@ -699,8 +699,26 @@ You cannot partially apply type constructors with more than one parameter direct
 
 \subsubsection{Rust}
 \label{sec:rust_hkt}
-Rust does not have HKT, but it has \textit{Traits}, which are similar to type classes in Haskell.
-We can mimick to some extent the behavior of \lstinline|Functor| in Rust using Traits, there is an \href{https://hugopeters.me/posts/14/}{article here displaying how}, but is a syntactic mess which I won't report here; below there is only the last part of the code, with the usage of this \lstinline|Functor| trait.
+Rust does not have HKT, but it has \textit{Traits}, which are similar to type classes in Haskell,
+however the most intuitive approach to implement a \lstinline|Functor| equivalent results in an error. In general Rust does not support higher-kinded types, so you cannot write a completely generic \lstinline|fmap| that works for arbitrary type constructors like \lstinline|Option|, \lstinline|Vec|, or \lstinline|Result|. You would need a separate \lstinline|Functor| implementation for each concrete type constructor. \frownie
+\begin{lstlisting}
+   impl<T> Functor for Option<T> {
+      type Item = T;
+  
+      // Error here, B is not acceptable, should be T
+      fn fmap<F, B>(self, f: F) -> Option<B>
+      where
+          F: FnOnce(Self::Item) -> B,
+      {
+          match self {
+              Some(x) => Some(f(x)),
+              None => None,
+          }
+      }
+  }
+\end{lstlisting}
+
+We however can mimick to some extent the behavior of \lstinline|Functor| in Rust using Traits, there is an \href{https://hugopeters.me/posts/14/}{article here displaying how}, but is a syntactic mess which I won't report here; below there is only the last part of the code, with the usage of this \lstinline|Functor| trait.
 \begin{lstlisting}[language=Rust]
    fn main() {
       let x = Some(5);

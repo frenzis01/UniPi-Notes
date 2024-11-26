@@ -526,8 +526,6 @@ When a class D is derived from B, and B is derived from A, and they all share a 
 \framedt{Diamond Problem}{
    The \textit{Diamond Problem} is an ambiguity that arises in this scenario:\\
    If B and C inherit from A, and D inherits from both B and C, and D calls a method defined in A, from which class is it inherited, B or C?
-
-
 }
 
 Note however that this may still lead to issues (not because of the Diamond Problem, it is different!) in case D is derived from (A,B) and B is derived from A, in which case the order would be \lstinline|D,A,B,A|, which is incosistent and leads to an MRO error.
