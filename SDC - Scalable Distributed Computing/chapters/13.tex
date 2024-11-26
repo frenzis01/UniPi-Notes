@@ -1,0 +1,49 @@
+\chapter{Big data}
+\label{chap:big_data}
+
+Distributed computing is the key to Big Data processoing, as it allows to \textit{split} huge tasks into smaller ones, \textit{parallely} execute them, \textit{aggregate} the results and provide a final output.
+
+\textbf{Horizontally scaling} is the key to Big Data processing, both from a Strong Scaling and Weak Scaling perspective (see \autoref{sec:weak_strong_scalability}).
+
+\section{MapReduce Framework}
+Google was a pioneer in Big Data processing, and introduced the MapReduce framework in 2004.
+It is a programming model and an associated implementation for processing and generating large data sets with a parallel, distributed algorithm on a cluster.
+
+\framedt{Hadoop}{
+   Initially BigData was built on top of Apache Hadoop, an open-source framework for distributed storage and processing of large datasets.
+
+   It allowed to used frameworks such as MapReduce to process data across large clusters.
+}
+
+
+\section{Infrastucture requirements}
+
+Not only powerful CPUs and GPUs are required, but also a \textbf{high-speed network} to allow for fast data transfer between nodes.\\
+This may come in many flavours and architectures, such as \textbf{Ethernet}, \textbf{Infiniband}, or \textbf{Myrinet}. Often RDMA (Remote Direct Memory Access) is used to reduce latency and CPU overhead.
+
+However, there is also the need for a distributed File System, to allow for a seamless and efficient way to manage and access data that is distributed across multiple machines or nodes in a network.
+
+We want also to \textbf{abstract over distributed data}, hiding the complexity of data distribution, allowing users and applications to access files with a \textbf{unified view} as if they were stored on a single machine, ultimately providing also \textbf{location transparency}, i.e. decoupling the physical location of data from its logical location.
+
+This does not refer to Fibre Channel or iSCSI, we are at a higher level of abstraction, where we want to provide a \textbf{file system interface} to the user, hiding the complexity of the underlying distributed storage.
+
+{There are different types of File Systems, each with its own characteristics and requirements:\ns
+\begin{itemize}
+   \item HPC FS - Latency is crucial here
+   \begin{itemize}
+      \item GlusterFS (Lustre) - High performance, POSIX compliant. Allows for almost linear (weak) scalability
+      \item BeeGFS - Offers high data transfer speeds and flexible scalability. In general more flexible than Lustre, and still is Open Source.
+   \end{itemize}
+   \item General Purpose FS
+   \begin{itemize}
+      \item NFS - Based on UDP
+      \item Ceph - Mostly used in cloud and virtualized environments.
+   \end{itemize}
+   \item Big Data FS - High throughput is crucial here
+   \begin{itemize}
+      \item HDFS (Hadoop Distributed File System) - High throughput, fault-tolerant, designed for large files\\
+      Its architectures mostly consists of \textit{NameNodes} and \textit{DataNodes}, where the former keeps metadata and the latter stores data and executes command.\\
+      \note{Hadoop, Based on HDFS, allows for distributed processing of large data sets across clusters of computers. Quite vintage.}
+   \end{itemize}
+   \item P2P FS - Decentralized, no central authority
+\end{itemize}}
