@@ -6,14 +6,23 @@
 
 \end{definition}
 
+The aims of replication are reducing latency, increasing availability, and scaling read throughput.
+However replication clearly poses some potential problems when handling changes to replicated data.
+{The possible approaches to replication are:\ns
+\begin{itemize}
+   \item single-leader,
+   \item multi-leader, and
+   \item leaderless replication
+\end{itemize}}
 
-% // TODO up to leaders and followers
-
-\section{Replication Fashions}
+\section{Leaders and followers}
 Each node may store a copy of the database, in this case it is called a \textbf{replica}, so, ensuring consistency among replicas is crucial.
 
 
-\subsection{Leaders and followers}
+
+With leader based replication, one replica is designated as the \textit{leader} who receives write requests by clients, and is responsible for writing new data to its local storage.
+Later on, Followers update their local copy based on the leader's
+replication log.
 
 \subsection{Synchronous vs Asynchronous Replication}
 \begin{itemize}
@@ -26,6 +35,7 @@ Each node may store a copy of the database, in this case it is called a \textbf{
    \begin{itemize}
       \item Follower may fall behind the leader.
       \item The advantage is that the system continues processing even if a follower is slow to respond.
+      \item The disadvantage is that the system may lose data if the leader fails before the followers have caught up, so there's the need for methods to ensure data integrity.
    \end{itemize}
    \item \textbf{Semi-synchronous} - The leader waits for a quorum of followers (at least one follower, typically always the same and placed in another location) to acknowledge the write before acknowledging the write itself.
    \begin{itemize}
@@ -37,10 +47,9 @@ Each node may store a copy of the database, in this case it is called a \textbf{
 \section{Failure}
 \begin{itemize}
    \item Node failures - Nodes can fail due to faults or planned maintenance. The goal is to minimize impact and keep the system running.
-   \item Follower failure: Catch up recovery - Followers keep a log of data Challenges //TODO
-   % // TODO
-   \item Leader failure: Failover - 
-   \item Challenges in Failover -
+   \item Follower failure: Catch up recovery - Followers keep a log of data changes, but can catch up with the leader if they fall behind.
+   \item Leader failure: Failover - Failover process involves promoting ---hence reconfiguring--- a follower to leader. Failover can be manual or automatic
+   \item Challenges in Failover - Asynchronous replication may lead to data loss, as stated before.
 \end{itemize}
 
 \subsection{Implementing Replication Logs}
@@ -59,7 +68,9 @@ Each node may store a copy of the database, in this case it is called a \textbf{
 \section{Eventual Consistency}
 The eventual consistency model implies a temporary state where the followers lag behind the leader, but eventually they will catch up. 
 Hence there is some ``replication-lag'' \dots
-% //TODO
+
+However, many modern applications require heavy reading workload, but light writing workload, so eventual consistency is a good trade-off.
+Besides it is possible to increase capacity for read- only requests by adding more followers. Removes load from the leader. Allows read requests to be served by nearby replicas 
 
 \subsection{Read-after-write consistency}
 In asynchronous replication it is not trivial to ensure \textit{read-your-write} consistency, i.e. if a client writes a value to the leader, it should be able to read it.
@@ -102,15 +113,13 @@ With multi-leader replication, the system must resolve the conflict, and the use
 \labelitemize{Strategies}{
    \begin{itemize}
       \item Routing writes towards the same leader prevents conflicts.
-      \item Routing user requests towards the same datacenter
-      \item // TODO
+      \item Routing user requests towards the same datacenter allows to use only the leader of that datacenter; furthermore, geographical locality may be applied, to serve a user with the closest datacenter.
    \end{itemize}
 }
 
 % // Prof SKIPPING a few slides starting from "consistent and converging to a state"
 
 
-% // TODO
 \subsection{Topologies}
 \begin{itemize}
    \item \textbf{Circular} - each node receives writes and forwards writes
@@ -121,3 +130,15 @@ With multi-leader replication, the system must resolve the conflict, and the use
 Note that this is not hardware (neither virtual) network, but a logical network of replication, made up by how we manage the information flow.
 
 In whatever topology it is important to \textbf{monitor staleness}, which is monitoring obsolete replicas, i.e. how far behind a follower is from the leader.
+
+\subsection{Concurrent Writes}
+Several clients can write to the same key simultaneously, and the order of writes may differ on different leaders. So\dots ``who wins?''
+
+\begin{itemize}
+   \item \textbf{Last write wins} - The last write is the one that is kept.
+   \item \textbf{Most recent timestamp wins} - The write with the most recent timestamp is the one that is kept.
+   \item \textbf{Merge values} - The values are merged together, based on a \textit{happens-before} relationship.
+\end{itemize}
+
+However, especially for geographically spread databases, it is not trivial to determine the most recent timestamp, because clocks may be unsynchronized, and also the network latency may vary. Remember also that the light speed is finite, so it takes time for a signal to travel from one point to another.\\
+For this reason the \textit{happens-before} relationship is used, which is a partial order on events, which reflects the order in which events have occurred.
