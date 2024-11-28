@@ -1,0 +1,81 @@
+\chapter{Distributed Messaging}
+Messaging systems enable loose coupling and asynchronous communication between distributed components, they act as the glue binding components together.
+
+When applied to distributed computing, messaging systems can be used to implement a wide range of communication patterns, such as request/reply, publish/subscribe, and event sourcing.
+A too simplified message passing mechanism may not be enough, since it must take into account delays, message ordering, lost packets, scalability, and fault tolerance.
+
+\section{Message Passing mechanisms}
+
+\begin{itemize}
+   \item Request-response - a client sends a request to a server, and the server sends a response back.
+   \item One-way messaging - a client sends a message to a server, and the server does not send a response.
+   \item Publish-subscribe - a client subscribes to a topic, and the server sends messages to all clients subscribed to that topic.
+\end{itemize}
+
+
+Publish-subscribe is useful because allows to receive information from multiple services, explicitly (and implicitly) categorize them, and assign them different semantics.
+
+\subsection{Adapting Publish-subscribe to Point-to-point}
+Note however that trying to create point-to-point communication with publish-subscribe may be cumbersome, and lead to un-elegant architectures, like having all clients subscribing to everyone else: a mess.
+
+Introducing a server in the middle simplifies the topology, and allows to have a single point of contact for all clients, which forwards messages to the correct recipient.
+On the other hand, it is not distributed, not scalable, and may become a bottleneck!
+
+We could also have single queues for each client, but this is not scalable, and may lead to a single point of failure, again.
+
+\section{Message Brokers - Kafka}
+Message brokers are software systems that receive messages from producers and deliver them to consumers. They act as intermediaries between producers and consumers, and can provide additional features such as message storage, routing, and filtering.
+
+Kafka is a distributed message broker that is designed for high-throughput, fault-tolerant, and scalable messaging. It is used in a wide range of use cases, such as log aggregation, stream processing, and event sourcing.
+
+Messages in Kafka are similar to DB rows, and are stored in topics, which are similar to DB tables. Each message has a key, a value, and a timestamp, and is stored in a partition.
+
+Messages are written in \textit{Batches}, which are collections of messages produced to the same topic and partition within a short time window. Batching improves throughput and reduces latency, but is a tradeoff: larger batches allows for more messages to be stored, but it might take longer for a message to be propagated.
+\\
+
+
+Messages are categorized into topics, which in turn are broken down into partitions, where they are written in append-only fashion are read in order from beginning to end.
+Each partition can be hosted on a different server, hence a single topic may be scaled horizontally across multiple server to \textbf{scale-out}.
+
+
+\ul{Multiple partitions imply there's not guarantee of message time-ordering across the entire topic.}
+
+Kafka sacrifices a global order of messages for scalability, and allows to have multiple consumers reading from the same topic, and even the same partition, at the same time.
+In general it is not impossible to have a global order ---see blockchains--- but it may be very costful in a distributed environment.\\
+However, \ul{if it is necessary for a topic to have a global order, it is possible to have a single partition for that topic.}
+
+\framedt{Bypassing the Single partition limitation}{
+   To avoid having a single partition but still preserve the order, we can implement some trick.
+
+   Suppose you have a topic for ``user tracking'', with each user being identified by a key.\\
+   You could create a partition for odd user IDs and one for even user IDs, and then have a single consumer for each partition.
+}
+
+\subsection{Producers and Consumers}
+
+Producers write messages to topics, and consumers read messages from topics. Producers and consumers can be scaled horizontally to improve throughput and fault tolerance.
+Scaling out consumers allows to consume message-intense topics. 
+
+The \textbf{offset} is a unique identifier for each message within a partition, and is used by consumers to keep track of their progress. The offset is always increased, and is never reset.
+
+Note that, in order to preserve the ordering of the message within a partition, \ul{a partition may be consumed only by one member of a consumer group at a time}.\\
+In this way, the sequential semantics of a partition are preserved.\\
+This implies that the maximum degree of scalability is given by the number of partitions, and not by the number of consumers.
+
+\subsubsection{Rebalancing}
+The number of partitions is set when the topic is created, and in general cannot be changed during the provisioning of the topic.\\
+However, Kafka has a feature called \textit{rebalancing}, which allows to dynamically create partitions, allowing for more consumers to consume from the same topic.
+However, it is a bit of a mess, and requires the provisioning to stop, compute the rebalancing plan, and then restart the provisioning.
+
+\subsubsection{Brokers and Clusters}
+A single Kafka server is called a \textit{broker}, and a group of brokers is called a \textit{cluster}. Each broker is responsible for a set of partitions, and is able to handle reads and writes for those partitions.
+
+Brokers communicate with each other to \textbf{replicate} data and keep the cluster in sync. Each partition has a leader broker, which is responsible for handling reads and writes for that partition in the cluster. The leader broker replicates data to follower brokers, which can take over as leader if the current leader fails.
+
+Consumers always get messages from the leader, never from the replicas, allowing to enforce asynchronous consistency.
+
+\subsubsection{Retention and other mechanisms}
+
+For each topic it is possible to define a retention policy, which specifies how long messages should be retained in the topic. Messages can be retained for a fixed amount of time, or until a certain size limit is reached.
+
+% // TODO
