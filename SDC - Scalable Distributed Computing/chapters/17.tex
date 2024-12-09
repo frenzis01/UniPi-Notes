@@ -9,7 +9,7 @@ Batch processing is typically cheaper and easier to implement than real-time pro
 
 We have high latency, but also high throughput, and the system is easier to reason about, however, it lacks the ability for real-time decision making.
 
-% // TODO
+The key paradigm here is clearly MapReduce.
 
 \section{Stream Processing}
 
@@ -22,11 +22,16 @@ Here the focus is on processing data as soon as it is generated.
    \item \textit{Ingestion} time - the time when the event was received. 
 \end{itemize}
 
-Watermarks are used to track the progress of event time, and to determine when to emit results. In general allow for managing late-arrive data
+Watermarks are used to track the progress of event time, and to determine when to emit results. In general allow for managing late-arrive data.
 
-% // TODO
+In Stream processing there are \ul{\textbf{Transactions}, which are atomic operations between streams}.
+Clearly it may happen also that events arrive out of order, and we need to handle this, either by buffering to wait for more data, or by allowing lateness in \textit{windowing}.
 
-Time-based windowing is used to group events into windows based on time, and to process them in parallel. Windows can be fixed or sliding, and can be based on event time or processing time.
+
+\textbf{Time-based windowing} is used to group events into windows based on time, and to process them in parallel. Windows can be fixed or sliding, and can be based on event time or processing time.
+
+\textbf{Count-based windowing} instead is used to group events into windows based on the number of events, but the same principles apply. \\
+\textbf{Session-based windowing} groups events based on inactivity periods.
 
 \subsection{Lambda architectures}
 
@@ -40,10 +45,18 @@ A lambda architecture is a data processing architecture designed to handle massi
 \end{itemize}
 }
 
+The architecture provides a unified view
+of both batch (hence, historical) and real-time data
+processing, possibly handling large volumes of data and scaling horizontally.
+However it may be complex to implement and maintain, and may generate redundant data processing and storage costs.
 
-% // TODO 
+
 \subsection{Kappa architectures}
-Well suited for processing data from IoT devices.
+Lambda difficulties in implementation led to the development of Kappa, which simplifies the architecture by removing the batch layer, focusing on streams, ultimately offering better scaling and fault tolerance than lambda.\\
+Kappa relies on recomputing state from streams rather than storing it.
+It exploits checkpointing and state backends to manage state.
+
+Kappa is very well suited for processing data from IoT devices, or analytics in general.
 
 A kappa architecture is a data processing architecture designed to handle massive quantities of data by taking advantage of stream processing methods. It consists of a single layer that processes both batch and real-time data in a fault-tolerant and scalable manner.
 
@@ -53,9 +66,24 @@ It is still more complex than traditional stream processing techniques, but it i
 \subsection{CQRS}
 What happens if i have many writes and few reads?
 
-Command Query Responsibility Segregation is a design pattern that separates the read and write operations of a system into two separate components. This allows for better scalability, performance, and maintainability of the system.
+{\textbf{Command Query Responsibility Segregation} (\texttt{CQRS}) is a design pattern that separates the read and write operations of a system into two separate components, along with a UI to interact with them:\ns
+\begin{itemize}
+   \item The \textbf{command model} (write) is responsible for handling the write operations of the system, such as creating, updating, and deleting data.
+   \item The \textbf{query model} (read) is responsible for handling the read operations of the system, such as retrieving data.
+\end{itemize}}
+This allows for better scalability, performance, and maintainability of the system.
 
-This looks good on the paper, but it is not always easy to implement, and may lead to inconsistencies between the read and write models.
+
+This looks good on the paper, but it is not always easy to implement, and may lead to inconsistencies between the read and write models, alongside with latency and communication overhead.
+
+\section{Data Processing Frameworks}
+
+\subsection{Sharing or not}
+
+In shared-nothing architectures each is self-sufficient, has its own private memory and storage, and communicates with others using message passing.\\
+These are typically used in big data processing and web applications, as they easily allow horizontal scaling.
+
+Examples of shared-nothing architectures are Hadoop, DynamoDB, Couchbase, and Facebook TAO.
 
 \subsection{Data Lakehouse}
 
@@ -73,3 +101,5 @@ This approach is well suited for IoT devices, as it allows for the training of m
 
 \subsection{Serverless Data Processing}
 Abstracts infrastrcture management, and allows for the deployment of data processing pipelines without the need to manage servers.
+This paradigm is increasingly applied to data
+processing workflows.
