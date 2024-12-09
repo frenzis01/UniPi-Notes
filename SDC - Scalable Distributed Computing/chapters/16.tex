@@ -74,8 +74,141 @@ Brokers communicate with each other to \textbf{replicate} data and keep the clus
 
 Consumers always get messages from the leader, never from the replicas, allowing to enforce asynchronous consistency.
 
-\subsubsection{Retention and other mechanisms}
+\subsubsection{Retention}
 
 For each topic it is possible to define a retention policy, which specifies how long messages should be retained in the topic. Messages can be retained for a fixed amount of time, or until a certain size limit is reached.
 
-% // TODO
+Kafka brokers are configured with a default retention
+setting for topics, defining either size or time limits, which once reached, messages are deleted.
+
+
+\subsubsection{Multiple Groups}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/16/clusters.png}
+   \caption{Clusters and \texttt{MirrorMaker}s schema}
+   \label{fig:16/clusters}
+\end{figure}
+
+As kafka deployments grow, it is often advantageous to have multiple clusters, in order to have \textbf{segregation}, \textbf{isolation}, and \textbf{fault tolerance}.
+
+When working with multiple datacenters
+it could be required that messages be
+copied between them.
+Kafka includes a tool called \texttt{MirrorMaker},
+used for this purpose, which simply is a Kafka consumer and producer, linked together with a queue:
+messages are consumed from one Kafka cluster and produced for another
+
+\section{Using Kafka}
+
+
+\subsection{Producers}
+First addressing the producer point of view, it is important to consider the requirements on this side:
+\begin{itemize}
+   \item Is every message critical?
+   \item Are accidental duplicates acceptable?
+   \item Are there latency or throughput requirements?
+\end{itemize}
+These questions are important to correctly use the API for the producer, which can be either \texttt{fire-and-forget}, \texttt{synchronous}, or \texttt{asynchronous}.
+
+\begin{itemize}
+   \item \texttt{fire-and-forget} - the producer sends the message and does not wait for a response. Kafka automatically retries to send messages if they fail to be delivered, so most of them will be actually delivered, but some may be lost.
+   \item \texttt{synchronous} - the producer sends the message and waits for a response. This is the safest way to send messages, but it is also the slowest.
+   \lstinline|send()| returns a \lstinline|Future()| object, which we may invoke \lstinline|get()| on to wait for the response.
+   \item \texttt{asynchronous} - the producer invokes \lstinline|send()| along with a \textit{callback} and continues with its execution.
+   The callback is invoked when the message is successfully delivered, or when an error occurs.
+\end{itemize}
+
+\subsubsection{Message record format}
+\begin{paracol}{2}
+   \begin{itemize}
+      \item Topic
+      \item Key  (optional)
+      \item Partition  (optional)
+      \item Value
+   \end{itemize}
+   
+   Once sent the \texttt{ProducerRecord}, the
+   producer will serialize the key and value
+   objects so can be sent over the network.\\
+   Later on, if a partition is
+   specified in the \texttt{ProducerRecord}, the partitioner simply returns the partition we specified.
+   
+   A separate thread is responsible for sending those batches of records to the appropriate Kafka brokers,
+   which yield a Metadata record upon successful delivery.
+
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/16/producerRecord.png}
+      \caption{Sending \texttt{ProducerRecord}}
+      \label{fig:16/producerRecord}
+   \end{figure}
+
+\end{paracol}
+
+
+\subsection{Consumers}
+
+When dealing with Kafka messages it is important to consider that the producers may write to topics at a rate higher than the consumers can read from them.\\
+This is undesirable, as it may lead to the consumers falling behind, and eventually running out of memory;
+hence, we must allow to scale the consumers.
+
+Kafka consumers are typically part of a group. When multiple consumers are subscribed to a topic and belong to the same group, each consumer in the group will receive messages from a different subset of the partitions in the topic.
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.3\columnwidth]{images/16/partitions_1.png}
+	\includegraphics[width=0.3\columnwidth]{images/16/partitions_2.png}
+	\includegraphics[width=0.3\columnwidth]{images/16/partitions_3.png}
+	\caption{Partitions are assigned to Consumers to have a fair distribution.}
+	\label{fig:16/partitions_1}
+\end{figure}
+
+Having more consumers than partitions is not a problem, as the consumers will simply be idle.\\
+In general it is reasonable to have many partitions, allowing to scale when needed.
+
+\begin{paracol}{2}
+   It is not uncommon to have multiple applications that need to receive the same data.
+   Simply assigning different consumers groups to different applications ensures that messages are delivered to all of them.
+   \note{The separation among consumers remains.}
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/16/groups.png}
+      \caption{Multiple Consumer Groups}
+      \label{fig:16/groups}
+   \end{figure}
+\end{paracol}
+
+
+\subsection{Rebalancing}
+
+Moving partition ownership from one consumer to another is called a rebalance. Rebalances are important because they provide the consumer group with high availability and scalability,
+but \ul{in the normal course of events they are \textit{fairly undesirable}}, because during a rebalance, \ul{consumers can’t consume messages}, so a rebalance is basically a short \textbf{window of unavailability} of the entire consumer group.
+
+When partitions are moved from one consumer to another, the consumer loses its current state; if it was caching any data, it will need to refresh its caches—slowing down the application until the consumer sets up its state again.
+
+\subsubsection{When is it needed?}
+\begin{itemize}
+   \item A new consumer joins the group
+   \item A consumer leaves the group
+   \item A consumer is considered dead
+   \item The set of partitions for a topic changes
+\end{itemize}
+
+The most interesting case is when a consumer ``dies''.
+If the consumer stops sending heartbeats for long enough, its session will time
+out and, after a few seconds, the group coordinator will consider it ``dead'' and \ul{trigger a rebalance}.
+During those seconds, no messages will be processed from the partitions owned by the dead consumer \frownie.
+
+Instead, when closing a consumer cleanly, the consumer will notify the group coordinator that it is leaving, and the group coordinator will trigger a rebalance immediately.
+
+\section{Kafka Strengths}
+Kafka is able to seamlessly handle multiple producers, whether those clients
+are using many topics or the same topic, and multiple consumers, whether they are in the same group or different groups, and also allow to seamlessly read from the same stream without interfering with each other, opposed to many queuing systems where once a message is consumed by one client, it is not available to any other.
+
+Disk-based retention allows consumers to avoid working necessarily in real-time, and to catch up with the stream at their own pace.

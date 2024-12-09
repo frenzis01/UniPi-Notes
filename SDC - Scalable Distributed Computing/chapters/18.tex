@@ -1,0 +1,13 @@
+\chapter{TLAV - Thinking Like a Vertex}
+
+MapReduce + HDFS is a solution for many BigData problems, as it allows for processing large amounts of data in a distributed manner. However, it is not the best solution for all use cases, as it has some limitations, such as high latency and lack of real-time processing capabilities.
+
+\note{Recall that HDFS is a distributed file system that allows for storing large amounts of data across multiple machines.}
+
+\section{Spark SQL}
+Spark SQL allows to execute SQL queries, which are translated into Spark jobs (more precisely as \textit{actions} and \textit{transformations}). It is built on top of the Spark Core, and provides a more user-friendly interface for working with data.
+The result is yielded as a DataFrame, which is a distributed collection of data organized into named columns.
+
+\subsection{Structured Streaming}
+The key idea in structured streaming is to treat a live stream as if it were a table that is being continuously appended. This allows for writing SQL queries that process the data in real-time, and to get the results as soon as new data arrives.
+
