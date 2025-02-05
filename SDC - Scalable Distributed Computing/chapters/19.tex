@@ -1,0 +1,107 @@
+\chapter{Vertex Centric Computing}
+\label{chap:vertex-centric-computing}
+
+This lecture was held by Emanuele Carlini.
+
+The lecture spans in three sections:
+\begin{enumerate}
+   \item Introduction to vertex-centric computing
+   \item Real stuff from Paper
+   \item Talk about thesis projects.
+\end{enumerate}
+
+\section{Introduction to vertex-centric computing}
+
+Vertex-centric computing takes a bit from Distributed computing, Graph theory, and Big Data.
+
+\subsection{Graph Theory}
+First, let'address graphs. Graphs are typically defined as $G = (V, E)$, where $V$ is the set of vertices, and $E$ is the set of edges. Edges can be directed or undirected, and can have weights.\\
+Vertices have a in/out\footnote{In case of a directed graph} degree.
+
+Edges typically represent the relationships between vertices.
+
+\begin{definition}
+   [Graph Theory]
+   Graph theory is a branch of mathematics that studies graphs, which are mathematical structures used to model pairwise relations between objects.
+\end{definition}
+\note{Hence, GT deals with Connectivity, Flows, Topology, and many other things.}
+
+\subsubsection{Topologies}
+\begin{itemize}
+   \item \textbf{Random graphs} - Every edge has a probability $p$ of being present.
+   \item \textbf{Small-world graphs} - Most nodes can be reached from every other node by a small number of hops.
+   \item \textbf{Preferential attachment} - New nodes prefer to connect to nodes with high degree.
+\end{itemize}
+
+% // TODO
+
+\subsection{Towards Vertex-Centric}
+
+\begin{definition}
+   [Vertex-Centric]
+   Vertex-centric computing is a programming model for graph processing that allows the user to define a function that is executed on each vertex of the graph.
+\end{definition}
+
+\begin{lstlisting}[caption={TLAV in a nutshell}]
+for each iteration
+   for each vertex v
+      fetch data from neighbors
+      update internal state
+      send data to neighbors
+\end{lstlisting}
+
+TLAV's logic is very simple and straightforward, making it very flexible; it may be applied to:\ns
+\begin{itemize}
+   \item Decentralized networks (one host = one node)
+   \item Distributed networks (one host = multiple nodes)
+   \item Multi-core machines (one core = multiple nodes)
+\end{itemize}
+
+\section{Practical Examples}
+
+\subsection{Fast Connected Components Computing in Large Graphs by Vertex Pruning}
+A paper by Emanuele Carlini, Alessandro Lulli, Patrizio Dazzi, Claudio Lucchese and Laura Ricci.
+
+\begin{definition}
+   [Connected Component]
+   A \textbf{Connected Component} (\texttt{CC}) is a subset of vertices in which there is a path between any pair of vertices.
+\end{definition}
+
+The paper talks about an algorithm called \textit{``Cracker''}, which is a vertex-centric algorithm to find connected components in undirected graphs, which exploits an incremental approach and message passing to achieve its goal.
+
+\begin{paracol}{2}
+   \colfill
+   The key idea is to incrementally remove ndodes when we are sure of their \texttt{CC}. 
+   Each CC is identified by a unique ID
+   \colfill
+   % // TODO
+   \switchcolumn
+   \begin{lstlisting}
+      while (not finished)
+         // find the seeds
+         selection()
+         simplification()
+      % propagate the seeds
+      propagation()
+   \end{lstlisting}
+\end{paracol}
+
+This was used as backend for a web page crawler.
+Many web pages were represented as nodes, with edges representing similarities computed with locality-sensitive hashing (was this the name?).
+% // TODO 
+Computing the CCs allowed to group similar pages together, and perform more specific heuristics on them, which, being polynomial (worse than linear) would have taken too much time to be performed on the whole graph.
+
+\subsection{Decentralized minimum vertex cover}
+\begin{definition}
+   [Vertex Cover]
+   A \textbf{Vertex Cover} on an undirected graph G is a subset C of the nodes of the graph, such that for each edge, at least one endpointo of the edge is included in C. The minimum vertex cover problem consists in finding the C of minimum size.
+\end{definition}
+
+
+\begin{itemize}
+   \item Every node starts as deselected.
+   \item Superstep 1 - Mark as selected the node with the highest degree among the neighbors and the node itself
+   \item If the node is selected or all of its neighbors are, do nothing
+   \item Superstep 2 - Otherwise, select 
+   % // TODO 
+\end{itemize}
