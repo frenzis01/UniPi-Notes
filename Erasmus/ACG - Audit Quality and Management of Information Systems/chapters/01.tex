@@ -109,8 +109,130 @@ Hay muchas matrices en las slides, algunas relacionan requisitos con casos de us
 
 \section{Gestión de la Calidad}
 La calidad del proceso contribuye a la calidad del producto, y la calidad del producto contribuye a la calidad en uso.
+\note{
+   \begin{itemize}
+      \item \textbf{Producto}: entregado al cliente
+      \item \textbf{Proceso}: conjunto de actividades que se realizan para producir un producto
+   \end{itemize}
+}
 
+
+
+Hay algunos pasos importantes en la gestión de la calidad:
+\begin{itemize}
+   \item Preparación y utilización de recursos
+   \begin{itemize}
+      \item Humanos
+      \item Económicos
+      \item Infraestructura
+      \item Conocimientos y experencia
+   \end{itemize}
+   \item Procesos
+   \begin{itemize}
+      \item Estratégicos
+      \item Operativos
+      \item Soporte
+   \end{itemize}
+   \item Políticas de trabajo\\
+   Una política de trabajo de calidad es una manifestación que realiza una empresa acerca de cómo actúa y cuáles son las pautas o reglas que establecen en el día a día para trabajar que le lleven a mejorar continuamente y hacer las cosas bien a la primera.
+
+   Una parte crítica de la política de calidad es detectar y analizar los problemas en una empresa y los resultados no alcanzados
+   \item Objetivos\\
+   ``Conseguir una productividad del 100\% de los desarrolladores'' o ``Aumentar la satisfacción de los cliente'' son objetivos mal planteados.
+
+\end{itemize}
+
+\subsection{ISO 9001}
 La ISO 9001 es una norma internacional que especifica los requisitos para un sistema de gestión de la calidad (SGC). Las organizaciones utilizan la norma para demostrar la capacidad para proporcionar productos y servicios que cumplen con los requisitos del cliente y los reglamentarios aplicables.
+El principal objetivo de la ISO 9001:2015 es lograr que una compañía consiga la satisfacción del cliente mediante el establecimiento de procesos de mejora continuada dentro de la misma.
 
 Propone también un metodo de \textbf{mejora continua}, el PDCA (Plan, Do, Check, Act).
 
+\subsubsection{Quality control and assurance}
+\begin{itemize}
+   \item \textbf{Quality Control}: A part of quality management focused on fulfilling quality
+   requirements\\
+   Parte de la gestión de calidad de software que comprueba que el proyecto sigue sus estándares, procesos y procedimientos, y que el proyecto produce los productos (entregables) internos y externos requeridos.
+   \item \textbf{Quality Assurance}: A part of quality management focused on providing confidence that quality requirements will be fulfilled\\
+   Parte de la gestión de calidad de software que asegura que los estándares, procesos y procedimientos son apropiados para el proyecto y se han implementado correctamente.
+\end{itemize}
+
+\begin{itemize}
+	\item los \textit{procesos} incluyen todas las actividades involucradas en el
+diseño, codificación, pruebas y mantenimiento;
+	\item los \textit{productos} incluyen software, datos asociados,
+documentación, y toda la documentación para soporte y
+reportes.
+\end{itemize}
+
+Los ingenieros del software realizan el trabajo técnico.
+En cambio, un grupo de SQA (Software Quality Assurance) se responsabiliza en la planificación de aseguramiento de la calidad, supervisión, mantenimiento de registros, análisis e informes.\\
+El principal propósito del control de calidad es asegurar que el producto satisface los requisitos mediante \textbf{pruebas} y \textbf{revisiones} de los requisitos funcionales y no funcionales.
+
+\subsubsection{SPI - Software Process Improvement}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/01/spice.png}
+   \caption{Spice Model for Process Improvement}
+   \label{fig:01/spice}
+\end{figure}
+
+\begin{paracol}{2}
+   Modelos de Madurez establecen marcos de referencia que evalúan la capacidad de una organización para desarrollar productos o servicios de calidad de manera consistente y predecible; van a evalúar la madurez de los procesos de desarrollo de software o sistemas.
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/01/madurez.png}
+      \caption{Capability Maturity CMMI}
+      \label{fig:01/madurez}
+   \end{figure}
+
+\end{paracol}
+
+\framedt{Complaints about Models}{
+	\begin{itemize}
+		\item No siempre se ven como tan relevantes y actuales por los
+		      ingenieros del software
+		\item Pueden conllevar mucha burocracia
+		\item Pueden requerir trabajo manual tedioso si no tienen
+		      herramientas software de soporte
+	\end{itemize}
+	Entonces, \textit{to effectively apply standards, limit overhead!}
+}
+
+\subsection{Coste de la calidad}
+\begin{equation}
+   \text{Coste de la calidad} = \text{Coste de conformidad} + \text{Coste de no conformidad}
+\end{equation}
+
+\begin{definition}
+	[Coste de conformidad]
+	costes de las actividades para:
+	\begin{itemize}
+		\item Valoración/Estimación: detección de defectos (testeo)
+		\item Prevención: de errores (aseguramiento de calidad, etc)
+	\end{itemize}
+\end{definition}
+
+
+\begin{definition}
+   [Coste de no conformidad]
+   costes de las actividades para:
+   \begin{itemize}
+      \item Corrección: de defectos (reparación de errores)
+      \item Fallos: en el producto (retrabajo, etc)
+      \item Pérdida de clientes
+      \item Costes de juicios
+      \item etc.
+   \end{itemize}
+\end{definition}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/01/boehm.png}
+   \caption{Según Boehm, el coste de corregir un error aumenta exponencialmente con el tiempo. Entonces, el \textbf{testing} es un momento crítico en el desarrollo de software, porque permite de encontrar errores antes de que el coste de corregirlos sea más alto.}
+   \label{fig:01/boehm}
+\end{figure}
