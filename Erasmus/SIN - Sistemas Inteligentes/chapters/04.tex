@@ -64,3 +64,88 @@ enunciar y muy difícil de resolver.
 \end{itemize}}
 
 \note{Formalization omitted here}
+
+En general, los problemas de optimización son particularmente difíciles de resolver.
+En general, basta con una solución razonablemente buena (factible, optimizada, pero no la
+óptima) en un tiempo razonable, y si puede obtener con métodos aproximados (como alternativa a los métodos exactos), cómo la \textbf{Búsqueda Heurística} / Metaheurística: La solución es obtenida (generada / mejorada), mediante un proceso de búsqueda en un amplio espacio de estados/soluciones.
+
+\begin{itemize}
+   \item Búsqueda Local (Local Search) - Se parte de una solución inicial y se busca una solución mejor en el vecindario de la solución actual.
+   \item Búsqueda Sistemática (Systematic Search) - Se parte de una solución inicial y se busca una solución mejor en todo el espacio de soluciones.
+\end{itemize}
+
+\begin{itemize}
+   \item Métodos Constructivos - Construyen una solución paso a paso, añadiendo o eliminando elementos de la solución.
+   \item Métodos de Mejora - Parten de una solución inicial y la mejoran iterativamente mediante movimientos locales.
+   \item Métodos Evolutivos - Combinan soluciones previas
+\end{itemize}
+
+
+\subsection{Algoritmo Genéticos}
+Los \textbf{algoritmos genéticos} son un tipo de algoritmo evolutivo que se utiliza para encontrar soluciones aproximadas a problemas de optimización y búsqueda. Estos algoritmos reflejan el proceso de selección natural en la evolución de las especies, y se basan en la idea de que las soluciones a un problema pueden ser representadas como individuos en una población, y que la evolución de la población puede conducir a la generación de soluciones cada vez mejores.
+
+
+\begin{paracol}{2}
+
+   \colfill
+   La operación fundamental es la \textbf{cruce}, que toma n padres (típicamente 2) y generar m hijos (típicamente 2);
+   consiste en heredar material genético
+   de los padres.
+   La \ul{asunción} es que si los padres tienen buen material genético, la mezcla del material genético de ambos también será buena.\\
+   Entonces, el efecto de la cruza es \textit{explorar} el espacio de búsqueda con \textbf{material prometedor}.
+   
+   La operación de \textbf{mutación} es una operación que se aplica a un individuo y cambia aleatoriamente uno o más genes de ese individuo. Corisponte a una búsqueda local, porque sólo se cambia un gen a la vez, y entonces el hijo serà cerca de su padre.
+   \colfill
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.48\columnwidth]{images/04/cruce.png}
+      \includegraphics[width=0.48\columnwidth]{images/04/mutacion.png}
+      \caption{Cruce y mutación}
+      \label{fig:04/cruceYMutacion}
+   \end{figure}
+\end{paracol}
+
+TODO selección des padres
+TODO criterio de parada
+
+\subsubsection{Resumen}
+\begin{enumerate}
+	\item Una \textbf{representación} adecuada de las \textit{soluciones} del problema (individuos).\\
+   Cromosomas, genes, genotipo, fenotipo.
+	\item Una forma de crear una \textit{\textbf{población} de soluciones inicial} (individuos iniciales). A
+menudo, aleatoria.
+	\item Una \textbf{función de evaluación} capaz de medir la adecuación de cualquier solución
+	(individuo) al problema. Fitness.
+	\item Un conjunto de \textbf{operadores evolutivos} para combinar las soluciones existentes con el
+objetivo de obtener nuevas soluciones (nuevos individuos): \textit{selección}, \textit{cruce}, \textit{mutación} y \textit{reemplazo} de individuos. Guían el proceso de la búsqueda.
+	\item Conjunto de \textbf{parámetros de entrada}: tamaño de la población, número de iteraciones
+	(generaciones), probabilidades de selección, etc.
+\end{enumerate}
+
+
+Podemos resumir el proceso de un algoritmo genético en los siguientes pasos:
+\begin{enumerate}
+	\item \textbf{Codificación} de Soluciones/instanciaciones.
+	\item \textbf{Población Inicial}:
+	\begin{enumerate}
+      \item Generar población aleatoria de n individuos: {x} (posibles soluciones del problema)
+      \item Evaluar la aptitud o fitness f(x) de cada individuo.
+   \end{enumerate}
+	\item \textbf{Ciclo-Generacional}:
+	\begin{enumerate}
+   	\item \textbf{Selección} Seleccionar dos padres de la población de acuerdo a su aptitud:
+Probabilidad de cruce (pc).
+	\item \textbf{Cruce} Combinar los genes de los dos padres para obtener descendientes.
+	\item \textbf{Mutación} Con una probabilidad de mutación (pmut ), mutar cada gen de los
+cromosomas hijo.
+	\item \textbf{Reemplazo} Añadir nuevos hijos y determinar nueva población.
+   \end{enumerate}
+	\item Verificar condición de parada:
+	\begin{enumerate}
+   	\item \textbf{Parada}: proporcionar como solución el individuo con mejor valor de aptitud f(x).
+	\item \textbf{Ciclo}: Ir al paso 2
+   \end{enumerate}
+\end{enumerate}
