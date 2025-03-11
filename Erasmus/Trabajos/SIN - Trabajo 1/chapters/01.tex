@@ -47,11 +47,13 @@ El código se divide en tres ficheros:
 Para ejecutar el código se puede usar el comando \texttt{python3 emerg.py}, añadiendo el parámetro \texttt{-A} se generan animaciones de los movimientos de las ambulancias en un fichero \texttt{.mp4}.
 Si lo prefiere puede utilizar \textsc{Docker}, para evitar la instalación de las dependencias necesarias.
 
-\begin{lstlisting}
+\begin{verbatim}
    docker build -t emergencia .
    docker run -v $(pwd)/output:/app/output -e PARAMS="-A" emergencia
    docker run -v $(pwd)/output:/app/output emergencia    # without animations
-\end{lstlisting}
+\end{verbatim}
+
+
 
 \subsection{Representación del estado}
 El estado se representa con alguno diccionarios, uno para cada entidad:
@@ -277,7 +279,10 @@ Me resultaron muy útiles para tener una representación visual del plan ejecuta
 
 \section{Conclusiones}
 
-El problema de la planificación de emergencias es un problema interesante y complejo, especialmente se si considera también como optimizar una solucción en términos de travel distance y makespan, en vez de limitarse a alcanzar un estado final; se puede complicar más si se van a consider multiplés funciones objetivo para.
+\textsc{pyhop} permite de modelar y resolver problemas de planificación de manera sencilla y elegante, y es muy útil para problemas de planificación que se pueden descomponer en acciones elementales.\\
+Hay maneras de resolver el problema sin formalizar los métodos de planificación, pero durante la realización de este proyecto, me he dado cuenta de que siguiendo el esquema de \textsc{pyhop} se obtiene un código más claro y legible, así como una representación linear del dominio..
+
+El problema de la planificación de emergencias es un problema interesante y complejo, especialmente se si considera también como optimizar una solucción en términos de travel distance y makespan, en vez de limitarse a planificar para alcanzar un estado final; se puede complicar más si se van a consider multiplés funciones objetivo.
 En uno escenario real, la severidad de la emergencia es importante, pero no es el único factor a considerar, es necesario también minimizar el tiempo de respuesta para todas la víctimas.\\
 En general, he leido online que el \textit{Emergency Vehicle Dispatching Problem} es una variante del \href{https://en.wikipedia.org/wiki/Vehicle_routing_problem}{\textit{Vehicle Routing Problem}} (VRP), que es un problema NP-hard, que pero parece diferir dal nuestro problema en algunos aspectos, sobre todo que en el VRP hay un grafo con arcos que tienen un costo asociado y que determinen entre cuales nodos se puede viajar, mientras en nuestro problema se puede viajar entre cualquier par de nodos. Podemos imaginar que el nuestro es un caso particular en que el grafo es completo.
 
