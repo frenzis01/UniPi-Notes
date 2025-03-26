@@ -9,7 +9,7 @@
 
 
 
-\note{Soy un estudiante italiano en Erasmus. Hablo español bastante bien, pero me resulta más natural escribir en inglés; sé que un mi compañero prenguntó si podía escribir en inglés, y que está bien. sin embargo, decidí escribir en español para practicar, con la ayuda de algunos traductores cuando era necesario. Si hay algo mal escrito o poco claro, estoy a disposición para cualquier aclaración.}
+\note{Soy un estudiante italiano en Erasmus. Hablo español bastante bien, pero me resulta más natural escribir en inglés; sé que un compañero prenguntó si podía escribir en inglés, y que está bien. sin embargo, decidí escribir en español para practicar, con la ayuda de algunos traductores cuando era necesario. Si hay algo mal escrito o poco claro, estoy a disposición para cualquier aclaración.}
 
 \section{Introducción}
 
@@ -17,7 +17,7 @@
 \begin{itemize}
    \item Localización de las víctimas, ambulancias y hospitales.
    \item Asignación de ambulancias a las víctimas, teniendo en cuenta la gravedad de la emergencia.
-   \item Minimización del tiempo de respuesta, como objetivo.
+   \item Traer a todas las víctimas a un hospital, como objetivo.
 \end{itemize}}
 
 La version más basica del escenario incluye una sola víctima, en vez la version ampliada mas victímas.
@@ -31,19 +31,24 @@ La version más basica del escenario incluye una sola víctima, en vez la versio
       \item \textbf{Dominio} (acciones disponibles): mover ambulancias, cargar y descargar
       víctimas, tratar a las víctimas en las ambulancias.
    \end{itemize}
-   \vspace{1em}
+   
+   \begin{itemize}
+      \item \textbf{Sujetos estáticos}: localizaciones y hospitales.
+      \item \textbf{Sujetos dinámicos}: ambulancias y víctimas.
+   \end{itemize}
+   
+   \vspace{0.5em}
 }
 
 \section{Implementación}
 
 \subsection{Organización del código}
-El código se divide en tres ficheros:
+{El código se divide en tres ficheros:\ns
 \begin{itemize}
    \item \texttt{emerg.py}: contiene la implementación de las funciones de los operadores y métodos.
    \item \texttt{scenario.py}: contiene la definición de posibles estado iniciales.
    \item \texttt{utils.py}: contiene funciones auxiliares, para trazar el grafico de la ciudad de Valencia y imprimir algunos mensajes.
-\end{itemize}
-
+\end{itemize}}
 Para ejecutar el código se puede usar el comando \texttt{python3 emerg.py}, añadiendo el parámetro \texttt{-A} se generan animaciones de los movimientos de las ambulancias en un fichero \texttt{.mp4}.
 Si lo prefiere puede utilizar \textsc{Docker}, para evitar la instalación de las dependencias necesarias.
 
@@ -63,7 +68,7 @@ El estado se representa con alguno diccionarios, uno para cada entidad:
    state1.hospitals = [ {'name': 'H1', 'loc': 'Hospital La Fe'},...
    state1.coordinates = { 'El Carmen': {'x': 50, 'y': 50}, 'Ciutat Vella': {'x': 55, 'y': 45}, ...
 \end{lstlisting}
-En cada entrada del diccionario se encuentran propiedades de la entidad como la posición, el nombre y la gravedad.
+En cada entrada de cada diccionario se encuentran propiedades de la entidad como la posición, el nombre y la gravedad.
 
 Las localidades son barrios/areas de la ciudad de Valencia, y cada barrio es caracterizado por coordenadas \lstinline|(X,Y)|.
 Se asume que es posible viajar entre cualquier par de localizaciones y el tiempo de viaje es proporcional a la distancia euclídea entre ambas.
@@ -76,10 +81,10 @@ Se asume que es posible viajar entre cualquier par de localizaciones y el tiempo
 
 \subsection{Operadores}
 
-Los operadores de \textsc{pyhop} representan las acciones que se pueden realizar en el dominio, y no so se pueden descomponerse. Se devuelve al nueve estado tras aplicarse el operador o \lstinline|False| si el operador falla (i.e. no se aplicable).
+Los \textit{operadores} de \textsc{pyhop} representan las acciones que se pueden realizar en el dominio, y no so se pueden descomponerse. Se devuelve al nueve estado tras aplicarse el operador o \lstinline|False| si el operador falla (i.e. no se aplicable).
 Entonces los operadores en nuestro dominio son lo siguientes, que son bastante self-explanatory:
 \begin{itemize}
-   \item \lstinline|op_drive(state, amb, dest)| - Mover la ambulancia a una localización. Puede parecer complicado pero es solo porque hay algunas instrucciones para trazar el camino en el mapa. No es necesario para la planificación, pero es útil para la visualización. 
+   \item \lstinline|op_drive(state, amb, dest)| - Mover la ambulancia a una localización. Puede parecer complicado pero es solo porque hay algunas instrucciones para trazar el camino en el mapa, que no es necesario para la planificación, pero es útil para la visualización. 
    \item \lstinline|op_load(state, amb, victim)| - Cargar una víctima en una ambulancia. Aquí tenemos que verificar que la ambulancia tiene suficiente capacidad para la severidad de la víctima.
    La localización de la víctima se convierte en la propia ambulancia que la traslada.
    \note{Nel código esto control se hace también en el método \lstinline|method_deliver_victim|.}
@@ -90,7 +95,7 @@ Entonces los operadores en nuestro dominio son lo siguientes, que son bastante s
 
 \subsection{Métodos}
 
-Los métodos implementan la logica de la planificación, y determinan la secuencia de operadores que se deben aplicar para alcanzar un objetivo.
+Los \textit{métodos} implementan la logica de la planificación, y determinan la secuencia de operadores que se deben aplicar para alcanzar un objetivo.
 
 El método fundamental es \lstinline|method_deliver_victim(state, victim_dict, hospital)|, que se utiliza para mover la ambulancia más cercana a la víctima, cargar la víctima, mover la ambulancia al hospital y descargar la víctima.
 Este método es lo más sencillo, y es invocado por los otros métodos para resolver el problema de las víctimas múltiples.
@@ -171,7 +176,7 @@ En \texttt{scenario.py} se definen cuatro estados iniciales con distintas config
 \begin{enumerate}
    \item \texttt{-S1} - Una sola víctima
    \item \texttt{-S1} - 5 víctimas, donde todas las permutaciones de las víctimas son evaluadas.
-   \item \texttt{-S1} - 5 víctimas que tiene que fallar porque no hay ninguna ambulancia capaz de transportar a la víctima más grave.
+   \item \texttt{-S1} - 5 víctimas, la planificación tiene que fallar porque no hay ninguna ambulancia capaz de transportar a la víctima más grave.
    \item \texttt{<Default>} - 11 víctimas, que no permite de evaluar todas la permutaciones, solo algunas eligidas casualmente, y en efecto observamos cómo distintas ejecuciones dan resultados diferentes.
 \end{enumerate}
 
@@ -223,17 +228,18 @@ En la primera sección, el se imprime el resultado del metodo
    =====================================
 \end{verbatim}
 
-En la segunda sección se generan las permutaciones con el método \lstinline|method_try_all_permutations|, y imprime la distancia y el makespan de cada una de ellas, e al final
+En la segunda sección se generan las permutaciones con el método \lstinline|method_try_all_permutations|, e imprime la distancia y el makespan uno de cada 10, e al final
 el resultado de las 5 mejores permutaciones por distancia y por makespan, junto con la ambulancia que determina el makespan (la que ha hecho el viaje más largo).
 \begin{verbatim}
    --- PERMUTATION OPTIMIZATION APPROACH ---
    Too many victims (11) to try all permutations.
    Sampling 120 random permutations from 39916800 possibilities...
-   Tested permutation 1 starting with Sofia: distance 350.81, makespan 190.31 (A5)
-   Tested permutation 2 starting with Miguel: distance 360.58, makespan 223.90 (A5)
+   Tested permutation 10 starting with Pablo: distance 337.87, makespan 161.34 (A5)
+   Tested 10/120 permutations. Best distance: 319.27
+   Tested permutation 20 starting with Carlos: distance 337.70, makespan 260.75 (A5)
+   Tested 20/120 permutations. Best distance: 319.27
    ...
-   Tested permutation 119 starting with Maria: distance 337.87, makespan 248.36 (A1)
-   Tested permutation 120 starting with Alejandro: distance 337.70, makespan 173.37 (A1)
+   Tested permutation 120 starting with Francisco: distance 345.98, makespan 289.04 (A5)
    Tested 120/120 permutations. Best distance: 319.27
    
    ===== TOP 5 PERMUTATIONS BY TOTAL DISTANCE =====
@@ -280,11 +286,11 @@ Me resultaron muy útiles para tener una representación visual del plan ejecuta
 \section{Conclusiones}
 
 \textsc{pyhop} permite de modelar y resolver problemas de planificación de manera sencilla y elegante, y es muy útil para problemas de planificación que se pueden descomponer en acciones elementales.\\
-Hay maneras de resolver el problema sin formalizar los métodos de planificación, pero durante la realización de este proyecto, me he dado cuenta de que siguiendo el esquema de \textsc{pyhop} se obtiene un código más claro y legible, así como una representación linear del dominio..
+Hay maneras de resolver el problema sin formalizar los métodos de planificación, pero durante la realización de este trabajo, me he dado cuenta de que siguiendo el esquema de \textsc{pyhop} se obtiene un código más claro y legible, así como una representación linear del dominio.
 
-El problema de la planificación de emergencias es un problema interesante y complejo, especialmente se si considera también como optimizar una solucción en términos de travel distance y makespan, en vez de limitarse a planificar para alcanzar un estado final; se puede complicar más si se van a consider multiplés funciones objetivo.
-En uno escenario real, la severidad de la emergencia es importante, pero no es el único factor a considerar, es necesario también minimizar el tiempo de respuesta para todas la víctimas.\\
+El problema de la planificación de emergencias es un problema interesante y complejo, especialmente si se considera también como optimizar una solucción en términos de travel distance y makespan, en vez de limitarse a planificar para alcanzar un estado final; se puede complicar más si se van a consider multiplés funciones objetivo.
+En un escenario real, la severidad de la emergencia es importante, pero no es el único factor a considerar, es necesario también minimizar el tiempo de respuesta para todas la víctimas.\\
 En general, he leido online que el \textit{Emergency Vehicle Dispatching Problem} es una variante del \href{https://en.wikipedia.org/wiki/Vehicle_routing_problem}{\textit{Vehicle Routing Problem}} (VRP), que es un problema NP-hard, que pero parece diferir dal nuestro problema en algunos aspectos, sobre todo que en el VRP hay un grafo con arcos que tienen un costo asociado y que determinen entre cuales nodos se puede viajar, mientras en nuestro problema se puede viajar entre cualquier par de nodos. Podemos imaginar que el nuestro es un caso particular en que el grafo es completo.
 
-Y además, en la realidad, no siempre todos los hospitales están disponibles, el trafico afecta a la travel distance, y otros factores tecnicos (carburante, turnos de trabajo, mantenimiento de vehículos, \dots) y éticos/humanos pueden influir en la solucción elegida.
+Y además, en la realidad, no siempre todos los hospitales están disponibles, el tráfico afecta a la travel distance, y otros factores tecnicos (carburante, turnos de trabajo, mantenimiento de vehículos, \dots) y éticos/humanos pueden influir en la solucción elegida.
 

@@ -121,3 +121,54 @@ salidas anteriores
    \caption{Forma columna y forma fila de tablas de decisión}
    \label{fig:05/tablaForma}
 \end{figure}
+
+\section{Valores Límites}
+\begin{itemize}
+	\item Intervalo: un subconjunto del espacio de los valores de entrada de
+un programa.
+	\item Punto límite de un intervalo (boundary) : aquel punto que según
+sea incrementado o decrementado un valor epsilon infinitesimal
+dará como resultado un valor perteneciente o no a dicho intervalo.
+	\item Desigualdad del límite : una expresión algebraica con $>$, $<$, $\geq$, $\leq$
+que define parte de los puntos que pertenecen a un intervalo o
+dominio.
+	\item Condiciones de igualdad : una expresión algebraica con $=$, $\neq$
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/05/puntoIN.png}
+   \includegraphics[width=0.45\columnwidth]{images/05/puntoOUT.png}
+   \caption{puntoINOUT}
+   \label{fig:05/puntoINOUT}
+\end{figure}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/05/puntoON.png}
+   \includegraphics[width=0.45\columnwidth]{images/05/puntoOFF.png}
+   \caption{puntoONOFF}
+   \label{fig:05/puntoONOFF}
+\end{figure}
+
+\begin{itemize}
+   \item \textsc{Punto IN} : un punto que pertenece al intervalo
+   \item \textsc{Punto OUT} : un punto que no pertenece al intervalo
+   \item \textsc{Punto ON} : un punto que pertenece al intervalo y es un límite
+   \item \textsc{Punto OFF} : un valor cerca del punto límite de un intervalo
+\end{itemize}
+
+La estrategia para diseñar las pruebas de valores límites es 1 punto ON + 1 punto OFF para cada desigualdad de límite.
+\note{Ejemplos:
+\begin{itemize}
+	\item 3 <= extras < 10
+	      \begin{itemize}
+		      \item Puntos ON: extras = 3; extras = 10
+		      \item Puntos OFF: extras = 2; extras = 9
+	      \end{itemize}
+	\item 2000 < precio\_base <= 5000
+	      \begin{itemize}
+		      \item Puntos ON?
+		      \item Puntos OFF?
+	      \end{itemize}
+\end{itemize}}
+

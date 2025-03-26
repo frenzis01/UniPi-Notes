@@ -1,0 +1,63 @@
+\chapter{FreeRTOS - Tasks}
+\lstset{language=C}
+\section{Crear una Tarea}
+
+
+\begin{lstlisting}[caption={Definir la funcion de tarea},label={lst:task}]
+   void vATaskFunction( void *pvParameters )
+   {
+       for( ;; )
+       {
+           -- Task application code here. --
+       }
+
+       /* Tasks must not attempt to return from their implementing
+       function or otherwise exit.  In newer FreeRTOS port
+       attempting to do so will result in an configASSERT() being
+       called if it is defined.  If it is necessary for a task to
+       exit then have the task call vTaskDelete( NULL ) to ensure
+       its exit is clean. */
+       vTaskDelete( NULL );
+   }
+\end{lstlisting}
+
+\href{http://www.freertos.org/a00125.html}{\texttt{xTaskCreate()}}
+es el componente fundamental de un sistema multitarea.
+Probablemente la más compleja de todas las funciones del API.
+
+\begin{lstlisting}
+   portBASE_TYPE  xTaskCreate(
+      pdTASK_CODE       		pvTaskCode,
+      const signed char 		*const pcName,
+      unsigned short    		usStackDepth,
+      void 	          		* pvParameters,
+      unsigned portBASE_TYPE uxPriority,
+      xTaskHandle       		*pxCreatedTask
+      );
+      
+\end{lstlisting}
+
+\begin{itemize}
+	\item \lstinline|pvTaskCode|\\
+Puntero a la función que implementa la tarea (simplemente el nombre de la función)
+	\item \lstinline|pcName|\\
+Un nombre descriptivo para la tarea. FreeRTOS no lo usa, pero ayuda a la depuración.
+	\item \lstinline|uStackDepth| es el tamaño de la pila en numero de palabras, no en bytes.
+Por ejemplo, la pila de un Cortex-M3 tiene un ancho de palabra de 32-bits.
+\lstinline|pvParameters|
+El valor asignado a pvParameters será el valor pasado a la función de tarea a través del parámetro con el mismo nombre
+\lstinline|uxPriority|
+Define la prioridad con la que se ejecutará la tarea.
+Las prioridades pueden asignarse desde 0, (la menor prioridad), a (\lstinline|configMAX_PRIORITIES-1|), que es la mayor.
+Varias tareas pueden tener la misma prioridad
+\lstinline|pxCreatedTask|
+Devuelve un identificador para la tarea creada, para poder hacer referencia a ella en futuras llamadas del API
+P.ej., cambiar la prioridad o eliminar la tarea
+Se puede pasar NULL si no se va a usar
+Valor de retorno, dos posibilidades:
+pdTRUE : la tarea se ha creado con éxito.
+\lstinline|errCOULD_NOT_ALLOCATE_REQUIRED_MEMORY|
+tarea no creada por insuficiente memoria dinámica (heap) para asignar las estructuras de datos y pila necesarios.
+
+\end{itemize}
+\section{}

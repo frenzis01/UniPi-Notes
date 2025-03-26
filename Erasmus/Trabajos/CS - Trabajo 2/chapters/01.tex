@@ -33,8 +33,8 @@ visualize and correlate} the enormous amount of historical and real-time data.
 
 \subsection{Costruir un SOC}
 Como arquitectos de seguridad, para construir un SOC, necesitamos ante todo {\textbf{identificar} cuales son los datos que vamos a recoger, y con cual frequencia vamos a recogerlos}, cuántos eventos por segundo/minuto/hora y cuánto storage necesitaremos.\\
-Despues, tenemos que decidir dónde colocar los sensores (collectors) de esos datos.\\
-Al final, deberiamos diseñar y implementar una User Interface para los analistas, que les permita visualizar los datos y tomar decisiones.
+Después, tenemos que decidir dónde colocar los sensores (collectors) de esos datos.\\
+Al final, deberiamos diseñar e implementar una User Interface para los analistas, que les permita visualizar los datos y tomar decisiones.
 
 Es fundamental identificar {cuales son los \textit{crown jewels} de la organización}, y protegerlos con mayor prioridad, gestionándolos lo más rápidamente posible.
 
@@ -50,7 +50,7 @@ Es fundamental identificar {cuales son los \textit{crown jewels} de la organizac
 \begin{enumerate}
    \item \ul{\textbf{Agregar} datos}
    \item \ul{\textbf{Normalizar} datos}, para que los analistas puedan escribir detecciones y reglas a partir de los datos
-   \item \ul{\textbf{Personalizar las detecciones}}, adaptarlos a la estructura y las necesidades de la organización, para limitar el riesgo de falsos positivos y comprender la criticidad de un incidente en relación con el contexto de la organización.
+   \item \ul{\textbf{Personalizar las detecciones}}, adaptarlas a la estructura y las necesidades de la organización, para limitar el riesgo de falsos positivos y comprender la criticidad de un incidente en relación con el contexto de la organización.
    \item \ul{\textbf{Proteger} datos sensibles}, según un criterio de priorización.
    \item\ul{\textbf{Automated responses}}. Es importante minimizar el tiempo de remediación, utilizando modernas herramientas que permitan automatizar la respuesta a los eventos, en lugar de enviar una alerta a un servicio de tickets, abrir un ticket, asignarlo a un analista, etc. 
 \end{enumerate}
@@ -60,7 +60,7 @@ Estas funcionalidades coinciden con los mencionados en el artículo de Cyviz, au
 El artículo propone \textit{``Identify'',} \textit{``Protect'',} \textit{``Detect''} and \textit{``Respond''} como puntos clave, pero el significado es más o menos el mismo.
 
 
-En el video también es mencionada la importancia de \textbf{monitorizar} constantemente el estado del SOC y de los sensores, para asegurarse de que está funcionando correctamente, evaluar disponibilidad y scalabilidad y si son apropriadas nuevas tecnologías, herramientas, dispositivos.
+En el video también se menciona la importancia de \textbf{monitorizar} constantemente el estado del SOC y de los sensores, para asegurarse de que está funcionando correctamente, evaluar disponibilidad y scalabilidad y si son apropriadas nuevas tecnologías, herramientas, dispositivos.
 
 
 Vamos a ver cómo se pueden implementar estas funcionalidades con las herramientas que hemos visto en clase.
@@ -80,7 +80,7 @@ Vamos a ver cómo se pueden implementar estas funcionalidades con las herramient
 %    \end{figure}
 % \end{paracol}
 
-Antes de agregar datos, es necesario recorgelos, pero las herramientas para hacer esto no están tratados en el video o en el artículo, que, en cambio, apuntan a la atención que debe prestarse en general al diseño de la recogida de datos, sin entrar en detalles de implementación.\\
+Antes de agregar datos, es necesario recorgelos, pero las herramientas para hacer esto no están tratadas en el video o en el artículo, que, en cambio, apuntan a la atención que debe prestarse en general al diseño de la recogida de datos, sin entrar en detalles de implementación.\\
 Hay muchas herramientas y sensores que pueden ser fuentes de datos, por ejemplo NIDSs/HIDSs (\textsl{OSSEC}, \textsl{Snort}, \textsl{Suricata}, \dots), firewalls, network monitoring tools (\textsl{Zeek},\dots), EDR tools,\dots
 \note{En la practica de la semana pasada hemos utilizado SELKS, que es un IDS/IPS. Incluye, entre otros, Suricata y Kibana.}
 
@@ -121,7 +121,7 @@ La tipología de visualización depende de los datos que se quieren representar,
 
    \switchcolumn
    \colfill
-   Lo más intuitivos son grafos, pero no siempre son suficiente para representar la complejidad de las relaciones entre los datos, porque los grafos tienen solo dos dimensiones (se ne pueden añadir más, utilizando el color o el tamaño de los nodos, pero son, sin embargo, limitadas en algunos casos).\\
+   Lo más intuitivos son grafos, pero no siempre son suficientes para representar la complejidad de las relaciones entre los datos, porque los grafos tienen solo dos dimensiones (se pueden añadir más, utilizando el color o el tamaño de los nodos, sin embargo son limitadas en algunos casos).\\
    En Fig. \ref{fig:chart} se puede ver un ejemplo de un diagrama de flujo de conexiones, que permite de identificar rápidamente horizontal/vertical port scanning o DDoS ataques.
    \colfill
 \end{paracol}
@@ -154,7 +154,7 @@ Gracias a los sistemas de detección y visualización, los analistas pueden iden
 A menudo conviene integrar estos procedimientos con los standards que clasifican las vulnerabilidades y amenazas, como el \textsc{MITRE ATT\&CK Framework}, \textsc{CVSS}, \textsc{CVE}, \textsc{STIX}, que hemos mencionado en clase. 
 
 Sin embargo, para velocizar el proceso de remediación, es posible \ul{\textbf{automatizar}} las respuestas a los eventos, utilizando herramientas como \textsc{SOAR}, que tal vez se pueden integrar con el \textsc{SIEM}.\\
-El orador del vídeo presenta esto aspecto como uno de los más importantes, porque minimizar el tiempo de remediación es fundamental para limitar el daño de un ataque.
+El orador del vídeo presenta este aspecto como uno de los más importantes, porque minimizar el tiempo de remediación es fundamental para limitar el daño de un ataque.
 Él introduce en la entrevista el concepto de \textbf{playbook} (más sobre esto más abajo), que define una secuencia de acciones que deben ser ejecutadas para realizar un objetivo, y que pueden automatizarse.
 
 
@@ -216,16 +216,16 @@ Por ejemplo, en el artículo se puede leer:
    unknown threats''}
 \end{center}
 
-En el video se habla de la importancia de \textbf{runbooks} y \textbf{playbooks}, y que son fundamentales ---aparte de sus uso principal de automatizar las respuestas--- para definir workflows repetibles que puedan enseñarse fácilmente a los nuevos miembros del equipo.
+En el video se habla de la importancia de \textbf{runbooks} y \textbf{playbooks}, y que son fundamentales ---aparte de su uso principal de automatizar las respuestas--- para definir workflows repetibles que puedan enseñarse fácilmente a los nuevos miembros del equipo.
 
 \note{Los \textbf{runbooks} definen las acciones de alto nivel que deben emprenderse en respuesta a una alerta, y los \textbf{playbooks} definen las acciones reales que deben emprenderse, \ul{y generalmente son \textbf{automatizados}}.
 \begin{align*}
    \textit{Runbook} &\longrightarrow \textit{Statements}\\
    \textit{Playbook} &\longrightarrow \textit{Actions}
 \end{align*}
-Por ejemplo, en caso de que una dispositivo se viera comprometido, el runbook diría que hay que evaluar el escenario (qué hizo el usuario, cuándo, si hay un ransomware\dots) y que hay que aislar la dispositivo de la red.
-Mientras que en el libro de jugadas está escrito cómo aislar realmente en practica la dispositivo de la red.
+Por ejemplo, en caso de que un dispositivo se viera comprometido, el runbook diría que hay que evaluar el escenario (qué hizo el usuario, cuándo, si hay un ransomware\dots) y que hay que aislar el dispositivo de la red.
+Mientras que en el playbook está escrito cómo aislar realmente en practica el dispositivo de la red.
 }
 \nl
 
-Y con respecto a la Fig. \ref{fig:cyvizTeam}, el orador no habla de esos ``equipos dedicados'', sino que menciona las actividades que realizan, como la categorización de alertas, la investigación de una alerta o el análisis retrospectivo de un incidente, y es razonable pensar que estas las actividades se dividen y se asignan a diferentes equipos con diferentes funciones y permisos, aunque no se menciona explícitamente.
+Y con respecto a la Fig. \ref{fig:cyvizTeam}, el orador no habla de esos ``equipos dedicados'', sino que menciona las actividades que realizan, como la categorización de alertas, la investigación de una alerta o el análisis retrospectivo de un incidente, y es razonable pensar que estas actividades se dividen y se asignan a diferentes equipos con diferentes funciones y permisos, aunque no se menciona explícitamente.
