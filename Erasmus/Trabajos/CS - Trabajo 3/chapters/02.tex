@@ -1,0 +1,104 @@
+\chapter{Tarea 2}
+
+% TAREA 2.
+
+%     Visualiza el siguiente vídeo:
+
+% https://www.google.com/search?client=firefox-b-d&q=Kaspersky+Industrial+CyberSecurity+demonstration+for+Energy+sector+-+Bing+video+#fpstate=ive&vld=cid:fc74c561,vid:7LNtjWx17mA,st:0
+
+%     Contesta a las siguientes preguntas:
+
+%     Identifica en la red industrial que se describe en el vídeo:
+
+% a. Lo componentes físicos
+
+% b. Los componentes ciberfísicos
+
+% c. Los componentes ciber
+
+%     Identifica los tipos de ataque que se describen en el vídeo, y explica brevemente como piensas que se podrían implementar.
+
+%     Explica cómo plantea la solución de Kaspersky en el vídeo la defensa frente a los posibles ataques.
+
+\section{Componentes de la red industrial}
+
+\begin{itemize}
+   \item \textbf{Componentes físicos:}
+   \begin{itemize}
+      \item 100kv high-voltage incoming line
+      \item Power transformer
+      \item 10kV bus feeder
+      \item Primary switching equipment
+   \end{itemize}
+   \item \textbf{Componentes ciberfísicos:}
+   \begin{itemize}
+      \item transformer protection
+      \item 2 bay controllers
+      \item Industrial Ethernet switch
+      \item Router
+   \end{itemize}
+   \item \textbf{Componentes ciber:}
+   \begin{itemize}
+      \item Kaspersky Industrial CyberSecurity
+      \begin{itemize}
+         \item KICS for Nodes - Endpoint Protection
+         \item KICS for Network - Anomaly and Breach Protection
+         \item Centralized security management
+         \item Kasperky Security Center - Manager installed on nodes
+      \end{itemize}
+      \item Firewall
+      \item Remote Control Center tools
+      \item SCADA server
+   \end{itemize}
+\end{itemize}
+
+% Software / hardware / virtual appliance
+
+% Passive traffic analysis
+
+% No influence on network stability
+
+% It can detect:
+
+% . Unauthorized network access
+
+% . Cyberattacks and intrusions
+% . Unauthorized commands to industrial
+% equipment
+% · Technological parameters anomalies:
+% - rules based
+% . machine learning
+% . Assets and its parameters
+
+% . Abnormal dataflow on network map
+
+\section{Ataque sobre la infraestructura industrial y defensa}
+
+El ataque que se muestra en el video comprende tres fases, también se analizan las posibles implementaciones de cada una de ellas:
+\begin{enumerate}
+   \item \textbf{Breach} - Obtener acceso a un componente
+   \begin{itemize}
+      \item Instalar un malware a traves de un documiento \texttt{.pdf} en un USB, que cuando se abre, se conecta al atacante, que obtiene acceso la computadora infectada, que puede utilizar como fuente para futuros ataques en la red.
+      \item \textit{Defensa} - KICS for Networks detecta una comunicación no autorizada entre la computadora infectada y una dirección IP externa, y detecta tamién un payload potencialmente peligroso, y envía una alerta Kaspersky Security Center.
+      \note{Si puede bloquear el ataque aquí, pero en el video se supone que no lo haces para mostrar el comportamiento defensivo en las fases siguientes}
+   \end{itemize}
+   \item \textbf{Discovery} - Obtener información y datos sobre el sistema
+   \begin{itemize}
+      \item A traves del componente infectado, el atacante puede escanear la red y obtener información sobre los dispositivos ciber y ciberfísicos conectados, lo que le permite establecer las vulnerabilidades actuales y planificar futuros ataques explotándolas.
+      \item \textit{Defensa} - KICS for Networks detecta un escaneo de red no autorizado y envía una alerta a Kaspersky Security Center. Imagino que KICS también puede detectar cualquier movimiento lateral del atacante.
+   \end{itemize}
+   \item \textbf{Technlogical Attack} - Ataque a la infraestructura
+   \begin{itemize}
+      \item Si no se bloquea el ataque en la fase anterior, el atacante puede enviar comandos no autorizados a los dispositivos ciberfísicos.\\
+      El ejemplo que se hace en el video es de utilizar una vulnerabilidad ---conocida--- del firmware del componente de protección del transformador para enviar un comando inapropiado para updatear el firmware de modo que el dispositivo deje de cumplir su función de protección.
+      \item En este punto, el atacante puede causar daños físicos como cortocircuitos y similares
+      \item \textit{Defensa} - KICS for Networks detecta un comando no autorizado y envía una alerta a Kaspersky Security Center.\\
+      Aunque no se detenga el ataque, podemos utilizar la información recopilada para mitigar futuros ataques.
+   \end{itemize}
+\end{enumerate}
+
+\framedt{
+   GOOSE spoofing
+}{
+   GOOSE spoofing es un ataque que consiste en enviar mensajes GOOSE (Generic Object Oriented Substation Event) falsos a los dispositivos de la subestación, lo que puede provocar fallos en el sistema.
+}

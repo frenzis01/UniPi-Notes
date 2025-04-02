@@ -1,0 +1,71 @@
+\chapter{Tarea 1}
+
+
+% Visualiza el siguiente vídeo:
+
+% https://www.youtube.com/watch?v=dEvtsZNrCSQ
+
+%     Contesta a las siguientes preguntas:
+
+%     Identifica en el sistema de distribución de agua:
+
+%     Lo componentes físicos
+%     Los componentes ciberfísicos
+%     Los componentes ciber
+
+%     Identifica los tipos de ataque que se describen en el vídeo, y explica brevemente como piensas que se podrían implementar.
+%     Explica cómo se plantea en el vídeo la defensa frente a los posibles ataques.
+
+\section{Componentes del sistema de distribución de agua}
+
+\begin{itemize}
+   \item \textbf{Componentes físicos:}
+   \begin{itemize}
+      \item Reservoirs
+      \item Tanks
+      \item Valves
+      \item Pipes
+      \item Pumps
+      \item Taps in houses
+   \end{itemize}
+   \item \textbf{Componentes ciberfísicos:}
+   \begin{itemize}
+      \item Sensors
+      \begin{itemize}
+         \item Water temperature
+         \item Water pressure
+      \end{itemize}
+      \item Logic Controllers (PLCs) que, por ejemplo, pueden activar una valvula si una cisterna está casi vacía 
+   \end{itemize}
+   \item \textbf{Componentes ciber:}
+   \begin{itemize}
+      \item Networks
+      \item Computadoras
+   \end{itemize}
+   \item SCADA (Supervisory Control and Data Acquisition)
+   % // TODO
+\end{itemize}
+
+\section{Tipos de ataque}
+Components of cyberphysical systems often do not enforce strong security measures, making them a target for attackers, who can gain initial access to a system by exploiting their vulnerabilities.     
+\begin{itemize}
+   \item Stealing data
+   \item Damaging eequipment
+   \item Cutting off water supply
+   \item Releasing toxic chemicals
+   \item Eavesdropping attacks
+   \item DoS (Denial of Service)
+   \item Deception attacks, i.e. sending bogus data to the control system
+\end{itemize}
+
+Parte de estos ataques van a mostrar efectos evidentes en el sistema de distribución, pero los atacantes también pueden cubrir sus huellas manipulando los datos que se envían al sistema de control, engañando potencialmente tanto a humanos como a algoritmos.
+
+\section{Defensa frente a ataques}
+La mejor defensa para Water Distributio Networks es la simulación de ataques, sin embargo, actualmente no existe un método estándar para hacerlo.
+El video muestra dos métodos de simulación:
+\begin{itemize}
+   \item Attack models, que son modelos matemáticos que simulan los posibles comportamientos de un atacante. \texttt{epanetCPA} es una herramienta que funciona en MATLAB que permite, dado un modelo de ataque, de ejecutar el modelo en una red PA, que es un modelo industrial estandar de red de agua, y ver cómo se comporta el sistema.\\
+   \texttt{epanetCPA} controla tanto el estado físico del sistema como el estado cibernético emulado del sistema.\\
+\end{itemize}
+
+Tras un estudio, se observó que ataques a distintos componentes conducen a resultados similares, entonces encontrar un comportamiento anomalo en el sistema puede ser insuficiente para determinar cual componente ha sido atacado.\\
