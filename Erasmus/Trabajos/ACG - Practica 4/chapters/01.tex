@@ -1,0 +1,51 @@
+\chapter{Trabajo}
+
+\lstset{language=python}
+
+% Preface
+% \note{Soy un estudiante italiano en Erasmus. Hablo español bastante bien, pero me resulta más natural escribir en inglés; sin embargo, decidí escribir en español para practicar, con la ayuda de algunos traductores cuando era necesario. Si hay algo mal escrito o poco claro, estoy a disposición para cualquier aclaración.}
+
+\section{Ejercicios 1/2/3 - \texttt{sin\_vocales}}
+
+\begin{paracol}{2}
+   El primero error en la función dada \lstinline|sin_vocales(s)| es que no se tiene cuenta de las mayúsculas y minúsculas. Por lo tanto, la función no elimina las vocales mayúsculas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión mayúscula de cada vocal.
+
+   \switchcolumn
+
+   \begin{lstlisting}
+def test_sin_vocales():
+   s = "el agua esta mojada"
+   exp = "l g st mjd"
+   assert sin_vocales(s) == exp
+
+   ...
+      
+   s = "El AgUe eStA mOjAdA"
+   exp = "l g St mjd"
+   assert sin_vocales(s) == exp
+   \end{lstlisting}
+\end{paracol}
+
+\begin{paracol}{2}
+   El segundo error es que la función no tiene cuenta de los acentos. Por lo tanto, la función no elimina las vocales acentuadas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión acentuada de cada vocal.
+
+   \begin{verbatim}
+      vocales = 'aeiouAEIOUáéíóúàèìòùäëïöüâê
+      îôûÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÂÊÎÔÛãõÃÕñÑ'
+   \end{verbatim}
+
+   Esta solución no parece muy elegante, ya que la lista de vocales se vuelve muy larga. Buscando sobre el internet he visto que una solución más elegante sería usar una expresión regular para eliminar todas las vocales, acentuadas o no. Para ello, se puede usar el módulo \lstinline|re| de Python, junto con \lstinline|unicodedata|, como se muestra en el código \ref{lst:unicodedata}.
+
+   \switchcolumn
+   \begin{verbatim}
+import unicodedata
+import re
+
+def sin_vocales(s):
+   # Normaliza el texto separando los caracteres básicos de sus diacríticos
+   s_norm = unicodedata.normalize('NFD', s)
+   # Elimina todas las vocales base y los diacríticos
+   s_sin_vocales = re.sub(r'[aeiouAEIOU\u0300-\u036f]', '', s_norm)
+   return s_sin_vocales
+   \end{verbatim}
+\end{paracol}
