@@ -1,4 +1,4 @@
-\chapter{Trabajo}
+\chapter{Práctica 4 y 5}
 
 % No necesario con minted (se especifica al usar el entorno)
 \lstset{language=python}
@@ -8,8 +8,32 @@
 
 \section{Ejercicios 1/2/3 - \texttt{sin\_vocales}}
 
+\subsection{Ejercicio 1 - Función inicial}
+\begin{lstlisting}[captionpos=b,caption={Función inicial}]
+   def sin_vocales (s):
+      """
+      devuelve el argumento s sin vocales
+      """
+      vocales = 'aeiou'
+      s_sinVocales = ' '
+      for ch in s:
+         pos = vocales.find(ch)
+         if pos == -1: #ch no es vocal
+            s_sinVocales = s_sinVocales + ch
+      return s_sinVocales
+\end{lstlisting}
+
+Esta es la función inicial que se nos ha dado, y que parece funcionar, pero solo con pruebas demasiado sencillas.
+
+\subsection{Ejercicio 2 - Prueba de la función}
+
+Abajo en el código \ref{code:pruebas}, después de la discusión de los dos errores encontrados, hay la función	de prueba completa \lstinline{test_sin_vocales()} que comprueba la función \lstinline{sin_vocales(s)}. 
+
+
 \begin{paracol}{2}
-   El primero error en la función dada \lstinline{sin_vocales(s)} es que no se tiene cuenta de las mayúsculas y minúsculas. Por lo tanto, la función no elimina las vocales mayúsculas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión mayúscula de cada vocal.
+   \colfill
+   El primero error en la función dada \lstinline{sin_vocales(s)} es que \ul{no se tiene cuenta de las \textbf{mayúsculas} y \textbf{minúsculas}}. Por lo tanto, la función no elimina las vocales mayúsculas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión mayúscula de cada vocal.
+   \colfill
 
    \switchcolumn
 
@@ -27,18 +51,37 @@ def test_sin_vocales():
    \end{lstlisting}
 \end{paracol}
 
+\begin{lstlisting}[captionpos=b,caption={\lstinline|sin_vocales()| con vocales mayúsculas}, label={code:sin_vocales1}]
+   def sin_vocales (s:str):
+      vocales = 'aeiouAEIOU'
+      s_sinVocales = ''
+      for ch in s:
+         pos = vocales.find(ch)
+         if pos == -1: #ch no es vocal
+            s_sinVocales = s_sinVocales + ch
+      return s_sinVocales
+\end{lstlisting}
+
+\newpage
 \begin{paracol}{2}
-   El segundo error es que la función no tiene cuenta de los acentos. Por lo tanto, la función no elimina las vocales acentuadas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión acentuada de cada vocal.
+   \colfill
+   El segundo error es que la función \ul{no tiene cuenta de los \textbf{acentos}}. Por lo tanto, la función no elimina las vocales acentuadas.
+   \begin{lstlisting}
+   assert sin_vocales("áÉíÓú") == "" # falla
+   \end{lstlisting}
+   Para solucionarlo, es suficiente añadir a la lista de vocales la versión acentuada de cada vocal.
 
-   \begin{verbatim}
-      vocales = 'aeiouAEIOUáéíóúàèìòùäëïöüâê
-      îôûÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÂÊÎÔÛãõÃÕñÑ'
-   \end{verbatim}
+   \begin{lstlisting}
+   vocales = 'aeiouAEIOUáéíóúàèìòùäëïöüâê
+   îôûÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÂÊÎÔÛãõÃÕ'
+   \end{lstlisting}
 
-   Esta solución no parece muy elegante, ya que la lista de vocales se vuelve muy larga. Buscando sobre el internet he visto que una solución más elegante sería usar una expresión regular para eliminar todas las vocales, acentuadas o no. Para ello, se puede usar el módulo \lstinline{re} de Python, junto con \lstinline{unicodedata}, como se muestra en el código \ref{code:unicodedata}.
+   Esta solución no parece muy elegante, ya que la lista de vocales se vuelve muy larga. Buscando sobre el internet he visto que una solución más elegante sería usar una expresión regular para eliminar todas las vocales, acentuadas o no. Para ello, se puede usar el módulo \lstinline{re} de Python, junto con \lstinline{unicodedata}, como se muestra en el código a la derecha.
+   \colfill
 
    \switchcolumn
-   \begin{lstlisting}[label={code:unicodedata},caption={Código para eliminar vocales y diacríticos}]
+   \colfill
+   \begin{lstlisting}[label={code:unicodedata},captionpos=b,caption={Código para eliminar vocales y diacríticos que utiliza \lstinline{unicodedata}}]
 import unicodedata
 import re
 
@@ -49,11 +92,59 @@ def sin_vocales(s):
    s_sin_vocales = re.sub(r'[aeiouAEIOU\u0300-\u036f]', '', s_norm)
    return s_sin_vocales
    \end{lstlisting}
+   \colfill
 \end{paracol}
 
+\vspace{2em}
+
+\begin{lstlisting}[captionpos=b,caption={Pruebas que he escrito}, label={code:pruebas}]
+def test_sin_vocales():
+   s = "el agua esta mojada"
+   exp = "l g st mjd"
+   assert sin_vocales(s) == exp
+   s = "aieou"
+   exp = ""
+   assert sin_vocales(s) == exp
+   s = "123greee"
+   exp = "123gr"
+   assert sin_vocales(s) == exp
+   s = "El AgUe eStA mOjAdA"
+   exp = "l g St mjd"
+   assert sin_vocales(s) == exp
+   s = "àéíóú"
+   exp = ""
+   assert sin_vocales(s) == exp
+   s = "are you ok?"
+   exp = "r y k?"
+   assert sin_vocales(s) == exp
+   s = ""
+   exp = ""
+   assert sin_vocales(s) == exp
+   s = "A"
+   exp = ""
+   assert sin_vocales(s) == exp
+   
+\end{lstlisting}
+\subsection{Ejercicio 3/4 - Corregir la función y añadir pruebas}
+
+\begin{lstlisting}[captionpos=b,caption={\lstinline|sin_vocales()| corregida}, label={code:sin_vocales}]
+   def sin_vocales (s:str):
+      vocales = 'aeiouAEIOUáéíóúàèìòùäëïöüâêîôûÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÂÊÎÔÛãõÃÕ'
+      s_sinVocales = ''
+      for ch in s:
+         pos = vocales.find(ch)
+         if pos == -1: #ch no es vocal
+            s_sinVocales = s_sinVocales + ch
+      return s_sinVocales
+\end{lstlisting}
+
+Para evitar el uso del paquete adicional \lstinline{unicodedata}, he preferido utilizar simplemente listas de vocales que incluyen también las vocales acentuadas.
+
+He añadido al fichero \texttt{.py} la función que nos ha dado en el ejercicio, per controllare che anche quei test passassero.
+
 \newpage
-\section{Ejercicio 5}
-\begin{lstlisting}[caption={Solución sencilla}]
+\section{Ejercicio 5 - \texttt{cantidad\_numeros}}
+\begin{lstlisting}[captionpos=b,caption={Solución sencilla}]
 def cantidad_numeros_sencilla(s: str):
    """
    Esta función recibe una cadena de texto y devuelve la cantidad de números que contiene.
@@ -62,10 +153,10 @@ def cantidad_numeros_sencilla(s: str):
    return len(re.findall(r'\d+', s))
 \end{lstlisting}
 
-Esta primera solución funciona y es concisa, pero no tiene en cuenta los números decimales (como $12.34$) y las notaciones científicas (como $12*10^6$ o $10^(-2)$). 
+Esta primera solución funciona y es concisa, pero no tiene en cuenta los números decimales (como $12.34$) y las notaciones científicas (como $12\cdot 10^6$ o $10^{-2}$). 
 Para solucionarlo, es necesario modificar la expresión regular para que también considere estos casos.
 
-\begin{lstlisting}[caption={Solución que incluye números decimales y notaciones científicas}]
+\begin{lstlisting}[captionpos=b,caption={Solución que incluye números decimales y notaciones científicas}]
       
 def cantidad_numeros(s: str):
    """
@@ -96,7 +187,12 @@ def cantidad_numeros(s: str):
    
    # Contar el total de números encontrados
    return len(decimal_matches) + len(scientific_matches) + len(remaining_matches)
+\end{lstlisting}
 
+\newpage
+\begin{paracol}{2}
+   
+   \begin{lstlisting}[captionpos=b,caption={Mis pruebas para \lstinline|cantidad_numeros()|}, label={code:cantidad_numeros}]
 def test_cantidad_numeros():
    s = "12 356 53333"
    assert cantidad_numeros(s) == 3
@@ -124,10 +220,59 @@ def test_cantidad_numeros():
    assert cantidad_numeros(s) == 2
    s = "asgre23*10^(-2)asfg10^2agr12.34"
    assert cantidad_numeros(s) == 3
-\end{lstlisting}
+   \end{lstlisting}
+
+   \switchcolumn
+
+   \begin{lstlisting}[captionpos=b,caption={Pruebas ordenadas como estan en el documiento}, label={code:cantidad_numeros2}]
+def test_cantidad_numeros_doc():
+   # Varios números en la cadena
+   s = "un 1, un 201 y 2 unos"   
+   assert cantidad_numeros(s) == 3
+   # Sin números en la cadena
+   s = "sin numeros"   
+   assert cantidad_numeros(s) == 0
+   # Un solo número en la cadena
+   s = "2345543"    
+   assert cantidad_numeros(s) == 1
+   # Diferentes longitudes de números
+   s = "1 22 333 4444 55555"    
+   assert cantidad_numeros(s) == 5
+   # Números separados por espacios
+   s = "123 456 789"    
+   assert cantidad_numeros(s) == 3
+   # Números separados por comas
+   s = "12,34,56,78"    
+   assert cantidad_numeros(s) == 4
+   # Números rodeados de texto
+   s = "numero123numero456numero"   
+   assert cantidad_numeros(s) == 2
+   # Una cadena continua de números
+   s = "123456789"   
+   assert cantidad_numeros(s) == 1
+   # Números al inicio y al final
+   s = "1 starting and ending 2"    
+   assert cantidad_numeros(s) == 2
+   # Número al final 
+   s = "ending with number 5"   
+   assert cantidad_numeros(s) == 1
+   # Números en una cadena simple
+   s = "3 6 9"   
+   assert cantidad_numeros(s) == 3
+   # Sin números en la cadena
+   s = "sinnumeros"    
+   assert cantidad_numeros(s) == 0
+   # Números mezclados con texto
+   s = "123unnumero456"   
+   assert cantidad_numeros(s) == 2
+   # Números negativos
+   s = "-5 10 -15"  
+   assert cantidad_numeros(s) == 3
+   \end{lstlisting}
+\end{paracol}
 
 \newpage
-\section{Ejercicio 6}
+\section{Ejercicio 6 - \texttt{sin\_vocales} con prueba parametrizada}
 
 \begin{lstlisting}
 @pytest.mark.parametrize ("entrada , salida_esperada " ,[
