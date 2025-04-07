@@ -36,39 +36,45 @@
          \item Water pressure
       \end{itemize}
       \item Logic Controllers (PLCs) que, por ejemplo, pueden activar una valvula si una cisterna está casi vacía 
+      \item Actuators in general
    \end{itemize}
    \item \textbf{Componentes ciber:}
    \begin{itemize}
+      \item \textsc{SCADA} (Supervisory Control and Data Acquisition)
+      \item HMIs
       \item Networks
       \item Computadoras
    \end{itemize}
-   \item SCADA (Supervisory Control and Data Acquisition)
 \end{itemize}
 
 \section{Tipos de ataque}
-Components of cyberphysical systems often do not enforce strong security measures, making them a target for attackers, who can gain initial access to a system by exploiting their vulnerabilities.     
+Los componentes de sistemas ciberfísicos a menudo no implementan medidas de seguridad fuertes, convirtiéndolos en objetivo para atacantes, que pueden obtener acceso inicial a un sistema explotando sus vulnerabilidades.     
 \begin{itemize}
-   \item \textbf{Robo de datos (Stealing data):} Podrían implementarse mediante la infiltración en los sistemas SCADA para extraer información confidencial sobre la infraestructura, patrones de uso, o datos de clientes. Esto podría realizarse mediante malware especializado o aprovechando vulnerabilidades en el software de control. Es posible también a traves de \textit{packet sniffing}. 
+   \item \textbf{\ul{Robo de datos (Stealing data):}} Podrían implementarse mediante la infiltración en los sistemas \textsc{SCADA} para extraer información confidencial sobre la infraestructura, patrones de uso, o datos de clientes. Esto podría realizarse mediante malware especializado o aprovechando vulnerabilidades en el software de control. Es posible también a traves de \textbf{packet sniffing}.\\
    
-   \item \textbf{Daño al equipamiento (Damaging equipment):} Manipulación de PLCs para operar bombas fuera de sus límites operativos. Similar al ataque Stuxnet que dañó centrifugadoras en Irán modificando frecuencias de operación.
+   \item \textbf{\ul{Daño al equipamiento (Damaging equipment):}} Manipulación de PLCs para operar bombas fuera de sus límites operativos. Similar al ataque Stuxnet que dañó centrifugadoras en Irán modificando frecuencias de operación.\\
+   A veces, los sistemas empotrados no tienen \textbf{separación de privilegios} (monolithic kernel, todas las aplicaciones tienen el mismo ---máximo--- privilegio, falta de memory protection), lo que facilita la manipulación.
    
-   \item \textbf{Corte del suministro de agua (Cutting off water supply):} Cierre de válvulas o apagado de bombas mediante acceso no autorizado a HMIs (Human-Machine Interfaces).
+   \item \textbf{\ul{Corte del suministro de agua (Cutting off water supply):}} Cierre de válvulas o apagado de bombas mediante acceso no autorizado a HMIs (Human-Machine Interfaces);
+   \textbf{command injection} ataques junto a falta de \textbf{input validation} pueden permitir a un atacante ejecutar comandos arbitrarios en el sistema.
    
-   \item \textbf{Liberación de sustancias tóxicas (Releasing toxic chemicals):} Alteración de sistemas de dosificación química explotando PLCs con vulnerabilidades conocidas.
+   \item \textbf{\ul{Liberación de sustancias tóxicas (Releasing toxic chemicals):}} Alteración de sistemas de dosificación química explotando PLCs con vulnerabilidades conocidas.\\
+   Hemos mencionado \textbf{Maroochy Shire}, donde un ex-empleado de la empresa de control de aguas trató de liberar aguas residuales en el sistema de distribución, a través de un laptop y de una transmisión de radio para manipular bombas y válvulas.\\
    
-   \item \textbf{Ataques de interceptación (Eavesdropping attacks):} Captura de tráfico no cifrado entre sensores y controladores mediante herramientas como Wireshark. Muchos protocolos SCADA (Modbus, DNP3) carecen de encriptación, y, en cualquier caso, existen técnicas de Deep Packet Inspection (DPI) que permiten deducir información incluso de paquetes cifrados.\\
+   \item \textbf{\ul{Ataques de interceptación (Eavesdropping attacks):}} Captura de tráfico no cifrado entre sensores y controladores mediante herramientas como Wireshark. Hemos visto en clase que si pueden {alterar las funciones} de los protocolos \textsc{SCADA} \textsc{Modbus} y \textsc{DNP3} con fines malévolos. Además, \textsc{SCADA} protocolos pueden carecer de \textbf{encriptación}, y, en cualquier caso, existen técnicas de \textit{Deep Packet Inspection} (\textsc{}DPI) que permiten deducir información incluso de paquetes cifrados.\\
+   Una práctica comun es el \textbf{ARP spoofing} para redirigir el tráfico a un dispositivo de escucha.
    
-   \item \textbf{Denegación de servicio (DoS):} Saturación de interfaces de red de controladores RTU/PLC, o explotación de vulnerabilidades para inhabilitar dispositivos.
+   \item \textbf{\ul{Denegación de servicio (DoS):}} Saturación de interfaces de red de controladores RTU/PLC, o explotación de vulnerabilidades para inhabilitar dispositivos. Ejemplos típicos incluyen \textbf{\textsc{SYN} flooding}, \textbf{Malformed packets injection} o \textbf{Smurf} ataques.
    
-   \item \textbf{Ataques de engaño (Deception attacks):} Falsificación de lecturas de sensores mediante ataques man-in-the-middle en protocolos vulnerables como OPC UA. El ataque a Ukrainian Power Grid (2015) utilizó técnicas similares para ocultar cambios en el sistema.
+   \item \textbf{\ul{Ataques de engaño (Deception attacks):}} Falsificación de lecturas de sensores mediante ataques man-in-the-middle en protocolos vulnerables como OPC UA. El ataque a una \textit{Ukrainian Power Grid} en 2015 utilizó técnicas de deception hacer que los empleados obtengan un malware a través de correos electrónicos para comprometer la red.
 \end{itemize}
 
 Parte de estos ataques van a mostrar efectos evidentes en el sistema de distribución, pero los atacantes también pueden cubrir sus huellas manipulando los datos que se envían al sistema de control, engañando potencialmente tanto a humanos como a algoritmos.
 
 \section{Defensa frente a ataques}
-La mejor defensa para Water Distributio Networks es la simulación de ataques, sin embargo, actualmente no existe un método estándar para hacerlo.
+La mejor defensa para \textit{Water Distribution Networks} es la \textbf{simulación de ataques}, sin embargo, actualmente no existe un método estándar para hacerlo.\\
 ``Attack models'' son modelos matemáticos que simulan los posibles comportamientos de un atacante.
 El video muestra \texttt{epanetCPA} es una herramienta que funciona en MATLAB que permite, dado un modelo de ataque, de ejecutar el modelo en una red PA, que es un modelo industrial estandar de red de agua, y ver cómo se comporta el sistema.\\
-\texttt{epanetCPA} controla tanto el estado físico del sistema como el estado cibernético emulado del sistema, así que puede comparar el comportamiento del sistema real con el comportamiento del sistema simulado.
+\texttt{epanetCPA} controla tanto el \textit{estado físico} del sistema como el \textit{estado cibernético} emulado del sistema, así que puede \textbf{comparar} el comportamiento del sistema real con el comportamiento del sistema simulado.
 
 Tras un estudio, se observó que ataques a distintos componentes conducen a resultados similares, entonces encontrar un comportamiento anomalo en el sistema puede ser insuficiente para determinar cual componente ha sido atacado, lo que hace necesaria una evaluación humana más completa.

@@ -1,5 +1,6 @@
 \chapter{Trabajo}
 
+% No necesario con minted (se especifica al usar el entorno)
 \lstset{language=python}
 
 % Preface
@@ -8,7 +9,7 @@
 \section{Ejercicios 1/2/3 - \texttt{sin\_vocales}}
 
 \begin{paracol}{2}
-   El primero error en la función dada \lstinline|sin_vocales(s)| es que no se tiene cuenta de las mayúsculas y minúsculas. Por lo tanto, la función no elimina las vocales mayúsculas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión mayúscula de cada vocal.
+   El primero error en la función dada \lstinline{sin_vocales(s)} es que no se tiene cuenta de las mayúsculas y minúsculas. Por lo tanto, la función no elimina las vocales mayúsculas. Para solucionarlo, es suficiente añadir a la lista de vocales la versión mayúscula de cada vocal.
 
    \switchcolumn
 
@@ -34,10 +35,10 @@ def test_sin_vocales():
       îôûÁÉÍÓÚÀÈÌÒÙÄËÏÖÜÂÊÎÔÛãõÃÕñÑ'
    \end{verbatim}
 
-   Esta solución no parece muy elegante, ya que la lista de vocales se vuelve muy larga. Buscando sobre el internet he visto que una solución más elegante sería usar una expresión regular para eliminar todas las vocales, acentuadas o no. Para ello, se puede usar el módulo \lstinline|re| de Python, junto con \lstinline|unicodedata|, como se muestra en el código \ref{lst:unicodedata}.
+   Esta solución no parece muy elegante, ya que la lista de vocales se vuelve muy larga. Buscando sobre el internet he visto que una solución más elegante sería usar una expresión regular para eliminar todas las vocales, acentuadas o no. Para ello, se puede usar el módulo \lstinline{re} de Python, junto con \lstinline{unicodedata}, como se muestra en el código \ref{code:unicodedata}.
 
    \switchcolumn
-   \begin{verbatim}
+   \begin{lstlisting}[label={code:unicodedata},caption={Código para eliminar vocales y diacríticos}]
 import unicodedata
 import re
 
@@ -47,5 +48,115 @@ def sin_vocales(s):
    # Elimina todas las vocales base y los diacríticos
    s_sin_vocales = re.sub(r'[aeiouAEIOU\u0300-\u036f]', '', s_norm)
    return s_sin_vocales
-   \end{verbatim}
+   \end{lstlisting}
 \end{paracol}
+
+\newpage
+\section{Ejercicio 5}
+\begin{lstlisting}[caption={Solución sencilla}]
+def cantidad_numeros_sencilla(s: str):
+   """
+   Esta función recibe una cadena de texto y devuelve la cantidad de números que contiene.
+   N.B. números, no digitos!
+   """
+   return len(re.findall(r'\d+', s))
+\end{lstlisting}
+
+Esta primera solución funciona y es concisa, pero no tiene en cuenta los números decimales (como $12.34$) y las notaciones científicas (como $12*10^6$ o $10^(-2)$). 
+Para solucionarlo, es necesario modificar la expresión regular para que también considere estos casos.
+
+\begin{lstlisting}[caption={Solución que incluye números decimales y notaciones científicas}]
+      
+def cantidad_numeros(s: str):
+   """
+   Esta función recibe una cadena de texto y devuelve la cantidad de números que contiene.
+   
+   Números decimales (como 12.34) y notaciones científicas (como 12*10^6 o 10^(-2)) son considerados números.
+   """
+   # Identificar números decimales (como 12.34)
+   decimal_pattern = r'-?\d+\.\d+'
+   decimal_matches = re.findall(decimal_pattern, s)
+   
+   # Eliminar los números decimales ya encontrados para evitar contar dos veces
+   for match in decimal_matches:
+       s = s.replace(match, ' ', 1)
+   
+   # Identificar notaciones científicas (como 12*10^6 o 10^(-2))
+   scientific_pattern = r'\d+\*10\^\(?\-?\d+\)?'
+   scientific_matches = re.findall(scientific_pattern, s)
+   
+   # Eliminar las notaciones científicas de la cadena
+   for match in scientific_matches:
+       s = s.replace(match, ' ', 1)
+   
+   # Encontrar los números restantes (enteros)
+   # Modificamos el patrón para capturar secuencias de dígitos en cualquier contexto
+   remaining_pattern = r'\d+'
+   remaining_matches = re.findall(remaining_pattern, s)
+   
+   # Contar el total de números encontrados
+   return len(decimal_matches) + len(scientific_matches) + len(remaining_matches)
+
+def test_cantidad_numeros():
+   s = "12 356 53333"
+   assert cantidad_numeros(s) == 3
+   s = "asfa432asf23"
+   assert cantidad_numeros(s) == 2
+   s = ""
+   assert cantidad_numeros(s) == 0
+   s = "1"
+   assert cantidad_numeros(s) == 1
+   s = "fwgds"
+   assert cantidad_numeros(s) == 0
+   s = "1 fhsdSGG 4"
+   assert cantidad_numeros(s) == 2
+   s = "-12 + 34 -12-133 "
+   assert cantidad_numeros(s) == 4
+   s = "12.34 56.78"
+   assert cantidad_numeros(s) == 2
+   s = "12*10^6"
+   assert cantidad_numeros(s) == 1
+   s = "23*10^(-2)"
+   assert cantidad_numeros(s) == 1
+   s = "23*10^(64) + 12.34"
+   assert cantidad_numeros(s) == 2
+   s = "asgre23*10^(-2)asfg10^2"
+   assert cantidad_numeros(s) == 2
+   s = "asgre23*10^(-2)asfg10^2agr12.34"
+   assert cantidad_numeros(s) == 3
+\end{lstlisting}
+
+\newpage
+\section{Ejercicio 6}
+
+\begin{lstlisting}
+@pytest.mark.parametrize ("entrada , salida_esperada " ,[
+   ("El agua esta mojada", "l g st mjd"),
+   ("mojada bañando en el agua", "mjd bñnd n l g"),
+   ("ahora termina bien", "hr trmn bn"),
+   ("", ""),
+   ("a", ""),
+   ("m", "m"),
+   ("unstringsinespacios", "nstrngsnspcs"),
+   ("MAYUSculas FUNCIOnaN", "MYScls FNCnN"),
+   ("krt yhgf dwpq", "krt yhgf dwpq"),
+   ("aeoiuuuoiea", ""),
+   ("disco de los 80", "dsc d ls 80"),
+   ("signos como ? y ! y ¡", "sgns cm ? y ! y ¡"),
+   ("ábc élla ó", "bc ll "),
+   ("Óm tambien mayÚsculÁs", "m tmbn myscls")
+   ])
+
+def test_sin_vocales_parametrizado(entrada, salida_esperada):
+   """
+   testea la función sin_vocales
+   """
+   assert sin_vocales (entrada) == salida_esperada
+\end{lstlisting}
+
+Esta es una forma alternativa de escribir los test, que permite de parametrizar la función driver de test.
+
+En comparación con el test set anterior del pdf, hemos añadido pruebas que incluyen vocales con acento. La función \lstinline|sin_vocales| no va a cambiar porque ya había tenido en cuenta los acentos en el ejercicio anterior.
+
+
+
