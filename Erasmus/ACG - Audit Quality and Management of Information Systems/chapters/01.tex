@@ -1,9 +1,9 @@
-\section*{Información General para la evaluación}
-Di lunedì seminarios fino a fine marzo...
-I seminari sono parte del$ 25\%$ della observación
-Da marzo iniziano le prácticas, che sono un altro $25\%$
-$30\%$ è una prova scritta
-$20\%$ è una prova orale 
+% \section*{Información General para la evaluación}
+% % Di lunedì seminarios fino a fine marzo...
+% % I seminari sono parte del$ 25\%$ della observación
+% % Da marzo iniziano le prácticas, che sono un altro $25\%$
+% % $30\%$ è una prova scritta
+% % $20\%$ è una prova orale 
 
 \chapter{Calidad}
 
@@ -100,8 +100,26 @@ Requisitos no funcionales son más fáciles de verificar que los funcionales, po
    Una frase que incluye alguna medida que puede ser objetivamente probada.
 \end{definition}
 
-Matrices de trazabilidad son herramientas que permiten verificar la trazabilidad de los requisitos.
+\subsection{Matrices de trazabilidad}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/01/matriceTrazabilidad.png}
+   \caption{Matrice de trazabilidad}
+   \label{fig:01/matriceTrazabilidad}
+\end{figure}
+
+{Matrices de trazabilidad son herramientas que permiten verificar la trazabilidad de los requisitos. Resulta fundamental que la trazabilidad siempre esté actualizada y refleje la realidad del proyecto en tiempo real\ns
+\begin{itemize}
+	\item Controlar cambios en requisitos
+	\item Ayuda a encontrar inconsistencias
+	\item Verificación de requisitos
+	\item Mejor gestión de requisitos
+	\item Asegurar eficiencia y calidad para el sistema
+\end{itemize}}
+
 Hay muchas matrices en las slides, algunas relacionan requisitos con casos de uso, otros con pruebas, otros con componentes del sistema.
+
 
 \framedt{Ejercicio 1 / Analisis Requisitos}{
    Javier dice cosas correctas. Aparte de las cosas que mencionó, se puede ver cómo no hay muchos numeros en los requisitos; el documento dices que es necesario hacer backups, pero, ¿cuantós backups? ¿con qué frecuencia? ¿con qué software?.
@@ -116,57 +134,92 @@ La calidad del proceso contribuye a la calidad del producto, y la calidad del pr
    \end{itemize}
 }
 
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/01/productoCalidad.png}
+   \caption{Calidad de proceso y producto}
+   \label{fig:01/productoCalidad}
+\end{figure}
 
+\note{El producto como el proceso requiren recursos y la calidad también depende de la calidad de los recursos utilizados}
+
+\begin{definition}
+[SGC]
+Un \textbf{Sistema de gestión de calidad} es un 
+conjunto de elementos relacionados entre sí para la planificación, la coordinación y la ejecución de acciones que fomenten la mejora continua en una organización, orientados a alcanzar la calidad de producto o servicio.
+\end{definition}
+
+Un SGC está formado por un conjunto de políticas, procesos y procedimientos documentados y está diseñado para asegurar que los productos o servicios desarrollados por la organización donde se implementa cumplen con los requisitos de calidad y con los exigentes estándares de un mercado específico.
 
 Hay algunos pasos importantes en la gestión de la calidad:
 \begin{itemize}
-   \item Preparación y utilización de recursos
+   \item Preparación y utilización de \textbf{recursos}
    \begin{itemize}
       \item Humanos
       \item Económicos
       \item Infraestructura
       \item Conocimientos y experencia
    \end{itemize}
-   \item Procesos
+   \item Documentación y evaluación de \textbf{Procesos}
    \begin{itemize}
       \item Estratégicos
       \item Operativos
       \item Soporte
    \end{itemize}
-   \item Políticas de trabajo\\
+   \item Establecer \textbf{Políticas de trabajo} y calidad\\
    Una política de trabajo de calidad es una manifestación que realiza una empresa acerca de cómo actúa y cuáles son las pautas o reglas que establecen en el día a día para trabajar que le lleven a mejorar continuamente y hacer las cosas bien a la primera.
 
-   Una parte crítica de la política de calidad es detectar y analizar los problemas en una empresa y los resultados no alcanzados
-   \item Objetivos\\
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/01/politicaCalidad.png}
+      \caption{Politica de calidad}
+      \label{fig:01/politicaCalidad}
+      Una parte crítica de la política de calidad es detectar y analizar los problemas en una empresa y los resultados no alcanzados
+   \end{figure}
+   \item \textbf{Objetivos}\\
    ``Conseguir una productividad del 100\% de los desarrolladores'' o ``Aumentar la satisfacción de los cliente'' son objetivos mal planteados.
 
 \end{itemize}
 
 \subsection{ISO 9001}
+
 La ISO 9001 es una norma internacional que especifica los requisitos para un sistema de gestión de la calidad (SGC). Las organizaciones utilizan la norma para demostrar la capacidad para proporcionar productos y servicios que cumplen con los requisitos del cliente y los reglamentarios aplicables.
 El principal objetivo de la ISO 9001:2015 es lograr que una compañía consiga la satisfacción del cliente mediante el establecimiento de procesos de mejora continuada dentro de la misma.
 
-Propone también un metodo de \textbf{mejora continua}, el PDCA (Plan, Do, Check, Act).
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/01/pdca.png}
+   \caption{PDCA plan}
+   \label{fig:01/pdca}
+   Propone también un metodo de \textbf{mejora continua}, el PDCA (Plan, Do, Check, Act).
+\end{figure}
 
 \subsubsection{Quality control and assurance}
 \begin{itemize}
-   \item \textbf{Quality Control}: A part of quality management focused on fulfilling quality
-   requirements\\
-   Parte de la gestión de calidad de software que comprueba que el proyecto sigue sus estándares, procesos y procedimientos, y que el proyecto produce los productos (entregables) internos y externos requeridos.
-   \item \textbf{Quality Assurance}: A part of quality management focused on providing confidence that quality requirements will be fulfilled\\
+   \item \textbf{Quality Control}: ``A part of quality management focused on fulfilling quality
+   requirements''\\
+   Parte de la gestión de calidad de software que comprueba que el proyecto sigue sus estándares, procesos y procedimientos, y que el proyecto produce los productos (entregables) internos y externos requeridos.\\
+   El principal propósito del control de calidad es asegurar que el producto satisface los requisitos mediante pruebas y revisiones de los requisitos funcionales y no funcionales. El control de calidad aprovecha las pruebas e inspecciones integrales para monitorear la calidad de la producción de un fabricante.
+
+   \item \textbf{Quality Assurance}: ``A part of quality management focused on providing confidence that quality requirements will be fulfilled''\\
    Parte de la gestión de calidad de software que asegura que los estándares, procesos y procedimientos son apropiados para el proyecto y se han implementado correctamente.
 \end{itemize}
 
+{El aseguramiento de la calidad incluye aquellas actividades
+planificadas y sistemáticas necesarias para aportar la
+confianza de que el software satisfará los requisitos dados de
+calidad.
+Esas actividades aseguran que el proceso del software y productos cumplen los requerimientos, estándares, y procedimientos:\ns
 \begin{itemize}
 	\item los \textit{procesos} incluyen todas las actividades involucradas en el
 diseño, codificación, pruebas y mantenimiento;
 	\item los \textit{productos} incluyen software, datos asociados,
 documentación, y toda la documentación para soporte y
 reportes.
-\end{itemize}
+\end{itemize}}
 
 Los ingenieros del software realizan el trabajo técnico.
-En cambio, un grupo de SQA (Software Quality Assurance) se responsabiliza en la planificación de aseguramiento de la calidad, supervisión, mantenimiento de registros, análisis e informes.\\
+En cambio, un grupo de \textbf{SQA} (\textit{Software Quality Assurance}) se responsabiliza en la planificación de aseguramiento de la calidad, supervisión, mantenimiento de registros, análisis e informes.\\
 El principal propósito del control de calidad es asegurar que el producto satisface los requisitos mediante \textbf{pruebas} y \textbf{revisiones} de los requisitos funcionales y no funcionales.
 
 \subsubsection{SPI - Software Process Improvement}
@@ -179,7 +232,11 @@ El principal propósito del control de calidad es asegurar que el producto satis
 \end{figure}
 
 \begin{paracol}{2}
-   Modelos de Madurez establecen marcos de referencia que evalúan la capacidad de una organización para desarrollar productos o servicios de calidad de manera consistente y predecible; van a evalúar la madurez de los procesos de desarrollo de software o sistemas.
+   \colfill
+   Los \textbf{Estándares de Calidad} son normas establecidas que definen las mejores prácticas, guías o requisitos que un proceso, producto o sistema debe cumplir para garantizar la Calidad.
+
+   Los \textbf{Modelos de Madurez} establecen marcos de referencia que evalúan la capacidad de una organización para desarrollar productos o servicios de calidad de manera consistente y predecible; van a evalúar la madurez de los procesos de desarrollo de software o sistemas.
+   \colfill
    
    \switchcolumn
 
