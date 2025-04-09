@@ -1,0 +1,46 @@
+\chapter{Pruebas de Regresión - Charla}
+\note{Beatriz Marín}
+
+\section{Introducción}
+\coolquote{Las pruebas solo pueden demostrar la presencia de bugs, no su ausencia.}{Edsger W. Dijkstra}
+
+Pruebas del software son una técnica de V\&V dinámica. Hay muchos tipos de pruebas, y cada uno tiene su propio objetivo.
+
+\begin{itemize}
+   \item Caja negra - No se tiene en cuenta la implementación interna del software, solo se prueba su comportamiento externo.
+   \item Caja blanca - Se tiene en cuenta la implementación interna del software, y se prueba su comportamiento interno.
+   \item Funcionales / No funcionales - Las pruebas funcionales se centran en verificar que el software cumple con los requisitos funcionales, mientras que las pruebas no funcionales se centran en verificar que el software cumple con los requisitos no funcionales.
+   \item Manuales / Automatizadas - Las pruebas manuales son realizadas por un tester humano, mientras que las pruebas automatizadas son realizadas por un programa de software.
+   \item Alfa / Beta / Regresión - Las pruebas alfa son realizadas por el equipo de desarrollo, las pruebas beta son realizadas por un grupo de usuarios seleccionados, y las pruebas de regresión son realizadas para verificar que los cambios realizados en el software no han afectado a su funcionamiento.
+   \item ecc\dots
+\end{itemize}
+
+El problema princípal es que el tiempo es limitado, y los sistemas cada vez son más complejos. Por lo tanto, es necesario encontrar un equilibrio entre la calidad del software y el tiempo de desarrollo.
+
+
+Estrategias para semplificar el proceso de pruebas:
+\begin{itemize}
+	\item Busqueda 
+	\item Mutación
+	\item Modelos 
+	\item Interfaz grafica
+\end{itemize}
+
+\section{\texttt{testar.org}}
+
+\texttt{testar.org} es una herramienta de código abierto para la automatización de pruebas de software. Permite crear y ejecutar pruebas automatizadas de manera sencilla y rápida, y cuenta con una interfaz gráfica intuitiva que facilita su uso.
+
+
+\section{Pruebas de regresión}
+
+El objetivo es detectar efectos no deseados cada vez que ocurre un cambio, como corregir un defecto, agregar, modificar o eliminar una funcionalidad, cambio de plataforma, etc\dots
+
+\subsection{Delta}
+
+Es importante considerar y identificar los cambios DELTA que se han realizado en el software. Estos cambios pueden ser de diferentes tipos, como cambios en el código fuente, cambios en la configuración del sistema, cambios en la base de datos, etc\dots 
+% // TODO verify 
+
+La mayoría de las aplicaciones tienen interfaz gráfica, y muchos bugs se producen en la interfaz gráfica. Por lo tanto, es importante tener en cuenta la interfaz gráfica al realizar pruebas de regresión.
+
+Mejorar el testing desde la educacion.
+
