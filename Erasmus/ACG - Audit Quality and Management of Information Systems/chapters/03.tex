@@ -70,6 +70,8 @@ funciona y que no contenga ``muchos'' errores}
 		\item[] Estas anotaciones son de \textsc{JUnit 5}, en \textsc{JUnit 4} se usaba \lstinline|@Before| y \lstinline|@After|, además de otras diferencias.
 	\end{itemize}
 	
+	El codigo de testo para una clase \lstinline|MyClass| se pone en una clase \lstinline|TestMyClass|, y el método para testear el método \lstinline|myMethod| se llama \lstinline|testMyMethod|, o algo similar, como \\
+	\lstinline|testMyMethodSimple|, \lstinline|testMyMethodAll|, etc.
 	\colfill
 	\switchcolumn
 
@@ -114,20 +116,156 @@ public class TestDB {
 	\switchcolumn
 	Los metodos son ejecutados en el siguiente orden:
 	\ns
-	\begin{itemize}
-		\item \lstinline|setUpBeforeAll|
-		\item \lstinline|setUp|
-		\item \lstinline|testAccountAccess|
-		\item \lstinline|tearDown|
-		\item \lstinline|setUp|
-		\item \lstinline|testEmployeeAccess|
-		\item \lstinline|tearDown|
-		\item \lstinline|tearDownAfterAll|
-	\end{itemize}
+ \begin{itemize}
+	\item \lstinline|setUpBeforeAll|
+	      \begin{itemize}
+		      \item \lstinline|setUp|
+		            \begin{itemize}
+			            \item \lstinline|testAccountAccess|
+		            \end{itemize}
+		      \item \lstinline|tearDown|
+		      \item \lstinline|setUp|
+		            \begin{itemize}
+			            \item \lstinline|testEmployeeAccess|
+		            \end{itemize}
+		      \item \lstinline|tearDown|
+
+	      \end{itemize}
+	\item \lstinline|tearDownAfterAll|
+\end{itemize}
 \end{paracol}
 
-% TODO ejemplo factorial
+\paragraph{Test Suite}
+Un test suite es una combinación de clases de prueba que
+permite ejecutar todas las pruebas contenidas en dichas
+clases a la vez en un orden establecido.
+Para crear una Test suit se debe:
+\begin{itemize}
+	\item Crear una clase Java
+	\item Anotar la clase con la etiqueta \lstinline|@RunWith(JUnitPlatform.class)|
+	\item Indicar las clases que forman parte de la suite con la
+etiqueta \lstinline|@SelectClasses|, o \lstinline|@SelectPackages|
+\end{itemize}
 
+A continuación, se muestra un ejemplo de código de la test suite AllTests que
+agrupa las pruebas de las clases \lstinline|LargestTest| y \lstinline|MiClaseDeTest|.
+
+\begin{lstlisting}
+	
+	import org.junit.platform.runner. JUnitPlatform;
+	import org. junit.platform.suite.api.SelectClasses;
+	import org.junit.runner.RunWith;
+	
+	@RunWith (JUnitPlatform.class)
+	@SelectClasses ({ LargestTest.class, MiClaseDeTest.class } )
+	public class AllTests {
+		
+		}
+\end{lstlisting}
+
+Cuando lancemos a ejecución el test suite \lstinline|AllTests| se ejecutarán primero las
+pruebas de la clase \lstinline|LargestTest|, y a continuación las pruebas de la clase
+\lstinline|MiClaseDeTest|.
+
+\paragraph{Testeo Parametrizado}
+Los test parametrizados posibilitan ejecutar un test con
+diferentes argumentos.
+Estos tests son declarados como los tests
+básicos (\lstinline|@Test| methods) pero usan la etiqueta
+\lstinline|@ParameterizedTest|.
+
+Es necesario declarar al menos una fuente que proporcionará
+los argumentos para cada invocación del método.
+Esto se puede hacer con la anotación \lstinline|@ValueSource| y un
+array de valores literales,
+pero Existen también otras formas de hacerlo, por ejemplo, con
+valores de un fichero csv utilizando la anotación
+\lstinline|@CsvFileSource|.
+
+\begin{lstlisting}
+	@ParameterizedTest
+	@ValueSource (strings = { "racecar", "radar", "able was I ere I saw elba" } )
+	void palindromesTest (String candidate) {
+		assertTrue (StringUtils.isPalindrome (candidate) );
+	}
+\end{lstlisting}
+
+\begin{paracol}{2}
+	\colfill
+\begin{lstlisting}[caption={Ejemplo de clase Factorial}]
+public class Factorial {
+	public static int factorial(int n) {
+		if (n < 0) {
+			throw new IllegalArgumentException("n must be nonnegative");
+		}
+		int result = 1;
+		for (int i = 1; i <= n; i++) {
+			result *= i;
+		}
+		return result;
+	}
+}
+\end{lstlisting}
+\colfill
+
+\switchcolumn
+
+\begin{lstlisting}[caption={Ejemplo de clase de test de  Factorial}]
+
+public class FactorialTest {
+	@Test
+	public void testFactorialOfZero() {
+		assertEquals(1, Factorial.factorial(0));
+	}
+
+	@Test
+	public void testFactorialOfOne() {
+		assertEquals(1, Factorial.factorial(1));
+	}
+
+	@Test
+	public void testFactorialOfPositiveNumber() {
+		assertEquals(24, Factorial.factorial(4));
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testFactorialOfNegativeNumber() {
+		Factorial.factorial(-1);
+	}
+}
+	
+\end{lstlisting}
+\end{paracol}
+
+\begin{lstlisting}
+@RunWith(Parameterized.class)
+public class FactorialParametrizedTest {
+	private int input;
+	private int expected;
+
+	public FactorialParametrizedTest(int input, int expected) {
+		this.input = input;
+		this.expected = expected;
+	}
+
+	@Parameterized.Parameters
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				{ 0, 1 }, { 1, 1 }, { 2, 2 }, { 3, 6 }, { 5, 120 }, { 9, 362880 },
+				{ 12, 479001600 }, { -1, 1 }
+
+		});
+
+	}
+
+	@ParametrizedTest
+	@MethodSource("data")
+	public void testFactorial() {
+		assertEquals(expected, Factorial.factorial(input));
+	}
+
+}
+\end{lstlisting}
 \subsection{Testeo de Integración}
 
 \begin{definition}
@@ -174,12 +312,138 @@ necesita dobles, que simulan componentes de un nivel inferior (``Stub'', ``dummy
 El \textit{Big Bang} testing se utiliza solo para sistemas pequeños, ya que es muy difícil de manejar en sistemas grandes.
 
 
+\subsubsection{Top-Down}
+\begin{lstlisting}
+	public float calculaSalarioNeto(float salarioBruto) throws BRException {
+		float retencion = 0.0f;
+		if (salarioBruto < 0) {
+			throw new BRException("El salario bruto debe ser positivo");
+		}
+		// PROXY HERE!
+		ProxyAeat proxy = getProxyAeat();
+		List<TramoRetencion> tramos;
+		try {
+			// Invoke the emulated function!
+			tramos = proxy.getTramosRetencion();
+		} catch (IOException e) {
+			throw new BRException("Error al conectar al servidor de la AEAT", e);
+		}
+		for (TramoRetencion tr : tramos) {
+			if (salarioBruto < tr.getLimiteSalario()) {
+				retencion = tr.getRetencion();
+				break;
+			}
+		}
+		return salarioBruto * (1 - retencion);
+	}
+	
+	public class MockProxyAeat extends ProxyAeat {
+		boolean lanzarExcepcion;
+	
+		public MockProxyAeat(boolean lanzarExcepcion) {
+			this.lanzarExcepcion = lanzarExcepcion;
+		}
+	
+		@Override
+		public List<TramoRetencion> getTramosRetencion()
+				throws IOException {
+			if (lanzarExcepcion) {
+				throw new IOException("Error al conectar al servidor");
+			}
+			List<TramoRetencion> tramos = new ArrayList<TramoRetencion>();
+			tramos.add(new TramoRetencion(1000.0f, 0.0f));
+			tramos.add(new TramoRetencion(1500.0f, 0.16f));
+			tramos.add(new TramoRetencion(Float.POSITIVE_INFINITY, 0.18f));
+			return tramos;
+		}
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Utilizar en el testing}]
+class TestableEmpleado extends Empleado {
+	ProxyAeat proxy;
+
+	public void setProxyAeat(ProxyAeat proxy) {
+		this.proxy = proxy;
+	}
+
+	@Override
+	ProxyAeat getProxyAeat() {
+		return proxy;
+	}
+}
+
+TestableEmpleado empleadoTest;
+
+@BeforeEach
+public void setUpClass() {
+	empleadoTest = new TestableEmpleado();
+	empleadoTest.setProxyAeat(new MockProxyAeat(false));
+	empleadoTestFail = new TestableEmpleado();
+	empleadoTestFail.setProxyAeat(new MockProxyAeat(true));
+}
+
+@Test
+public void testCalculaSalarioNeto1() throws BRException {
+	float resultadoReal = empleadoTest.calculaSalarioNeto(2000.0f);
+	float resultadoEsperado = 1640.0f;
+	assertEquals(resultadoEsperado, resultadoReal, 0.01);
+}
+	
+\end{lstlisting}
 \subsubsection{Mockito}
 Mockito es un framework de testing para Java que permite crear objetos simulados (mocks) de clases y interfaces. Mockito se utiliza para simular objetos que son necesarios para realizar pruebas unitarias. Se puede integrar con JUnit para realizar pruebas unitarias en Java. 
 En las slides se muestran ejemplos de cómo utilizar Mockito.
 
 Mockito es muy comodo para implementar el testeo de integración de manera \textit{top-down}.
-% TODO Parte 2 y 3	
+% TODO Parte 2 y 3
+
+\begin{lstlisting}
+public class CalculatorServiceImpl implements CalculatorService {
+   private DataService dataService;
+
+   public double calculateAverage() {
+      int[] numbers = dataService.getListOfNumbers();
+      double avg = 0;
+      for (int i : numbers) {
+         avg += i;
+      }
+      return (numbers.length > 0) ? avg / numbers.length : 0;
+   }
+
+   public void setDataService(DataService dataService) {
+      this.dataService = dataService;
+   }
+}
+
+@RunWith(MockitoJUnitRunner.class)
+public class CalculatorServiceTest {
+	// Automatically set data service to point to mock
+   @InjectMocks
+   private CalculatorServiceImpl calculatorService;
+   @Mock
+   private DataService dataService;
+
+   @Test
+   public void testCalculateAvg_simpleInput() {
+		// define what to yield when the mock methods are invoked
+      when(dataService.getListOfNumbers()).thenReturn(new int[] { 1, 2, 3, 4, 5 });
+      assertEquals(3.0, calculatorService.calculateAverage(), .01);
+   }
+
+   @Test
+   public void testCalculateAvg_emptyInput() {
+      when(dataService.getListOfNumbers()).thenReturn(new int[] {});
+      assertEquals(0.0, calculatorService.calculateAverage(), .01);
+   }
+
+   @Test
+   public void testCalculateAvg_singleInput() {
+      when(dataService.getListOfNumbers()).thenReturn(new int[] { 1 });
+      assertEquals(1.0, calculatorService.calculateAverage(), .01);
+   }
+}
+\end{lstlisting}
 
 \section{Testeo de Sistema}
 Se verifica que se cumple los requisitos especificados, es decir, que el sistema realiza correctamente todas las funcionesque se han detallado en las especificaciones dadas por el usuario del sistema.
@@ -190,10 +454,49 @@ Para testar el \textbf{rendimiento} (tiempo de respuesta, carga, memoria.) se ut
 
 Otros aspectos importantes que el testeo debe cubrir son \textbf{Seguridad} y \textbf{Usabilidad}.
 
+\labelitemize{Seguridad}{
+\begin{itemize}
+	\item Evaluar la capacidad del sistema de soFware de prevenir
+	acceso no autorizado.
+	\item Casos de test Npicos examinan funciones como:
+	\begin{itemize}
+		\item logon, logoff
+		\item cambio de permisos
+		\item chequeo de contraseñas
+		\item caducidad de contraseñas
+	\end{itemize}
+\end{itemize}
+}
+
+\labelitemize{Usabilidad}{
+ \begin{itemize}
+	\item Usabilidad es el conjunto de caracterísDcas que influyen en el esfuerzo requerido para el aprendizaje, el uso, la preparación de entradas y la interpretación de salidas del programa por parte de un conjunto de usuarios dados
+	      \begin{itemize}
+		      \item Memorabilidad (el esfuerzo del usuario para comprender el software
+		            una vez ya había aprendido a usarlo)
+		      \item Facilidad de aprendizaje (el esfuerzo del usuario para aprender el
+		            software)
+		      \item Operabilidad/eficiencia (el grado en que el usuario puede ejecutar las
+		            tareas que son objeDvo del software)
+		      \item Eficacia (el grado en que el usuario comete errores)
+		      \item Atractivo (ergonomía, colores, formas, )
+	      \end{itemize}
+
+	\item La major manera da evaluar si un producto es usable es involucrandolo a los usuarios, que son los que deciden si el producto es usable o no.
+\end{itemize}
+}
+
+
 \section{Testeo de aceptación}
 Esto testeo es dirigido a los criterios de aceptación
 previamente establecidos con el cliente. Se puede hacer de manera manual o automatizada.
 
+{Es importante recordar dos axiomas:\ns
+\begin{itemize}
+	\item Axioma de \textbf{decomposición}: Aunque se ha testeado un sistema adecuadamente, eso no significa que se ha testeado adecuadamente sus componentes.
+	\item Axioma de \textbf{anticomposición}: Testear cada uno de los componentes de un sistema por separado no necesariamente significa que el sistema entero está testeado adecuadamente.
+\end{itemize} 
+}
 \subsection{Regresión}
 Testeo que se necesita hacer después de cambios en el
 software para asegurar que no se ha introducido defectos.
@@ -204,12 +507,15 @@ software para asegurar que no se ha introducido defectos.
 
 {El proceso de clasificación de defectos incluye tres fases:\ns
 \begin{enumerate}
-	\item Detección de defectos
-	\item Investigación de defectos
-	\item Resolución de defectos
+	\item \textbf{Detección} de defectos
+	\item \textbf{Investigación} de defectos
+	\item \textbf{Resolución} de defectos
 \end{enumerate}}
 
+\vspace{1em}
+
 \note{
+	Para cada defecto tenemos que registrar algunas informaciones.
 \begin{itemize}
 	\item \textbf{Actividad} (que estábamos haciendo cuando encontramos el fallo)
 	\item \textbf{Fase del proyecto} (en que estábamos cuando encontramos el fallo)
@@ -254,7 +560,9 @@ incorrecto, etc.)
 	\end{itemize}}
 \end{itemize}
 
-La cobertura del testeo es una métrica importante para evaluar la calidad del testeo. La cobertura del testeo es la medida de la cantidad de código que ha sido ejecutado por los tests, especialmente en lo que se refiere a instrucciones, decisiones y condiciones (múltiples).\\
+\subsubsection{Cobertura}
+
+La cobertura del testeo es una métrica importante para evaluar la calidad del testeo. La cobertura del testeo es la medida de la cantidad de código que ha sido ejecutado por los tests, especialmente en lo que se refiere a \textbf{instrucciones}, \textbf{decisiones} y \textbf{condiciones} (múltiples).\\
 Pero puede referirse también a la cobertura de los requisitos, de los casos de uso, de los casos de prueba, etc.
 
 \begin{lstlisting}[caption={Con 1 test donde \lstinline|x==y| se cubre todo el codigo, pero no todas las decisiones. En efecto, el defecto ocurre cuando \lstinline|x!=y|}]
@@ -267,7 +575,25 @@ Pero puede referirse también a la cobertura de los requisitos, de los casos de 
 		*p = 123;
 	}
 \end{lstlisting}
+\begin{itemize}
+	\item $G =$ grafo de flujo de control
+	\item $A =$ canDdad de arcos en G
+	\item $N =$ canDdad de nodos en G
+	\item $V(G) = A - N + 2$
+\end{itemize}
 
+Complejidad ciclomática $V(G)$ es una aproximación de la cantidad de los casos de test necesarios para cobertura de decisiones.
+
+Está matemáticamente demostrado que $100\%$ cobertura de decisiones se puede hacer con $\leq V(G)$ tests.\\
+Sin embargo, se pueden elegir $V(G)$ caminos que NO consiguen $100\%$ de cobertura de decisiones!
+
+Se tiene que interpretar las métricas de cobertura con cuidado:
+cobertura alta no dice mucho, pero si es baja hay un problema.
+
+\begin{align}
+	PDD &= \textit{Porcentaje de Detección de Defectos}\\
+	PDD &= \frac{\#\{\textit{defectos encontrados durante el testeo}\}}{\#\{\textit{defectos encontrados}\}}\times 100
+\end{align}
 \subsection{Mutación}
 
 La mutación es una técnica de testing que consiste en introducir errores en el código fuente para ver si los tests son capaces de detectarlos. Se puede utilizar para evaluar la calidad de los tests.

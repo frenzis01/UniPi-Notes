@@ -1,27 +1,33 @@
 \chapter{Diseño de casos de prueba}
-\begin{tikzpicture}[node distance=1.5cm]
-   \node (model) [rectangle, draw] {Make a model};
-   \node (coverage) [rectangle, draw, below of=model] {Pick a coverage criterion};
-   \node (testcases) [rectangle, draw, below of=coverage] {Design test cases};
+\begin{figure}[htbp]
+   \centering
+   \begin{tikzpicture}[node distance=1.5cm]
+      \node (model) [rectangle, draw] {Make a model};
+      \node (coverage) [rectangle, draw, below of=model] {Pick a coverage criterion};
+      \node (testcases) [rectangle, draw, below of=coverage] {Design test cases};
+      
+      \draw [->] (model) -- (coverage);
+      \draw [->] (coverage) -- (testcases);
+   \end{tikzpicture}
+\end{figure}
 
-   \draw [->] (model) -- (coverage);
-   \draw [->] (coverage) -- (testcases);
-\end{tikzpicture}
-
-\section{Modelos}
 \note{Recuerda que el SUT (System under test) es el sistema bajo prueba.}
 
-\subsection{Clases de equivalencia}
+Abajo vamos a ver algunos modelos.
+
+\section{Clases de equivalencia}
 
 Se modela el input domain, y para ello se utilizan clases de equivalencia.
-Es importante notar que las clases de equivalencia son una asunción, y no una verdad absoluta, pueden ser erróneas.
+Es importante notar que las clases de equivalencia son una asunción, y no una verdad absoluta,  pueden ser erróneas.
 \begin{paracol}{2}
    
+   \colfill
    Sea $R$ una relación de equivalencia sobre un
    conjunto $A$. Para cada $a \in A$, llamaremos
    clase de equivalencia de $a$, al conjunto
    formado por todos los elementos de $A$ que
    estén relacionados con él a través de $R$.
+   \colfill
    
    \switchcolumn
 
@@ -35,11 +41,12 @@ Es importante notar que las clases de equivalencia son una asunción, y no una v
 
 Este modelo permite identificar conjuntos de pruebas de tamaño manejable seleccionando unos pocos casos de prueba para cada clase de equivalencia.
 Permite también medir la efectividad de la prueba en términos de cobertura relacionada con el modelo de partición creado.
-Además, el proceso de partición obliga al tester a pensar sistemáticamente sobre lo que importa
+Además, el proceso de partición obliga al tester a pensar sistemáticamente sobre lo que importa.
+
 
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/05/claseBanca.png}
+   \includegraphics[width=0.65\columnwidth]{images/05/claseBanca.png}
    \caption{Ejemplo de una aplicación bancaria}
    {Los datos de entrada son:\ns
    \begin{itemize}
@@ -81,6 +88,8 @@ Cuando se va a escribir las pruebas, cada prueba tiene que ser relacionada con u
    }
    \label{tab:05/claseEquivalencia}
 \end{table}
+
+
 
 \section{Tablas de decisión}
 
