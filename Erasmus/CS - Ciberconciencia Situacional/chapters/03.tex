@@ -6,14 +6,21 @@ de datos en bruto que les proporcionamos actualmente en las herramientas cibern�
 
 Las herramientas  de ciber inteligencia generan una gran cantidad de datos, en gran parte testuale, y es necesario que los analistas sean capaces de procesarlos y entenderlos de manera rápida y eficiente.
 
-Es frequentemente necesario representar multi-dimensional data en un espacio 2D o 3D.
+The needs for the cyber intelligence domain are pretty specific:
+\begin{itemize}
+   \item Breakdown the overwhelming amount of data into manageable pieces to find the data we are actually interested in.
+   \item Topological representations to show the relationships among the elements.
+   \item Adapt the representation to the timing and pace of the cyberspace.
+   \item Coupling cyber space domain data with physical domain data.
+\end{itemize}
+
+Es frequentemente necesario representar multi-dimensional data en un espacio 2D o 3D, y utilizar visualizaciones interactivas para permitir a los analistas analizar empezando por la información clave más relevante y siguiendo con datos más finos.
 
 Los puntos clave de la visualización de la inteligencia cibernética son:
 \begin{itemize}
    \item Dimensionality reduction and complexity reduction.
    \item Assuming inhernet non-linearities and couplings
    \item Tools and visualization techniques are need to help in the iterative process:
-   
 \end{itemize}
 
 \section{Visualization Charts}
@@ -60,3 +67,10 @@ Los puntos clave de la visualización de la inteligencia cibernética son:
    \caption{Según el profesor, este gráfico es muy importante porque muestra que para identificar lo que es \emph{anormal}, es necesario saber lo que es \emph{normal}.}
    \label{fig:03/ddos}
 \end{figure}
+
+\subsection{Georeferenced visualizations and IP-Port mapping}
+Hoy en día, mucha información del ciberespacio se acopla a magnitudes físicas del mundo real.
+Por ejemplo, si conocemos la localización de una dirección IP, podemos determinar de donde proviene el ataque.
+También es posible colorear un mapa según la distribución geográfica de los ataques.
+
+Gráficos que muestran las conexiones abiertas a los puertos de un nodo de red, o entre nodos de red, pueden mostrar fácilmente la actividad de exploración.

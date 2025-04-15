@@ -1,6 +1,12 @@
 \chapter{Estrategias de Testing}
 \label{chap:estrategias-de-testing}
 
+\coolquote{
+	Probar programas sirve para demostrar la presencia de errores, pero nunca para demostrar su ausencia
+}{
+	{Edsger W. Dijkstra}
+}
+
 El proceso de testng dentro de un proyecto de software es una actvidad que tene como objetivo \ul{verificar} y \ul{validar} que el software cumple con los requisitos especificados.
 
 El proceso de testing conlleva:
@@ -10,7 +16,7 @@ El proceso de testing conlleva:
 	\item ejecución de pruebas y
 	\item evaluación
 \end{itemize}
-La gestión de calidad debe garan2zar que el proceso de
+La gestión de calidad debe garantizar que el proceso de
 testing se lleve a cabo de manera eficiente y eficaz.
 
 \section{Tipos de Testing}
@@ -30,9 +36,9 @@ Las \textbf{unidades} son Clases/Métodos (en OO), Procedimientos, Módulos o Co
 
 
 Una \textbf{prueba unitaria} (\texttt{unit test}) es una pieza de código escrita por un desarrollador que pone a prueba un pequeño y específico trozo de código.
-Es una manera relativamente barata para mejorar la calidad del código producido, pero \textit{NO} es para usuarios, gerentes, jefes de proyectos: està hech para los programadores.
+Es una manera relativamente barata para mejorar la calidad del código producido, pero \textit{NO} es para usuarios, gerentes, jefes de proyectos: està hecha para los programadores.
 El programador examina o ejecuta una pequeña
-parte de su código, para testear:
+parte de su código, para testear
 \ul{la funcionalidad que él o ella piensa que tiene que tener}
 
 \begin{figure}[htbp]
@@ -54,13 +60,14 @@ funciona y que no contenga ``muchos'' errores}
 \begin{paracol}{2}
 	
 	\colfill
-	JUnit es un framework de testing para Java. JUnit es una herramienta que ayuda a los programadores a escribir pruebas unitarias en Java. JUnit ha sido importante en el desarrollo de la metodología de programación extrema (XP).
+	\textsc{JUnit} es un framework de testing para Java. \textsc{JUnit} es una herramienta que ayuda a los programadores a escribir pruebas unitarias en Java. \textsc{JUnit} ha sido importante en el desarrollo de la metodología de programación extrema (XP).
 	\lstinline|@Test| son los métodos de prueba.
 	\begin{itemize}
 		\item \lstinline|@BeforeEach| se invoca antes de la ejecución de cada test
 		\item \lstinline|@AfterEach| se invoca después de la ejecución de cada test
 		\item \lstinline|@BeforeAll| se invoca antes de la ejecución de todos los tests
 		\item \lstinline|@AfterAll| se invoca después de la ejecución de todos los tests
+		\item[] Estas anotaciones son de \textsc{JUnit 5}, en \textsc{JUnit 4} se usaba \lstinline|@Before| y \lstinline|@After|, además de otras diferencias.
 	\end{itemize}
 	
 	\colfill

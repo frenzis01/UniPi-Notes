@@ -1,1 +1,85 @@
-\chapter{Practica 1}
+\chapter{Risk analysis}
+
+\begin{definition}
+   [Risk]
+   Risk is a measure of the extent to which an entity is threatened by a potential
+circumstance or event, and is typically a function of: (i) the adverse impacts that
+would arise if the circumstance or event occurs; and (ii) the likelihood of
+occurrence
+
+\note{NIST}
+\end{definition}
+
+A risk is an uncertain event which may occur in the future, its likelihood can only
+be estimated, not predicted with certainty.
+A risk may prevent or delay the achievement of an organization’s goals or objectives, and even though they may not necessarily be bad, it is important to bound and control risks.
+
+\begin{enumerate}
+\begin{itemize}
+	\item Define strategy
+	\item Risk assessment
+	      \begin{itemize}
+		      \item Risk identification
+		      \item Risk Evaluation
+	      \end{itemize}
+	\item Control evaluation
+	      \begin{itemize}
+		      \item Evaluate effectiveness of controls
+		      \item Residual risks only to be measured
+
+	      \end{itemize}
+	\item Corrective actions
+	      \begin{itemize}
+		      \item Tolerate, treat, substitute, terminate
+		      \item Always consider cost/benefit of the action
+	      \end{itemize}
+	\item Risk Monitoring & reporting
+	      \begin{itemize}
+		      \item Use standards
+		      \item Proper periodicity
+		      \item Risk register always available
+	      \end{itemize}
+\end{itemize}
+\end{enumerate}
+
+Una metodología de Risk Assessment requiere:
+\begin{enumerate}
+   \item Risk assessment process
+   \item Risk model
+   \item Assessment approach
+   \item Analysis approach
+\end{enumerate}
+
+{\textbf{Risk factors} son características utilizadas en los modelos de riesgo como entradas para determinar los niveles de riesgo en las evaluaciones de riesgo, pueden descomponerse en características más detalladas: por ejemplo, las amenazas (threats) pueden descomponerse en fuentes de amenaza y eventos de amenaza.\ns
+\begin{itemize}
+   \begin{itemize}
+   	\item Threat\\
+   	event that potentially can adversely impact an individual, an
+asset, a network or an entire organization, as well as ongoing operations or
+activities.
+\note{A threat source is the origin of a given threat and causes threat events}
+	   \item \textbf{Vulnerability}\\
+	   Debilidad que puede ser explotada por una fuente de amenazas. Puede encontrarse en sistemas, procedimientos, controles internos o en las aplicaciones
+	   \item \textbf{Impact}\\
+	   el nivel de daño que un evento de amenaza puede producir a un activo, sistema, proceso u organización
+	   \item \textbf{Likelihood}\\
+      factor de riesgo ponderado basado en un análisis probabilístico de la capacidad de la amenaza para explotar una vulnerabilidad
+	   \item \textbf{Predisposing condition}\\
+	   condición que puede estar presente en un sistema, un proceso de la misión o en una organización y que influye en la probabilidad de los impactos adversos de los eventos de amenaza para el sistema, proceso u organización, aumentándola o disminuyéndola
+   \end{itemize}
+\end{itemize}
+}
+
+Risk is a function of the likelihood of the occurrence of a
+threat and the potential impact to be suffered by an asset if
+the event happens.
+Risk is normally represented as a single value, normally
+decimal, or a vector in which different types of impacts are
+assessed isolatedly.
+\[
+risk(e) = probability(e) \times impact(e)
+\]
+The impact may be measured also by using degradation, i.e. the percentage \% of the affected asset which is lost 
+\[
+   impact(e) = value(asset) \times degradation(asset)
+\]
