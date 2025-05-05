@@ -33,7 +33,7 @@ Es importante notar que las clases de equivalencia son una asunción, y no una v
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/05/claseequivalencia.png}
+      \includegraphics[width=0.9\columnwidth]{images/05/claseequivalencia.png}
       \caption{Dividir el dominio}
       \label{fig:05/claseequivalencia}
    \end{figure}
@@ -202,7 +202,7 @@ dominio.
    \centering
    \includegraphics[width=0.45\columnwidth]{images/05/puntoIN.png}
    \includegraphics[width=0.45\columnwidth]{images/05/puntoOUT.png}
-   \caption{puntoINOUT}
+   \caption{puntos IN y OUT}
    \label{fig:05/puntoINOUT}
 \end{figure}
 \begin{figure}[htbp]
@@ -222,6 +222,7 @@ dominio.
       condición del intervalo
       \item Intervalo abierto - punto ON \textit{no} satisface la
       condición del intervalo
+      \item \textred{Parece lo contrario de la figura Fig. \ref{fig:05/puntoONOFF}}
    \end{itemize}
    \item \textsc{Punto OFF} : un valor cerca del punto límite de un intervalo
    \begin{itemize}
@@ -235,19 +236,21 @@ dominio.
 La estrategia para diseñar las pruebas de valores límites es 1 punto ON + 1 punto OFF para cada desigualdad de límite.
 
 \begin{paracol}{2}
+   \colfill
    \note{Ejemplos:
    \begin{itemize}
       \item 3 <= extras < 10
             \begin{itemize}
-               \item Puntos ON: extras = 3; extras = 10
-               \item Puntos OFF: extras = 2; extras = 9
+               \item Puntos ON: \lstinline|extras = 3; extras = 10|
+               \item Puntos OFF: \lstinline|extras = 2; extras = 9|
             \end{itemize}
       \item 2000 < precio\_base <= 5000
             \begin{itemize}
-               \item Puntos ON?
-               \item Puntos OFF?
+               \item Puntos ON: \lstinline|p = 2000; p = 5000|
+               \item Puntos OFF: \lstinline|p = 2001; p = 5001|
             \end{itemize}
    \end{itemize}}
+   \colfill
    
    \switchcolumn
    
@@ -335,6 +338,7 @@ class Money {
 
    \switchcolumn
 
+   \colfill
    Imagina que tenemos que testear un componente:
 \begin{itemize}
 	\item entrada un objeto \lstinline|Money m|
@@ -346,6 +350,7 @@ class Money {
 	\item Si el cliente quiere pagar en \lstinline|USD,GBP o YEN|, tiene que pagar \lstinline|10%| de costes de administración
 	\item Si el cliente paga en \lstinline|EURO|, no hay costes de administración
 \end{itemize}
+   \colfill
 \end{paracol}
 
 \begin{figure}[htbp]

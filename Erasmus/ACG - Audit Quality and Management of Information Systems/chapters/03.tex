@@ -7,15 +7,17 @@
 	{Edsger W. Dijkstra}
 }
 
-El proceso de testng dentro de un proyecto de software es una actvidad que tene como objetivo \ul{verificar} y \ul{validar} que el software cumple con los requisitos especificados.
+El proceso de testing dentro de un proyecto de software es una actvidad que tene como objetivo \ul{verificar} y \ul{validar} que el software cumple con los requisitos especificados.
 
-El proceso de testing conlleva:
+{El proceso de testing conlleva:\ns
 \begin{itemize}
 	\item planificación,
 	\item diseño,
-	\item ejecución de pruebas y
+	\item ejecución de pruebas
 	\item evaluación
-\end{itemize}
+\end{itemize}}
+
+
 La gestión de calidad debe garantizar que el proceso de
 testing se lleve a cabo de manera eficiente y eficaz.
 
@@ -24,7 +26,7 @@ testing se lleve a cabo de manera eficiente y eficaz.
 	\item Testeo \textbf{unitario}\\
    Testeo de unidades de software individuales
 	\item Testeo de \textbf{integración}\\
-   Testeo de los interfaces de y la interacción entre las unidades previamente testeadas
+   Testeo de los interfaces y de la interacción entre las unidades previamente testeadas
 	\item Testeo de \textbf{sistema}\\
    Testeo del sistema entero
 	\item Testeo de \textbf{aceptación}\\
@@ -147,7 +149,7 @@ Para crear una Test suit se debe:
 etiqueta \lstinline|@SelectClasses|, o \lstinline|@SelectPackages|
 \end{itemize}
 
-A continuación, se muestra un ejemplo de código de la test suite AllTests que
+A continuación, se muestra un ejemplo de código de la test suite \lstinline|AllTests| que
 agrupa las pruebas de las clases \lstinline|LargestTest| y \lstinline|MiClaseDeTest|.
 
 \begin{lstlisting}
@@ -297,6 +299,7 @@ Hay tres estrategias:
 
 Para hacer el testing \textit{bottom-up} necesitamos \textbf{drivers}.
 Un driver es un programa que invoca un componente bajo testeo, por ejemplo, para simular un componente de un nivel superior cuyo código todavía no está disponible (está todavía en desarrollo).
+\note{Por ejemplo un driver puede simular el componente M9 che invoca M8, si estamos testeando M8.}
 
 \begin{figure}[htbp]
 	\centering
@@ -307,6 +310,7 @@ Un driver es un programa que invoca un componente bajo testeo, por ejemplo, para
 
 Para hacer el testeo de integración de manera \textit{top-down}, se
 necesita dobles, que simulan componentes de un nivel inferior (``Stub'', ``dummy'', ``fake'', ``mock'').
+\note{Si estamos testeando M8, podemos sostituir M1 y M2 con mocks}
 \ns
 
 El \textit{Big Bang} testing se utiliza solo para sistemas pequeños, ya que es muy difícil de manejar en sistemas grandes.
@@ -446,7 +450,7 @@ public class CalculatorServiceTest {
 \end{lstlisting}
 
 \section{Testeo de Sistema}
-Se verifica que se cumple los requisitos especificados, es decir, que el sistema realiza correctamente todas las funcionesque se han detallado en las especificaciones dadas por el usuario del sistema.
+Se verifica que se cumple los requisitos especificados, es decir, que el sistema realiza correctamente todas las funciones que se han detallado en las especificaciones dadas por el usuario del sistema.
 
 Es necesario automatizar las prubas, y por esto se utilizan herramientas como \textit{Selenium}, que permite automatizar pruebas en navegadores web: en este caso, hablamos de pruebas de \textbf{funcionalidad}.
 
@@ -456,7 +460,7 @@ Otros aspectos importantes que el testeo debe cubrir son \textbf{Seguridad} y \t
 
 \labelitemize{Seguridad}{
 \begin{itemize}
-	\item Evaluar la capacidad del sistema de soFware de prevenir
+	\item Evaluar la capacidad del sistema de software de prevenir
 	acceso no autorizado.
 	\item Casos de test Npicos examinan funciones como:
 	\begin{itemize}
@@ -470,7 +474,7 @@ Otros aspectos importantes que el testeo debe cubrir son \textbf{Seguridad} y \t
 
 \labelitemize{Usabilidad}{
  \begin{itemize}
-	\item Usabilidad es el conjunto de caracterísDcas que influyen en el esfuerzo requerido para el aprendizaje, el uso, la preparación de entradas y la interpretación de salidas del programa por parte de un conjunto de usuarios dados
+	\item Usabilidad es el conjunto de características que influyen en el esfuerzo requerido para el aprendizaje, el uso, la preparación de entradas y la interpretación de salidas del programa por parte de un conjunto de usuarios dados
 	      \begin{itemize}
 		      \item Memorabilidad (el esfuerzo del usuario para comprender el software
 		            una vez ya había aprendido a usarlo)
@@ -577,8 +581,8 @@ Pero puede referirse también a la cobertura de los requisitos, de los casos de 
 \end{lstlisting}
 \begin{itemize}
 	\item $G =$ grafo de flujo de control
-	\item $A =$ canDdad de arcos en G
-	\item $N =$ canDdad de nodos en G
+	\item $A =$ cantidad de arcos en G
+	\item $N =$ cantidad de nodos en G
 	\item $V(G) = A - N + 2$
 \end{itemize}
 

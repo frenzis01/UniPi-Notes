@@ -77,21 +77,20 @@ En general los atributos pueden ser esternos o internos. Los primeros derivados 
 
 Por ejemplo, centrémonos en la mantenibilidad. Podemos medirla con las siguientes métricas:
 \begin{itemize}
-   \item Aclopamiento
-   \item Cohesión
+   \item \textbf{Aclopamiento} - Degree of interdependence between modules. High coupling is bad, it means that a change in one module will affect many other modules.
+   \item \textbf{Cohesión} - Degree to which the elements of a module belong/work together to fulfill a single weel-defined purpose. High cohesion is good, it means that a module has a single responsibility and is easier to maintain. Low cohesion means that elements are loosely related and serve multiple purposes
    \item Complejidad Ciclomática de McCabe
    \item Código Chum
    \item Code Coverage
    \item Código Muerto
    \item Duplicación de Código
-   \item 
 \end{itemize}
 
 
 \section{Requisitos}
 Los requisitos son fundamentales en el software, y pueden ser utilizados para medir la calidad de este. 
 Pero es importante notar que es necesario poder verificar si los requisitos están satisfechos con la implementación.
-Además, necesitamos también algunos controles sobre los requisitos, come complejidad, consistencia, completitud, corrección, claridad, verificabilidad, rastreabilidad, prioridad, viabilidad, flexibilidad, no ambigüedad, no redundancia, no contradicción, no vaguedad, no sobre-especificación, no sub-especificación.
+Además, necesitamos también algunos controles sobre los requisitos, como complejidad, consistencia, completitud, corrección, claridad, verificabilidad, rastreabilidad, prioridad, viabilidad, flexibilidad, no ambigüedad, no redundancia, no contradicción, no vaguedad, no sobre-especificación, no sub-especificación.
 % TODO verifica requisitos controles
 
 Requisitos no funcionales son más fáciles de verificar que los funcionales, porque son más objetivos.
@@ -122,7 +121,7 @@ Hay muchas matrices en las slides, algunas relacionan requisitos con casos de us
 
 
 \framedt{Ejercicio 1 / Analisis Requisitos}{
-   Javier dice cosas correctas. Aparte de las cosas que mencionó, se puede ver cómo no hay muchos numeros en los requisitos; el documento dices que es necesario hacer backups, pero, ¿cuantós backups? ¿con qué frecuencia? ¿con qué software?.
+   Javier dice cosas correctas. Aparte de las cosas que mencionó, se puede ver cómo no hay muchos numeros en los requisitos; el documento dices que es necesario hacer backups, pero, ¿cuantós backups? ¿con qué frecuencia? ¿con qué software?
 }
 
 \section{Gestión de la Calidad}
@@ -242,7 +241,7 @@ El principal propósito del control de calidad es asegurar que el producto satis
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/01/madurez.png}
+      \includegraphics[width=0.5\columnwidth]{images/01/madurez.png}
       \caption{Capability Maturity CMMI}
       \label{fig:01/madurez}
    \end{figure}
