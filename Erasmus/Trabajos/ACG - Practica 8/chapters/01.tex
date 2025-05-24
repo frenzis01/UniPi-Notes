@@ -1,0 +1,307 @@
+\chapter{Práctica 8 y 9}
+
+\lstset{language=python}
+\lstset{captionpos=t}
+
+\section{Introduction}
+
+The implementation follows the core principles of the TESTAR approach:
+\begin{enumerate}
+    \item Automatically detect interactive elements on a web page
+    \item Derive meaningful actions that can be performed on these elements
+    \item Execute these actions in sequences to explore the application
+    \item Check for application correctness using oracles after each action
+    \item Collect and report statistics about the test execution
+\end{enumerate}
+
+The framework was tested on three different web applications:
+\begin{itemize}
+    \item LambdaTest Todo App: A simple todo application
+    \item SauceDemo: An e-commerce test application with authentication
+    \item Practice Software Testing: A comprehensive testing playground
+\end{itemize}
+
+\note{Note that for simplicity and readability only partial code snippets have been reported here}
+
+\subsection{Chromedriver flags}
+
+Optimization flags were used to slightly improve performance and reliability of the Chrome WebDriver.
+
+\begin{lstlisting}[caption=Chrome WebDriver Configuration]
+# Performance optimization options
+chrome_options.add_argument("--disable-search-engine-choice-screen")
+chrome_options.add_argument("--disable-infobars")
+chrome_options.add_argument("--disable-extensions")  # Disable extensions for speed
+chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+\end{lstlisting}
+
+Additionally, preferences were set to disable password manager leak detection and other potential popup interruptions:
+
+\begin{lstlisting}[caption=Chrome WebDriver Preferences]
+chrome_options.add_experimental_option("prefs", {
+    "profile.password_manager_leak_detection": False,
+    "credentials_enable_service": False,
+    "profile.password_manager_enabled": False
+})
+\end{lstlisting}
+
+The WebDriver was also configured with timeouts to prevent test runs from hanging:
+
+\begin{lstlisting}[caption=WebDriver Timeouts]
+driver.set_page_load_timeout(15)  # 15 seconds max to load a page
+driver.implicitly_wait(2)  # 2 seconds implicit wait instead of default 10
+\end{lstlisting}
+
+\section{CSS Selectors}
+
+The framework uses CSS selectors to identify interactive elements on the web page. A comprehensive set of selectors was implemented to cover various types of interactive elements:
+
+\begin{lstlisting}[caption=CSS Selectors for Interactive Elements]
+selectors = [
+    "a", "button", "select",  # Most common interactive elements
+    "input[type='submit']", "input[type='button']",
+    "input[type='text']", "input[type='password']", 
+    "input[type='checkbox']", "input[type='radio']",
+    "textarea",
+]
+\end{lstlisting}
+
+These selectors enable the framework to identify and interact with:
+\begin{itemize}
+    \item Links and anchors
+    \item Form elements (text fields, buttons, checkboxes, radio buttons)
+    \item Dropdown menus
+    \item Text areas
+\end{itemize}
+
+Additionally, the framework includes filters to exclude problematic elements:
+\begin{itemize}
+    \item Links with \texttt{target="\_blank"} that would open in new tabs
+    \item Links to external domains outside the application under test
+    \item Application-specific elements that should be ignored
+\end{itemize}
+
+\section{Actions derived}
+
+Once interactive elements are identified, the framework derives possible actions that can be performed on each element. The action derivation is element-type aware, meaning different actions are derived based on the type of element:
+
+\begin{lstlisting}[caption=Action Derivation Logic]
+# Basic click action for all elements
+actions.append(lambda el=element: (log("click", el), el.click()))
+
+# Actions for text input fields
+if tag_name == "input" and element_type in ["text", "password", "email", "search"]:
+    random_text = generate_random_text(10)
+    actions.append(lambda el=element, txt=random_text: (
+        log(f"input text: {txt}", el), 
+        el.clear(), 
+        el.send_keys(txt)
+    ))
+
+# Actions for select (dropdown) elements
+elif tag_name == "select":
+    select = Select(element)
+    if len(select.options) > 0:
+        random_index = random.randint(0, len(select.options)-1)
+        actions.append(lambda el=element, idx=random_index: (
+            log(f"select option at index: {idx}", el), 
+            Select(el).select_by_index(idx)
+        ))
+\end{lstlisting}
+
+The action selection logic also includes a weighted selection approach to prioritize certain types of actions:
+\begin{itemize}
+    \item Text input actions have higher weight (3x)
+    \item Dropdown selection actions have medium weight (2x)
+    \item Click actions have standard weight (1x)
+\end{itemize}
+
+This weighting ensures more thorough testing of form inputs, which were present in the applications tested.
+
+\section{Oracles}
+
+The framework implements oracles to check for application correctness after each action:
+
+\begin{enumerate}
+    \item \textbf{JavaScript Error Detection:} Checks if any JavaScript errors have been detected in the console.
+    \begin{lstlisting}[caption=JavaScript Error Oracle]
+    js_errors = driver.execute_script("""
+        return window.jsErrors || [];
+    """)
+    if js_errors:
+        print(f"Oracle violation: JavaScript errors detected: {js_errors}")
+    \end{lstlisting}
+
+    \item \textbf{Error Page Detection:} Checks if the current page title contains error codes or messages.
+    \begin{lstlisting}[caption=Error Page Oracle]
+    if "404" in driver.title or "500" in driver.title or "Error" in driver.title:
+        print(f"Oracle violation: Error page detected: {driver.title}")
+    \end{lstlisting}
+
+    \item \textbf{Error Message Detection:} Checks for visible error messages on the page.
+    \begin{lstlisting}[caption=Error Message Oracle]
+    error_elements = driver.find_elements(By.CSS_SELECTOR, ".error, .alert, [role='alert']")
+    for error in error_elements:
+        if error.is_displayed():
+            print(f"Oracle violation: Error message displayed: {error.text}")
+    \end{lstlisting}
+
+    \item \textbf{Broken Image Detection:} Checks for images that failed to load properly using a JS script.
+    \begin{lstlisting}[caption={Detecting broken images}]
+      broken_images = driver.execute_script("""
+      const images = document.getElementsByTagName('img');
+          const brokenImages = [];
+          
+          for (let i = 0; i < images.length; i++) {
+              const img = images[i];
+              if (img.complete && 
+                  typeof img.naturalWidth !== 'undefined' && 
+                  img.naturalWidth === 0 &&
+                  !img.classList.contains('icon') && 
+                  !img.classList.contains('svg')) {
+                  
+                  brokenImages.push({
+                      src: img.src || 'no-src',
+                      alt: img.alt || 'no-alt'
+                  });
+              }
+          }
+          return brokenImages;
+      """)
+      
+    \end{lstlisting}
+
+    \item \textbf{Accessibility Check:} Ensures interactive elements have accessible names, which is important for users relying on assistive technologies.
+    \begin{lstlisting}[caption={Testing accessibility}]
+    accessible_name = (
+        el.get_attribute("aria-label") or 
+        el.get_attribute("title") or 
+        el.get_attribute("alt") or  # For images in links
+        el.text or 
+        el.get_attribute("value")  # For buttons with value
+    )
+    
+    # Also check child content for links
+    if not accessible_name and el.tag_name.lower() == "a":
+        # Check if there's an image with alt text
+        img_children = el.find_elements(By.TAG_NAME, "img")
+        for img in img_children:
+            alt_text = img.get_attribute("alt")
+            if alt_text:
+                accessible_name = alt_text
+                break
+    
+    # For inputs, also consider the placeholder as accessible name
+    if el.tag_name.lower() == "input":
+        accessible_name = accessible_name or el.get_attribute("placeholder")
+    \end{lstlisting}
+\end{enumerate}
+
+Some oracle checks can be selectively enabled or disabled to balance thoroughness with testing speed.\\
+This helped mostly during development for debugging purposes, since the initial implementation was prone to false positives.
+
+\section{Testing summary}
+
+The implementation includes a simple test statistics tracking system, collecting various metrics during test execution and providing a summary report at the end of the testing session.
+
+\subsection{Statistics Collection}
+
+The framework tracks the following metrics during test execution:
+
+\begin{itemize}
+    \item \textbf{Actions Executed:} Total number of actions performed during the test session.
+    \item \textbf{Errors Encountered:} Number of exceptions or errors that occurred during testing.
+    \item \textbf{Unique URLs Visited:} Set of distinct URLs the framework navigated to, providing a measure of navigation coverage.
+    \item \textbf{Element Types Interacted:} Distribution of interactions across different element types (clicks, text inputs, selections).
+    \item \textbf{Test Duration:} Total time elapsed from the beginning to the end of the test session.
+\end{itemize}
+
+
+At the conclusion of testing, a formatted summary report is displayed.
+
+
+\subsection{Example Output}
+
+A typical summary report might look like:
+
+\begin{verbatim}
+==================================================
+TEST EXECUTION SUMMARY
+==================================================
+Total actions executed: 150
+Errors encountered: 3
+Unique URLs visited: 12
+URLs: https://example.com/home, https://example.com/products, ...
+Element types interacted with:
+  - click: 78 interactions
+  - text_input: 42 interactions
+  - select: 30 interactions
+Total test duration: 0:05:23.456789
+==================================================
+\end{verbatim}
+
+
+
+The summary could be further extended to include additional metrics such as unique states visited, form submission counts, or specific interface components tested, depending on the application's nature and testing objectives.
+
+\section{Conclusions}
+
+The implementation was tested using the \texttt{testingTESTAR.py} file provided in Poliformat.
+
+Key issues encountered during the implementation included:
+
+\begin{itemize}
+    \item \textbf{External Links Disruption:} Links to external domains or with \texttt{target="\_blank"} would open new websites or tabs, disrupting the testing flow.
+    \begin{itemize}
+        \item \textit{Solution:} Implemented automatic filtering of external links based on domain comparison and target attribute detection.
+    \end{itemize}
+    
+    \item \textbf{Browser Interruptions:} Chrome's password manager and other browser features would display popups that interrupted automated testing.
+    \begin{itemize}
+        \item \textit{Solution:} Chromedriver was configured with options to disable password manager prompts and other popups that could interfere with test execution.
+    \end{itemize}
+    
+    \item \textbf{Accessibility Testing False Positives:} Many elements were initially flagged as accessibility violations that were actually acceptable in context.
+    \begin{itemize}
+        \item \textit{Solution:} Improved accessible name detection to check for more attributes and child elements, implemented tracking to avoid reporting the same violation multiple times.
+    \end{itemize}
+    
+    \item \textbf{Broken Image Detection:} Initial implementation had many false positives when checking for broken images.
+    \begin{itemize}
+        \item \textit{Solution:} Improved the JavaScript detection logic and added special cases for SVG and icon images.
+    \end{itemize}
+    
+    \item \textbf{Performance Concerns:} Testing the implementation was initially slow due to network operations and unnecessary checks.
+    \begin{itemize}
+        \item \textit{Solution:} Added options to selectively enable/disable certain oracles and optimized browser settings.
+    \end{itemize}
+\end{itemize}
+
+
+% Observations include:
+% \begin{itemize}
+%     \item \textbf{Efficient Element Detection:} The framework successfully detects interactive elements across different web applications.
+    
+%     \item \textbf{Smart Action Generation:} Type-aware action generation ensures appropriate interactions with different UI elements.
+    
+%     \item \textbf{Effective Exploration:} The framework can navigate through applications, exploring different states and pages.
+    
+%     \item \textbf{Issue Detection:} Oracles successfully detect various issues such as accessibility violations, broken images, and error messages.
+    
+%     \item \textbf{Performance Optimization:} Various techniques were employed to improve testing speed and reliability.
+% \end{itemize}
+
+% There are several potential areas for future improvement:
+
+% \begin{itemize}
+%     \item \textbf{State Modeling:} Implementing state modeling to avoid revisiting already tested states.
+    
+%     \item \textbf{Smarter Exploration:} Using heuristics to prioritize unexplored areas of the application.
+    
+%     \item \textbf{More Oracle Types:} Adding additional oracles for other types of issues like performance problems or security vulnerabilities.
+    
+%     \item \textbf{Test Case Reduction:} Implementing algorithms to reduce test sequences to minimal reproducing steps when issues are found.
+% \end{itemize}
+
+% The framework demonstrates the power of scriptless testing for rapidly exploring web applications without the overhead of maintaining detailed test scripts. It provides a solid foundation for further research and development in automated testing techniques.
