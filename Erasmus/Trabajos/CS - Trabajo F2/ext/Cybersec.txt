@@ -1,0 +1,1375 @@
+﻿
+
+
+
+A Review of Cybersecurity Incidents in the Water Sector
+
+
+
+Amin Hassanzadeh, PhD1, Amin Rasekh, PhD2, Stefano Galelli, PhD3, Mohsen Aghashahi,
+
+MSc4, Riccardo Taormina, PhD5, Avi Ostfeld, PhD6, and M. Katherine Banks, PhD7
+
+
+1R&D Principal, Accenture Labs, Cyber Fusion Center, 800 North Glebe Road, Arlington, VA.
+
+Email: amin.hassanzadeh@accenture.com
+
+2Industry Advisor, Zachry Department of Civil Engineering, Texas A&M University, 400 Bizzell
+
+St, College Station, TX 77843.
+
+3Assistant Professor, Pillar of Engineering Systems and Design, Singapore University of
+
+Technology and Design, 8 Somapah Rd., Singapore 487372, Singapore.
+
+4Doctoral Student, Zachry Department of Civil Engineering, Texas A&M University, 400 Bizzell
+
+St, College Station, TX 77843.
+
+5Assistant Professor, Department of Water Management, Faculty of Civil Engineering and
+
+Geosciences, Delft University of Technology, Stevinweg 1, 2628 CN Delft, the Netherlands.
+
+6Professor, Faculty of Civil and Environmental Engineering, Technion–Israel Institute of
+
+Technology, Haifa 32000, Israel.
+
+7Professor, College of Engineering, Texas A&M University, 400 Bizzell St, College Station, TX
+
+77843.
+
+
+
+
+ABSTRACT
+
+This study presents a critical review of disclosed, documented, and malicious cybersecurity in-
+
+cidents in the water sector to inform safeguarding eﬀorts against cybersecurity threats. The review
+
+is presented within a technical context of industrial control system architectures, attack-defense
+
+models, and security solutions. Fifteen incidents have been selected and analyzed through a search
+
+strategy that included a variety of public information sources ranging from federal investigation
+
+
+
+Hassanzadeh September 11, 2019
+
+reports to scientiﬁc papers. For each individual incident, the situation, response, remediation, and
+
+lessons learned are compiled and described. The ﬁndings of this review indicate an increase in the
+
+frequency, diversity, and complexity of cyber-threats to the water sector. While the emergence of
+
+new threats, such as ransomware or cryptojacking, is observed, a recurrence of similar vulnera-
+
+bilities and threats, such as insider threats, is also evident, emphasizing the need for an adaptive,
+
+cooperative, and comprehensive approach to water cyber-defense.
+
+
+INTRODUCTION
+
+The Water and Wastewater Sector (WWS) is considered by the U.S. Department of Homeland
+
+Security(DHS)asoneofthemaintargetsforcyber-attacksamongstthesixteenlifelineinfrastructure
+
+sectors (White House 2013).  Its safeguard against cybersecurity threats is considered a matter of
+
+national priority (White House 2017). From 2012 to 2015, WWS received the highest number of
+
+assessments from the Cybersecurity and Infrastructure Security Agency-Industrial Control Systems
+
+(ICS-CERT 2016b), which routinely conducts on-site cybersecurity assessments for several critical
+
+infrastructure sectors (ICS-CERT 2016b).   The only exception was 2014, when the number of
+
+assessments in the energy sector was slightly higher (ICS-CERT 2016b).
+
+According to ICS-CERT (ICS-CERT 2016b), 25 water utilities reported cybersecurity incidents
+
+in 2015, making WWS the third most targeted sector.  Since there are over 151,000 public water
+
+systems in the United States (USEPA 2019a), one may conclude that cybersecurity risk in WWS
+
+is extremely low and most systems are secure.  However, the reality is that many cybersecurity
+
+incidents either go undetected, and consequently unreported (Walton 2016), or are not disclosed—
+
+as doing so may jeopardize the victim’s reputation, customers’ trust, and, consequently, revenues
+
+(Cava 2018; Rubin 2019).   Moreover, the complexity and impact of cyber-originated incidents
+
+can be as serious as the incidents initiated from the Operational Technology (OT) area.   Most
+
+industrial sectors, and WWS in particular, are now embracing the digital age, but still lack dedicated
+
+cybersecurity specialists to provide customized guidelines for security programs, secure systems,
+
+and train employees.
+
+Recently, cybersecurity has piqued the interest and attention of the WWS industry and policy-
+
+
+Hassanzadeh September 11, 2019
+
+makingentities. SeveraleducationalprogramshavebeenoﬀeredbytheUSEPA,DHS,theAmerican
+
+Water Works Association, and the Water Information Sharing & Analysis Center over the past few
+
+years to raise awareness, train staﬀ, and provide resources and tools to assist with cybersecurity
+
+practices (WaterISAC 2015; ICS-CERT 2019; USEPA 2019b).  This has been accompanied by
+
+a rising interest in the research community (Amin et al. 2013; Rasekh et al. 2016; Ahmed et al.
+
+2017; Formby et al. 2017; Taormina et al. 2017; Laszka et al. 2017; Taormina et al. 2018; Chandy
+
+et al. 2018; Taormina and Galelli 2018; Housh and Ohar 2018; Ramotsoela et al. 2019).  Within
+
+this respect, there may exist valuable lessons and insights in the past cybersecurity incidents that
+
+shouldbediscoveredanddisseminatedtoinformtheongoingcyber-defenseinvestmentsandeﬀorts,
+
+thereby enhancing their relevance and eﬀectiveness.  This requires a comprehensive compilation
+
+and review of the these incidents; a public resource that is not currently available.
+
+This study conducted by the EWRI Task Committee on Cyber-physical Security of Water
+
+Distribution Systems, presents a review of disclosed, documented, and malicious cybersecurity
+
+incidents in WWS to inform safeguarding eﬀorts against cybersecurity threats. First, a review of a
+
+typical industrial control system architecture, standard models, and common practices, alongside
+
+security controls and solutions oﬀered for these environments, is provided.  This is followed by a
+
+description of attack-defense models, an important concept in the design of cybersecurity systems.
+
+Next, a selection of cyber incidents in WWS is presented. The main details regarding the situation,
+
+response, remediation, and lessons learned are reported for each incident.  This review concludes
+
+with recommendations for industry, policy-makers, and research community.
+
+
+INDUSTRIAL CONTROL NETWORKS
+
+In order to provide context for the analysis of the incidents, this section reviews traditional OT
+
+networks, their integration with Information Technology (IT) networks, and standard architecture
+
+designs proposed for ICS networks. We will refer to these architectures when reviewing some of the
+
+incidents and map theattacker’s activities to the architectural layers andtargeted hardware/software.
+
+ICS networks traditionally uses a system of hardware and software components—called Su-
+
+pervisory Control and Data Acquisition (SCADA)—for process control, data collection, system
+
+
+Hassanzadeh September 11, 2019
+
+monitoring, communication with industrial devices, and log data storing.  A typical SCADA sys-
+
+tem architecture is depicted in Figure 1a: the lowest level generally consists of ﬁeld elements (also
+
+called end or dumb devices), such as sensors, pumps, and actuators. These elements are operated
+
+by control devices, such as Programmable Logic Controllers (PLC) and Remote Terminal Units
+
+(RTU). PLCs and RTUs are microcomputers that send control signals to the ﬁeld elements, acquire
+
+data, and transmit them to the central control station, such as a Master Terminal Unit (MTU). MTU
+
+and RTUs/PLCs communicate and function in a master/slave model (through wired or wireless
+
+networks, public telephone network, or even through the internet) to send commands, upload new
+
+conﬁgurations, and monitor the ﬁeld elements.   Operators manage all these operations through
+
+a Human Machine Interface (HMI) connected to the MTU that allows them to gather data, send
+
+commands to remote sites, and change settings and conﬁgurations (Krutz 2005).
+
+Figure 1b shows a typical water system architecture with RTUs and PLCs geographically-
+
+dispersed in diﬀerent sites.   We have mapped diﬀerent layers of a SCADA architecture to this
+
+sample network, where ﬁeld elements, such as valves or pressure gauges, are monitored by RTUs
+
+with wireless antennas.   The SCADA servers are located in a central control station (e.g., the
+
+headquarters of a water utility) and remotely communicate with the RTUs and PLCS scattered in
+
+the entire service area (SWAN Forum Interoperability Workgroup 2016).
+
+Formanyyears, SCADAsystems, and, ingeneral, OTnetworksinindustrialenvironments, were
+
+air-gapped—that is, not connected to corporate IT networks or internet.  However, as technology
+
+advanced,  many organizations planned to consolidate overlapping IT and OT networks.   This
+
+approach aims at saving maintenance costs and integrating data collection and analysis (Krutz
+
+2005).   However,  such integration comes at high security risks due to the following reasons:
+
+1) OT networks have diﬀerent operational priorities compared to IT networks—e.g., availability
+
+vs.  conﬁdentiality—and one model may not ﬁt both; 2) Most ICS devices and protocols are not
+
+designedtosupportsecurityfeatureslikedataencryptionoraccesscontrol,andoftensupportremote
+
+access through radio modems; 3) Expensive legacy devices in ICS environments provide limited
+
+visualization options to implement and evaluate security modiﬁcations; and, 4) Critical and real-
+
+
+
+Hassanzadeh September 11, 2019
+
+time business operations in OT, along with safety regulations, prevent immediate implementation
+
+of remediation options that may require system interruptions. In light of the above, security experts
+
+have proposed some work-around options to limit the access of users to the OT network.  Other
+
+eﬀortsintheICSsecurityﬁeldareconstantlyimprovingstandards, protocols, anddevicestosupport
+
+security features.
+
+The new generation of converged IT-OT networks in industrial control systems, also referred to
+
+as Industrial Internet of Things (IIoT), is no longer air-gapped. Figure 1c depicts a typical integrated
+
+ICS network consisting of multiple levels and zones, also known as the Industrial Automation and
+
+Control Systems (IACS) Security standard (ISA-62443) (Krutz 2005).  A zone is in fact a set of
+
+assets (IT or OT devices) grouped together to provide a subclass of services and applications for
+
+the entire ICS network. The main zones can be described as follows:
+
+
+•   Enterprise Zone that includes assets for business logistics and enterprise systems, repre-
+
+senting Level 4 and 5, respectively. This zone is also known as IT network.
+
+•   Demilitarized Zone (DMZ) that separates IT and OT networks, thus preventing direct
+
+access to OT devices from the IT network.  All corporate–accessible services (e.g., web,
+
+email) reside in this zone.
+
+•   Manufacturing Zone and Control Zone.   The former refers to the entire OT domain,
+
+including Levels 0, 1, 2, and 3; the latter refers to Levels 0, 1, and 2, so it is equivalent to
+
+the traditional ICS architecture shown in Figure 1a.  Level 3 provides site-level operation
+
+and asset management. Plant historian, production scheduling and reporting, patch and ﬁle
+
+services reside at Level 3 (Hassanzadeh et al. 2015).
+
+
+ATTACK AND DEFENSE MODELS
+
+The incidents reviewed in this paper can be comprehended more eﬀectively with some knowl-
+
+edge of attack and defense models, which are introduced next.
+
+
+
+
+
+
+
+Hassanzadeh September 11, 2019
+
+Attack models
+
+From the attacker’s perspective, a systematic process consisting of several steps or individual
+
+malicious activities is required to obtain the desired eﬀect on the victim’s network.   Lockheed
+
+Martin researchers have expanded the kill chain concept used in military applications to deﬁne the
+
+Cyber Kill Chain (CKC) (Hutchins et al. 2011), which models the life cycle of an attack based on
+
+the fact that the adversary uses a series of malicious activities (also called intrusions or single-step
+
+attack) and adjusts each step based on the success or failure of the previous step.  CKC steps are
+
+deﬁnedasreconnaissance, weaponization, delivery, exploitation, installation, commandandcontrol
+
+(C2), and actions on objectives.  Inspired by the CKC model, researchers have proposed several
+
+attack life cycle models that are reviewed and discussed in Hassanzadeh and Burkett (2018).
+
+In industrial environments, the attack life cycle is slightly diﬀerent because of the diﬀerent
+
+architecture design shown in Figure 1c. The target in such networks can be an asset in one of the
+
+three domains, namely, IT, DMZ, or OT. However, in most reported ICS incidents, the target is an
+
+OT asset (Hassanzadeh et al. 2015), since the attacker gains access to the victim’s environment
+
+through the IT domain and then traverse to the OT infrastructure by launching multiple attacks.
+
+This model is deﬁned as the ICS Kill Chain, a multi-domain, multi-step approach that considers
+
+ISA-62443 architectural levels and CKC steps together.   Since the attacker may need to repeat
+
+several CKC steps at each IT/OT level to laterally move within the network from one asset to
+
+another (until he/she reaches the target), Hassanzadeh and Burkett (2018) proposed a spiral attack
+
+model to accurately describe the attacker’s activities within the converged IT/OT systems. Figure
+
+2a shows a simpliﬁed version of this model, which is color-coded to map it to the IT/DMZ/OT
+
+domains of Figure 1c.  As depicted, an attacker may start with some reconnaissance activities in
+
+outer layers of an organization that are more exposed to the public (e.g., web server, mail server),
+
+and then ﬁnd a vulnerable host that can be exploited. Once the ﬁrst attack is delivered and executed,
+
+the attacker is already inside the victim’s network, and then escalates his/her privileges and move
+
+laterally within the network towards the ﬁnal target, which is placed in the lower levels. Note that
+
+this is a generic model, so there might be attacks that do not necessarily start from Level 5—such
+
+
+
+Hassanzadeh September 11, 2019
+
+as an insider that uses OT workstations or a vulnerable server in the DMZ to launch an attack.
+
+In light of the fact that an attacker operates in a chain of events (i.e., a set of single-step
+
+intrusions), the diamond model of intrusion analysis proposes a formal method called “activity
+
+thread” (Caltagirone et al. 2013).   The method shows not only the attacker’s steps and causal
+
+relation between them, but also a complete list of features for each of these steps. Figure 2b shows
+
+the core and meta features of each single-step intrusion, or event. An activity thread in an industrial
+
+environment is a directed graph (like the spiral set of arches in Figure 2a), where each vertex is an
+
+event/intrusion (see Figure 2b) and links represent the relation between those intrusions from the
+
+ﬁrst step of the attack to the ﬁnal target. As shown in Figure 2b, the four core features describe how
+
+an adversary deploys a capability over some infrastructure against a victim.  Let us further focus
+
+on these features:
+
+
+•   Adversary is the actor or organization responsible for the attack.  The adversary can be
+
+categorized as insider or outsider and individual, group, or organization.  This is usually
+
+an unknown feature in most cyber-attacks.   It is important to understand the distinction
+
+between adversary operator (i.e., the actual hacker) and adversary customer (i.e., the entity
+
+that beneﬁts from the attack).
+
+•   Capabilityisthesetoftoolsandtechniquesthatareusedbytheattacker. Thevulnerabilities
+
+and conﬁguration issues in the target environment deﬁne the capability of an attacker.
+
+•   Infrastructure is the physical and/or logical communication structure, such as email ad-
+
+dresses or USB devices, used by the attacker to deliver the attack capabilities, maintain
+
+control over them, and ﬁnally obtain results. The infrastructure can be owned or controlled
+
+by the attacker or an intermediary (e.g., zombies hosts, botnets, or compromised email
+
+accounts).
+
+•   Victim is the target that has vulnerabilities and conﬁguration issues to provide attack
+
+capabilities for the adversary. Victims are either persona (e.g., people or organizations) or
+
+assets (e.g., networks, systems, accounts, or information).
+
+
+
+
+Hassanzadeh September 11, 2019
+
+In addition to the core features, there exist six meta-features in every security event: 1) times-
+
+tamp, that is, the start and stop time of the intrusion; 2) phase, or step, describing the position
+
+of the intrusion in the entire attack kill chain; 3) direction, which denotes the course of an attack
+
+(for example, data exﬁltration has a victim-to-infrastructure direction, while probing goes from the
+
+adversary to the infrastructure); 4) result, which indicates the status of an attack, such as success,
+
+failure, or unknown; 5) resources, such as software, hardware, information, knowledge, funds, etc.;
+
+and, 6) methodology, that is, the class of the malicious activity, such as spear-phishing or denial-
+
+of-service.  Moreover, four expanded-meta features have also been used to describe a single-step
+
+intrusion: detection method, showing what tools or techniques were used in detecting the malicious
+
+activity; data source to detect it; detection signature, or rule, that was used for the detection; and,
+
+author, namely the analyst-author of the intrusion.  Several multi-step attack examples and their
+
+activity threads are presented in Caltagirone et al. (2013).
+
+Defense models
+
+To secure target organizations, defenders can employ several security tools and technologies.
+
+Moreover, they may have access to standards, threat intelligence databases, security controls, and
+
+benchmarks.   Nonetheless, developing and implementing a thorough security strategy is a very
+
+challenging task that requires prioritization and rigour.   The Center for Internet Security (CIS)
+
+proposed a list of the most fundamental and valuable security actions called “CIS Controls” that
+
+every organization should consider (CIS 2019). These controls are categorized as:
+
+
+•   Basic Controls, such as inventory and control of hardware/software assets, continuous
+
+vulnerability management, or controlled use of administrative privileges;
+
+•   Foundational Controls, such as email and web browser protections, malware defenses, or
+
+secure conﬁguration for network devices like ﬁrewalls, routers, and switches;
+
+•   Organizational Controls, such as the implementation of a security awareness and training
+
+program, incident response and management, penetration tests, and red team exercises.
+
+
+Table 1 provides the complete list of CIS controls along with their corresponding category.
+
+
+Hassanzadeh September 11, 2019
+
+These controls are available and oﬀered in diﬀerent security tools and solutions.  They can have
+
+variousimpactsdependingontheirgoalandimplementation: 1)detect theattack; 2)denyorprevent
+
+the attacker from accessing assets or information; 3) disrupt active malicious activities; 4) degrade
+
+the impact of an attack; 5) deceive the attacker; or, 6) contain the malicious activity to a zone where
+
+damages can be mitigated.  Figure 3 shows how diﬀerent security controls (tools and solutions)
+
+can be used to protect an organization against an intrusion attempt at each CKC step (Hutchins
+
+et al. 2011; Bodeau et al. 2013; Willson 2013). As an example, network-based intrusion detection
+
+systems (NIDS), host-based intrusion detection systems (HIDS), or anti-virus (AV) solutions can
+
+be used to detect exploitation activities.   Similarly, trust zones can contain malicious activities
+
+associated with multiple attack steps from delivery to action, and honeypots can deceive attackers
+
+during several attack phases.  AV solutions are mostly used to detect or disrupt attacks during the
+
+delivery, exploitation, or installation phase, while data execution protection (DEP) techniques are
+
+mostly used as a disruption mechanism.
+
+In addition to traditional IT-based security controls, there exist several OT-speciﬁc security
+
+controls—such as data-diode and unidirectional gateway, in-line command white listing, passive
+
+asset discovery, passive OT intrusion detection (or anomaly detection), or patch and compliance
+
+management—that are currently used in industrial networks.   A closer look at these solutions
+
+shows that they also fall under the categories mentioned above; however, they are designed to be
+
+compatible with OT network protocols and standards. For example, unidirectional gateway ensures
+
+a limited (if not zero) network interaction from the IT to the OT domain that should be considered
+
+as a ﬁrewall with a very restricted communication rule consistent with the OT architecture and
+
+its security needs.  Hence, this OT-speciﬁc security control is a boundary defense control listed
+
+in Table 1.  Similarly, passive asset discovery in OT networks is a basic security control to create
+
+an inventory of authorized and unauthorized devices (ﬁrst control in Table 1).  A technical report
+
+published by the Department of Energy (Department of Energy 2005) lists 21 actions that can
+
+increase the security of SCADA networks.  Each action corresponds to one or multiple security
+
+controls listed here.
+
+
+
+Hassanzadeh September 11, 2019
+
+INCIDENTS
+
+In this review, a cybersecurity incident refers to an incident that has been maliciously launched
+
+from the cyber space to cause adverse consequences to a target entity.  All available reports on
+
+disclosed, documented, and malicious cybersecurity incidents in WWS happened until the end of
+
+May 2019 were considered, but only the incidents with detailed and veriﬁed information were then
+
+selected. Theinformationsourcesincludereportspublishedbygovernmentorganizations, scientiﬁc
+
+papers, internal reports from aﬀected utilities, and media coverage that reported interviews with the
+
+involved oﬃcial representatives. The authors of this review did not conduct any direct investigation
+
+themselves.  The review is not restricted to any particular geographic region.  All incidents, here
+
+presented in chronological order, are true positives, with the exception of one incident.  This was
+
+included due to the massive, negative cry-wolf eﬀects it created in the aftermath of its disclosure.
+
+For each incident, we describe the situation, response/recovery (if available), and lessons learned.
+
+1. Maroochy Water Services, Australia, 2000
+
+Incident
+
+Maroochy Shire is located about 100 kilometres north of Brisbane in the Sunshine Coast region
+
+of Queensland, Australia.  It has a population of nearly 120,000 inhabitants and a gravity sewage
+
+collection and treatment system that processes an average of 35 million liters of sewage each day.
+
+During the period 1997–2000, Hunter Watertech Pty Ltd (HWT), a third-party contractor, installed
+
+PDS Compact 500 RTUs at all 142 sewage pumping stations.  This enabled to remotely control
+
+and monitor the pumps through a SCADA system.   In late January 2000, the SCADA started
+
+experiencing faults, such as loss of communication and pump control capabilities, false alarms, or
+
+altered conﬁguration of the pumping stations.  The incident resulted in the release of nearly one
+
+million liters of raw sewage into the river, local parks, and residential grounds. 500 meters of open
+
+drain in a residential area were polluted.
+
+Response and lessons learned
+
+In March 2000, after monitoring and recording all signals, the investigators concluded that the
+
+faults were caused by a human intervention.  A suspect was caught on April 23rd, 2000, having
+
+
+Hassanzadeh September 11, 2019
+
+in his possession a Compact 500 computer, a two-way radio, a laptop, a transformer, and cables.
+
+The suspect had served as a site supervisor for Hunter Watertech until resigning due to unspeciﬁed
+
+disagreements (with eﬀect from December 3rd, 1999).  He was sentenced to two years in jail and
+
+ordered to pay $13,111 to the Council for the damage caused by the spill.  The sewage spill and
+
+its impacts were cleaned up.  The process took days and required the deployment of substantial
+
+resources.
+
+The main hazard involved in this incident was the unauthorized access to the SCADA system,
+
+which enabled the malevolent actor to release raw sewage into the surrounding environment. There
+
+were no cybersecurity procedures,  policies,  or defenses present,  and the service contract was
+
+deﬁcient or inadequate to handle the contractor’s responsibilities.  Considering that the attacker
+
+was a former supervisor of the whole project, which controlled all pumping stations, the scale of
+
+the impacts could have been more extensive. The attacker was indeed a skillful, insider adversary
+
+with an intimate knowledge of the target system.  The adoption of the NIST SP 800-53 control
+
+protocols(BodeauandGraubart2013)wouldhavearguablypreventedalloftheattacker’smalicious
+
+activities.  A former employee’s access to the network, for example, should indeed be terminated
+
+immediately.  (The sources used herein for this incident included District Court at Maroochydore
+
+(2002), Abrams and Weiss (2008), and Sayfayn and Madnick (2017).)
+
+2. Pennsylvania Water Filtering Plant, U.S., 2006
+
+Incident
+
+FBI suspected a security breach at a water treatment facility in Harrisburg,  PA, in 2006.
+
+More speciﬁcally, it appeared that hackers planted a computer virus on the laptop computer of an
+
+employee.  The hackers then used the infected laptop as an entry point, and installed a malicious
+
+software on the plant’s computer system.  The hackers were reportedly operating outside the US.
+
+The investigations further reported that the hackers did not appear to target the actual plant, but
+
+merely intended to use the computer to distribute emails and other information.  It was reported
+
+that the attack could have nevertheless aﬀected the normal operations of the plant. For example, it
+
+could have altered the concentration levels of disinfectants in the potable water.
+
+
+Hassanzadeh September 11, 2019
+
+Response and lessons learned
+
+The water utility eliminated remote access to the plant and changed all passwords.   In the
+
+case of this speciﬁc attack, it should be noted that the entry point to the plant’s computer system
+
+was an employee’s laptop.  Such weak links should always be avoided in the security chain.  Due
+
+to the distributed nature of water infrastructure, staﬀ often resorts to remote access to connect
+
+to key components and check system variables, such as tank water levels.   Separating SCADA
+
+systems from administrative networks, which are connected to the internet, can decrease the risk
+
+of adversary penetrations.  (The sources used herein for this incident included McMillan (2006),
+
+USEPA (2008), McGurk (2008), and RISI (2019).)
+
+3. Tehama-Colusa Canal, U.S., 2007
+
+Incident
+
+The Tehama-Colusa Canal Authority (TCAA) consists of 17 water contractors of the Central
+
+Valley Project.   Its service area spans across the west side of the Sacramento Valley.   TCAA
+
+operated two canals in 2007—the Tehama Colusa Canal and the Corning Canal—that provide
+
+water for irrigation to a variety of permanent and annual crops in the local farms. Both canals are
+
+owned by the federal government. In 2007, a former electrical supervisor at the TCCA was alleged
+
+to have accessed and damaged the computer used to divert water from the Sacramento River to the
+
+local farms.  Fortunately, the canals could still be operated manually.  In his role with TCCA, the
+
+employee was responsible for the computer systems.
+
+Response and lessons learned
+
+The employee accessed the computer system around August 15th, 2007, and installed unau-
+
+thorized software on the SCADA system.  He was an electrical supervisor with the authority and
+
+responsible for computer systems. The intrusion costed the TCAA more than $5,000 in damages.
+
+Theemployeewaseventuallychargedwithunauthorizedsoftwareinstallationandcomputerdamage
+
+to divert water from the Sacramento River and sentenced to 10 years imprisonment and a ﬁne.
+
+This incident is another case of insider attack. In this case, however, the insider was reportedly
+
+still an active employee of the aﬀected entity at the time of the attack. (The sources used herein for
+
+
+Hassanzadeh September 11, 2019
+
+this incident included McMillan (2007), Weiss (2010), and RISI (2019).)
+
+4. Illinois Water Plant Pump Station, U.S., 2011 (a false alarm incident)
+
+Incident
+
+In 2011, a pump burnout at an Illinois water plant was reported to be the result of a cyber-attack.
+
+News of the suspected attack became public after a security expert obtained a report collected by the
+
+Illinois Statewide Terrorism and Intelligence Center.  According to the report, a plant’s employee
+
+noticed problems in the SCADA. In particular, the pump kept turning on and oﬀ and eventually
+
+burnt out. The suspicions were raised in part due to the apparent connections to foreign IP addresses
+
+in the log ﬁles. This news was circulated rapidly by several credible news agencies.
+
+Response and lessons learned
+
+The FBI and DHS launched an investigation.  DHS spokesman subsequently advised that “At
+
+this time there is no credible corroborated data that indicates a risk to critical infrastructure entities
+
+or a threat to public safety”.  According to the DHS, the pump had malfunctioned multiple times
+
+during the recent years.  Additionally, the contractor with remote access to the computer system
+
+was on a personal trip in Russia.  Investigation of the log ﬁles and interviews with the personnel
+
+collectively concluded that the reported attack was a false alarm.
+
+Interestingly, this false alarm was circulated extensively by some credible news agencies, such
+
+as the Washington Post, causing anxiety and cry-wolf eﬀects. The issue could have been prevented
+
+throughamoretimelyconsiderationoftheemployee’sinternationaltravelandpumpmalfunctioning
+
+history. Another factor that likely contributed to the cry-wolf eﬀect was the public availability of a
+
+preliminary report that anticipated the oﬃcial conclusion of the investigations. (The sources used
+
+herein for this incident included Nakashima (2011) , Zetter (2011) , and Parish (2011).)
+
+5. Key Largo Wastewater Treatment District, U.S., 2012
+
+Incident
+
+In2012, theformerChiefFinancialOﬃcer(CFO)ofFlorida’sKeyLargoWastewaterTreatment
+
+District illegally accessed the district’s computer system to download emails and other personal
+
+
+
+Hassanzadeh September 11, 2019
+
+documents. He performed these actions using the credentials of other employees, after the district
+
+did not renew his contract.   He was arrested on account of felony charges, including computer
+
+crime with intent to defraud, modify information without authority, and delete information from
+
+the district’s computer system.
+
+Response and lessons learned
+
+The facility’s IT manager discovered emails addressed to the CFO’s personal email account
+
+during a routine check of the email system. These emails were sent when the CFO was still working
+
+at the facility but already informed that his contract was not going to be renewed. Upon discovery,
+
+the IT manager informed the police, who then proceeded to arrest the CFO. The attack was limited
+
+to the IT systems of the facility, with no other malicious activity or disruptions for the district’s
+
+operations.
+
+It is still not clear how the CFO got the credentials of his fellow employees. It is important for
+
+employees to constantly update their passwords in order to reduce the risks associated with stolen
+
+credentials.  The CFO used these credentials to access the system from home, suggesting that no
+
+second authentication factor was needed to access the computer systems. Similarly to the ‘Kemuri
+
+Water Company’ incident (Incident 8 below), a two-factor authentication could have prevented this
+
+attack. The attack was discovered thanks to routine checks, which should always been performed
+
+extensively for systems containing sensitive and conﬁdential data. (The sources used herein for this
+
+incident included Goverment Technology (2012) and WPLG Inc (2012).)
+
+6. Bowman Avenue Dam, U.S., 2013
+
+Incident
+
+The Bowman Avenue Dam is a small hydraulic infrastructure used to control ﬂoods in Blind
+
+Brook creek (Rye, New York). A key component of the dam is a remotely-controllable sluice gate,
+
+in operation since 2013, that controls the water ﬂow as a function of water levels and temperatures
+
+in the creek.   Between August 28th  and September 18th, 2013, hackers obtained “unauthorized
+
+remote access” to the SCADA system; a cyber-attack that allowed them to gather information on
+
+water levels, temperature, and the status of the sluice gate.  The gate was manually disconnected
+
+
+Hassanzadeh September 11, 2019
+
+for maintenance at the time of the intrusion, so hackers could not have the opportunity of taking
+
+direct control of the sluice gate.  The attack was perpetrated with the aid of Google dorking, a
+
+computer hacking technique that leverages Google search engine to locate speciﬁc strings—and
+
+thereby vulnerabilities—in web applications, such as the one used to monitor and control the sluice
+
+gate.  The hacker’s action should not be classiﬁed as an intrusion, but rather as reconnaissance,
+
+namely the ﬁrst stage of the CKC (see Figure 2a), in which the attacker just gathers information on
+
+a potential target by looking for publicly available information on the Internet. The attacker used a
+
+standalone PC of the dam’s system to access its control network.  However, at the time of attack,
+
+the control system was only gathering water level information and storing it on a spreadsheet. “The
+
+control system was attached to the Internet via a cellular modem but was directly Internet accessible
+
+and not protected by a ﬁrewall or authentication access controls.”.
+
+Response and lessons learned
+
+Sincetheattack, anewsoftwareandanewsluicegatehavebeeninstalled. AtGovernorCuomo’s
+
+direction, New York State has taken multiple steps to improve its cybersecurity capabilities across
+
+several sectors.   The investigations carried out by the DHS and Justice Department resulted in
+
+the indictment of a few state-sponsored hackers.  The attack caused over $30,000 in remediation
+
+costs. Whilst this attack had no consequences on the security and reliability of the Bowman Avenue
+
+Dam, it points to the vulnerabilities of critical water infrastructures, which are often monitored and
+
+controlled through unsafe web applications. It is thus not completely surprising to observe that the
+
+attack happened only two months after the intallation of an unsafe web application. (The sources
+
+used herein for this incident included Cuomo (2016), Lach (2016), and Kutner (2016).)
+
+7. Five water utilities, U.S., 2014
+
+Incident
+
+In the spring of 2014, ﬁve water utilities across three states in the U.S. experienced some
+
+problems with their smart water meters.  In particular, they faced inaccurate water bills and the
+
+deactivation of the Tower Gateway Base Stations (TGB), which receive signals from the water
+
+meters and transfer them to centralized facilities for monitoring and billing purposes.  The ﬁrst
+
+
+Hassanzadeh September 11, 2019
+
+incident was reported by Kennebec Water District (Maine), where the utility could not connect to
+
+the TGB. Other nine attacks were reported in Spotswood (New Jersey), Egg Harbor (New Jersey),
+
+Aliquippa (Pennsylvania), and New Kensington (Pennsylvania).
+
+The attack was caused by a ﬁred employee of the company that manufactured the smart water
+
+meters—named company A in court’s documents—who gained unauthorized access to protected
+
+computers.  More speciﬁcally, the employee used to work as a ﬁeld radio frequency engineer and
+
+was ﬁred in November 2013.  A few weeks later, using his access to the base station network, he
+
+conducted various malicious activities, such as changing the root passwords, modifying the TGB
+
+radio frequency, and overwriting computer scripts.
+
+Response and lessons learned
+
+This abnormality drew the attention of the Federal government and caused investigations about
+
+possible cyber-attacks against the water infrastructures. Since the attack disabled the communica-
+
+tion between utilities and their data collection network, the organizations had to resume manual
+
+data gathering. In addition, company A had to carry out forensic investigations at its own expenses
+
+to identify the attacker, characterize the attacks, and ﬁnd and repair the damage.
+
+Though the utilities suspected that the disgruntled employee could have accessed the systems
+
+before May 2014, investigators could not link some anomalies to the attacker, since login details
+
+were not recorded at that time. However, recorded logins showed multiple intrusions linked to the
+
+IP address of the attacker’s home.  The attacker was indicted for several malicious activities, and
+
+sentenced to prison and the payment of a ﬁne.
+
+Eventhoughtheattackerwasnotaprofessionalhacker, adefaultpasswordallowedhimtoaccess
+
+the TGB. This highlights the importance of implementing access control and revoking access rights
+
+when someone is laid oﬀ. In addition, it is important to log and store in a safe place all logins and
+
+user’s activities. If company A had kept track of log-ins earlier, investigators could have discovered
+
+breaches dating prior to May 2014. This would have helped the investigations. (The sources used
+
+herein for this incident included Department of Justice (2017), Cimpanu (2017), Vaas (2017), and
+
+Gallagher (2017).)
+
+
+Hassanzadeh September 11, 2019
+
+8. Kemuri Water Company (a pseudonym), U.S., 2016
+
+Incident
+
+In 2016, an undisclosed water utility in the U.S. (presented under the pseudonym of Kemuri
+
+Water Company) hired Verizon Security Solutions to perform a proactive cybersecurity assessment
+
+of its water supply and metering system. A comprehensive assessment was subsequently conducted
+
+on both its OT (distribution, control, and metering) and IT (personal and billing information of
+
+the customers) systems.   The assessment revealed several high-risk vulnerabilities, including a
+
+heavy reliance on outdated computers and operating systems. This included an outdated mid-range
+
+computer system (AS400) system that served a number of critical OT and IT functions—including
+
+the utility’s valve and ﬂow control application—and had direct connections to many networks.
+
+The detection of these vulnerabilities triggered a full response and investigation.   A cross-
+
+correlation of the utility’s internet traﬃc against a repository of known threat actors disclosed a
+
+positive match with the IP addresses of state-sponsored hacktivists. Interviews were also conducted
+
+with the utility’s staﬀ:  they revealed that some staﬀ members have been aware of possible unau-
+
+thorized access to the systems as well as a series of unexplained valve manipulation patterns. This
+
+casts doubt on whether the call for a forensic investigation was actually proactive and not reactive.
+
+A physical survey revealed the presence of a wired connection between the utility’s internet
+
+payment application and the AS400 system.   Since the AS400 was open to the internet, it was
+
+concluded that access to the payment application would have also granted access to any information
+
+stored in the AS400.  Collectively, the forensic investigations discovered an actual exploitation of
+
+the internet-facingpayment application serverand the subsequentmanipulation of the utility’svalve
+
+and ﬂow control application.  In synthesis, the incident resulted in the exﬁltration of 2.5 million
+
+unique records and manipulation of chemicals and ﬂow rates.
+
+Response and lessons learned
+
+Access to and from the account management web front was terminated, and outbound connec-
+
+tivity of the AS400 system was blocked immediately. Recommendations were made to replace the
+
+antiquated systems with more modern versions.
+
+
+Hassanzadeh September 11, 2019
+
+Multiple exploitable vulnerabilities led to the breach, which could have led to more serious
+
+consequences if the forensic investigation was not conducted earlier or the attackers had more
+
+knowledge of the utility’s OT and IT systems.  Internet-facing servers and applications, such the
+
+payment management application here, should not be connected to the SCADA. The utility had
+
+relied on a single-factor authentication; this is not suﬃcient, and multi-factor authentication should
+
+be used. Outdated systems, like the AS400 here, which formed a single point of failure, should not
+
+be deployed, and installation of security patches should not be overlooked. Exﬁltration of records
+
+went unnoticed for a long time and in large amounts. There should be a monitoring mechanism in
+
+place that oversees the transfer of data to enable early detection and response.  (The sources used
+
+herein for this incident included Verizon (2016) and Mahairas (2018).)
+
+9. An undisclosed utility, U.S., 2016
+
+Incident
+
+In 2016, the system administrator of a small water utility noticed the emergence of suspicious
+
+network traﬃc data.  In particular, the administrator found heavy network traﬃc originating from
+
+the control panel of a pumping station.   This triggered the possibility of a cyber-attack and a
+
+subsequent call to ICS-CERT. An oﬃcial investigation was promptly launched.
+
+Response and lessons learned
+
+The ICS-CERT was immediately provided with the data on the network conﬁguration. Address
+
+white-lists were instituted. Together with a transition to non-standard ports, these actions enabled
+
+safeguardingthenetworkwithoutrequiringtoputthecontrolinterfaceinoﬄinemode. Withinafew
+
+days, ICS-CERT also collected forensics images of the network hardware. Reverse engineering of
+
+themalwarewassubsequentlyperformedtodeterminetheattacker,breachpoint,datacompromised,
+
+and mitigation strategy to prevent the same attack at other facilities. No details of the key ﬁndings
+
+have been disclosed.
+
+The situational awareness of the system administrator and prompt notiﬁcation of ICS-CERT
+
+proved to be eﬀective in isolating and thwarting a potentially catastrophic intrusion.  Under the
+
+CriticalInfrastructureInformationActof2002(CIIAct), DHShasestablishedtheProtectedCritical
+
+
+Hassanzadeh September 11, 2019
+
+Infrastructure Information (PCII) Program to assure the utilities that their submitted information
+
+will not be disclosed. (The source used herein for this incident is ICS-CERT (2016a).)
+
+10. An undisclosed drinking water utility, U.S., 2016
+
+Incident
+
+In late 2016, an American water authority noticed a 15,000% increase in their monthly cellular
+
+data bills.  The authority was hacked between November 2016 and January 2017.  The utility had
+
+seven Sixnet BT series cellular routers, which provided wireless access for monitoring the utility’s
+
+pumping stations as well as a few other sites.   Four of these seven routers were compromised
+
+by the hackers.   The hack was believed to be an opportunistic action to steal valuable internet
+
+bandwidth, resulting in the the authority’s cellular data bill soaring from an average of $300 a
+
+month to $45,000 in December 2016 and $53,000 in January 2017. However, the intrusion did not
+
+damage the utility’s infrastructure and did not cause any physical harm.  The cause of the attack
+
+may stand in the Sixnet BT Series Hard-coded Credentials Vulnerability (identiﬁed by the DHS
+
+in May 2016).  A poorly-skilled hacker should indeed be able of exploiting this vulnerability by
+
+hacking a factory-installed password. Sixnet produced patches and a new ﬁrmware to mitigate this
+
+vulnerability.
+
+Response and lessons learned
+
+The use of hard-coded credentials by the routers manufacturer and failure of the water authority
+
+to install the patches proved to be major contributors to this incident. (The sources used herein for
+
+this incident included Walton (2017) and Jerome (2017).)
+
+11. A regional water supplier, U.K., 2017
+
+Incident
+
+A regional water supplier was notiﬁed by several of its clients that their online account details
+
+were changed. After the clients credential were reset, it emerged that the details of some registered
+
+bank accounts were also changed, so that refunds issued to the customers were transferred fraud-
+
+ulently to these new bank accounts.  In particular, the diverted refunds totaled over £500,000 and
+
+
+
+Hassanzadeh September 11, 2019
+
+were directed to two bank accounts in England.  The banks holding these accounts were socially
+
+engineered and allowed the holders to quickly transfer the majority of the funds to other bank
+
+accounts in Dubai and the Bahamas.  Subsequently, these funds were used to purchase Bitcoins,
+
+which were then transferred to addresses associated with a Bitcoin mixing service, thus preventing
+
+any subject to be identiﬁed by following this trail further.
+
+Response and lessons learned
+
+The company initially notiﬁed its legal advisor about the data breach.   When the eﬀorts to
+
+track down the bank account holders failed, the legal advisor contacted Verizon’s cybersecurity
+
+experts, who started investigating in the company’s premises.  The experts proceeded to analyze
+
+the systems and processes involved in managing the customers’ accounts.  After a due diligence
+
+review of logs and web server revealed that no malicious software was present,  the Verizon
+
+team suggested to interview personnel involved with customers’ accounts.  The interviews were
+
+extended to various stakeholders, including a third-party call center in Mumbai (India), which
+
+was responsible for administering the online accounts and processing telephone payments.  After
+
+reviewing the Customer Relationship Management’s log ﬁles, the investigators were able to conﬁrm
+
+that one employee had accessed all the accounts that were fraudulently refunded. In depth analysis
+
+of the employee’s computers revealed that, despite the use of a data wiping software, he had sent
+
+numerous email messages concerning the accounts aﬀected by the fraudulent activity to another
+
+individual based in England.   When presented with this evidence, the suspected worker ﬁnally
+
+confessed the crime and oﬀered assistance in identifying accounts with over £1,000 in refunds
+
+stolen. The employee would take photographs of the account details and send them to his aide in
+
+England, who would then create an online account or request a password reset. With the help of the
+
+call center employee, new evidence was gathered, and authorities were able to secure a conviction
+
+also for the aide.
+
+This insider attack examined here suggests that management should also ensure that partners
+
+having access to critical data perform stringent background checks on their employees. (The source
+
+used herein for this incident is Verizon (2017).)
+
+
+Hassanzadeh September 11, 2019
+
+12. A European water utility, 2018
+
+Incident
+
+A European water utility with a cloud-based OT analytics system hired a critical infrastructure
+
+security ﬁrm, Radiﬂow, to monitor its network. On January 21st, 2018, suspicious network traﬃc
+
+was detected on the SCADA network. A series of new links to external IP addresses created a major
+
+network topology change, which triggered several alerts. The destination IP addresses were looked
+
+up, but this did not lead to any malicious site.  Further investigation revealed that the addresses
+
+belonged to a “MinerCircle Monero Pool”. This led to the detection of crypto-mining malware in
+
+the OT network of the water utility. The investigation classiﬁed nearly 40% of the traﬃc as related
+
+to mining operations, causing a 60% surge in the overall bandwidth consumption. The investigation
+
+found no attempts of manipulating the controller conﬁguration or sending commands.
+
+Response and lessons learned
+
+The security ﬁrm informed the water utility about the crypto-mining malware and infected
+
+servers.  The recovery scheme included updating the anti-virus software on some servers as well
+
+as tightening the ﬁrewall security. The updated anti-virus software was successful in detecting the
+
+CoinMiner malware.
+
+This incident is believed to be the ﬁrst known instance of cryptojacking—i.e., the unauthorized
+
+useofacomputingresourcetoillicitlyminecryptocurrency—beingusedagainstanICS.Suspicious
+
+network traﬃc was the clue that led to the detection of the cryptojacking in this incident. Besides
+
+suspicious network traﬃc, high processor usage, sluggish response times, and overheating are some
+
+symptoms of cryptojacking that can be monitored for early detection. (The sources used herein for
+
+this incident included Radiﬂow (2018), Newman (2018), and Kerner (2018).)
+
+13. Onslow Water and Sewer Authority, U.S., 2018
+
+Incident
+
+Onslow Water and Sewer Authority, a water utility company in Jacksonville (North Carolina)
+
+was targeted by cyber-criminals in October of 2018. Timed right in the wake of Hurricane Florence,
+
+the attack soon escalated into a sophisticated ransomware attack that locked out employees and
+
+
+Hassanzadeh September 11, 2019
+
+encrypted databases, leaving the utility with limited computing capabilities. The hack began with
+
+persistent cyber-attacks through a virus known as EMOTET. With the EMOTET virus infection
+
+persisting, the authority reached out to outside security experts to investigate and respond to the at-
+
+tack. At approximately 3 am on Saturday October 13th, while the investigations were still underway,
+
+the malware launched a more sophisticated virus known as RYUK. The IT team immediately dis-
+
+connected the authority’s facilities from the internet. Nevertheless, the situation soon exacerbated
+
+and the virus encrypted ﬁles and data.  The authority suspects that the attack has been a targeted
+
+one because the hackers chose a target that was recently hit by a natural disaster.  Moreover, the
+
+sophisticated virus was launched at 3 am on a Saturday—a time in which the authority was most
+
+vulnerable.  The authority soon received one email from the cyber criminals demanding payment
+
+to decrypt the damaged ﬁles and data.   The authority dismissed the oﬀer and stated it will not
+
+“negotiate with criminals nor bow to their demands.”
+
+Response and lessons learned
+
+The authority has been working with the FBI, the DHS, the state of North Carolina, and multiple
+
+security ﬁrms for remediation and recovery.  The authority also planned to rebuild its IT systems
+
+from the ground up.
+
+Theauthorityhadmultiplelayersofprotectioninplace,includingﬁrewallsandantivirus/malware
+
+software, when the hackers struck. Yet, their IT system proven to be penetrable. Ransomware is the
+
+fastest growing malware threat, targeting users of all types, according to the FBI. In this incident,
+
+the utility decided not to pay a ransom. This is in accordance with the federal guidelines—the US
+
+Government does not encourage paying a ransom to criminal actors. (The sources used herein for
+
+this incident included ONWASA (2018) and Mahairas (2018).)
+
+14. Fort Collins Loveland Water District, U.S., 2019
+
+Incident
+
+Fort Collins Loveland Water District serves customers in parts of Fort Collins,  Loveland,
+
+Timnath, Windsor, and Larimer County (Colorado). On February 11th, 2019, the staﬀ of the Fort
+
+Collins Loveland Water District and South Fort Collins Sanitation District were unable to access
+
+
+Hassanzadeh September 11, 2019
+
+technical data. Daily operations and customers’ data were not believed to have been compromised.
+
+The utility had fallen victim to a ransomware cyber-attack.  The hackers demanded a ransom to
+
+restore access (the amount of ransom payment demanded has not been disclosed to the public).
+
+The district declined to pay the ransom.
+
+Response and lessons learned
+
+Within a few weeks, the district managed to unlock the data on its own. The decision on whether
+
+or not to notify the customers about the hack was also a challenge. Eventually, it was decided not
+
+to notify them, since the district did not store customers’ data. All payments were indeed handled
+
+by a third-party vendor.
+
+This is another case of ransomware attack in which the victim declined to pay a ransom. Data
+
+segmentation and segregation proven to be a helpful practice in safeguarding sensitive customer
+
+and daily operation data.  Hiring a third-party vendor to handle customer payments prevented the
+
+customer data to be compromised.  The practice of hiring third-party vendors, however, creates
+
+its own risks, as it was also manifested by Incident 11.  (The sources used herein for this incident
+
+included Ferrier (2019) and Sobczak (2019).)
+
+15. Riviera Beach Water Utility, U.S., 2019
+
+Incident
+
+On May 29th, 2019, Riviera Beach, a small city of 35,000 inhabitants located north of West
+
+Palm Beach (Florida), was hit by a crippling ransomware attack after an employee of the police
+
+department opened an infected email.   Paralyzing computer systems of the police department,
+
+city council and other local government oﬃces, the ransomware sent all operations oﬄine and
+
+encrypted their data.   The attack also spread to the water utility, compromising the computer
+
+systems controlling pumping stations and water quality testing, as well as its payment operations.
+
+Response and lessons learned
+
+A few days after the attack, the city council unanimously voted to authorize its insurer to pay
+
+65 bitcoins, approximately $600,000, to the attackers. The city would pay an additional $25,000 as
+
+
+
+Hassanzadeh September 11, 2019
+
+insurance deductibles out of its budget. Two weeks after the attack was disclosed, the IT department
+
+could bring the city’s website and email services fully operational, while the water pump stations
+
+and water quality testing systems were only partially available.  Although water quality sampling
+
+had to be performed manually, the city council’s spokeswoman assured that water quality itself was
+
+never in jeopardy. The FBI, Secret Service, and DHS investigated the attack and recommended the
+
+city not to pay the ransom.  Regardless of paying the ransom, as of June 20th, 2019, the sensitive
+
+data being encrypted by hackers were still inaccessible.
+
+While waiting for the attackers to share a decryption key, the local government authorized
+
+spending more than $900,000 to buy new computer hardware—purchases which were planned for
+
+next year. According to a councilperson, most of the existing hardware was old and outdated, which
+
+made it vulnerable to the cyber-attack. In addition, the city’s computer network was not updated,
+
+and patches were not installed on time.
+
+It is known that local governments and small public utilities are less prepared for cyber-attacks,
+
+since they lack the budget and professionals needed to secure their IT and OT systems.   That
+
+said, basic cybersecurity training raises awareness, and reduces the possibility of succumbing to
+
+devastating attacks unleashed by the naivety of uninformed employees, such as the case for Riviera
+
+Beach. Although paying a ransom looks like the easiest way to solve the problem, FBI and security
+
+experts suggest never to pay ransom as it only encourages future criminal activity.   Preventing
+
+cyber-attacks from happening is always the best practice. (The sources used herein for this incident
+
+included Doris (2019), Mazzei (2019), and O’Donnell (2019).)
+
+
+DISCUSSION
+
+As outlined in the previous section, the complexity of cyber-incidents in WWS has increased
+
+during the last two decades. In some earlier incidents, such as the 2000 Maroochy Water Services
+
+hack, an insider simply and directly gained access to the OT controllers and performed malicious
+
+activities, while in some recent attacks, such the 2016 Kemuri Water Company hack, several IT
+
+and OT workstations were compromised by outsiders using multi-step attack techniques.  In this
+
+section, we review and analyze some key points of the aforementioned incidents from both attacker
+
+
+Hassanzadeh September 11, 2019

@@ -1,0 +1,44 @@
+\chapter{Tarea 4}
+
+\framedt{Tarea a realizar}{
+   Visualiza el siguiente vídeo:
+   \href{
+      www.youtube.com/watch?v=8edHD2o0pao
+   }{youtube.com/watch?v=8edHD2o0pao}
+   
+   Contesta a las siguientes preguntas:
+   \begin{itemize}
+   	\item Explica las medidas que propone el video para securizar un sistema de Smart Grid
+	   \item Sugiere alguna medida adicional no recogida en el vídeo  
+   \end{itemize}
+}
+\vspace{2em}
+
+\section{Introduction}
+The low voltage smart grid is a soft target which is critically important for the supply of \textit{Sustainable Energy} and \textit{DSO's Billing Operations} (``Distribution System Operator'').
+\note{Examples of such operations include the management of distributed energy resources (DERs), electric vehicle (EV) charging, and home energy management systems (HEMS).}
+
+\section{Measures to Secure a Smart Grid}
+The video suggests six key steps to be taken by all parties involved in the supply in order to be robust against cyber attacks:
+\begin{enumerate}
+   \item \ul{``\textbf{Regulatory compliance} and \textbf{protection} should be considered the \textit{minimum}, not the \textit{desired} level of security''}\\
+   This helps to think like a cyber criminal, and anticipate their actions.
+   \item \ul{``Don't trust \textbf{optionality} in security}\\
+   Cyber criminals look for \textit{optional} security measures to exploit. If a security measure is optional, it is likely to be ignored by some parties, which can lead to vulnerabilities, potentially allowing criminals to sneak in and disable even the mandatory security measures.
+   \item \ul{``Don'assume your security is \textbf{unique} and that this protects you''}\\
+   Cyber criminals always have several tools at their disposal, and they will not hesitate to use them. Even if you think your security measures are unique, they may still bypassed by a determined attacker.\\
+   DSO should run \textbf{Penetration Tests} (PT) regularly to assess the effectiveness of their security measures, preferrably by testers with some experties concerning low voltage smart grids.
+   \item \ul{``\textit{Invest} in \textbf{threat detection and response}''}\\
+   This would allow the security team to focus on the organized attacks, such as Ransom attacks or Denial of Service (DoS) attacks, which are more likely to be successful and cause significant damage.\\
+   Besides, robust detection is symptom of ``saber lo que pasa'', i.e. Cyber Situational Awareness (CSA), which is a key element of any security strategy.
+   \item \ul{``Provide an effective \textbf{deterrent}''}\\
+   Exploit detection and response capabilities to deter cyber criminals and build a body of evidence against them.\\
+   This can be achieved by implementing measures such as \textbf{Honeypots} and \textbf{Honeynets}, which are designed to attract and trap cyber criminals, allowing security teams to gather information about their tactics and techniques.
+   \item \ul{``\textbf{Integrate} your low voltage smart grid with your \textbf{corporate security}''}\\
+   This would allow the security team to have a holistic view of the security posture of the organization, making it easier to identify multi-point attacks and to coordinate the response to them.
+\end{enumerate}
+
+Ultimately the video reminds that we are all potential victims of cyber attacks, no matter how weak or strong our security measures are.\\
+After all, the key point is to be have people, organizations, and technology in your organization which can think like a cyber criminal.
+
+\section{Additional Measures}
