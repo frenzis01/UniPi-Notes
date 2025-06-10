@@ -1,0 +1,48 @@
+---
+config:
+  look: handDrawn
+  theme: redux
+  layout: dagre
+---
+flowchart TD
+    CS(["Ciberconciencia Situacional"]) --> Fundamentos["<b>1. Fundamentos de la CS</b>"] & Componentes["<b>2. Componentes estructurales</b>"] & Colaboracion["<b>3. Colaboración y visualización</b>"] & Riesgos["<b>4. Análisis y gestión de riesgos</b>"] & Herramientas["<b>5. Herramientas y tecnologías</b>"] & Dominios["<b>6. Dominios físicos y cibernéticos</b>"] & Ciberinteligencia["<b>7. Ciberinteligencia</b>"]
+    Fundamentos --- C1["*1. Ciberconciencia Situacional*"]
+    C1 --- C2["*2. Ciclo cognitivo de la CS*"]
+    C2 --- C2A["*2a. Fase de percepción*"]
+    C2A --- C2B["*2b. Fase de comprensión*"]
+    C2B --- C2C["*2c. Fase de proyección*"]
+    C2C --- C3["*3. Situation Understanding*"]
+    C3 --- C4["*4. Sensemaking*"]
+    Componentes --- C5["*5. Network Awareness*"]
+    C5 --- C6["*6. Threat Awareness*"]
+    C6 --- C7["*7. Mission Awareness*"]
+    Colaboracion --- C8["*8. Common Operational Picture*"]
+    C8 --- C9["*9. Visualización de ciberinteligencia*"]
+    C9 --- C10["*10. Gestión de sobrecarga informativa*"]
+    Riesgos --- C11["*11. Factores de riesgo*"]
+    C11 --- C12["*12. Análisis de consecuencias*"]
+    Herramientas --- C13["*13. Sensores cibernéticos*"]
+    C13 --- C14["*14. Posicionamiento de sensores*"]
+    C14 --- C15["*15. SIEM*"]
+    Dominios --- C16["*16. Cyber Hybrid SA*"]
+    C16 --- C17["*17. Georreferenciación de activos*"]
+    Ciberinteligencia --- C18["*18. Estándares intercambio info*"]
+    C18 --- C19["*19. Fuentes de Ciberinteligencia*"]
+    C19 --- C20["*20. Sistemas Respuesta Incidentes*"]
+    C20 --- C21["*21. Attack Graphs*"]
+    C21 --- C22["*22. Niveles mando: Táctico/Operativo/Estratégico*"]
+    C6 -.-> C3
+    C21 -.-> C12
+    C13 -.-> C2A
+    C15 -.-> C2B
+     CS:::sectionNode
+     CS:::Sky
+     Fundamentos:::sectionNode
+     Componentes:::sectionNode
+     Colaboracion:::sectionNode
+     Riesgos:::sectionNode
+     Herramientas:::sectionNode
+     Dominios:::sectionNode
+     Ciberinteligencia:::sectionNode
+    classDef sectionNode font-size:20px, font-weight:bold, stroke:#333, fill:#ffffde, stroke-width:2px, rx:10, ry:10
+    classDef Sky font-size:28px, stroke-width:3px, stroke-dasharray:none, stroke:#374D7C, fill:#E2EBFF, color:#374D7C, rx:25, ry:25

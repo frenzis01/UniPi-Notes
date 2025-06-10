@@ -1,5 +1,21 @@
 \chapter{20 conceptos más relevantes}
 
+
+
+A continuación, se presentan los 20 conceptos que me parecen más relevantes para la Ciberconciencia Situacional (CS), junto con una breve descripción de cada uno y una explicación de su importancia en el contexto de la CS.
+Los 20 conceptos están divididos en secciones temáticas y se presentan en orden de importancia.
+Solo se refieren a la primera parte de la asignatura.
+
+\note{En realidad, hay 22 conceptos; me pareció más apropiado separar algunos que están muy relacionados.}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.99\columnwidth]{images/00/mapa.png}
+   \caption{En esta figura se muestra un mapa conceptual de los conceptos así cómo estan organizados en este documiento.}
+   \label{fig:00/mapa}
+\end{figure}
+
+\newpage
 \section{Fundamentos de la Ciberconciencia Situacional}
 \begin{enumerate}
 \item \textbf{Ciberconciencia Situacional (CS)} \\
@@ -39,13 +55,13 @@ El ciclo de la CS se compone de adquisición de datos, procesamiento, análisis,
 \begin{enumerate}[resume]
 
 \item \textbf{Situation Understanding} \\
-El entendimiento situacional va más allá de la simple conciencia situacional, y se refiere a, dada una situació, comprender las posibles consecuencias y predecir eventos futuros. Es relevante porque permite anticipar las amenazas antes de que se materialicen completamente. Mientras que la conciencia situacional responde a la pregunta \textit{``¿qué está pasando?"}, el \textit{entendimiento situacional} busca responder \textit{``¿por qué está pasando y qué podría ocurrir después?"}. Esta profundidad adicional de análisis es fundamental en el complejo entorno cibernético, donde las relaciones causa-efecto no siempre son evidentes y donde un solo indicador puede ser parte de un ataque multifacético más amplio.
+El \ul{entendimiento situacional} va más allá de la simple conciencia situacional, y se refiere a, dada una situació, comprender las posibles consecuencias y predecir eventos futuros. Es relevante porque permite anticipar las amenazas antes de que se materialicen completamente. Mientras que la conciencia situacional responde a la pregunta \textit{``¿qué está pasando?"}, el \textit{entendimiento situacional} busca responder \textit{``¿por qué está pasando y qué podría ocurrir después?"}. Esta profundidad adicional de análisis es fundamental en el complejo entorno cibernético, donde las relaciones causa-efecto no siempre son evidentes y donde un solo indicador puede ser parte de un ataque multifacético más amplio.
 \nl
 
 \note{El video de la tarea del sistema idraulico señalaba lo complicado que era distinguir la causa de un problema, porque multiples sensores podrían indicar el mismo problema. En situaciones así, es importante combinar los datos con el conocimiento previo y la experiencia para determinar la causa raíz de un efecto indeseado.}
 
 \item \textbf{Sensemaking} \\
-Incluye las actividades cognitivas necesarias para desarrollar conciencia, comprensión y traducirlas en acciones. Es fundamental porque conecta la conciencia con la acción concreta en el dominio cibernético. El proceso de sensemaking representa el puente crítico entre la observación pasiva y la respuesta activa, transformando el conocimiento abstracto en decisiones operativas tangibles. Este proceso involucra la contextualización de la información dentro de marcos mentales preexistentes, la resolución de ambigüedades y contradicciones, y la creación de narrativas coherentes que expliquen los eventos observados.
+Incluye las actividades cognitivas necesarias para desarrollar conciencia, comprensión y traducirlas en acciones. Es fundamental porque \ul{conecta la conciencia con la acción concreta en el dominio cibernético}. El proceso de sensemaking representa el puente crítico entre la observación pasiva y la respuesta activa, transformando el conocimiento abstracto en decisiones operativas tangibles. Este proceso involucra la contextualización de la información dentro de marcos mentales preexistentes, la resolución de ambigüedades y contradicciones, y la creación de narrativas coherentes que expliquen los eventos observados.
 
 Para simplificar el proceso de sensemaking es importante disponer de recursos y herramientas apropiados, como sensores, tecnicas de visualización, SIEMs, \dots\\
 Pero es importante también destacar que un grafico de visualización de datos no es util sin las inferencias que se pueden hacer tenendo en cuenta el contexto. 
@@ -142,6 +158,7 @@ En el video sobre los sistemas idraulicos de una tarea, se menciona una herramie
 % Este análisis va más allá de la simple cuantificación de daños directos para contemplar efectos en cascada, impactos indirectos y consecuencias a largo plazo que pueden afectar a múltiples facetas de la organización y sus grupos de interés. El análisis de consecuencias emplea modelos sofisticados para simular escenarios de compromiso en diferentes sistemas críticos.
 \end{enumerate}
 
+\newpage
 \section{Herramientas y tecnologías para la CS}
 \begin{enumerate}[resume]
 % \item \textbf{Herramientas de Cyber Situational Awareness para integrar y visualizar datos} -
@@ -184,6 +201,8 @@ Hemos visto que los SIEM son herramientas potentes, pero \ul{\textit{no} son la 
    \label{fig:00/SIEM}
 \end{figure}
 \end{enumerate}
+
+\newpage
 
 \section{Dominios físicos y cibernéticos}
 \begin{enumerate}[resume]
@@ -265,10 +284,11 @@ Los \textit{attack graphs} son representaciones gráficas que ilustran las relac
 \end{figure}
 
 Esta representación visual no solo mejora la comprensión de las amenazas, sino que también permite priorizar defensas y mitigaciones basadas en la probabilidad de explotación de diferentes rutas de ataque.\\
-Es posible detener una intrusión calculando cortes en un grafo de ataque.
+Es posible detener una intrusión calculando cortes en un grafo de ataque, cómo se muestra en la Fig. \ref{fig:00/graphintrusions}.\\
+\newpage
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/00/graphintrusions.png}
+   \includegraphics[width=0.9\columnwidth]{images/00/graphintrusions.png}
    \caption{Detener una intrusión calculando cortes en un grafo de ataque}
    \label{fig:00/graphintrusions}
 \end{figure}
