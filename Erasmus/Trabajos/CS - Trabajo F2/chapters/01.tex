@@ -1,6 +1,6 @@
 \chapter{Caracterización de ataques a ICS con Mitre}
 \label{chap:01}
-\section{Introducción}
+\section*{Introducción}
 
 La tarea nos pide de leer un artículo de revisión de 15 ataques a sistemas de control industrial (ICS) y elegir 5 de ellos para caracterizarlos con la matriz de \href{attack.mitre.org/matrices/ics/}{Mitre ATT\&CK}. La matriz de Mitre ATT\&CK es una base de datos de tácticas, técnicas y procedimientos (TTP) utilizados por los atacantes en el ciberespacio. Esta matriz se utiliza para comprender mejor las amenazas y mejorar la defensa cibernética.
 
@@ -41,7 +41,7 @@ Una red ICS està dividida por niveles y zonas:
 Los ataques a sistemas de control industrial (ICS) son cada vez más frecuentes y sofisticados. En este trabajo, analizaremos cinco ataques significativos a sistemas de agua y aguas residuales (WWS), utilizando la matriz de MITRE ATT\&CK para ICS. Esta matriz nos permite categorizar las tácticas, técnicas y procedimientos utilizados por los atacantes en entornos ICS.
 
 Vamos a analizar las tácticas y técnicas utilizadas en cada ataque, así como la respuesta a los incidentes y su efectividad.
-
+\newpage
 \section{Ataque 1: Maroochy Water Services, Australia, 2000}
 
 \subsection{Descripción del incidente}
@@ -82,8 +82,8 @@ Según la matriz MITRE ATT\&CK para ICS, el ataque utilizó las siguientes táct
 
 \subsection{Respuesta al incidente}
 La respuesta consistió en una investigación que culminó con la captura del sospechoso en abril de 2000. Se le encontró en posesión de equipos de control industrial, como un ordenador Compact 500, un radio bidireccional, un portátil, un transformador y cables. Posteriormente fue sentenciado a dos años de prisión y ordenado a pagar 13,111 dólares australianos por los daños causados. La limpieza del vertido requirió días y recursos sustanciales.
-\nl
 
+\subsubsection{Evaluación de la respuesta}
 La respuesta fue reactiva y no preventiva. Como se sugiere en el artículo, la respuesta parece inadecuada por varias razones:
 
 \begin{itemize}
@@ -94,14 +94,32 @@ La respuesta fue reactiva y no preventiva. Como se sugiere en el artículo, la r
 
 Una respuesta más adecuada habría incluido la implementación de controles de seguridad básicos según el protocolo NIST SP 800-53, como la terminación inmediata de accesos de exempleados, autenticación multifactor, segregación de redes y monitoreo continuo de actividades sospechosas en el sistema SCADA.
 
-Bloquear el acceso inicial a los atancates es fundamental. Constituye la primera línea de defensa contra ataques a ICS y a sistemas informaticos en general. Tras obtener acceso, los atacantes pueden escanear la red, detectar vulnerabilidades, moverse lateralmente y comprometer sistemas críticos.
+Bloquear el \textbf{acceso inicial} a los atancates es fundamental. Constituye la primera línea de defensa contra ataques a ICS y a sistemas informaticos en general. Tras obtener acceso, los atacantes pueden escanear la red, detectar vulnerabilidades, moverse lateralmente y comprometer sistemas críticos.
+
+Además, la falta de ciberconciencia situacional, es decir, la falta de conocimiento sobre lo que está sucediendo en el sistema, no ha permitido de detectar sin demora el ataque.\\
+Además de la falta de ciberconciencia situacional, parece evidente que faltaba la definición clara de políticas de \textbf{Access Control}, que es fundamental y que tiene que funcionar como guía para la implementación y configuración de las herramientas de seguridad.\\
+Un firewall, sin una política de acceso bien definida, no es más que un filtro que pero no puede resolver ningún problema concreto de seguridad.
+\newpage
+
 
 \section{Ataque 2: Kemuri Water Company (seudónimo), EE.UU., 2016}
 
 \subsection{Descripción del incidente}
-En 2016, una empresa de servicios de agua en EE.UU. (bajo el seudónimo Kemuri Water Company) contrató a Verizon Security Solutions para realizar una evaluación de ciberseguridad de sus sistemas. La evaluación reveló vulnerabilidades de alto riesgo, incluyendo el uso de sistemas obsoletos como un ordenador AS400 que servía para funciones críticas de IT y OT, con conexiones directas a múltiples redes. El análisis forense descubrió que hacktivistas patrocinados por un estado habían explotado la aplicación de pago en internet para acceder al sistema AS400, resultando en la exfiltración de 2.5 millones de registros únicos y manipulación de productos químicos y tasas de flujo.
+\begin{paracol}{2}
+    \colfill
+    En 2016, una empresa de servicios de agua en EE.UU. (bajo el seudónimo Kemuri Water Company) contrató a Verizon Security Solutions para realizar una evaluación de ciberseguridad de sus sistemas. La evaluación reveló vulnerabilidades de alto riesgo, incluyendo el uso de sistemas obsoletos como un ordenador \href{https://it.wikipedia.org/wiki/IBM_AS/400}{AS400} que servía para funciones críticas de IT y OT, con conexiones directas a múltiples redes. El análisis forense descubrió que hacktivistas patrocinados por un estado habían explotado la aplicación de pago en internet para acceder al sistema AS400, resultando en la exfiltración de 2.5 millones de registros únicos y manipulación de productos químicos y tasas de flujo.
+    \colfill
+    
+    \switchcolumn
 
-\subsection{Tácticas y técnicas según MITRE ATT\&CK}
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.95\columnwidth]{images/AS400.jpg}
+        \caption{AS400 IBM}
+        \label{fig:AS400}
+    \end{figure}
+\end{paracol}
+    \subsection{Tácticas y técnicas según MITRE ATT\&CK}
 Según la matriz MITRE, este ataque empleó:
 
 \begin{itemize}
@@ -153,12 +171,20 @@ Algunas ídeas de mejora serían:
 
 Si hubiera habido un control periódico y mayor monitoreo, las vulnerabilidades habrían sido identificadas antes, y ---esperablemente--- el ataque habría sido prevenido.\\
 Además, el hecho de que algunos empleados conocían vulnerabilidades denota negligencia y/o falta de comunicación entre equipos.\\
-La falta de comunicación y un monitoring deficiente evidentemente contribuyeron a una \textit{``Ciberconciencia situacional''} parcial, es decir, que no se sabía lo que estaba pasando en el sistema.
-
+La falta de comunicación y un monitoring deficiente evidentemente contribuyeron a una \textit{``Ciberconciencia situacional''} parcial, es decir, que no se sabía lo que estaba pasando en el sistema. Hemos visto en clase que, herramientas de Visualización o una COP (Common Operational Picture) pueden ayudar a mejorar la comunicación entre los equipos y a obtener una vista general más completa.
+En cualquier caso, es importante recalcar nuevamente que un sistema de filtrado o de autenticación para hacer segura una aplicación de cara al público por sí solos no son suficientes, es necesario definir reglas de acceso y autorización claras y eficaces, para que tales herramientas puedan efectivamente proteger el sistema.
+\newpage
 \section{Ataque 3: Empresa de agua europea, 2018}
 
 \subsection{Descripción del incidente}
-En enero de 2018, una empresa europea de servicios de agua con un sistema de análisis OT basado en la nube contrató a Radiflow para monitorear su red. El 21 de enero, se detectó tráfico de red sospechoso en la red SCADA, con nuevos enlaces a direcciones IP externas que generaban un cambio importante en la topología de la red. La investigación reveló que las direcciones pertenecían a un ``MinerCircle Monero Pool", lo que llevó a la detección de malware de criptominería en la red OT. Aproximadamente el 40\% del tráfico estaba relacionado con operaciones de minería, causando un aumento del 60\% en el consumo total de ancho de banda. Este incidente se considera el primer caso conocido de ``cryptojacking" contra un sistema ICS.
+En enero de 2018, una empresa europea de servicios de agua con un sistema de análisis OT basado en la nube contrató a Radiflow para monitorear su red. El 21 de enero, se detectó tráfico de red sospechoso en la red SCADA, con nuevos enlaces a direcciones IP externas que generaban un cambio importante en la topología de la red. La investigación reveló que las direcciones pertenecían a un ``MinerCircle Monero Pool", lo que llevó a la detección de malware de criptominería en la red OT. Aproximadamente el 40\% del tráfico estaba relacionado con operaciones de minería, causando un aumento del 60\% en el consumo total de ancho de banda. Este incidente se considera el primer caso conocido de ``\textbf{cryptojacking}" contra un sistema ICS.
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.85\columnwidth]{images/cryptojacking.jpg}
+    \caption{Cryptojacking esquema}
+    \label{fig:cryptojacking}
+\end{figure}
 
 \subsection{Tácticas y técnicas según MITRE ATT\&CK}
 Las tácticas y técnicas utilizadas incluyen:
@@ -204,6 +230,12 @@ Para fortalecer un ICS contra ataques similares, propondría adicionalmente:
         \item Implementación de listas blancas de aplicaciones para prevenir la ejecución de software no autorizado.
         Para una empresa de distribución de agua esto no debería ser demasiado difícil de implementar y mantener actualizado.
 \end{itemize}
+
+Hay técnicas de active/passive fingerprinting para establecer un perfil de tráfico normal, que pueden ayudar a detectar anomalías en el tráfico de red.\\
+Sin embargo, un utilizo continuo de tecnicas de active fingerprinting pueden causar problemas de rendimiento y disponibilidad, que en un ICS pueden ser críticos.
+
+
+
 
 % \section{Ataque 4: Onslow Water and Sewer Authority, EE.UU., 2018}
 
@@ -257,6 +289,8 @@ Para fortalecer un ICS contra ataques similares, propondría adicionalmente:
 %     \item Capacitación específica sobre amenazas de phishing, especialmente durante situaciones de crisis como desastres naturales.
 % \end{itemize}
 
+
+\newpage
 \section{Ataque 4: Riviera Beach Water Utility, U.S., 2019}
 
 \subsection{Descripción del incidente}
@@ -267,6 +301,13 @@ El ataque también se extendió a la utilidad de agua, comprometiendo los sistem
 \coolquote{
     Although paying a ransom looks like the easiest way to solve the problem, FBI and security experts suggest never to pay ransom as it only encourages future criminal activity. Preventing cyber-attacks from happening is always the best practice.
 }{}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/ransom.jpg}
+    \caption{\href{https://www.kaspersky.com/about/press-releases/over-half-of-ransomware-victims-pay-the-ransom-but-only-a-quarter-see-their-full-data-returned}{Segun una encuesta de Kaspersky}, más del 50\% de las victimas pagan el ransom, especialmente los usuarios más jovenes}
+    \label{fig:ransom}
+\end{figure}
 
 \subsection{Tácticas y técnicas según MITRE ATT\&CK}
 Según la matriz MITRE ATT\&CK para ICS, este ataque utilizó las siguientes tácticas y técnicas:
@@ -295,6 +336,8 @@ Los atacantes eligieron estas tácticas por varias razones:
     \item Pueblos pequeños a menudo no tienen fondos suficiente para invertir en ciberseguridad, lo que los hace más vulnerables a ataques de ransomware.
     El hardware y software obsoleto, como el sistema de control de la utilidad de agua, a menudo carece de las actualizaciones de seguridad necesarias para resistir ataques modernos.
 \end{itemize}
+
+
 
 \subsection{Respuesta al incidente}
 Pocos días después del ataque, el ayuntamiento votó unánimemente autorizar a su aseguradora a pagar 65 bitcoins, aproximadamente \$600,000, a los atacantes, más \$25,000 adicionales como deducible del seguro. A pesar del pago, los datos seguían siendo inaccesibles al 20 de junio de 2019, y no había garantía de recuperación completa.
@@ -329,18 +372,52 @@ Una respuesta más adecuada habría incluido:
 
 Este caso ilustra claramente cómo la falta de inversión en seguridad cibernética básica puede resultar en costos mucho mayores tras un incidente, incluyendo no solo el rescate y las nuevas adquisiciones, sino también daños reputacionales y pérdida de confianza pública.
 
-Sin embargo, ilustra también cómo la seguridad sea un coste no indiferente, especialmente para pequeñas municipalidades que no tienen muchos recursos, y inversiones en ciberseguridad pueden ser vistas como un gasto innecesario.\\
-Claro que, típicamente el coste de un ataque exitoso es mucho mayor que el coste de una inversión en ciberseguridad, pero esto no es evidente para todos los responsables de la toma de decisiones, y para el público en general.
+\begin{paracol}{2}
+    
 
-Cómo un seguro de salud, o del coche, la ciberseguridad es una inversión que no se ve hasta que se necesita, y por lo tanto a menudo es minimizada o ignorada.\\
-Dado que ser robusto contra ciberataques puede ser difícil y costoso, debería haber al menos mecanismos de resistencia, que tienden a ser más baratos y fáciles de implementar, y que pueden ayudar a recuperarse ---casi--- fácilmente de un ataque sin pagar un rescate.
+    \colfill
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.95\columnwidth]{images/FSC.jpg}
+        % \caption{}
+        \label{fig:FSC}
+    \end{figure}
+    \colfill
+    
+    \switchcolumn
+    Sin embargo, ilustra también cómo la seguridad sea un coste no indiferente, especialmente para pequeñas municipalidades que no tienen muchos recursos, y inversiones en ciberseguridad pueden ser vistas como un gasto innecesario.\\
+    Claro que, típicamente el coste de un ataque exitoso es mucho mayor que el coste de una inversión en ciberseguridad, pero esto no es evidente para todos los responsables de la toma de decisiones, y para el público en general.
+    
+    Cómo un seguro de salud, o del coche, la ciberseguridad es una inversión que no se ve hasta que se necesita, y por lo tanto a menudo es minimizada o ignorada.\\
+    Dado que ser robusto contra ciberataques puede ser difícil y costoso, debería haber al menos mecanismos de resistencia, que tienden a ser más baratos y fáciles de implementar, y que pueden ayudar a recuperarse ---casi--- fácilmente de un ataque sin pagar un rescate.
+    
+\end{paracol}
+
+
+\newpage
 \section{Ataque 5: Bowman Avenue Dam, EE.UU., 2013}
 
-\subsection{Descripción del incidente}
-Entre el 28 de agosto y el 18 de septiembre de 2013, hackers obtuvieron ``acceso remoto no autorizado" al sistema SCADA de la presa Bowman Avenue en Rye, Nueva York. Esta presa utiliza una compuerta controlada remotamente desde 2013 para controlar el flujo de agua según los niveles y temperaturas del arroyo Blind Brook. Los atacantes lograron recopilar información sobre niveles de agua, temperatura y estado de la compuerta, aunque esta estaba desconectada manualmente para mantenimiento durante la intrusión. El ataque se realizó mediante ``Google dorking", una técnica que utiliza el motor de búsqueda Google para localizar vulnerabilidades en aplicaciones web.
+\begin{paracol}{2}
+    
+    \subsection{Descripción del incidente}
 
-\subsection{Tácticas y técnicas según MITRE ATT\&CK}
-Las tácticas y técnicas utilizadas incluyen:
+    \colfill
+    Entre el 28 de agosto y el 18 de septiembre de 2013, hackers obtuvieron ``acceso remoto no autorizado" al sistema SCADA de la presa Bowman Avenue en Rye, Nueva York. Esta presa utiliza una compuerta controlada remotamente desde 2013 para controlar el flujo de agua según los niveles y temperaturas del arroyo Blind Brook. Los atacantes lograron recopilar información sobre niveles de agua, temperatura y estado de la compuerta, aunque esta estaba desconectada manualmente para mantenimiento durante la intrusión. El ataque se realizó mediante ``Google dorking", una técnica que utiliza el motor de búsqueda Google para localizar vulnerabilidades en aplicaciones web.
+    
+    \colfill
+    
+    \switchcolumn
+
+        \begin{figure}[htbp]
+            \centering
+            \includegraphics{images/googledorking.png}
+            \caption{Google advanced search commands}
+            \label{fig:googledorking}
+        \end{figure}
+    \end{paracol}
+    
+    \subsection{Tácticas y técnicas según MITRE ATT\&CK}
+    Las tácticas y técnicas utilizadas incluyen:
 
 \begin{itemize}
     \item \textbf{Reconnaissance} - \textit{Network Sniffing} (T0842) y \textit{Spoof Reporting Message} (T0856), utilizando Google dorking para identificar vulnerabilidades en la aplicación web de control de la presa.
