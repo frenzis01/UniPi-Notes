@@ -2,15 +2,16 @@
 
 Podemos ver la Planificación Inteligente desde varios puntos de vista:
 \begin{itemize}
-   \item Deducción\\
+   \item \textbf{Deducción}\\
    A partir de algunos hechos ciertos, concer qué otros hechos también son ciertos (propagación)
-   \item Aprendizaje\\
+   \item \textbf{Aprendizaje}\\
    ``Mejorar la conudcta a partir de la experiencia''
-   \item Razonamiento sobre acciones
+   \item \textbf{Razonamiento} sobre acciones\\
    A partir de lagunos hechos ciertos (estado inicial), decidir qué acciones se deben ejecutar para alcanzar ciertos objectivos (es decir, que otros hechos sean también ciertos) en base a relaciones de causa-efecto. 
 \end{itemize}
 
 El ser humano es inteligente porque es capaz de razonar acerca de las consecuencias de sus actos. Al fin y al cabo estamos planificando constantemente aunque no nos demos cuenta.
+
 
 \begin{figure}[htbp]
    \centering
@@ -19,7 +20,11 @@ El ser humano es inteligente porque es capaz de razonar acerca de las consecuenc
    \label{fig:02/planificacion}
 \end{figure}
 
+
 En Fig. \ref{fig:02/planificacion} podemos ver un esquema de planificación. En el estado actual del mundo corresponde al \textit{``\textbf{dominio}''}, y el objetivo es llegar a un estado deseado nel mundo.
+
+
+\newpage
 
 \begin{figure}[htbp]
    \centering
@@ -44,27 +49,30 @@ En Fig. \ref{fig:02/planificacion} podemos ver un esquema de planificación. En 
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/02/condiciones.png}
+      \includegraphics[width=\columnwidth]{images/02/condiciones.png}
       \caption{Ejemplo para coger un taxi}
       \label{fig:02/condiciones}
    \end{figure}
 \end{paracol}
 
-\begin{definition}[Plan]
-   Un plan \lstinline|P| es una secuencia de acciones que transforma el estado
-   inicial (\lstinline|I|) en un estado que satisface los objetivos (\lstinline|G|)
-\end{definition}
 
 \begin{paracol}{2}
+   
+   \colfill
+   \begin{definition}[Plan]
+      Un plan \lstinline|P| es una secuencia de acciones que transforma el estado
+      inicial (\lstinline|I|) en un estado que satisface los objetivos (\lstinline|G|)
+   \end{definition}
    Un plan puede estar parcial o totalmente ordenado.
-   Un enlace causal ($a_i$, $p$, $a_j$ ) determina que la acción ai resuelve la condición $p$ de la acción $a$.
+   Un enlace causal ($a_i$, $p$, $a_j$ ) determina que la acción $a_i$ resuelve la condición $p$ de la acción $a$.
+   \colfill
    
 
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/02/planordenado.png}
+      \includegraphics[width=\columnwidth]{images/02/planordenado.png}
       \caption{Plan}
       \label{fig:02/planordenado}
    \end{figure}
@@ -81,7 +89,8 @@ En Fig. \ref{fig:02/planificacion} podemos ver un esquema de planificación. En 
 
 Es decir, el resultado de una acción aplicada a un estado
 completamente conocido se puede predecir correctamente,
-ya que no hay influencias externas que afecten al entorno.Para resolver este problema se utilizan algoritmos de búsqueda.
+ya que no hay influencias externas que afecten al entorno.
+Para resolver este problema se utilizan algoritmos de búsqueda.
 
 Esto modelo pero es muy limitado, y sus asuciones necesitan ser relajadas para que sea más realista y aplicable a problemas reales.\\
 En primer lugar, las acciones tienen distintas \textbf{duraciones}, usan recursos y tienen \textbf{coste}; además, El mundo \textit{no} es totalmente conocido (existe incertidumbre) y es \textbf{dinámico} (cambia debido a eventos exógenos).
@@ -97,6 +106,7 @@ Primero los aspectos generales (tareas) y después los detalles.
 
 \begin{paracol}{2}
    
+   \colfill
    Se definen métodos abstractos que se deben descomponer
    para resolver el problema.
    Métodos son los triángulos invertidos en la figura.
@@ -108,11 +118,12 @@ Primero los aspectos generales (tareas) y después los detalles.
       \item Precondiciones
       \item Red de tareas
    \end{itemize}
+   \colfill
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/02/htn.png}
+      \includegraphics[width=\columnwidth]{images/02/htn.png}
       \caption{Método abstracto y decomposición}
       \label{fig:02/htn}
    \end{figure}
@@ -120,6 +131,7 @@ Primero los aspectos generales (tareas) y después los detalles.
 
 
 \begin{paracol}{2}
+   \colfill
    Métodos son tareas a descomponer, y los operadores (como \lstinline|Fly|) representan las acciones que se pueden llevar a cabo dentro del
    mundo para poder alcanzar los distintos objetivos (acciones
    ejecutables que producen cambios en el estado del mundo).
@@ -129,12 +141,13 @@ Primero los aspectos generales (tareas) y después los detalles.
       \item Condiciones
       \item Efectos
    \end{itemize}
+   \colfill
    
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/02/accionFly.png}
+      \includegraphics[width=\columnwidth]{images/02/accionFly.png}
       \caption{Accion \lstinline|Fly|}
       \label{fig:02/accionFly}
    \end{figure}

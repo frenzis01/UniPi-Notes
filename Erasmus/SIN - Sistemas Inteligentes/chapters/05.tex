@@ -1,6 +1,6 @@
 \chapter{Agente Inteligentes}
 
-Agentes autónomos trabajan para resolver problemas en un entorno dinámico y complejo. Un agente es un sistema computacional que opera en un entorno y es capaz de percibirlo y actuar sobre él. Un agente inteligente es aquel que actúa de manera racional, es decir, que actúa para alcanzar sus objetivos, basándose en la información que percibe y en su conocimiento del entorno.
+Agentes autónomos trabajan para resolver problemas en un entorno dinámico y complejo. \ul{Un agente es un sistema computacional que opera en un entorno y es capaz de percibirlo y actuar sobre él}. Un agente inteligente es aquel que actúa de manera racional, es decir, que actúa para alcanzar sus objetivos, basándose en la información que percibe y en su conocimiento del entorno.
 Más formalmente,
 \begin{definition}
    [Wooldrdige]
@@ -41,7 +41,7 @@ En entornos complejos, un agente no tiene control completo sobre su entorno, só
    Un entorno accesible es aquel en el que el agente puede
    obtener información completa, exacta y actualizada del
    estado del entorno.
-   \item Determinista vs no determinista.
+   \item Determinista vs no determinista.\\
    Un entorno determinista es aquel en el que cualquier
    acción tiene un único efecto garantizado, no hay
    incertidumbre sobre el estado resultante de la ejecución de
@@ -93,13 +93,17 @@ estado del entorno :
    \textit{Percibir} & : E \rightarrow P\\
    \textit{Decisión} & : P^* \rightarrow A\\
    \textit{Selección} & : I \rightarrow Ac \\
-   \textit{actualizar\_estados} & : I \times P \rightarrow I
+   \textit{actualizar\_estados} & : I \times P \rightarrow I\\
+   \textit{actualizar\_objetivos} & : G \times P \rightarrow G \\
+   \textit{Acción (update)} & : I \times G \rightarrow Ac
 \end{align}
+\text{La acción dependerá del estado interno y de los objetivos que el agente quierá alcanzar}
 \note{
    \begin{itemize}
       \item 
       $P$ es un conjunto (no vacío) de percepciones (entradadas perceptivas), que relaciona estados del entorno con percepciones
       \item $I$ es el conjunto de todos los estados internos del agente
+      \item $G$ es el conjunto de todos los objetivos del agente
    \end{itemize}
 }
 
@@ -202,7 +206,7 @@ mundo que el agente desea conseguir.
 
 \subsubsection{Cuerpo de un plan}
 
-El cuerpo del plan es secuencia de instrucciones separadas por ``\lstinline|;|''. Estas instrucciones puedes ser:\ns
+El cuerpo del plan es secuencia de instrucciones separadas por ``\lstinline|;|''. Estas instrucciones pueden ser:\ns
 \begin{itemize}
 	\item Actions: Acciones externas que se denotan por un predicado.
 	      Proporcionan un ``feedback''.

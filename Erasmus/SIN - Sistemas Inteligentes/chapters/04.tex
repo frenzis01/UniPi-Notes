@@ -68,6 +68,8 @@ enunciar y muy difícil de resolver.
 En general, los problemas de optimización son particularmente difíciles de resolver.
 En general, basta con una solución razonablemente buena (factible, optimizada, pero no la
 óptima) en un tiempo razonable, y si puede obtener con métodos aproximados (como alternativa a los métodos exactos), cómo la \textbf{Búsqueda Heurística} / Metaheurística: La solución es obtenida (generada / mejorada), mediante un proceso de búsqueda en un amplio espacio de estados/soluciones.
+Hay tambien técnicas inferenciales, que no se sostituyen por la búsqueda, sino que la complementan. Estas técnicas son utilizadas para reducir el espacio de búsqueda, y se basan en la \textbf{lógica} y en la \textbf{teoría de conjuntos}.
+Conociendo las consecuencias de una acción, podemos reducir el espacio de búsqueda, y por lo tanto, la complejidad del problema.
 
 \begin{itemize}
    \item Búsqueda Local (Local Search) - Se parte de una solución inicial y se busca una solución mejor en el vecindario de la solución actual.
@@ -83,6 +85,30 @@ En general, basta con una solución razonablemente buena (factible, optimizada, 
 
 \subsection{Algoritmo Genéticos}
 Los \textbf{algoritmos genéticos} son un tipo de algoritmo evolutivo que se utiliza para encontrar soluciones aproximadas a problemas de optimización y búsqueda. Estos algoritmos reflejan el proceso de selección natural en la evolución de las especies, y se basan en la idea de que las soluciones a un problema pueden ser representadas como individuos en una población, y que la evolución de la población puede conducir a la generación de soluciones cada vez mejores.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|p{4cm}|p{4cm}|p{4cm}|p{4cm}|}
+\hline
+\textbf{Término GA} & \textbf{Explicación} & \textbf{Término Optimización} & \textbf{Explicación equivalencia} \\
+\hline
+Medio o entorno & Lugar en el que se desempeñan los individuos & Problema & El individuo se desenvuelve en un entorno, que determina cómo puede actuar. En ese caso, este marco es el problema. \\
+\hline
+Individuo & Representa a un individuo de la población que compite con otros & Solución & Nuestros individuos son las soluciones al problema, aquello que queremos gradualmente evolucionar hacia mejores individuos o soluciones. \\
+\hline
+Cromosoma o genotipo & Es la forma en la que se representa internamente un individuo & Codificación de la solución & Representa cómo representamos internamente la solución (pueden haber diferentes). \\
+\hline
+Gen & Es una de las partes atómicas del cromosoma & Variable de decisión & Representa una decisión atómica en el problema. \\
+\hline
+Alelo & Son los valores que puede tomar un gen & Dominio de la variable & Si un gen es equivalente a una variable de decisión, el alelo representa su dominio. \\
+\hline
+Fenotipo & Representan la representación externa del individuo o solución, que es lo que al final es evaluado en el medio. A veces puede ser equivalente al genotipo. & - & - \\
+\hline
+Función de fitness & Determina el desempeño del fenotipo de un individuo en el entorno & Función objetivo & Equivalente, se usa simplemente diferente terminología. \\
+\hline
+\end{tabular}
+\caption{Equivalencia entre términos de Algoritmos Genéticos y Optimización}
+\end{table}
 
 
 \begin{paracol}{2}
