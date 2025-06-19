@@ -3,7 +3,7 @@
 Agentes autónomos trabajan para resolver problemas en un entorno dinámico y complejo. \ul{Un agente es un sistema computacional que opera en un entorno y es capaz de percibirlo y actuar sobre él}. Un agente inteligente es aquel que actúa de manera racional, es decir, que actúa para alcanzar sus objetivos, basándose en la información que percibe y en su conocimiento del entorno.
 Más formalmente,
 \begin{definition}
-   [Wooldrdige]
+   [Wooldridge]
    Un agente es un sistema informático
    capaz de actuar autónomamente en algún
    entorno con el fin de alcanzar los objetivos
@@ -37,11 +37,11 @@ Un agente reactivo reacciona a los cambios del entorno. No tiene que ser el más
 En entornos complejos, un agente no tiene control completo sobre su entorno, sólo tiene un control parcial. Control parcial significa que el agente puede influir sobre el entorno con sus acciones. Una acción ejecutada por un agente puede fallar o tener el efecto deseado. En conclusión, los entornos son no deterministas y los agentes deben estar preparados para posibles fallos.
 
 \begin{itemize}
-   \item Accesible vs inaccesible.\\
+   \item \textbf{Accesible vs inaccesible.}\\
    Un entorno accesible es aquel en el que el agente puede
    obtener información completa, exacta y actualizada del
    estado del entorno.
-   \item Determinista vs no determinista.\\
+   \item \textbf{Determinista vs no determinista.}\\
    Un entorno determinista es aquel en el que cualquier
    acción tiene un único efecto garantizado, no hay
    incertidumbre sobre el estado resultante de la ejecución de
@@ -50,7 +50,7 @@ En entornos complejos, un agente no tiene control completo sobre su entorno, só
    considerado como no determinista.\\
    Los entornos no deterministas presentan grandes
    problemas para el diseñador de agentes.
-   \item Episódico vs no episódico\\
+   \item \textbf{Episódico vs no episódico}\\
    En un entorno episódico el desempeño/actuación de un
    agente depende de un número discreto de episodios, no
    existiendo enlaces (relación) entre el desempeño de un agente
@@ -60,14 +60,14 @@ En entornos complejos, un agente no tiene control completo sobre su entorno, só
    decidir que acción ejecutar basándose únicamente en el
    episodio actual, no necesita razonar sobre las interacciones
    entre el episodio actual y los episodios futuros.
-   \item Estático vs dinámico\\
+   \item \textbf{Estático vs dinámico}\\
    Un entorno estático es aquel en el que se puede asumir que
    no se producen cambios excepto los provocados por la
    ejecución de acciones del agente.
    Un entorno dinámico es aquel que tiene otros procesos que
    operan en el, y que por lo tanto se producen cambios que están
    fuera del control del agente.
-   \item Discreto vs continuo\\
+   \item \textbf{Discreto vs continuo}\\
    Un entorno es discreto si en él hay un número fijo y finito de
    acciones y percepciones.
    El juego del ajedrez es un ejemplo de entorno discreto, y la
@@ -107,15 +107,31 @@ estado del entorno :
    \end{itemize}
 }
 
+Si puede también añadir una función de \textit{utilidad} (o \textit{recompensa}) que asigne un valor a cada estado del entorno, entonces el agente puede ser considerado como un \textbf{agente de utilidad}.
+
+En este caso, La tarea del agente es alcanzar estados (seleccionar acciones) que maximicen la utilidad. La función de utilidad asocia un número real a cada estado del entorno. 
+\begin{equation}
+   u : E \rightarrow \mathbb{R}
+\end{equation}
+
+Alternativamente, si puede asignar una utilidad a las ejecuciones del agente, en lugar de a los estados del entorno:
+
+\begin{equation}
+   u : \mathcal{R} \rightarrow \mathbb{R}
+\end{equation}
+
 \section{Jason}
 
 Jason es un lenguaje de programación basado en agentes, que permite la programación de agentes inteligentes. Jason es un lenguaje de alto nivel, basado en la lógica, que permite la programación de agentes inteligentes, y es una extension de AgentSpeak.
 
 {Los elementos fundamentales del Lenguaje son:\ns
 \begin{itemize}
-	\item \textbf{Creencias} (Beliefs)
-	\item \textbf{Objetivos} (Goals)
-	\item \textbf{Planes} (Plans, Intentions)
+	\item \textbf{Creencias} (Beliefs)\\ 
+   Colección de literales que representan el conocimiento del agente sobre el mundo.
+	\item \textbf{Objetivos} (Goals)\\ 
+   Representan los objetivos que el agente quiere alcanzar.
+	\item \textbf{Planes} (Plans, Intentions)\\ 
+   Colección de reglas que definen cómo el agente puede alcanzar sus objetivos.
 \end{itemize} }
 
 
@@ -165,7 +181,13 @@ mundo que el agente desea conseguir.
    \end{itemize}
 \end{enumerate}
 }
+
 \subsection{Planes}
+\begin{lstlisting}
+   +trigger : context <- body.
+\end{lstlisting}
+
+
 {Un plan tiene tres partes\ns
 \begin{itemize}
 	\item \textbf{Triggering event}: Cambios en las creencias o objetivos del agente
@@ -271,14 +293,63 @@ El cuerpo del plan es secuencia de instrucciones separadas por ``\lstinline|;|''
 \begin{lstlisting}
    /* Creencias iniciales */
    fact(0,1).
-   /* Planes */
+   /* Plan1 */
    +fact(X,Y) : X < 5
    <- +fact(X+1, (X+1) * Y ).
+
+   /* Plan2 */
    +fact(X,Y) : X = 5
    <- .print("fact 5 == ", Y ).
 \end{lstlisting}
+\subsubsection*{Plan1}
+\begin{itemize}
+\item \textbf{Trigger}: \lstinline|+fact(X,Y)|\\
+Il piano si attiva quando una nuova credenza fact(X,Y) viene aggiunta.
 
-\begin{lstlisting}
+\item \textbf{Contesto}: \lstinline|X < 5|\\
+Il piano si esegue solo se X è minore di 5.
+
+\item \textbf{Azione}: \lstinline|+fact(X+1, (X+1) * Y )|
+
+L'agente aggiunge una nuova credenza \lstinline|fact(X+1, (X+1) * Y)|\\
+in pratica, calcola il fattoriale progressivamente.
+\end{itemize}
+
+\subsubsection*{Plan2}
+
+\begin{itemize}
+   \item \textbf{Trigger}: \lstinline|+fact(X,Y)|
+   \item \textbf{Contesto}: \lstinline|X = 5|
+   \item \textbf{Azione}: stampa il valore di Y (cioè il fattoriale di 5)
+\end{itemize}
+
+\subsubsection*{Simboli}
+Vediamo ora i simboli \lstinline|+|, \lstinline|!!| e \lstinline|!|:
+\begin{itemize}
+   \item \lstinline|+!goal|
+   
+   Significa che l'agente adotta un nuovo obiettivo (goal).
+   
+   Il \lstinline|+| indica aggiunta (di un fatto, credenza, o obiettivo).
+   
+   Il \lstinline|!| identifica un goal (obiettivo).
+   
+   \item \lstinline|!!goal|
+   
+   È un goal persistente.
+   
+   L'agente continua a perseguirlo anche se fallisce, provando a ripianificare finché non riesce o viene sospeso.
+   
+   È usato per creare loop continui, come cicli o comportamenti ricorrenti.
+   
+   \item \lstinline|!goal.|
+   
+   È una intenzione di raggiungere l'obiettivo goal.
+   
+   Serve per specificare quali piani devono essere attivati
+\end{itemize}
+   
+   \begin{lstlisting}
    /* Objetivos iniciales */
    !dots.
    !control.

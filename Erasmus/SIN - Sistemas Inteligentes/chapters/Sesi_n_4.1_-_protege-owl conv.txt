@@ -1,0 +1,1203 @@
+﻿
+
+
+
+
+
+
+
+
+
+
+
+Protégé - OWL
+
+
+
+
+
+
+Ejemplo de las Pizzas
+
+
+
+
+
+
+
+Basado en los tutoriales de Matthew Horridge (CO-ODE), Holger Knublauch (StanfordUniv.) y el de la web de PROTÉGÉ
+Ontologías
+
+
+
+§Información vs. Conocimiento
+oEn la web tenemos información: gran colección de hechos
+oDebemos traducir esos hechos a conceptos: verdades, creencias, perspectivas, juicios, metodologías, know-how, …
+
+
+
+
+§Problemas
+1.   ¿Cómo representar el conocimiento para que lo pueda tratar una máquina?
+
+2.   ¿Cómo lo usamos en aplicaciones reales?
+Ontologías
+
+
+
+§Una ontología define los términos y conceptos comunes empleados para describir y representar un área de conocimiento.
+
+
+
+
+
+
+
+Descripción mediante	Representación
+
+•   Clases
+•   Instancias •   Relaciones
+•   Propiedades
+•   Funciones / procesos •   Restricciones
+
+•   Frases que combinan la terminología para expresar relaciones entre los términos
+•   Estas frases aportan significado.
+Ontologías
+
+
+
+§Un lenguaje es un sistema formal formado por oalfabeto, vocabulario o ambos
+oreglas para combinar los elementos en sentencias osemántica para dar significado a los elementos anteriores
+
+
+
+§Son necesarios 4 niveles para construir modelos: 1.   Sintaxis
+2.   Estructura 3.   Semántica 4.   Uso
+Ontologías
+
+Sintaxis – Estructura – Semántica – Uso §La sintaxis hace referencia al orden, al formato y a la
+estructura
+
+
+
+• El análisis sintáctico es el primer paso de un compilador
+
+
+
+• En la web se trabaja con documentos: cadenas de texto
+
+
+
+¿cuáles son los elementos sintácticos de XML?
+Ontologías
+
+Sintaxis – Estructura – Semántica – Uso §Sgeun un etsduio de una uivenrsdiad ignlsea,
+no ipmotra el odren en el que las ltears etsan ersciats, la uicna csoa ipormtnate es que la pmrirea y la utlima ltera esten ecsritas en la psiocion cocrrtea. El rsteo peuden estar ttaolmntee mal y aun pordas lerelo sin pobrleams. Etso es pquore no lemeos cada ltera por si msima preo la paalbra es un tdoo
+Sintaxis – Estructura – Semántica – Uso § C13R70 D14 D3 V3R4N0 3574B4 3N L4 PL4Y4 0853RV4ND0 D05
+CH1C45 8R1NC4ND0 3N 14 4R3N4, 357484N 7R484J4ND0 MUCH0 C0N57RUY3ND0 UN C4571LL0 D3 4R3N4 C0N 70RR35, P454D1Z05, 0CUL705 Y PU3N735. CU4ND0 357484N 4C484ND0 V1N0 UN4 0L4 9U3 D357RUY0 70D0 R3DUC13ND0 3L C4571LL0 4 UN M0N70N D3 4R3N4 Y 35PUM4. P3N53 9U3 D35PU35 DE 74N70 35FU3RZ0 L45 CH1C45 C0M3NZ4R14N 4 110R4R,P3R0 3N V3Z D3 350, C0RR13R0N P0R L4 P14Y4 R13ND0 Y JU64ND0 Y C0M3NZ4R0N 4 C0N57RU1R 07R0 C4571LLO. C0MPR3ND1 9U3 H4814 4PR3ND1D0 UN4 6R4N L3CC10N; 64574M05 MUCH0 713MP0 D3 NU357R4 V1D4 C0N57RUY3ND0 4L6UN4 C054 P3R0 CU4ND0 M45 74RD3 UN4 0L4 L1364 4 D357RU1R 70D0, S010 P3RM4N3C3 L4 4M1574D, 3L 4M0R Y 3L C4R1Ñ0, Y L45 M4N05 D3 49U3LL05 9U3 50N C4P4C35 D3 H4C3RN05 50NRR31R. S4LUD05 Y 83505
+Ontologías Sintaxis – Estructura – Semántica – Uso
+Ontologías
+
+Sintaxis – Estructura – Semántica – Uso §La estructura deﬁne la forma de organizar los elementos del
+modelo
+oorganización de los elementos oanidamiento/jerarquía ojerarquía, herencia, parte-de
+§La estructura se suele representar mediante un grafo oDirigido
+oAcíclico
+
+
+
+pon ejemplos de estructuras en distintos modelos
+Ontologías Sintaxis – Estructura – Semántica – Uso
+Semántica: Mapeo entre un conjunto de datos estructurados y un modelo de objetos de algún dominio que aporta signiﬁcados, así como las relaciones entre estos objetos.
+
+
+
+
+
+
+• el significado recae en la representación simbólica que los humanos hacemos del mundo
+• si queremos que una máquina comprenda el contenido de un documento, necesitamos automatizar el proceso de interpretación semántica
+Ontologías
+
+Sintaxis – Estructura – Semántica – Uso La pragmática indica cómo se debe usar la
+semántica
+poco usada en lenguajes de programación (ej #pragma en C)
+
+cada vez de más importancia en la web semántica Pragmática en agentes inteligentes
+• teoría de los speech acts: describe el uso de los mensajes para conseguir ciertos objetivos (informar, solicitar)
+
+• tipos de diálogo (D. Walton & E: Krabbe)
+RDF
+
+
+
+Resource Definition Framework (RDF), no es propiamente un lenguaje de ontologías pero está muy próximo (objetivo, proporcionar un marco de representación del conocimiento estandarizado para la web)
+
+
+
+Sintaxis de RDF
+•Diferentes vocabularios de XML •http://www.w3.org/RDF/
+Modelo de datos de RDF: tripletas (recurso,propiedad,valor) •Recurso (Sujeto)
+•Propiedad (Predicado) •Valor (Objeto)
+RDF
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Recurso: Ente del cual se habla
+Propiedad: Define relaciones del ente con otros entes o valores, aspectos específicos, características, atributos o relaciones.
+Objeto : Es la entidad (persona, animal, cosas, …) a la que se refiere el predicado.
+Afirmación: Recurso tiene Propiedad con Valor(Objeto)
+RDF
+
+
+
+RDF permite construir KB basadas en una ontología, pero ¿cómo se deﬁne la ontología? ⇒ RDFS
+RDFS proporciona un lenguaje básico para deﬁnir nuestro vocabulario con
+•jerarquía de clases e instancias •restricciones (sobre las propiedades)
+•jerarquía también de propiedades (interesante)
+Se diferencia de los modelos de datos OO en que se debe seguir una metodología bottom-up: se deﬁnen las propiedades y luego se establece a qué clases caracterizan.
+http://www.w3.org/TR/rdf-schema/
+RDF
+RDF
+
+
+
+Ejemplo (Estructura de clases): <rdfs:Class rdf:ID=”vasos_sanguíneos”/>
+<rdfs:Class rdf:ID=”arteria"> <rdfs:subClassOf rdf:resource=”vasos_sanguíneos”/>
+</rdfs:Class>
+<rdfs:Class rdf:ID=”arteria_grande"> <rdfs:subClassOf rdf:resource=”arteria”/>
+</rdfs:Class>
+
+
+
+Ejemplo (Definición de instancias) <arteria_grande rdf:ID=”aorta"/>
+RDF
+
+
+
+Ejemplo (restricciones):
+
+<rdfs:Datatype
+
+
+
+<rdf:Property
+
+rdf:about="&xsd;decimal"/>
+
+
+
+rdf:ID=”diámetro">
+
+
+
+<rdfs:domain <rdfs:range
+</rdfs:Property>
+
+rdf:resource="#vasos_sanguíneos">
+rdf:resource="&xsd;decimal">
+
+
+
+
+<rdf:Property rdf:ID=”situación">
+
+<rdfs:domain <rdfs:range
+</rdfs:Property>
+
+rdf:resource="#vasos_sanguíneos">
+rdf:resource=”#cuerpo">
+OWL
+
+
+
+OWL aporta mayor expresividad, pudiendo definir
+1. clases como combinaciones booleanas de otras con union, intersection y complement.
+2. clases como disjoint
+3. dos clases como iguales equivalentClass
+4. dos individuos (instancias) son o no el mismo sameAs, differentFrom
+5. cardinalidad en las propiedades 6. propiedades transitivas
+OWL
+OWL
+
+
+
+Ejemplo (Estructura de clases):
+
+<owl:Class
+<owl:Class
+
+rdf:ID=“vasos_sanguíneos"/>
+rdf:ID="arteria">
+
+
+<rdfs:subClassOf rdf:resource="#vasos_sanguíneos"/> </owl:Class>
+<arteria rdf:Id="aorta"/> (definición de las instancias)
+
+
+
+
+Ejemplo (Equivalencia)
+
+<owl:Class rdf:ID="SingleLensReflex"> <owl:equivalentClass rdf:resource="#SLR"/>
+</owl:Class>
+OWL
+
+
+
+Ejemplo (individuos): <ModelType rdf:ID="CanonEOS400D">
+<owl:sameAs rdf:resource="#Canon Rebel XTi"> <owl:differentFrom rdf:resource="#Canon Rebel XT">
+</ModelType>
+
+
+
+
+
+Ejemplo (grupos disjuntos) <owl:AllDifferent>
+<owl:distinctMembers rdf:parseType="Collection">
+
+<BackType
+<BackType
+
+rdf:about="#35mm">
+rdf:about="#Polariod">
+
+</owl:distinctMembers> </owl:AllDifferent>
+OWL
+
+
+
+Ejemplo (propiedades y tipos de datos): <owl:ObjectProperty rdf:ID="hasBack"/>
+<rdfs:domain rdf:resource="#CameraType"/> <rdfs:range rdf:resource="#BackType"/>
+</owl:ObjectProperty>
+
+
+
+<owl:DatatypeProperty rdf:ID="resolution"/> <rdfs:range rdf:resource="&xsd;decimal"/>
+</owl:DatatypeProperty>
+OWL
+
+
+
+Ejemplo (clases equivalentes e inversas):
+
+
+
+
+<owl:ObjectProperty rdf:ID="manufactures"/> <rdfs:domain rdf:resource="#Manufacturer"/> <rdfs:range rdf:resource="#CameraType"/>
+
+
+<rdfs:inverseOf rdf:resource="#manufacturer"/> <rdfs:equivalentProperty
+rdf:resource="#produces"/> </owl:ObjectProperty>
+OWL
+
+
+
+Ejemplo (clase por enumeración): <owl:Class rdf:ID="BodyType">
+<owl:oneOf rdf:parseType="Collection"> <owl:Thing rdf:about="#Compact"/> <owl:Thing rdf:about="#SLR"/> <owl:Thing rdf:about="#MediumFormat"/>
+</owl:oneOf> </owl:Class>
+
+
+
+Ejemplo (clases disjuntas):
+
+
+
+<owl:Class rdf:ID="35mmBack"> <rdfs:subClassOf rdf:resource="#FilmBack"/> <owl:disjointWith rdf:resource="#APSBack"/>
+<owl:disjointWith rdf:resource="#PolaroidBack"/> </owl:Class>
+La Web Semántica
+
+Ontologías compartidas ayudan al intercambio de datos y significados entre servicios web
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(Image by Jim Hendler)
+Agentes y ontologías
+
+
+
+§ Ontología: expresada en un leng. de
+formalización de ontologías
+
+
+independiente del contexto de uso
+
+
+
+
+§ conocimiento si están de acuerdo en la
+Varios agentes pueden compartir
+semántica de una cierta ontología
+
+
+
+
+
+
+
+§ Una ontología común deﬁne el vocabulario
+con el que los agentes intercambian
+
+
+mensajes (consultas y asertos)
+
+
+
+
+
+
+3
+Agentes y ontologías
+
+
+
+
+§ Dos agentes comparten un vocabulario no es:
+
+
+
+
+
+o  Compartir la misma base de conocimiento
+
+o  Capaces de contestar cualquier pregunta formulada con ese vocabulario
+
+
+
+
+
+§ Que un agente use una cierta ontología garantiza la consistencia pero no la completitudrespecto a las consultas y asertos utilizando la ontología
+
+
+
+
+
+
+
+3
+Revisión de OWL
+
+
+OWL…
+
+§ Web Ontology Language § es un estándar W3C
+§ viene en 3 sabores (lite, DL y full) –usamos OWL DL (Description Logic)
+o DL = fragmento decidible de la Lógica de Primer Orden
+
+§ se encuentra generalmente en sintaxis RDF/XML § es por lo tanto laborioso escribirlo a mano
+Por eso existen herramientas para ayudarnos
+OWL Constructs
+vive_en
+vive_en
+
+
+
+
+
+
+Persona
+
+
+Elvis Holge
+r	Kylie
+S.Claus ai
+vive_en
+tiene_mascota
+tiene_mascota
+H
+
+País
+
+
+Belgium Paraguay
+Latvia
+China
+
+
+
+
+
+
+
+
+
+= clase (concepto)
+
+= propiedad (relación)
+
+= individuo (instancia)
+
+
+
+Flipper
+
+Animal Rudolph
+Escenario del Ejemplo del Vino
+
+
+
+Dime qué vinos debería comprar para servir con cada plato del siguiente menú.
+
+
+
+
+
+
+
+
+
+BooksAgent
+
+
+
+
+
+WineAgent
+
+
+
+Yo recomiendo Chardonney o DryRiesling
+
+
+
+
+GroceryAgent
+Protégé
+
+
+
+
+
+
+
+
+§ Es gratis, open source
+
+§ Está basado en Java, es extendible
+
+§ Es un editor de ontologías y marco de
+trabajo de bases de conocimiento
+
+§ Deﬁne la estructura de una ontología § Deﬁne y administra instancias
+
+
+
+
+
+
+
+
+
+4
+Ejemplo: Ontología de Pizzas
+Ejercicio 1: Crear una nueva ontolog.
+
+
+
+§ Iniciar Protégé § Ontology IRI
+
+o URI (Uniform Resource
+Identiﬁers): estándar para identiﬁcar recursos (documentos, personas, cosas abstractas) y nombres de relaciones.
+
+o IRI (Internationalized Resource Identiﬁers): URIs + caracteres alfabéticos no-latinos (Unicode en lugar de ASCII).
+
+
+Menú “File / Save as...” permite guardar en la ontología que se va creando, usando diversos formatos (OWL/XML).
+Ejercicio 2: Añadir una anotación
+Vista de las clases
+Ejercicio 3: Crear clases
+
+
+
+
+
+§ Pulsar botón Classes.
+
+§ Pulsar botón Add:
+crea una nueva
+subclase de la clase
+
+
+
+seleccionada (en este
+caso :Thing)
+
+
+
+
+§ Crear, repitiendo
+este proceso, las
+clases: Pizza,
+
+
+
+PizzaTopping y
+PizzaBase.
+Clases Disjuntas
+
+
+
+
+•	OWL asume que las clases solapan
+
+
+
+Pizza	PizzaTopping
+
+
+
+
+
+
+= individual
+
+
+
+•	Un individuo podría ser a la vez una Pizza y un PizzaTopping a la vez
+•	Éste no es el caso
+Ejercicio 4: Clases disjuntas
+
+
+
+
+
+
+
+1.Seleccionar la clase Pizza in la jerarquía de clases.
+
+
+
+2.Hacer disjuntas las tres clases usando el botón Clases Disjuntas en la vista de descripción de clases.
+Ejercicio 5: ‘Create Class Hierarchy’
+
+
+
+
+§Crear FinaYCrujiente y PanGrueso como subclases de PizzaBase
+
+
+
+
+§Usar la opción del menú Tools / Create Class Hierarchy
+
+
+Make all primitive siblings disjoint
+Ejercicio 6: ‘Create Class Hierarchy’
+
+
+
+
+
+§ Crear como subclases de PizzaTopping
+
+
+§ Añadir Topping como suﬁjo de todas las subclases: Suﬃx all in list with
+
+
+§ Árbol indentado por tabs para entrar una jerarq. de clases.
+
+Make all new classess disjoint
+Ejercicio 6: ‘Create Class Hierarchy’
+
+
+
+
+
+§ Crear como subclases de PizzaTopping
+
+
+§ Añadir Topping como sufijo de todas las subclases: Suffix all in list with
+
+
+§ Árbol indentado por tabs para entrar una jerarq. de clases.
+
+
+
+
+Make all primitive siblings disjoint
+¿Qué tenemos?
+
+
+
+
+
+
+§ Árbol de clases disjuntas
+
+
+
+
+§ Esta separación se hereda hacia abajo en el árbol. Ej.: algo que es un TomateTopping no puede ser una Pizza porque su superclase, PizzaTopping, es disjunta de Pizza.
+¿Qué echamos de menos?
+
+
+
+§ No es un modelo enriquecido semánticamente.
+§ Aparte de es un tipo de y no es un tipo de, no hay otra información de interés.
+
+§ Queremos decir más cosas sobre los individuos Pizza, tal como su relación con otros individuos.
+§ Esto se puede hacer con propiedades.
+
+
+
+
+
+Pizza	PizzaTopping
+
+
+
+
+
+= individual
+Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+§Object properties: enlazan individuos.
+
+
+
+
+§Datatype properties
+
+
+
+
+§Annotation properties
+Ejercicio 7: Crear prop. del Objeto
+
+
+
+
+
+§ Pulsar el botón Object Properties.
+
+
+
+
+
+
+
+§ Pulsar el botón Add Object Property, para añadir la propiedad tieneIngrediente
+Ejercicio 7: Crear prop. del Objeto
+
+
+
+
+
+§ Pulsar el botón Object Properties.
+
+
+
+
+
+
+§ Pulsar el botón AddObject Property, para añadir la propiedad tieneIngrediente
+
+
+
+
+
+
+§ Pulsar el botón Domains (intersection) para indicar que el dominio de esta propiedad es Pizza.
+Ejercicio 8: Crear sub-propiedades
+
+
+
+
+§ Crear tieneTopping y
+tieneBase como sub-
+props. de
+
+
+
+tieneIngrediente
+
+
+
+
+
+§ Seleccionar la propiedad jerarquía de propiedades.
+tieneIngrediente en la
+
+
+
+
+§ Pulsar el botón Add
+subproperty.
+Ejercicio 9: Crear prop. inversas
+
+
+
+
+§ Crear props. inversas:
+
+
+o
+
+
+
+o
+
+
+
+o
+
+esIngredienteDe inversa de
+tieneIngrediente
+
+esBaseDe inversa de
+tieneBase
+
+esToppingDe inversa de
+tieneTopping
+
+
+
+
+
+
+
+§
+
+Usar el icono Add de Inverse
+Properties en la vista
+Properties Description.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Ejercicio 10: Hacer funcional la prop. tieneBase
+
+
+
+1. Seleccionar la propiedad tieneBase en la jerarquía de propiedades en Object Properties.
+
+
+
+2. Marcar el tick Functional en el Property Characteristics View.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Ejercicio 10: Hacer transitiva la prop. tieneIngrediente
+
+1.Seleccionar la propiedad tieneIngrediente en la jerarquía de propiedades en Object Properties.
+
+
+
+
+
+2.Marcar el tick Transitive en el Property Characteristics View.
+
+
+
+
+
+3.Seleccionar la propiedad esIngredienteDe, inversa de tieneIngrediente, marcarla como transitiva.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Tipos de Propiedades de OWL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OWL-DL no permite que las propiedades de tipo de datos sean transitivas, simétricas o tengan inversas.
+
+
+OWL-DL: Propiedades de tipos de datos sólo son Allows for multiple values y Inverse Functional.
+Dominios y Rangos de Propiedades
+
+
+
+
+
+
+
+
+
+
+§Propiedades enlazan individuos del Dominio con individuos del Rango.
+Ejercicio 11: Especiﬁcar Domino y Rango de las prop. tieneTopping
+1.
+Seleccionar la propiedad
+tieneTopping en la jerarquía de
+propiedades en Object Properties.
+2.Usar Add al lado de Domains
+(intersection) para añadir Pizza.
+3.Usar Add al lado de Ranges
+(intersection) para añadir
+PizzaTopping.
+4.Añadir a esToppingDe como
+Dominio PizzaTopping y como Rango
+Pizza
+Ejercicio 11: Espec. Dominio y Rango de las propiedades tieneBase
+1.
+en la jerarquía de propiedades en
+Seleccionar la propiedad tieneBase
+
+Object Properties.
+2 (intersection) para añadir Pizza.
+.
+Usar Add al lado de Domains
+3.Usar Add al lado de Ranges
+(intersection) para añadir PizzaBase.
+4.Añadir a esBaseDe como Dominio
+PizzaBase y como Rango Pizza
+Restricciones
+
+
+
+
+
+
+
+
+
+
+§Restricciones de cuantificación §Restricciones de cardinalidad §Restricciones tieneValor
+Restricciones
+
+
+
+
+
+
+
+
+Crear restricción
+
+
+
+•  Se ven y se editan usando la vista de descripción de Clases.
+Restricciones de Cuantiﬁcación
+
+
+
+
+
+
+
+
+
+
+§Restricciones Existenciales §Restricciones Universales
+Restricciones de Cuantificación
+
+
+
+
+
+§Restricciones Existenciales
+–	describen clases de individuos que participan en al menos una relación en una propiedad especíﬁca para miembros de una clase determinada.
+
+
+
+§Restricciones Universales
+–	describen clases de individuos que para una determinada propiedad sólo tienen relaciones con miembros de una clase particular.
+Ejercicio 12: Añadir restricción a la
+clase PizzA 1.Seleccionar la clase Pizza en la jerarquía de clases.
+
+2.Pulsar Add de SubClass Of de la vista de descripción de clases. 3.Pulsar el botón Class expression editor.
+4.Introducir la restricción (usar TAB para autocompletar): Una Pizza DEBE tener una PizzaBase
+1. Propiedad	tieneBase
+2.Tipo de restricción (some - existenc.; only - univ.).	some 3.Filtro para la restricción.	PizzaBase
+Condición NECESARIA
+SIGNIFICADO:Restricciones especifican superclases anónimas de la clase descrita.
+Ejercicio 13: Crear nuevos tipos de Pizza
+1.Crear una subclase de Pizza llamada PizzaConNombre.
+
+
+
+
+
+2.Crear una subclase de PizzaConNombre llamada PizzaMargarita.
+
+
+
+
+
+3.Añadir un comentario a la clase PizzaMargarita usando la vista Annotations: “Una pizza que sólo tiene Mozzarella y Tomate”.
+Ejercicio 14: Crear restricción
+
+
+
+
+
+
+
+
+
+
+§Restricción existencial (some): Una PizzaMargarita tiene al menos un MozzarellaTopping.
+Ejercicio 15: Crear restricción
+
+
+
+
+
+
+
+
+
+§Restricción existencial (some): Una PizzaMargarita tiene al menos un TomateTopping.
+Ejercicio 16: Crear clase PizzaAmericana
+
+
+1. Crear un duplicado de la PizzaMargarita que será la PizzaAmericana.
+
+
+
+2. Añadir a la PizzaAmericana la restricción existencial de que tiene al menos un topping de pepperoni.
+Ejercicio 16: Crear clase PizzaAmericana y PizzaSoho
+
+
+1.Crear un duplicado de la PizzaAmericana que será la PizzaAmericanaPicante.
+
+2.Añadir a la PizzaAmericanaPicante la restricción existencial de que tiene al menos un topping de pimiento jalapeño.
+3.Crear un duplicado de la PizzaMargarita que será la PizzaSoho.
+
+4.Añadir a la PizzaSoho las restricciones existenciales de que tiene al menos un topping de oliva y uno de parmesano.
+5.Usar la opción de menú Edit / Make primitive siblings disjoint, para hacer disjuntos todos los nuevos tipos de pizza.

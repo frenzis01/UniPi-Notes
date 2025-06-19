@@ -1,4 +1,7 @@
-\chapter{Ontologías}
+\chapter{Ontologías y Comunicación}
+$\circ\circ$
+
+
 Una ontología define los términos y conceptos comunes
 empleados para describir y representar un área de
 conocimiento   
@@ -19,4 +22,118 @@ terminología para expresar
 relaciones entre los términos
 	\item Estas frases aportan
 significado
+\end{itemize}
+
+\section{Ontologías y OWL}
+
+Las ontologías permiten representar conocimiento de forma estructurada y compartible entre sistemas. Para construir modelos ontológicos se requieren cuatro niveles:
+
+\begin{itemize}
+    \item \textbf{Sintaxis}: Define el orden, formato y estructura (elementos sintácticos como XML)
+    \item \textbf{Estructura}: Organización de elementos en jerarquías, herencia y relaciones parte-de
+    \item \textbf{Semántica}: Mapeo entre datos estructurados y modelos de objetos que aportan significado
+    \item \textbf{Uso}: Pragmática que indica cómo utilizar la semántica
+\end{itemize}
+
+\subsection{Lenguajes para Representación de Ontologías}
+
+\subsubsection{RDF (Resource Definition Framework)}
+RDF proporciona un marco estandarizado para representar conocimiento en la web mediante tripletas:
+\begin{itemize}
+    \item \textbf{Recurso} (Sujeto): Entidad de la que se habla
+    \item \textbf{Propiedad} (Predicado): Define relaciones o características
+    \item \textbf{Objeto}: Entidad a la que se refiere el predicado
+\end{itemize}
+
+\subsubsection{RDFS (RDF Schema)}
+Extiende RDF permitiendo definir:
+\begin{itemize}
+    \item Jerarquía de clases e instancias
+    \item Restricciones sobre propiedades
+    \item Jerarquía de propiedades
+\end{itemize}
+
+\subsubsection{OWL (Web Ontology Language)}
+OWL aporta mayor expresividad, permitiendo definir:
+\begin{itemize}
+    \item Clases como combinaciones booleanas (union, intersection, complement)
+    \item Clases disjuntas
+    \item Equivalencia entre clases o individuos
+    \item Cardinalidad en propiedades
+    \item Propiedades transitivas, inversas, funcionales
+\end{itemize}
+
+\subsection{Protégé}
+Herramienta gratuita y open source para:
+\begin{itemize}
+    \item Editar ontologías
+    \item Gestionar bases de conocimiento
+    \item Definir estructuras ontológicas
+    \item Administrar instancias
+\end{itemize}
+
+\section{Comunicación entre Agentes}
+
+La comunicación es fundamental para los sistemas multiagente, permitiendo la cooperación, coordinación y negociación entre agentes.
+
+\subsection{Teoría de Actos de Habla}
+
+Los actos de habla consideran el lenguaje como acción, donde cada declaración realiza un acto:
+\begin{itemize}
+    \item \textbf{Actos asertivos}: Dan información sobre el mundo
+    \item \textbf{Actos directivos}: Solicitan algo al destinatario
+    \item \textbf{Actos de promesa}: Comprometen al locutor a acciones futuras
+    \item \textbf{Actos expresivos}: Indican estados mentales
+    \item \textbf{Actos declarativos}: La declaración realiza el acto
+\end{itemize}
+
+Componentes de los actos de habla:
+\begin{itemize}
+    \item \textbf{Locución}: Modo de producción de frases
+    \item \textbf{Ilocución}: Acto realizado (fuerza ilocutoria + contenido proposicional)
+    \item \textbf{Perlocución}: Efectos en el destinatario
+\end{itemize}
+
+\subsection{Lenguajes de Comunicación entre Agentes}
+
+\subsubsection{KQML (Knowledge Query Management Language)}
+Lenguaje basado en actos de habla con:
+\begin{itemize}
+    \item Performativas (tell, ask, achieve, reply...)
+    \item Estructura de mensaje con pares atributo-valor
+    \item Niveles de contenido, comunicación y mensaje
+\end{itemize}
+
+\subsubsection{FIPA ACL}
+Estándar desarrollado por Foundation for Intelligent Physical Agents:
+\begin{itemize}
+    \item Define estructura de mensajes y performativas
+    \item Estandariza arquitectura de plataformas de agentes
+    \item Incluye servicios de directorio, gestión y comunicación
+\end{itemize}
+
+\subsection{Comunicación en JASON}
+JASON implementa comunicación mediante:
+\begin{itemize}
+    \item Estructura de mensajes: $\langle$emisor, fuerza\_ilocutoria, contenido$\rangle$
+    \item Acción interna: \texttt{.send(receptor, performativa, contenido)}
+    \item Performativas: tell, untell, achieve, askOne, askAll...
+\end{itemize}
+
+\section{Sistemas Multiagente}
+
+Los sistemas multiagente consisten en conjuntos de agentes que interactúan entre sí:
+\begin{itemize}
+    \item Capacidad para coordinar, cooperar y negociar
+    \item Requieren servicios de localización (páginas blancas y amarillas)
+    \item Utilizan protocolos de interacción estandarizados
+\end{itemize}
+
+\subsection{Plataformas de Agentes FIPA}
+El modelo conceptual FIPA incluye:
+\begin{itemize}
+    \item Agent Management System (AMS): gestión de agentes
+    \item Directory Facilitator (DF): servicio de páginas amarillas
+    \item Agent Communication Channel (ACC): canal de comunicación
+    \item Message Transport System: infraestructura de comunicación
 \end{itemize}

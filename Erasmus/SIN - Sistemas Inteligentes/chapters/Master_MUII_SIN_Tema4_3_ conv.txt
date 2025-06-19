@@ -1,0 +1,1685 @@
+﻿
+
+
+
+
+
+
+
+Tema 4: Agentes Inteligentes (3)
+
+
+
+
+§ Agentes inteligentes
+
+
+
+o Modelos y arquitecturas de agentes inteligentes o JASON: ejemplo de programa de agente
+o Representación del conocimiento. Ontologías oComunicación y Sistemas multiagente
+¡Recordemos!
+
+
+•  El mundo real es un mundo multi-agente: cuando queremos conseguir objetivos tenemos que tener en cuenta al resto de
+entidades (agentes) del entorno donde nos encontramos.
+
+•  En algunos casos para alcanzar un objetivo es necesario interactuar con otros ya que puede que nosotros no tengamos capacidades
+suficientes para lograrlo.
+
+•  La sociabilidad (capacidad social) en agentes es la capacidad de interactuar con otros agentes (y posiblemente con humanos)
+mediante cooperación, coordinación y negociación.
+
+Por lo menos significa la capacidad de comunicarse.
+Comunicación
+
+
+
+
+La comunicación es el acto o proceso por el que una o varias personas (emisores) transmiten un mensaje con información a otra u otras (receptores).
+
+Código: es el conjunto de signos y reglas con que el emisor ha formado su mensaje.
+
+Canal: es el medio físico o el soporte tecnológico que hace que el mensaje llegue del emisor al receptor.
+
+Mensaje: es la información que el emisor le transmite al receptor.
+
+Contexto: es el lugar y el momento en el que se produce la comunicación.
+Comunicación
+
+
+
+
+Buenos días, quería comprar unos zapatos
+
+
+
+
+¿De qué talla?
+
+
+
+De la 44 y que sean mocasines
+
+
+
+Si dos agentes tienen que comunicarse en un dominio o contexto determinado es necesario que compartan la terminología que utilizan para describir el dominio.
+
+¿Qué significan los términos zapatos, talla, mocasines, comprar, ….? Estos términos tienen que tener el mismo significado para ambos agentes.
+Una ontología es una especificación de un conjunto de términos que tiene por objeto proporcionar una base común de comprensión sobre algún dominio.
+Knowledge Sharing Effort (KSE)
+§ Iniciado por ARPA (Asociación para Proyectos de investigación Avanzados del Dpto. Defensa de EEUU) hacia 1990, y apoyado por organismos norteamericanos de investigación (ASOFR, NSF, NRI)
+
+§ Propósito:
+
+o Desarrollo de técnicas, metodologías y herramientas software para la compartición y reutilización del conocimiento entre sistemas
+
+o ... a lo largo de las etapas del ciclo de vida del software: •   diseño
+•   implementación •   Ejecución
+§ Componentes fundamentales para la interacción eﬁcaz de agentes sw 1. Un lenguaje común
+2. Una comprensión común del conocimiento intercambiado 3. Una habilidad para intercambiar todo lo relativo a (1) y a (2)
+Knowledge Sharing Effort (KSE)
+
+
+§Compartir conocimiento entre agentes  requiere la capacidad de comunicarse, la capacidad de comunicarse requiere un lenguaje de comunicación común:
+
+oSintaxis: KIF (Knowledge Interchange Format). Lenguaje para el intercambio de conocimiento http://www.cs.umbc.edu/kse/kif/
+
+oSemántica: Ontolingua. Lenguaje para la definición de Ontologías http://www.cs.umbc.edu/kse/ontology/
+
+oPragmática: KQML (Knowledge Query and Manipulation Language). Lenguaje para la comunicación entre agentes http://www.cs.umbc.edu/kqml . Proporciona interoperabilidad de alto nivel (interacción) entre agentes en un entorno distribuido
+Lenguaje de comunicación (código)
+
+
+✤ El lenguaje humano ha sido la clave para el desarrollo de la inteligencia y de la sociedad.
+
+¡Recordemos! ✤ La computación como interacción
+o La computación ocurre mediante y a través de la comunicación entre
+entidades computacionales.
+
+o La computación es una actividad inherentemente social, en lugar de
+solitaria, llevando a nuevas formas de concebir, diseñar, desarrollar y manejar sistemas computacionales.
+
+✤ Sistemas multiagente
+✤ La comunicación entre agentes es la clave para obtener todo el potencial del paradigma de agentes.
+
+✤ Los agentes requieren un lenguaje de comunicación (ACL –Agent Communication Language) para comunicar información y conocimiento.
+La comunicación en los agentes
+
+
+§ La comunicación es la base para las interacciones y la organización social de los agentes
+
+§ Interacciones
+
+o Hay interacciones cuando la dinámica de un agente está perturbada por las influencias de otros [O. Boissier, 2001]
+
+
+o Las interacciones son el motor de los SMA
+
+§ Distintas formas de interaccionar (modelos de comunicación)
+
+o Acciones sobre el entorno
+
+o Pizarra compartida
+
+o Paso de mensajes
+
+o ...
+Comunicación indirecta
+
+§ Agentes Reactivos: Arquitectura de Subsunción o Mars explorer (L. Steels)
+
+
+•  Objetivo
+– Explorar un planeta distante,
+y, en particular, recoger
+muestras de una roca
+preciosa.
+– La localización de las muestras no se conoce de antemano, pero se sabe que
+están apiñadas.
+– La nave nodriza transmite la señal de radio (que se debilita
+con la distancia).
+– Mapa no disponible. – Colaborativo.
+Comunicación indirecta
+
+
+
+
+
+
+
+
+
+
+Mother ship
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+autonomous vehicle
+
+
+precious rock
+Comunicación indirecta
+
+
+
+§Solución de un único Explorer: ocomportamientos/ reglas
+
+
+1. Si obstáculo entonces cambia dirección 2. Si llevando muestras y en la base
+entonces dejarlas caer 3. Si llevando muestras y no en la base
+entonces viajar al campo de gradiente de la señal de la base 4. Si detecto muestra entonces recogerla
+5. Si cierto entonces caminar aleatoriamente
+
+
+
+oRelación de orden total: 1 < 2 < 3 < 4 < 5
+Comunicación indirecta
+
+
+§Solución de múltiples Explorers:
+
+oSi un agente encuentra una agrupación de rocas – comunicarlo? – rango ?
+– posición ?
+– Cómo tratar con tales mensajes ?  Puede estar lejos…
+
+
+
+
+oComunicación indirecta (através del entorno):
+• Cada agente lleva “migajas radioactivas”, que pueden ser arrojadas, recogidas y detectadas por robots que pasen
+
+• Comunicación via entorno es llamada stigmergy
+Comunicación indirecta
+
+
+
+§ Solución inspirada en el comportamiento de búsqueda de comida de las hormigas
+•   Agente crea un rastro de migajas radiactivas de regreso a la nave nodriza siempre que encuentra una muestra de roca
+•   Si otro agente se encuentra un rastro, puede seguirlo hasta el grupo de muestras
+
+
+
+§ Refinamiento:
+•   Agentes que siguen el rastro a las muestras recogen algunas migajas para hacer el rastro más débil
+•   El rastro que lleva a un grupo vacío será finalmente borrado
+Comunicación indirecta
+
+
+§Conjunto de reglas modificado	http://www.youtube.com/watch?v=H68YF9YKKJ8
+
+
+Si detecta un obstáculo	entonces cambiar dirección
+Si llevando muestras y en la base
+entonces arrojar muestras
+Si llevando muestras y no en la base
+entonces arrojar 2 migajasy viajar por el gradiente
+
+Si detecta una muestra Si percibe migajas
+Si cierto
+
+entonces recoger muestra
+entonces recoger una migaja y viajar por el gradiente entonces mover aleatoriamente (nada mejor que hacer)
+
+
+
+§Relación de orden: 1 < 2 < 3 < 4 < 5 < 6
+§Logra ejecuciones casi óptimas en muchas situaciones §Solución barata y robusta (la pérdida de un agente no es crítica).
+§L. Steels argumenta que los agentes deliberativos son
+enteramente irreales para este problema.
+Comunicación indirecta
+
+
+§Ventajas osimple oeconómico
+ocomputationalmente tratable orobusto frente a fallos
+§Desventajas
+
+oagentes actúan a corto plazo (usan sólo información local) osin aprendizaje
+o¿cómo desarrollar estos agentes? Difícil si más de 10 reglas ono hay herramientas formales para analizar y predecir
+Comunicación
+
+
+
+§ Las capacidades de comunicación son los “ladrillos” básicos con los que construir mecanismos de coordinación, cooperación y negociación entre agentes
+
+§ Modelos de comunicación
+
+o Sistemas de pizarra
+
+o Paso de mensajes
+
+§ Lenguajes de comunicación de agentes
+
+o KQML
+
+o FIPA ACL
+Actos de habla (speach acts)
+
+
+
+§ Language as Action
+
+
+
+
+§ J.L. Austin (1962), How to do things with words, Clarendon Press
+
+o La lingüística tradicional intentaba entender el significado de las frases indicando cómo es posible usar una combinación de palabras para hacer una declaración con significado
+
+
+• Interés en la función denotativa del lenguaje: determinar la verdad o falsedad de una frase
+
+o Los actos del habla hacen referencia a la función conativa
+
+• Un acto del habla designa las acciones intencionales en el curso de una conversación
+Actos de habla (speach acts)
+
+
+
+§ Language as Action
+
+
+
+
+§ J.L. Austin (1962), How to do things with words, Clarendon Press
+
+o Quien habla no declara solamente sentencias ciertas o falsas
+
+o Quien habla realiza actos de habla:
+
+• peticiones, sugerencias, promesas, amenazas, etc.
+
+o Cada declaración es un acto de habla
+
+o Identificar el acto del habla es imprescindible para una correcta comunicación
+Tipos de actos de habla J.R. Searle (1969), Speach Acts, Cambridge University Press
+§ Actos asertivos: dan información sobre el mundo
+
+Estoy de acuerdo	2 y 2 son 4	Estamos en clase § Actos directivos: para solicitar algo al destinatario
+Siéntate	¿Cuántas pesetas son un euro?
+
+§ Actos de promesa: comprometen al locutor a realizar ciertas acciones en el futuro
+
+Mañana vuelvo a las 8	Te enviaré las fotos § Actos expresivos: dan indicaciones del estado mental del locutor
+Soy feliz	Gracias	Siento lo de tu perro
+
+§ Actos declarativos: el mero hecho de la declaración es la realización de un acto Estás contratado	Empezamos la clase
+Componentes de los actos de habla
+
+
+§ Locución: modo de producción de frases utilizando una gramática y un léxico
+
+§ Ilocución: acto realizado por el locutor sobre el destinatario mediante la declaración (utterance)
+
+
+o Fuerza ilocutoria (F): afirmación, pregunta, petición, promesa, orden => PERFORMATIVA
+
+
+o Contenido proposicional (P), objeto de la fuerza ilocutoria
+
+o Se puede representar como F(P) (o performativa(contenido))
+
+aserta(está nevando)   responde(está nevando)
+
+§ Perlocución: efectos que pueden tener los actos ilocutorios en el estado del destinatario y en sus acciones, creencias y juicios
+
+o Ejemplos: convencer, inspirar, persuadir, atemorizar
+Hipótesis F(P)
+
+
+Todo acto del proposición P
+
+habla consiste en una fuerza F aplicada a una
+
+
+F(P), performativa(contenido)
+
+
+
+
+
+Ilocución (performativa)
+
+Información
+
+Sentencia (contenido)
+
+La ventana está abierta
+
+
+
+Pregunta
+
+Orden
+
+Petición
+
+Promesa
+
+¿Está abierta la ventana?
+
+Abre la ventana
+
+Podrías abrir la ventana
+
+Te prometo que abriré la ventana
+
+
+Oferta	Abriré la ventana si tu quieres
+Éxito de actos de habla
+
+
+
+§ Una declaración no es verdadera o falsa:
+
+tiene éxito o fracasa
+
+§ Un acto de habla puede fallar
+
+o en su enunciación, porque no llegue el mensaje o llegue corrompido o el destinatario no lo entiende
+
+
+o en su interpretación, por el destinatario
+
+o en su consecución final, por ejemplo porque el destinatario no sea capaz de llevar a cabo la acción solicitada
+KQML (Knowledge Query Management Language)
+
+
+
+En la comunicación intervienen los siguientes elementos: §El protocolo de interacción
+o Estrategia de alto nivel seguida por el agente software para controlar la interacción con otros agentes
+o Desde esquemas de negociación hasta tan simples como: “cada vez que desconozcas algo de tu interés busca a algún agente que lo sepa y pregúntale”
+§El lenguaje de comunicación
+o Es el medio a través del que se intercambian los actos de la comunicación
+o Indica si el contenido de la comunicación es una información, una respuesta o algún tipo de consulta
+§El protocolo de transporte
+o Mecanismo de transporte utilizado en la comunicación o TCP, SMTP, HTTP, XMPP...
+KQML
+
+
+✤  Mensajes KQML
+
+•	Representa un acto de habla o performativa (intención de realizar alguna acción)
+
+•	Consta de una lista de pares atributo-valor (el primer elemento es el identificador del acto del habla, el resto son pares atributo-valor)
+
+
+
+
+
+
+(ask-one
+:sender pepe
+
+:content (PRECIO
+
+performativa	nivel de contenido
+
+
+
+
+TELEFONICA?precio)
+
+
+
+:receiver servidor-bolsa :reply-with accion-telefonica :language LPROLOG :ontology IBEX
+)
+
+
+nivel de comunicaciones
+
+
+
+
+nivel de mensaje
+KQML
+
+
+La respuesta al anterior:
+
+
+
+(tell
+
+:sender servidor-bolsa
+
+:content (PRECIO TELEFONICA19) :receiver pepe
+:in-reply-to accion-telefonica :language LPROLOG :ontology IBEX
+)
+KQML (palabras reservadas)
+
+
+
+
+
+
+Atributo :content :sender :receiver :language
+
+
+:ontology
+
+
+
+:reply-with
+
+
+
+:in-reply-to
+
+Significado La información
+Emisor del mensaje Receptor del mensaje
+El nombre del lenguaje de representación empleado en el atributo :content
+
+El nombre de la ontología utilizada en el atributo : content
+
+Etiqueta para la respuesta (si es que el emisor la espera)
+
+La etiqueta esperada en la respuesta
+KQML (performativas)
+
+
+
+
+
+
+
+
+evaluate reply ask-if ask-one ask-all
+
+insert uninsert
+delete
+delete-oneDB delete-all
+Basi undelete
+c
+
+
+
+Inform
+
+
+
+
+
+Inform
+
+
+tell
+deny	broadcast, forward, register,unregister, pipe, break
+untell
+Basic
+Network	achieve unachieve
+
+
+
+sorry Stream	Query stream-about
+stream-all
+eos	Generator
+
+
+
+
+
+KQML Performatives
+
+
+Request	Goal
+
+
+
+Facilitation broker-one
+
+standby ready next rest discard
+
+
+Reply stream
+eos	Meta
+
+
+
+Promise advertise
+deny
+subscribe   unadvertise
+
+recommend-one recruit-one broker-all recommend-all recruit-all
+
+
+
+
+Nombre tell evaluate reply ask-if
+ask-about ask-one stream-about achieve standby ready
+next
+
+advertise register broadcast recommend-one
+recruit-one
+
+KQML (performativas) Significado
+S comunica una información que se encuentra en su BC
+
+S quiere que R evalúe la expresión
+
+S comunica a R una respuesta esperada
+
+S quiere saber si la expresión se encuentra en la BC de R
+
+S quiere conocer todo el conocimiento de R relacionado con la expresión
+
+S quiere que R conteste a una pregunta
+
+Versión en respuesta múltiple de ask-about
+
+S quiere que R convierta en verdadera la expresión en su BC
+
+S quiere que R esté preparado para responder a una performative
+
+S está preparado para responder a R
+
+S quiere que R le devuelva la siguiente respuesta (de una consulta múltiple)
+
+S está preparado para responder a una determinada performative
+
+S puede responder a performatives de un determinado agente
+
+S quiere que R envíe la performative a todas los agentes conectados
+
+S quiere el nombre de un agente que pueda contestar a una performative
+
+S quiere que R le proporcione el nombre de otro agente que conteste a la performative
+KQML: ejemplo
+
+
+
+
+(ask-one :sender A
+:content (interested ‘(sobre, bloqueA, ?x) :receiver B
+:reply-with q1 :language KIF :ontology bloques)
+
+(reply :sender B
+:content (sobre bloqueB  bloqueA) :receiver A
+:in-reply-to q1 :language KIF :ontology bloques)
+KQML: ejemplo
+
+
+
+
+(stream-about :sender A :content bloque A :receiver B
+:reply-with q1 :language KIF :ontology bloques)
+
+
+(tell
+:sender B
+:content (sobre mesa bloqueA) :receiver A
+:in-reply-to q1 :language KIF :ontology bloques)
+
+
+(tell
+:sender B
+:content (sobre bloqueB  bloqueA) :receiver A
+:in-reply-to q1 :language KIF :ontology bloques)
+
+
+(sorry :sender B
+:receiver A
+:in-reply-to q1)
+KQML: ejemplo
+
+
+
+
+
+
+
+
+Después de completada la tarea
+
+
+
+
+
+(achieve :sender A
+:content (sobre mesa bloque ) :receiver B
+:reply-with q1 :language KIF :ontology bloques)
+
+
+(tell
+:sender B
+:content (sobre mesa bloqueB) :receiver A
+:in-reply-to q1 :language KIF :ontology bloques)
+KQML: ejemplo
+
+
+(standby :sender A
+:content (stream-about :language KIF :ontology bloques :reply-vith q3 :content bloqueA)
+:receiver B :reply-with q1
+:language KQML :ontology K10)
+
+(next :sender A
+:receiver B
+:in-replay-to XA77)
+
+(discard :sender A :receiver B
+:in-replay-to XA77)
+
+
+(ready :sender B
+:content (sobre mesa bloqueB) :receiver A
+:in-reply-to XA77 :language KQML :ontology K10)
+
+
+
+
+
+
+
+
+(tell
+:sender B
+:content (sobre bloqueB bloqueA) :receiver A
+:in-reply-to q3 :language KIF :ontology bloques)
+
+Hasta discard
+KQML: protocolos
+
+
+
+
+
+
+
+
+ask-one
+
+Sender	reply	Receiver
+
+
+
+
+
+
+subscribe
+
+
+
+Sender
+
+reply reply
+reply
+
+
+Receiver
+KQML: protocolos
+
+
+
+
+
+
+
+query manejador
+next
+
+reply
+Sender	next	Receiver
+
+reply next
+
+reply
+Comunicación en JASON
+
+
+
+§Los mensajes recibidos por un agente Jason tienen la siguiente estructura:
+
+⟨emisor, fuerza_ilocutoria, contenido⟩
+
+
+
+
+§La forma general de la acción interna predefinida para la comunicación es:
+
+.send(receptor, fuerza_ilocutoria, contenido_proposicional) También se puede hacer:
+.broadcast(fuerza_ilocutoria, contenido_proposicional)
+Comunicación en JASON: performativas definidas
+
+
+El agente s ejecuta .send(r, performativa, contenido)
+§ tell: s pretende que r crea (lo que s cree) que el literal del contenido es verdadero
+§ untell: s pretende que r no crea (lo que s cree) que el literal del contenido es verdadero
+§ achieve: s pide a r que intente alcanzar un estado en el que el literal del contenido del mensaje sea verdadero (s delega un objetivo en r)
+§ unachieve: s pide a r que abandone el objetivo de alcanzar un estado donde el contenido del mensaje sea cierto
+§ askone: s quiere saber si el contenido del mensaje es verdadero para r (es decir, si hay una respuesta que hace que el contenido del mensaje sea una consecuencia lógica de la base creencias de r, mediante la sustitución apropiada de variables)
+§ askAll: s quiere todas las respuestas de r a una pregunta § tellHow: s informa a r de un plan (que s conoce)
+§ untellHow: s pide a r que ignore un determinado plan (es decir, que elimine ese plan de su biblioteca de planes)
+§ askHow: s desea obtener todos los planes de r que son relevantes para el evento de disparo especificado en el contenido del mensaje.
+Comunicación en JASON: intercambio de información
+
+
+
+Programming Multi-Agent Systems in AgentSpeak using Jason Rafael H. Bordini, Jomi Fred Hübner, Michael Wooldridge
+John Wiley & Sons Ltd
+
+
+
+
+.send(r, tell, open(left_door))
+
+
+the belief open(left_door) [source(s)] will be added to r’s belief base.
+
+
+
+
+.send([r1,r2], tell, open(left_door))
+
+
+the belief open(left_door)[source(s)] will be added to the belief base of both r1 and r2.
+Comunicación en JASON: intercambio de información
+
+
+
+
+
+
+
+.send(r, tell, [open(left_door),open(right_door)])
+
+
+the belief open(left_door)[source(s)] and the belief open(right_door)[source(s)] will both be added to r’s belief base.
+
+
+
+
+.send(r,untell,open(left_door))
+
+
+the belief open(left_door)[source(s)] will be removed from r’s belief base.
+
+
+Note that if agent r currently believes open(left_door)[source(t), source(s), source(percept)], only the fact that s wanted r to believe open(left_door) is removed from the belief base.
+Comunicación en JASON: delegación de objetivos
+
+
+
+
+.send(r, achieve, open(left_door))
+
+
+the event +!open(left_door)[source(s)], is created and added to r’s set of events.
+
+
+Jason adds an annotation that the goal was delegated by agent s, so this can be used in the plans to decided whether to actually take any action or not, and to decide what is the most appropriate course of action as well (note that this is on top of the message being socially Acceptable)
+
+
+.send(r, unachieve, open(left_door))
+
+
+the internal action .drop_desire(open(left_door)) is executed. This internal action causes current and potential intentions on instances of a goal !open(left_door) to be dropped, without generating a plan failure event for the plans that required that goal to be achieved.
+Comunicación en JASON: búsqueda de información
+
+
+
+
+
+
+
+.send(r, askOne, open(Door), Reply)
+
+
+s’s intention that executed this internal action will be suspended until a reply from r is received. On r’s side, the message s, askOne, open(Door) is received and (if accepted) the Jason predefined plan to interpret askOne messages itself sends the appropriate reply, a reply with content open(left_door) if that was in r’s belief base at the time. This is done with a test goal, so if the relevant information is not in the belief base the agent can also try to execute a plan to obtain the information, if such plan exists in the plan library. When the reply is received by s, the content in that message is instantiated to the Reply variable in the internal action executed by s. The intention is then resumed, hence the formula after the .send internal action is only executed after s has received a reply from r.
+Comunicación en JASON: búsqueda de información
+
+
+
+
+
+
+.send(r, askOne, open(Door))
+
+
+as above but asynchronous, in the sense that the askOne message is sent to r but the intention is not suspended to wait for a reply; this means that the formula in the plan body immediately after the .send internal action could in principle execute in the next reasoning cycle (if selected for execution).
+
+
+.send(r, askAll, open(Door), Reply)
+
+
+as for askOne (the synchronous version) but Reply is a list with all possible answers that r has for the content. For example, if at the time of processing the askAll message agent r believed both open(left_door) and open(right_door), variable Reply in the internal action would be instantiated with the list ‘[open(left_door),open(right_door)]’. An empty list as reply denotes r did not believe anything that unifies with open(Door).
+Comunicación en JASON: planes
+
+
+
+
+.send(r, tellHow, "@pOD +!open(Door): not locked(Door)<- turn_handle(Door); push(Door); ?open(Door).”)
+
+
+
+the string in the message content will be parsed into an AgentSpeak plan and added to r’s plan library. Note that a string representation for a plan in the agent’s plan library can be obtained with the .plan_label internal action given the label that identifies the required plan
+
+
+
+.send(r, tellHow, ["+!open(Door) : locked(Door)<- unlock(Door); !!open(Door).", "+!open(Door) : not locked(Door) <- turn_handle(Door); push(Door);?open(Door)."])
+
+
+
+each member of the list must be a string that can be parsed into a plan; all those plans are added to r’s plan library
+Comunicación en JASON: planes
+
+
+
+
+.send(r, untellHow, "@pOD”)
+
+
+
+the string in the message content will be parsed into an AgentSpeak plan label; if a plan with that label is currently in r’s plan library, it is removed from there. Make sure a plan label is explicitly added in a plan sent with tellHow if there is a chance the agent might later need to tell other agents to withdraw that plan from their belief base.
+
+
+
+.send(r, askHow, "+!open(Door)”)
+
+
+
+the string in the message content must be such that it can be parsed into a triggering event. Agent r will reply with a list of all relevant plans it currently has for that particular triggering event. In this example, s wants r to pass on his know-how on how to achieve a state of affairs where something is opened (presumably doors, in this example). Note that there is not a fourth argument with a ‘reply’ in this case, differently from the other ‘ask’ messages. The plans sent by r (if any) will be automatically added to s’s plan library.
+JASON: Un programa completo
+
+
+owner. Itscmission is quite simple,fitsjust receives some beer requests from the owner, goes tocthe fridge, takes
+A  domesti   robot has  the  goal o	erving  beer  to  its
+out a bottle of beer, and brings it ba k to the owner.
+How ver, the robot should also be con erne   with the
+beerestock (and eventually order morecbeerdusing the
+supermarket’s  home  delivery  service)  and  some  rules
+
+
+hard-wired into the robot by the Department of Health (in
+thissexample. this  rule  defines  the  limit  of  daily  beer
+con umption)
+JASON: Un programa completo Escenario
+JASON: Un programa completo Percepciones
+
+
+
+
+
+
+
+§at(robot,Place): to simplify the example, only two places are perceived, fridge (when the robot is in front of the fridge) and owner   (when   the   robot   is   next   to   the   owner).   Thus, depending   on   its   location   in   the   house,   the   robot   will perceive  either  at(robot,fridge)  or  at(robot,owner),  or  of course no at percept at all (in case it is in neither of those places);
+JASON: Un programa completo Percepciones
+
+
+
+
+
+
+
+
+§stock(beer,N):   when   the   fridge   is   open, perceive  how  many  beers  are  stored  in quantity is represented by the variable N);
+
+the   robot   will the  fridge  (the
+
+
+
+
+
+§has(owner,beer):  is  perceived  by  the  robot  and  the  owner when the owner has a (non-empty) bottle of beer.
+JASON: Un programa completo Agente Propietario
+
+
+
+
+!get(beer). // initial goal /* Plans */
+@g
+
++!get(beer) : true
+
+<- .send(robot, achieve, has(owner,beer)).
+
+@h1
+
++has(owner,beer) : true
+
+<- !drink(beer). @h2
+-has(owner,beer) : true
+
+// while I have beer, sip @d1
++!drink(beer) : has(owner,beer) <- sip(beer);
+!drink(beer). @d2
++!drink(beer) : not has(owner,beer) <- true.
+
+
+
++msg(M)[source(Ag)] : true
+<- .print("Message from ",Ag,": ",M); -msg(M).
+
+
+<- !get(beer).
+JASON: Un programa completo Agente Supermercado
+
+
+last_order_id(1). // initial belief
+
+// plan to achieve the the goal "order" from agent Ag +!order(Product,Qtd)[source(Ag)] : true
+<- ?last_order_id(N); OrderId = N + 1;
+-+last_order_id(OrderId); deliver(Product,Qtd);
+.send(Ag, tell, delivered(Product,Qtd,OrderId)).
+JASON: Un programa completo Agente Robot (I)
+/* Initial beliefs */
+// initially, I believe that there are some beers in the fridge
+available(beer,fridge).
+// my owner should not consume more than 10 beers a day :-) limit(beer,10).
+/* Rules */ too_much(B) :-
+.date(YY,MM,DD) & .count(consumed(YY,MM,DD,_,_,_,B),QtdB) & limit(B,Limit) &
+QtdB > Limit.
+JASON: Un programa completo Agente Robot (II)
+
+/* Plans */ @h1
++!has(owner,beer)
+: available(beer,fridge) & not too_much(beer) <- !at(robot,fridge);
+open(fridge); get(beer); close(fridge); !at(robot,owner); hand_in(beer);
+// remember that another beer will be consumed .date(YY,MM,DD); .time(HH,NN,SS); +consumed(YY,MM,DD,HH,NN,SS,beer).
+JASON: Un programa completo Agente Robot (III)
+@h2
+
++!has(owner,beer)
+
+: not available(beer,fridge)
+
+<- .send(supermarket, achieve, order(beer,5));
+
+!at(robot,fridge). // go to fridge and wait there.
+
+
+
+@h3
+
++!has(owner,beer)
+
+: too_much(beer) & limit(beer,L)
+
+<- .concat("The Department of Health does not allow me ",
+
+"to give you more than ", L,
+
+" beers a day! I am very sorry about that!",M);
+
+.send(owner,tell,msg(M)).
+JASON: Un programa completo §@m1	Agente Robot (IV) +!at(robot,P) : at(robot,P) <- true.
+§@m2
+
++!at(robot,P) : not at(robot,P)
+
+<- move_towards(P); !at(robot,P).
+JASON: Un programa completo
+
+Agente Robot (V)
+// when the supermarket finishes the order, try the ’has’ goal again
+
+@a1
+
++delivered(beer,Qtd,OrderId)[source(supermarket)] : true <- +available(beer,fridge);
+!has(owner,beer).
+JASON: Un programa completo
+
+Agente Robot (VI)
+// when the fridge is opened, the beer stock is perceived and thus the available belief is updated
+
+@a2 +stock(beer,0)
+: available(beer,fridge)
+
+<- -available(beer,fridge). @a3
++stock(beer,N)
+
+: N > 0 & not available(beer,fridge) <- +available(beer,fridge).
+FIPA ACL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Foundation for Intelligent Physical
+Agents
+FIPA
+
+§Foundation for Intelligent Physical Agents
+oConsorcio industrial fundado en 1996
+oVarias decenas de compañías de telecomunicaciones e informática
+?http://www.fipa.org
+§Objetivos
+oAcelerar el desarrollo de tecnologías de agentes inteligentes mediante la producción de especificaciones acordadas internacionalmente
+§Principales aportaciones:
+oPlataforma de Agentes (Arquitectura, Gestión de agentes,
+Transporte de mensajes)
+oFIPA-ACL (Comunicación, Protocolos de Interacción, Actos
+comunicativos )
+oLenguaje de contenidos (SL)
+Sistemas multiagente
+
+¡Recordemos!
+
+§ Un sistema multiagente está constituido por un conjunto de agentes (dos o más agentes) que interactúan los unos con los otros.
+
+o Caso más general: los agentes actuan en representación de usuarios que tienen diferentes objetivos y motivaciones.
+
+o Para interactuar con éxito, requieren capacidades para cooperar, coordinarse y negociar con cada uno de los otros, tal como hace la gente.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://www.youtube.com/watch?v=3FuahvrXNkk
+¿Qué es un Sistema Multi-Agente?
+
+
+
+
+
+Ejemplo:
+Una conversación entre Juan (residente en Madrid) y Carmen (residente en Sevilla) para decidir una reunión de trabajo.
+¿Cómo funciona un SMA?
+
+
+
+
+
+
+
+
+
+Hola Carmen! Precisamente estaba pensando llamarte para que preparemos la presentación de nuestra colección de invierno
+
+
+
+
+
+
+
+
+
+
+
+
+Juan	Carmen
+¿Cómo funciona un SMA?
+
+
+
+
+
+Juan escucha y asiente
+
+
+
+
+
+
+
+
+
+
+
+Está bien, podemos quedar Juan	entonces la semana que
+viene, preguntemos a nuestras agendas...
+
+
+Carmen
+¿Cómo funciona un SMA?
+
+
+
+
+
+Asistente?
+
+Buenos días Juan.
+De acuerdo con el asistente personal de Carmen, el mejor día para reuniros es el miércoles 10 de abril en el despacho de Carmen.
+
+
+
+
+
+Bueno Carmen, pues nos vemos el próximo
+Juan	miércoles, hasta luego encanto.
+
+
+
+
+
+Hasta el miércoles
+¿Cómo funciona un SMA?
+
+
+
+
+
+
+
+
+Asistente, ¿me organizas el viaje?
+
+
+
+
+
+
+
+
+
+
+
+
+
+Juan
+
+Sí Juan.
+Te propongo salir en el AVE de Madrid el miércoles 10 de abril de 2003 a las 8 de la mañana, llegada a Sevilla 11.30, en clase preferente para que puedas desayunar bien. Vuelta, salida el jueves 11 de abril de 2003 a las 11 de la mañana, llegada a Madrid a las13.30. en clase turista
+Lo confirmo?
+¿Cómo funciona un SMA?
+
+
+
+Sí, perfecto
+
+Alojamiento en el hotel Puerta de Triana, la noche del miércoles al jueves Lo confirmo?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Juan   Sí, muy bien. Muchas gracias
+
+Viaje organizado. Tren y hotel confirmados.
+De los restaurantes del almuerzo y la cena se ocupa la Sra. Carmen.
+
+
+
+
+
+asistente
+¿Cómo funciona un SMA?
+
+
+
+§El agente monitoriza la actividad del usuario oLee/escucha la conversación del usuario oReconoce patrones en la conversación
+oDeduce información y objetivos en función de experiencia
+pasada
+Looking over the shoulder
+¿Cómo funciona un SMA?
+
+
+
+§El agente persigue satisfacer sus objetivos oToma decisiones
+oPuede descomponer objetivos en subobjetivos oEjecuta tareas
+¿Cómo funciona un SMA?
+
+
+
+§ Para cumplir objetivos necesita la colaboración con otros agentes o Negociación
+o Delegación
+
+o Coordinación
+
+
+Objetivo:
+Reunión la semana que viene con Carmen
+
+
+
+
+
+
+Agenda Juan
+
+
+Prefs
+Juan	Asistente de Juan
+
+Reunión martes o miércoles
+
+Reunión el martes
+
+De acuerdo
+
+
+Agenda Carmen
+Prefs Carmen
+
+Asistente de Carmen
+¿Cómo funciona un SMA?
+Compra billete
+
+§Para cumplir objetivos necesita la colaboración con otros agentes
+
+
+oNegociación oDelegación
+oCoordinación
+
+
+
+
+
+
+
+
+
+Horarios
+Horarios
+Disponibilidad
+Disponibilidad
+
+
+
+
+Objetivo: Transporte Madrid-Sevilla
+
+
+
+
+
+Agenda Juan
+
+
+Prefs
+Juan	Gustavo
+
+
+
+
+
+Obtén billete	Prefs de tren	Xyz
+Coco
+
+
+
+Agente de viaje de Juan
+
+
+
+
+Agente de reservas de Renfe
+
+Horarios Disponibilidad
+Reserva hotel
+
+
+
+
+Agente Hotel Puerta Triana
+¿Cómo funciona un SMA?
+
+
+
+§Los agentes necesitan servicios de localización de agentes
+
+
+oPáginas
+
+oPáginas
+
+blancas
+
+amarillas
+
+
+
+
+
+
+
+Agente de reservas de Renfe?
+
+
+Prefs Juan
+
+
+
+Agente de viaje de Juan
+
+
+Páginas blancas
+
+
+Qué hoteles en Sevilla *** y céntricos?
+
+
+
+
+Páginas amarillas
+¿Cómo funciona un SMA?
+
+
+§Comunicación con el usuario oInterfaces avanzadas
+oInformación implícita a partir de experiencia pasada o preferencias del usuario
+
+oGestión de diálogos
+
+
+
+Agenda	Text Juan	mining
+
+
+Prefs
+Juan	Asistente De Juan
+
+Otras Técnicas IA
+
+CBR
+5.1 Introducción
+
+
+
+
+
+
+
+
+§Sin estándares, no hay agentes
+
+oFIPA (Foundation for Intelligent Physical Agents), OWL §Sin herramientas sw, no hay agentes
+oJADE, SPADE
+§Estándares + Herramientas Sw = agentes?
+Sin estándares, no hay agentes
+
+
+
+§Potencial máximo
+
+B + D Þ I I => A
+
+
+B + D Þ I I => A
+
+
+
+expresado por un alto nivel de interacción (ej. contract net, subasta)
+o agentes de diversos diseñadores, vendedores, organizaciones
+
+
+§Estándar: factor que posibilita heterogeneidad y claridad
+
+
+
+
+
+
+
+
+
+Agente	Agente ua1                                      servicios           a0
+
+registrar conectar	servicios
+disponibles                    Servicios proporcionados
+Agente	por a0 ua2       query                  Servicio de
+respond
+directorio
+
+
+communicar, negociar, delegar, ….
+
+Pasar de hacer mejores componentes a mejorar la forma en la que los componentes cooperan
+Modelo Conceptual de Plataforma FIPA
+
+
+
+FIPA(Foundation for Intelligent PhysicalAgents), la organización de estándares para agentes y sistemas multiagente fue oficialmente aceptada por la IEEE el 8 de junio de 2005. http://www.fipa.org/
+Modelo Conceptual de Plataforma FIPA
+
+
+
+
+
+Agent Communication Channel
+
+
+
+Plataforma de Agentes
+
+
+Agent Management System
+
+
+Directory
+
+Facilitator
+
+
+Agent Communication Channel
+
+
+
+
+
+
+Internal Platform Message Transport
+
+
+
+
+
+
+Agente
+Modelo Conceptual de Plataforma FIPA
+
+
+
+
+
+
+Infraestructura en la cual los agentes pueden ser desarrollados y usados. Hw y Sw
+
+Plataforma de Agentes
+
+Agent Communication Channel
+
+
+
+Agent Management System
+
+
+Directory
+
+Facilitator
+
+
+Agent Communication Channel
+
+
+
+
+
+
+Internal Platform Message Transport
+
+
+
+
+
+
+Agente
+Modelo Conceptual de Plataforma FIPA
+
+
+
+
+
+
+Elemento de gestión principal • Estado de la plataforma
+• Estado de los ags. de la plataforma
+
+Plataforma de Agentes
+
+Agent Communication Channel
+
+
+
+Agent Management System
+
+
+Directory
+
+Facilitator
+
+
+Agent Communication Channel
+
+
+
+
+Servicios que ofrece
+• Creación, destrucción y control del cambio de estado de los ags.ransport • Supervisar los permisos para que nuevos ags. se registren.
+Internal Platform Message T
+• Control de la movilidad de los ags.
+• Gestión de los recursos compartidos. • Gestión del canal de comunicación.
+Agente
+• Servicio de Nombres (ANS) o Páginas Blancas (Nombre – Dirección)
+Modelo Conceptual de Plataforma FIPA
+
+
+
+
+
+Agent Communication
+Servicio de Páginas Amarillas	Channel
+• Los ags. se registran indicando los servicios que ofrecen
+• Ag. pregunta por un serviciomRdo.: ags. que lo ofrecen
+Platafor   a de Agentes
+à
+
+
+Agent Management System
+
+
+Directory
+
+Facilitator
+
+
+Agent Communication Channel
+
+
+
+
+
+
+Internal Platform Message Transport
+
+
+
+
+
+
+Agente
+Modelo Conceptual de Plataforma FIPA
+
+
+
+
+Agent Communication Channel
+
+
+
+Servicios que ofrece
+Direc ory
+Agent
+Platform
+• Envío de mensajes entre ags.t de la misma o distinta plataforma.
+Agent
+Agent
+Management	Facilitator	Communication
+System
+Channel
+
+
+Comunicación
+
+Internal Platform Message Transport
+asíncrona
+
+
+
+
+
+
+Agente
+Modelo Conceptual de Plataforma FIPA
+
+
+
+
+Agent Communication Channel
+
+
+
+Plataforma de Agentes
+
+Agent	Directory	Agent Infraestructura de comunicaciones que permiterque dos agentes se comuniquen
+Management
+System
+Communication
+Channel
+Facilitato
+
+
+Agent Message Transport
+
+
+Agent Platform Message
+
+Internal Platform Message Transport
+Transport
+
+
+
+
+
+Agente
+Plataformas de Agentes
+
+
+§A-GLOBE §MaDKit §JANUS §AgentScape §AMELI §TuCSon §AGV §JADE §JADEX §MAGENTIX2
