@@ -46,10 +46,12 @@ Vamos a analizar las tácticas y técnicas utilizadas en cada ataque, así como 
 
 \subsection{Descripción del incidente}
 En el año 2000, un ex empleado atacó el sistema SCADA de Maroochy Shire en Queensland, Australia. El atacante era un antiguo supervisor de sitio para Hunter Watertech Pty Ltd (HWT), un contratista externo que había instalado RTUs en 142 estaciones de bombeo. Después de renunciar en diciembre de 1999, realizó múltiples intrusiones al sistema SCADA entre enero y abril del 2000, causando malfuncionamientos como pérdida de comunicaciones, falsas alarmas y alteración de configuraciones. El resultado fue la liberación de aproximadamente un millón de litros de aguas residuales sin tratar al medio ambiente.
+\nl
 
 \coolquote{
     The main hazard involved in this incident was the unauthorized access to the SCADA system, which enabled the malevolent actor to release raw sewage into the surrounding environment. There were no cybersecurity procedures, policies, or defenses present, and the service contract was deficient or inadequate to handle the contractor’s responsibilities.
 }{}
+\nl
 
 \subsection{Tácticas y técnicas según MITRE ATT\&CK}
 Según la matriz MITRE ATT\&CK para ICS, el ataque utilizó las siguientes tácticas y técnicas:
@@ -64,6 +66,7 @@ Según la matriz MITRE ATT\&CK para ICS, el ataque utilizó las siguientes táct
     Siendo un ex supervisor, tenía un conocimiento profundo del sistema y su funcionamento. Esto le permitió emitir comandos de ingeniería que parecían legítimos pero causaban daños significativos.
     
     \item \textbf{Impact} - Utilizó la técnica de \textit{Modify Parameter} (T0836), alterando la configuración de las estaciones de bombeo para causar el vertido de aguas residuales.\\
+    También utilizó la técnica de \textit{Loss of Safety} (T0880), desactivando exitosamente las alarmas de cuatro bombas.\\
     La manipulación de parámetros de control fue una táctica efectiva dada la ausencia de monitoreo de comportamientos anómalos en el sistema.
 \end{itemize}
 
@@ -80,19 +83,49 @@ Según la matriz MITRE ATT\&CK para ICS, el ataque utilizó las siguientes táct
 %     \item La manipulación de parámetros de control fue una táctica efectiva dada la ausencia de monitoreo de comportamientos anómalos en el sistema.
 % \end{itemize}
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/maroochyScada.png}
+    \caption{Cómo funcionarían el SCADA de Maroochy y la RTU (Unidad Terminal Remota)}
+    \label{fig:maroochyScada}
+\end{figure}
+
+
+\newpage
+
 \subsection{Respuesta al incidente}
 La respuesta consistió en una investigación que culminó con la captura del sospechoso en abril de 2000. Se le encontró en posesión de equipos de control industrial, como un ordenador Compact 500, un radio bidireccional, un portátil, un transformador y cables. Posteriormente fue sentenciado a dos años de prisión y ordenado a pagar 13,111 dólares australianos por los daños causados. La limpieza del vertido requirió días y recursos sustanciales.
 
 \subsubsection{Evaluación de la respuesta}
-La respuesta fue reactiva y no preventiva. Como se sugiere en el artículo, la respuesta parece inadecuada por varias razones:
 
-\begin{itemize}
-    \item No existían procedimientos de ciberseguridad que pudieran prevenir el ataque.
-    \item No había un sistema para revocar accesos cuando un empleado dejaba la empresa.
-    \item Tardaron mucho tiempo en identificar que las fallas eran causadas por intervención humana.
-\end{itemize}
+\begin{paracol}{2}
+    \colfill
+    
+    La respuesta fue reactiva y no preventiva. Como se sugiere en el artículo, la respuesta parece inadecuada por varias razones:
+    
+    \begin{itemize}
+        \item No existían procedimientos de ciberseguridad que pudieran prevenir el ataque.
+        \item No había un sistema para revocar accesos cuando un empleado dejaba la empresa.
+        \item Tardaron mucho tiempo en identificar que las fallas eran causadas por intervención humana.
+    \end{itemize}
+    
+    Una respuesta más adecuada habría incluido la implementación de controles de seguridad básicos según el protocolo NIST SP 800-53, como la terminación inmediata de accesos de exempleados, autenticación multifactor, segregación de redes y monitoreo continuo de actividades sospechosas en el sistema SCADA.
+    \colfill
 
-Una respuesta más adecuada habría incluido la implementación de controles de seguridad básicos según el protocolo NIST SP 800-53, como la terminación inmediata de accesos de exempleados, autenticación multifactor, segregación de redes y monitoreo continuo de actividades sospechosas en el sistema SCADA.
+    \switchcolumn
+
+    \begin{figure}[htbp]
+        \centering
+            \includegraphics[width=1\columnwidth]{images/maroochyFaults.png}
+            \caption{Número de fallas en el sistema SCADA de Maroochy Shire, antes y después del incidente}
+            \label{fig:maroochyFaults}
+
+            Parece interesante ver que el número de fallas tomó bastante tiempo después del último ataque el 23 de abril para volver a valores normales.
+    \end{figure}
+
+\end{paracol}
+
+
 
 Bloquear el \textbf{acceso inicial} a los atancates es fundamental. Constituye la primera línea de defensa contra ataques a ICS y a sistemas informaticos en general. Tras obtener acceso, los atacantes pueden escanear la red, detectar vulnerabilidades, moverse lateralmente y comprometer sistemas críticos.
 
@@ -119,7 +152,26 @@ Un firewall, sin una política de acceso bien definida, no es más que un filtro
         \label{fig:AS400}
     \end{figure}
 \end{paracol}
-    \subsection{Tácticas y técnicas según MITRE ATT\&CK}
+
+
+\subsection{Tácticas y técnicas según MITRE ATT\&CK}
+
+\begin{paracol}{2}
+
+    \colfill
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=1\columnwidth]{images/kemuri.png}
+        \caption{Kemuri attack diagram}
+        \label{fig:kemuri}
+    \end{figure}
+    \colfill
+
+    \switchcolumn
+    \colfill
+
+
+
 Según la matriz MITRE, este ataque empleó:
 
 \begin{itemize}
@@ -145,6 +197,9 @@ Los atacantes eligieron estas tácticas porque:
     
     \item La autenticación de factor único simplificó el acceso no autorizado a sistemas críticos.
 \end{itemize}
+    \colfill
+\end{paracol}
+
 
 \subsection{Respuesta al incidente}
 % Internet-facing servers and applications, such the
@@ -378,7 +433,7 @@ Este caso ilustra claramente cómo la falta de inversión en seguridad cibernét
     \colfill
     \begin{figure}[htbp]
         \centering
-        \includegraphics[width=0.95\columnwidth]{images/FSC.jpg}
+        \includegraphics[width=0.85\columnwidth]{images/FSC.jpg}
         % \caption{}
         \label{fig:FSC}
     \end{figure}
@@ -402,10 +457,19 @@ Este caso ilustra claramente cómo la falta de inversión en seguridad cibernét
     \subsection{Descripción del incidente}
 
     \colfill
-    Entre el 28 de agosto y el 18 de septiembre de 2013, hackers obtuvieron ``acceso remoto no autorizado" al sistema SCADA de la presa Bowman Avenue en Rye, Nueva York. Esta presa utiliza una compuerta controlada remotamente desde 2013 para controlar el flujo de agua según los niveles y temperaturas del arroyo Blind Brook. Los atacantes lograron recopilar información sobre niveles de agua, temperatura y estado de la compuerta, aunque esta estaba desconectada manualmente para mantenimiento durante la intrusión. El ataque se realizó mediante ``Google dorking", una técnica que utiliza el motor de búsqueda Google para localizar vulnerabilidades en aplicaciones web.
+    En el año 2013, entre el 28 de agosto y el 18 de septiembre, hackers obtuvieron ``acceso remoto no autorizado'' al sistema SCADA de la presa Bowman Avenue en Rye, New York. Esta presa utiliza una compuerta controlada remotamente desde 2013 para controlar el flujo de agua según los niveles y temperaturas del arroyo Blind Brook. Los atacantes lograron recopilar información sobre niveles de agua, temperatura y estado de la compuerta, aunque esta estaba desconectada manualmente para mantenimiento durante la intrusión.
+
+    El ataque se realizó mediante ``Google dorking'', una técnica que utiliza el motor de búsqueda Google para localizar vulnerabilidades en aplicaciones web. Los atacantes utilizaron comandos de búsqueda avanzada para identificar sistemas de control industrial expuestos en Internet, específicamente la aplicación web de monitoreo y control de la presa que carecía de medidas de seguridad básicas como firewall o autenticación.
+
+    % \coolquote{
+    %     This attack demonstrated how critical infrastructure systems can be discovered and compromised through simple reconnaissance techniques, highlighting the importance of implementing proper security controls before deploying internet-facing applications for industrial control systems.
+    % }{}
+
+    % El incidente marca uno de los primeros casos documentados de intrusión exitosa en infraestructura crítica estadounidense utilizando técnicas de reconocimiento de código abierto (OSINT). Aunque los atacantes no causaron daños físicos debido a que la compuerta estaba desconectada por mantenimiento, el acceso no autorizado demostró vulnerabilidades significativas en la seguridad de infraestructuras críticas conectadas a Internet.
+    
     
     \colfill
-    
+
     \switchcolumn
 
         \begin{figure}[htbp]
@@ -440,6 +504,15 @@ Los atacantes eligieron estas tácticas porque:
         \item La recopilación de datos sobre el sistema proporcionaba información valiosa para posibles ataques futuros más destructivos.
         De hecho, se considera como el primer paso de la ``Cyber Kill Chain'' (CKC), que es un modelo que describe las etapas de un ciberataque, siendo las etapas posteriores el ataque real al sistema.
 \end{itemize}
+
+\newpage
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics{images/bowmanDam.png}
+    \caption{Bowman Avenue Dam}
+    \label{fig:bowmanDam}
+\end{figure}
 
 \subsection{Respuesta al incidente}
 Después del ataque, se instalaron un nuevo software y una nueva compuerta. Por dirección del Gobernador Cuomo, el Estado de Nueva York tomó múltiples medidas para mejorar sus capacidades de ciberseguridad en varios sectores. Las investigaciones realizadas por el DHS y el Departamento de Justicia resultaron en la acusación de varios hackers patrocinados por un estado. El ataque causó más de $30,000\$$ en costos de remediación.
