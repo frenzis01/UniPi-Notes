@@ -47,7 +47,11 @@ La estimación de la probabilidad típicamente se hace usando relative frequency
 Un LM (Language Model, o Modelo de Lenguaje) es un modelo probabilístico que asigna una probabilidad a una secuencia de palabras.
 Un N-gram LM se dice \textit{completo} si todas las posibles secuencias de palabras tienen una apropiada estimación de probabilidad.\\
 El problema con esto es que hay eventos (secuencias de palabras) que casi nunca ocurren en el corpus de entrenamiento (\textit{training set}), y por lo tanto no tienen una estimación de probabilidad.
-Por este motivo hay métodos de \textit{smoothing} y \textit{discounting}.
+Por este motivo hay métodos de \textit{smoothing} y \textit{discounting}.\\
+La ídea es que si una secuencia de palabras no ha sido vista en el corpus, se utiliza la probabilidad de una secuencia más corta, moltiplicada por un factor de \textit{back-off}.
+En un modelo suavizado por back-off (por ejemplo Katz Back-off), se reduce también la probabilidad de eventos que tienen una probabilidad no nula.\\
+El \textit{smoothing} es un método para ajustar las probabilidades de los eventos que no han sido vistos en el corpus, para que no tengan una probabilidad cero.
+
 
 \begin{table}[htbp]
    \centering
@@ -71,7 +75,7 @@ Por este motivo hay métodos de \textit{smoothing} y \textit{discounting}.
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/07/ngramBackOff.png}
-   \caption{07/ngramBackOff}
+   \caption{Back-Off}
    \label{fig:07/ngramBackOff}
 \end{figure}
 

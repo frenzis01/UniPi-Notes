@@ -56,7 +56,7 @@ each map is built by the application of the corresponding filter to each possibl
 \nl
 
 Size for each map is the following (for $H\times W$ input):
-\[\frac{1}{S^2} (H + 2P - (K - 1))(W + 2P - (K-1))\]
+\[\frac{1}{S^2} (H + 2P - (K - 1))\times(W + 2P - (K-1))\]
 Spatial cost mainly dependent on number of filters.
 \nl
 
@@ -293,18 +293,33 @@ In CNN, basically:
 	\item Optional step (fine tuning): unfroze convolutional weights and re-train
 \end{itemize}
 
-Transfer learning strategy depends on:
-\begin{itemize}
-	\item Data availability
-	\item Data similarity
-	\item Computational resources
-\end{itemize}
-\nl
+\begin{paracol}{2}
+   \colfill
+   
+   Transfer learning strategy depends on:
+   \begin{itemize}
+      \item Data availability
+      \item Data similarity
+      \item Computational resources
+   \end{itemize}
+   \nl
+   
+   \begin{itemize}
+      \item High data available and low similarity: train from scratch
+      \item High data available and high similarity: freeze a high number of layers
+      \item Low data available and low similarity: freeze a low number of layers
+      \item Low data available and high similarity: freeze all convolutional layers
+      \item[]In case of low computational resources, freeze as much as possible
+   \end{itemize}
 
-\begin{itemize}
-	\item High data available and low similarity: train from scratch
-	\item High data available and high similarity: freeze a high number of layers
-	\item Low data available and low similarity: freeze a low number of layers
-	\item Low data available and high similarity: freeze all convolutional layers
-   \item[]In case of low computational resources, freeze as much as possible
-\end{itemize}
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.9\columnwidth
+      ]{images/10/transfer.png}
+      \caption{Transfer Learning strategy concerning data availability and similarity}
+      \label{fig:10/transfer}
+   \end{figure}
+\end{paracol}
