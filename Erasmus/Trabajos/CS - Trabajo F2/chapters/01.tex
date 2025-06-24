@@ -2,7 +2,7 @@
 \label{chap:01}
 \section*{Introducción}
 
-La tarea nos pide de leer un artículo de revisión de 15 ataques a sistemas de control industrial (ICS) y elegir 5 de ellos para caracterizarlos con la matriz de \href{attack.mitre.org/matrices/ics/}{Mitre ATT\&CK}. La matriz de Mitre ATT\&CK es una base de datos de tácticas, técnicas y procedimientos (TTP) utilizados por los atacantes en el ciberespacio. Esta matriz se utiliza para comprender mejor las amenazas y mejorar la defensa cibernética.
+La tarea nos pide leer un artículo de revisión de 15 ataques a sistemas de control industrial (ICS) y elegir 5 de ellos para caracterizarlos con la matriz de \href{attack.mitre.org/matrices/ics/}{Mitre ATT\&CK}. La matriz de Mitre ATT\&CK es una base de datos de tácticas, técnicas y procedimientos (TTP) utilizados por los atacantes en el ciberespacio. Esta matriz se utiliza para comprender mejor las amenazas y mejorar la defensa cibernética.
 
 \framedt{Tarea a realizar}{
 \begin{itemize}
@@ -19,7 +19,7 @@ Este es, según el \textit{U.S. Department of Homeland Security}, \ul{uno de los
 
 \textsc{WWS} son \textbf{sistemas de control industrial} (\textsc{ICS}) que se utilizan para supervisar y controlar las infraestructuras de agua y aguas residuales. Estos sistemas son esenciales para garantizar la calidad del agua, la eficiencia operativa y la seguridad pública.
 
-La major parte de los \textsc{ICS} en el sector \textsc{WWS} son sistemas \textsc{SCADA} (\textit{Supervisory Control and Data Acquisition}), que permiten la supervisión y control remoto de los procesos industriales. Estos sistemas se componen de sensores, controladores lógicos programables (\textsc{PLC}) y estaciones de trabajo que se comunican entre sí para supervisar y controlar los procesos.
+La mayor parte de los \textsc{ICS} en el sector \textsc{WWS} son sistemas \textsc{SCADA} (\textit{Supervisory Control and Data Acquisition}), que permiten la supervisión y control remoto de los procesos industriales. Estos sistemas se componen de sensores, controladores lógicos programables (\textsc{PLC}) y estaciones de trabajo que se comunican entre sí para supervisar y controlar los procesos.
 
 Hay una \textsc{MTU} (\textit{Master Terminal Unit}) que se encarga de la supervisión y control de los procesos, y una \textsc{RTU} (\textit{Remote Terminal Unit}) que se encarga de la supervisión y control de los dispositivos remotos. La \textsc{MTU} se comunica con la \textsc{RTU} a través de una red de comunicación, que puede ser una red privada o una red pública.
 La \textsc{HMI} (\textit{Human-Machine Interface}) es la interfaz que permite a los operadores interactuar con el sistema \textsc{SCADA}. La \textsc{HMI} se utiliza para supervisar y controlar los procesos, y para visualizar la información del sistema.
@@ -29,7 +29,7 @@ Durante muchos años, los sistemas \textsc{SCADA} y, en general, las redes \text
 \subsection{Redes ICS}
 
 La nueva generación de redes \textsc{IT-OT} convergentes en los sistemas de control industrial, también conocida como \textit{Industrial Internet of Things} (\textsc{IIoT}), ya no está \ul{air-gapped}.\\
-Una red ICS està dividida por niveles y zonas:
+Una red ICS está dividida por niveles y zonas:
 \begin{itemize}
    \item \textbf{Enterprise zone }- that includes assets for business logistics and enterprise systems, representing Level 4 and 5, respectively. This zone is also known as \textsc{IT} network.
    \item \textbf{Demilitarized zone (DMZ) }- that separates \textsc{IT} and \textsc{OT} networks, thus preventing direct access to \textsc{OT} devices from the \textsc{IT} network. All corporate-accessible services (e.g., web, 120 email) reside in this zone
@@ -46,6 +46,7 @@ Una red ICS està dividida por niveles y zonas:
 \subsection{Ataques a ICS}
 Los ataques a sistemas de control industrial (ICS) son cada vez más frecuentes y sofisticados. En este trabajo, analizaremos cinco ataques significativos a sistemas de agua y aguas residuales (\textsc{WWS}), utilizando la matriz de MITRE ATT\&CK para ICS. Esta matriz nos permite categorizar las tácticas, técnicas y procedimientos utilizados por los atacantes en entornos ICS.
 
+He elegido los artículos que me parecían más interesantes y diversificados, así se pueden ver diferentes tácticas y conceptos a lo largo del trabajo.\\
 Vamos a analizar las tácticas y técnicas utilizadas en cada ataque, así como la respuesta a los incidentes y su efectividad.
 \newpage
 \section{Ataque 1: Maroochy Water Services, Australia, 2000}
@@ -65,11 +66,11 @@ Según la matriz MITRE ATT\&CK para ICS, el ataque utilizó las siguientes táct
 \begin{itemize}
     \item \textbf{Persistence}/\textbf{Initial Access} - El atacante utilizó la técnica de \textit{Valid Accounts} (T0859), ya que mantuvo acceso a sus credenciales después de dejar la empresa.\\
     T0859 aparece en la sección \textit{Persistence} de la matriz MITRE ATT\&CK para ICS, pero claro que las credenciales se pueden utilizar también para el acceso inicial al sistema.\\
-    La falta de procedimientos para revocar accesos de exempleados facilitó su intrusión y persistencia en el sistema durante meses.
+    La falta de procedimientos para revocar accesos de ex empleados facilitó su intrusión y persistencia en el sistema durante meses.
     
     
     \item \textbf{Execution} - Empleó la técnica de \textit{Execution through API} (T0871), utilizando su conocimiento para enviar comandos legítimos con intenciones maliciosas.\\
-    Siendo un ex supervisor, tenía un conocimiento profundo del sistema y su funcionamento. Esto le permitió emitir comandos de ingeniería que parecían legítimos pero causaban daños significativos.
+    Siendo un ex supervisor, tenía un conocimiento profundo del sistema y su funcionamiento. Esto le permitió emitir comandos de ingeniería que parecían legítimos pero causaban daños significativos.
     
     \item \textbf{Impact} - Utilizó la técnica de \textit{Modify Parameter} (T0836), alterando la configuración de las estaciones de bombeo para causar el vertido de aguas residuales.\\
     También utilizó la técnica de \textit{Loss of Safety} (T0880), desactivando exitosamente las alarmas de cuatro bombas.\\
@@ -115,7 +116,7 @@ La respuesta consistió en una investigación que culminó con la captura del so
         \item Tardaron mucho tiempo en identificar que las fallas eran causadas por intervención humana.
     \end{itemize}
     
-    Una respuesta más adecuada habría incluido la implementación de controles de seguridad básicos según el protocolo NIST SP 800-53, como la terminación inmediata de accesos de exempleados, autenticación multifactor, segregación de redes y monitoreo continuo de actividades sospechosas en el sistema \textsc{SCADA}.
+    Una respuesta más adecuada habría incluido la implementación de controles de seguridad básicos según el protocolo NIST SP 800-53, como la terminación inmediata de accesos de ex empleados, autenticación multifactor, segregación de redes y monitoreo continuo de actividades sospechosas en el sistema \textsc{SCADA}.
     \colfill
 
     \switchcolumn
@@ -133,9 +134,9 @@ La respuesta consistió en una investigación que culminó con la captura del so
 
 
 
-Bloquear el \textbf{acceso inicial} a los atancates es fundamental. Constituye la primera línea de defensa contra ataques a ICS y a sistemas informaticos en general. Tras obtener acceso, los atacantes pueden escanear la red, detectar vulnerabilidades, moverse lateralmente y comprometer sistemas críticos.
+Bloquear el \textbf{acceso inicial} a los atacantes es fundamental. Constituye la primera línea de defensa contra ataques a ICS y a sistemas informáticos en general. Tras obtener acceso, los atacantes pueden escanear la red, detectar vulnerabilidades, moverse lateralmente y comprometer sistemas críticos.
 
-La falta de ciberconciencia situacional, es decir, la falta de conocimiento sobre lo que está sucediendo en el sistema, no ha permitido de detectar sin demora el ataque.\\
+La falta de ciberconciencia situacional, es decir, la falta de conocimiento sobre lo que está sucediendo en el sistema, no ha permitido detectar sin demora el ataque.\\
 Además de la falta de ciberconciencia situacional, parece evidente que faltaba la definición clara de políticas de \textbf{Access Control}, que es fundamental y que tiene que funcionar como guía para la implementación y configuración de las herramientas de seguridad.\\
 Un firewall, sin una política de acceso bien definida, no es más que un filtro que pero no puede resolver ningún problema concreto de seguridad.
 \newpage
@@ -222,7 +223,7 @@ Lo que parece extraño es que algunos empleados sabían de las vulnerabilidades 
 \subsubsection{Evaluación de la respuesta}
 La respuesta parece adecuada porque reveló apropiadamente las vulnerabilidades y llevó a la identificación del vector de ataque. Sin embargo, parece ser principalmente reactiva y carece de la implementación de medidas preventivas fuertes inmediatas.
 
-Algunas ídeas de mejora serían:
+Algunas ideas de mejora serían:
 \begin{itemize}
     \item Implementación de arquitectura de \textbf{segmentación de red} con zonas desmilitarizadas (DMZ) entre \textsc{IT} y \textsc{OT}.
     \item \textbf{Autenticación multifactor} para todos los sistemas críticos.
@@ -255,7 +256,7 @@ Las tácticas y técnicas utilizadas incluyen:
 
         \item \textbf{Execution} - \textit{Scripting} (T0853), ejecutando scripts maliciosos para la minería de criptomonedas.
         
-        \item \textbf{Impact} - \textit{Resource Hijacking}\footnote{Esta es la técnica \href{https://attack.mitre.org/techniques/T1496/}{T1496}, mencionada en la categoria \textit{Enterprise}, no \textit{ICS}; sin embargo si puede considerar relacionada a la \href{https://attack.mitre.org/techniques/T0826/}{T0826}} (/\textit{Loss of Availability} T0826), utilizando recursos computacionales del sistema para minar criptomonedas.\\
+        \item \textbf{Impact} - \textit{Resource Hijacking}\footnote{Esta es la técnica \href{https://attack.mitre.org/techniques/T1496/}{T1496}, mencionada en la categoría \textit{Enterprise}, no \textit{ICS}; sin embargo sí puede considerarse relacionada a la \href{https://attack.mitre.org/techniques/T0826/}{T0826}} (/\textit{Loss of Availability} T0826), utilizando recursos computacionales del sistema para minar criptomonedas.\\
         No hay exactamente la intención de causar daño directo a los activos, sino de aprovechar sus recursos para beneficio económico del atacante.
         Sin embargo, el resultado es un mayor consumo de recursos y uso de ancho de banda, lo que puede llevar a degradación del rendimiento y potencial denegación de servicio para operaciones legítimas.
 \end{itemize}
@@ -279,7 +280,7 @@ La empresa de seguridad informó a la empresa de agua sobre el malware de cripto
 
 \subsubsection{Evaluación de la respuesta}
 La respuesta fue adecuada pero ``bastante" reactiva.\\
-No pidieron la evaluación de seguridad tras la detección de un problema, y esto es positivo, ya que demuestra que la empresa tenía en cuenta la seguridad de su infraestructura, pero activadades como el básico monitoreo de tráfico de red deberían haber estado implementadas previamente.\\
+No pidieron la evaluación de seguridad tras la detección de un problema, y esto es positivo, ya que demuestra que la empresa tenía en cuenta la seguridad de su infraestructura, pero actividades como el básico monitoreo de tráfico de red deberían haber estado implementadas previamente.\\
 La reacción se puede considerar reactiva, ya que se actualizó tras la detección del malware, y no antes.\\
 La detección temprana del tráfico sospechoso permitió mitigar el impacto.
 La actualización de antivirus y refuerzo de firewalls fueron medidas apropiadas, que deberían ayudar a prevenir incidentes similares en el futuro.
@@ -295,9 +296,9 @@ Para fortalecer un ICS contra ataques similares, propondría adicionalmente:
 \end{itemize}
 
 Hay técnicas de active/passive \textit{fingerprinting} para establecer un perfil de tráfico normal, que pueden ayudar a detectar anomalías en el tráfico de red.\\
-Sin embargo, un utilizo continuo de tecnicas de active fingerprinting pueden causar problemas de rendimiento y disponibilidad, que en un ICS pueden ser críticos.
-Por esta  razón, puede ser mejor utilizar técnicas pasivas, o herramientas de \textit{traffic analysis} que solo analizan un traffic dump, así que no afectan el trafico de red en tiempo real.
-Tras la analisis pasiva, se puede establecer un perfil de tráfico normal, y configurar herramientas de monitoreo para alertar sobre desviaciones significativas de este perfil.
+Sin embargo, un uso continuo de técnicas de active fingerprinting puede causar problemas de rendimiento y disponibilidad, que en un ICS pueden ser críticos.
+Por esta razón, puede ser mejor utilizar técnicas pasivas, o herramientas de \textit{traffic analysis} que solo analizan un traffic dump, así que no afectan el tráfico de red en tiempo real.
+Tras el análisis pasivo, se puede establecer un perfil de tráfico normal, y configurar herramientas de monitoreo para alertar sobre desviaciones significativas de este perfil.
 
 
 
@@ -370,7 +371,7 @@ El ataque también se extendió a la utilidad de agua, comprometiendo los sistem
 \begin{figure}[htbp]
     \centering
     \includegraphics{images/ransom.jpg}
-    \caption{\href{https://www.kaspersky.com/about/press-releases/over-half-of-ransomware-victims-pay-the-ransom-but-only-a-quarter-see-their-full-data-returned}{Segun una encuesta de Kaspersky}, más del 50\% de las victimas pagan el ransom, especialmente los usuarios más jovenes}
+    \caption{\href{https://www.kaspersky.com/about/press-releases/over-half-of-ransomware-victims-pay-the-ransom-but-only-a-quarter-see-their-full-data_returned}{Según una encuesta de Kaspersky}, más del 50\% de las víctimas pagan el rescate, especialmente los usuarios más jóvenes}
     \label{fig:ransom}
 \end{figure}
 
@@ -398,7 +399,7 @@ Los atacantes eligieron estas tácticas por varias razones:
     
     \item Los sistemas de control industrial conectados a redes administrativas permiten que un ataque que comienza en sistemas \textsc{IT} se propague a componentes \textsc{OT} críticos.
     
-    \item Pueblos pequeños a menudo no tienen \textbf{fondos} suficiente para invertir en ciberseguridad, lo que los hace más vulnerables a ataques de ransomware.
+    \item Pueblos pequeños a menudo no tienen \textbf{fondos} suficientes para invertir en ciberseguridad, lo que los hace más vulnerables a ataques de ransomware.
     El hardware y software obsoleto, como el sistema de control de la utilidad de agua, a menudo carece de las actualizaciones de seguridad necesarias para resistir ataques modernos.
 \end{itemize}
 
@@ -430,7 +431,7 @@ Una respuesta más adecuada habría incluido:
     \item \textbf{Formación regular} en concienciación sobre ciberseguridad para todos los empleados, especialmente sobre la identificación de correos electrónicos de phishing.
     
     \item \textbf{Segmentación} efectiva entre redes \textsc{IT} y \textsc{OT} para evitar que un compromiso en sistemas administrativos afecte a los sistemas de control industrial.
-    Este caso es un ejemplo claro de cómo la falta de segmentación y controles adecuados ha llevado al compromiso no solo de la utilidad de agua, sino de multiples oficinas gubernamentales, paralizando muchas operaciones de la ciudad.
+    Este caso es un ejemplo claro de cómo la falta de segmentación y controles adecuados ha llevado al compromiso no solo de la utilidad de agua, sino de múltiples oficinas gubernamentales, paralizando muchas operaciones de la ciudad.
     
     \item Desarrollo de un plan de continuidad de operaciones que permita la\textbf{ restauración rápida desde copias} de seguridad sin necesidad de pagar rescates.
 \end{itemize}
@@ -450,10 +451,10 @@ Este caso ilustra claramente cómo la falta de inversión en seguridad cibernét
     \colfill
     
     \switchcolumn
-    Sin embargo, ilustra también cómo la \ul{seguridad sea un coste no indiferente}, especialmente para pequeñas municipalidades que no tienen muchos recursos, y inversiones en ciberseguridad pueden ser vistas como un gasto innecesario.\\
+    Sin embargo, ilustra también cómo la \ul{seguridad es un coste no indiferente}, especialmente para pequeñas municipalidades que no tienen muchos recursos, e inversiones en ciberseguridad pueden ser vistas como un gasto innecesario.\\
     Claro que, \ul{típicamente el coste de un ataque exitoso es mucho mayor que el coste de una inversión en ciberseguridad}, pero esto no es evidente para todos los responsables de la toma de decisiones, y para el público en general.
     
-    Cómo un seguro de salud, o del coche, la ciberseguridad es una inversión que no se ve hasta que se necesita, y por lo tanto a menudo es minimizada o ignorada.\\
+    Como un seguro de salud, o del coche, la ciberseguridad es una inversión que no se ve hasta que se necesita, y por lo tanto a menudo es minimizada o ignorada.\\
     Dado que ser robusto contra ciberataques puede ser difícil y costoso, debería haber al menos mecanismos de resistencia, que tienden a ser más baratos y fáciles de implementar, y que pueden ayudar a recuperarse ---casi--- fácilmente de un ataque sin pagar un rescate.
     
 \end{paracol}
@@ -529,7 +530,7 @@ Después del ataque, se instalaron un nuevo software y una nueva compuerta. Por 
 
 \subsubsection{Evaluación de la respuesta}
 La respuesta fue bastante adecuada.
-La instalación de nuevo software y hardware con mejores características de seguridad es una medida importante para prevenir ataques basicos.\\
+La instalación de nuevo software y hardware con mejores características de seguridad es una medida importante para prevenir ataques básicos.\\
 Además, \ul{es positivo que el ataque haya llevado al gobierno a tomar medidas para mejorar las capacidades de ciberseguridad a nivel estatal}.
 
 
@@ -540,7 +541,7 @@ Algunas mejoras podrían ser:
     \item Establecimiento de una arquitectura de acceso remoto seguro con múltiples capas de \textbf{autenticación}, posiblemente incluyendo información biométrica.
     \item Mejor \textbf{segmentación de red} para aislar sistemas críticos de control industrial de redes públicas y aplicaciones web.\\
     La compuerta de la presa estaba manualmente desconectada para mantenimiento durante la intrusión, por lo que los hackers no pudieron manipularla, pero esto fue simplemente suerte.
-    \item Monitoreo continuo de búsquedas en Internet que puedan revelar información sensible sobre infraestructuras críticas, o vulnerabilidades en las aplicaciones utilizadas da dichas infraestructuras.
+    \item Monitoreo continuo de búsquedas en Internet que puedan revelar información sensible sobre infraestructuras críticas, o vulnerabilidades en las aplicaciones utilizadas en dichas infraestructuras.
     % \item Implementación de programas de capacitación y concientización sobre ciberseguridad para el personal que gestiona infraestructuras críticas.
 \end{itemize}
 
