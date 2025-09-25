@@ -232,7 +232,7 @@ Such data set can be represented by an $m\times n$ matrix, where there are m row
 \rowcolors{2}{cyan!10}{white}
 \begin{tabular}{p{2.7cm}p{4.2cm}p{4.2cm}p{3.2cm}}
 \rowcolor{cyan!30}
-	extbf{Attribute Type} & \textbf{Description} & \textbf{Examples} & \textbf{Operations} \\
+	\textbf{Attribute Type} & \textbf{Description} & \textbf{Examples} & \textbf{Operations} \\
 Nominal & Nominal attribute values only distinguish. ($=, \neq$) & zip codes, employee ID numbers, eye color, sex: \{male, female\} & mode, entropy, contingency correlation, $\chi^2$ test \\
 Ordinal & Ordinal attribute values also order objects. ($<, >$) & hardness of minerals, \{good, better, best\}, grades, street numbers & median, percentiles, rank correlation, run tests, sign tests \\
 Interval & For interval attributes, differences between values are meaningful. ($+, -$) & calendar dates, temperature in Celsius or Fahrenheit & mean, standard deviation, Pearson's correlation, $t$ and $F$ tests \\
@@ -241,6 +241,66 @@ Ratio & For ratio variables, both differences and ratios are meaningful. ($*, /$
 \caption{Attribute types, examples and operations}
 \end{table}
 
+\subsection{Data Quality}
+Examples of data quality problems:
+\begin{itemize}
+	\item Wrong data
+	\item Duplicate data
+	\item Noise and outliers
+	\item Missing values
+\end{itemize}
+
+In order to know our data and discovery quality issues
+we need \ul{use descriptive statistics for getting a global picture and summarize properties of data} and
+compare such statistics with the expected behaviour.
+All around we can exploit \ul{visualization techniques} that can help in detecting general or unusual patterns and trends, as well as outliers.
+
+\subsubsection{Histograms}
+A histogram shows the frequency distribution for a numerical attribute.
+The range of the numerical attribute is discretized into a fixed number of intervals (\textbf{bins}).
+
+The number of bins according to Sturges' rule is:
+\[
+k = \lceil \log_2 n + 1 \rceil
+\]
+where \( n \) is the number of records in the data set.
+Sturges' rule is suitable for data from normal
+distributions and from data sets of moderate size.
+
+\subsubsection{Statistics notions}
+Notoriouses Mean/Median/Mode\dots
+The degree in which data tend to spread is called the
+\textit{dispersion}, or \textbf{variance} of the data.
+
+The most common measures for data dispersion are
+\textbf{range} (The distance between the largest and the smallest values), \textbf{standard deviation}, the \textbf{five-number summary} (based on \textit{quartiles}), and the \textbf{inter-quartile range}.
+
+% Variance formula
+\[
+\text{variance}(x) = \sigma^2 = s_x^2 = \frac{1}{m-1} \sum_{i=1}^{m} (x_i - \bar{x})^2
+\]
+
+Standard deviation $\sigma$ is the square root of variance $\sigma^2$.
+
+Because of outliers, other measures are often used:
+\begin{itemize}
+	\item absolute average deviation (AAD)
+	      \[
+		      \text{AAD}(x) = \frac{1}{m} \sum_{i=1}^{m} |x_i - \bar{x}|
+	      \]
+	\item median average deviation (MAD)
+	      \[
+		      \text{MAD}(x) = \text{median}\left( \{|x_1 - \bar{x}|, \ldots, |x_m - \bar{x}|\} \right)
+	      \]
+\end{itemize}
+
+\subsubsection{Box-Plot}
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/01/boxplot.png}
+   \caption{Box-Plot}
+   \label{fig:01/boxplot}
+\end{figure}
 \section{Data Understanding - Lab}
 
 Data comes from diverse sources, and generally is not tailor-made for some downstream task. We need to start from basics:
