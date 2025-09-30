@@ -1,0 +1,225 @@
+\chapter{Data Cleaning}
+
+\framedt{Key Points}{
+\begin{itemize}
+	\item How to handle \textbf{anomalous values}
+	\item How to handle \textbf{outliers}
+	\item \textbf{Data Transformations}
+\end{itemize}
+}
+
+\section{Anomalous Values}
+\begin{itemize}
+	\item \textbf{Missing} values - NULL, ?
+	\item \textbf{Unknown} Values - Values without a real meaning
+	\item \textbf{Not Valid} Values - Values not significant
+\end{itemize}
+
+We can handle anomalous values with various techniques.
+First of all we can \textbf{eliminate} the records with anomalous values.\\
+We could also \textbf{substitute} anomalous values, knowing, however, that it could influence the original distribution of numerical values.\\
+To mitigate this effect, we can use \textbf{mean/median/mode} to substitute missing values, or estimate missing values using the \textbf{probability distribution} of existing values.\\
+We could also \textbf{segment data} and apply the above for every segment where there happen to be missing values, hence using mean/mode/median or the probability distribution of the segment.\\
+Finally, we could use \textit{predictive models} (\textbf{classification/regression}) to estimate missing values, using the other attributes as predictors.
+
+\subsection{Discretization}
+\textit{Discretization is the process of converting a
+\textbf{continuous} attribute into an \textbf{ordinal} attribute.}
+\note{
+\begin{itemize}
+	\item A potentially infinite number of values are mapped into a
+small number of categories
+	\item Discretization is commonly used in classification
+	\item Many classification algorithms work best if both the
+independent and dependent variables have only a few
+values
+\end{itemize}}
+
+\framedt{Unsupervised Discretization}{
+	\begin{itemize}
+		\item No label for instances
+		\item The number of classes is unknown
+	\end{itemize}
+
+	Techniques of binning:
+	\begin{itemize}
+		\item \textbf{Natural} binning - Intervals with the same width
+		\item \textbf{Equal Frequency} binning - Intervals with the same frequency
+		\item \textbf{Statistical} binning - Use statistical information (Mean, variance, Quartile)
+	\end{itemize}
+}
+
+\subsubsection{Natural Binning}
+This is a fairly simple approach:
+we sort the values, subdividing the range of values into $k$ parts with the same size.
+\[
+\sigma = \frac{x_{max} - x_{min}}{k}
+\]
+Then, element $x_j$ is assigned to bin ---i.e. belong to the class--- $i$ if:
+\[
+x_j \in [x_{min} + i\sigma, x_{min} + (i+1)\sigma)
+\]
+
+Note however that this approach is sensitive to outliers, which can skew the range of values, \ul{generating very unbalanced distributions}.
+
+\subsubsection{Equal Frequency Binning}
+Sort and count the elements, definition of $k$ intervals of $f$, where, having $N$ elements:
+\[f = \frac{N}{k}\]
+The element $x_j$ is assigned to bin $i$ if:
+\[i \times f \leq j < (i+1) \times f\]
+This is not always suitable for highlighting interesting correlations.
+
+\subsubsection{How many bins?}
+In both cases, the number of bins $k$ is a parameter to be set.
+A rule of thumb is to set $k$ accorgin to Sturges' optimal number of classes $C$ for $N$ elements:
+\[C = 1 + \frac{10}{3} \log_{10}(N) \]
+where $N$ is the number of elements.
+The optimal width of the classes depends on the variance and the number of data points:
+\[h = \frac{3.5\cdot s}{\sqrt{N}}\]
+
+\section{Supervised discretization}
+
+% // TODO
+
+\subsection{Entropy-based Discretization}
+Minimizes the entropy wrt a label, with the goal of maximizing the purity of intervals (information gain).
+
+\section{Binarization}
+Binarization is the process of converting a continuous attribute into a binary attribute.\\
+This can be useful in various scenarios, such as when we want to simplify the model or when we need to handle categorical variables.
+It is common to apply this for \textbf{association} analysis.
+
+
+
+There are several techniques for binarization of continuous attributes:
+\begin{itemize}
+	\item \textbf{Thresholding} - Assigning values above a certain threshold to one class and values below to another.
+	\item \textbf{One-Hot Encoding} - Creating binary columns for each category in a categorical variable.
+	\item \textbf{Binarization with Decision Trees} - Using decision tree algorithms to find optimal splits for binarization.
+\end{itemize}
+
+\newpage
+There are also techniques for binarization of categorical attributes:
+
+
+\begin{table}[htbp]
+\centering
+\caption{Conversion of a categorical attribute to three binary attributes.}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Categorical Value} & \textbf{Integer Value} & \textbf{$x_1$} & \textbf{$x_2$} & \textbf{$x_3$} \\
+\hline
+awful & 0 & 0 & 0 & 0 \\
+\hline
+poor & 1 & 0 & 0 & 1 \\
+\hline
+OK & 2 & 0 & 1 & 0 \\
+\hline
+good & 3 & 0 & 1 & 1 \\
+\hline
+great & 4 & 1 & 0 & 0 \\
+\hline
+\end{tabular}
+\label{tab:binary_three}
+
+This however leads to highlighting associations that are not really there, for example, in the table above, $x_2$ and $x_3$ may look correlated, but, in fact, they are not. 
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Conversion of a categorical attribute to five asymmetric binary attributes.}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+\textbf{Categorical Value} & \textbf{Integer Value} & \textbf{$x_1$} & \textbf{$x_2$} & \textbf{$x_3$} & \textbf{$x_4$} & \textbf{$x_5$} \\
+\hline
+awful & 0 & 1 & 0 & 0 & 0 & 0 \\
+\hline
+poor & 1 & 0 & 1 & 0 & 0 & 0 \\
+\hline
+OK & 2 & 0 & 0 & 1 & 0 & 0 \\
+\hline
+good & 3 & 0 & 0 & 0 & 1 & 0 \\
+\hline
+great & 4 & 0 & 0 & 0 & 0 & 1 \\
+\hline
+\end{tabular}
+\label{tab:binary_five}
+\end{table}
+
+\subsection{Attribute Transformation}
+An attribute transform is a function that maps the
+entire set of values of a given attribute to a new set
+of replacement values such that each old value can be
+identified with one of the new values.
+\begin{itemize}
+	\item Simple functions: $x^k$, $log(x)$, $e^x$, $|x|$
+	\item \textbf{Normalization} Refers to various techniques to adjust to differences among attributes in terms of frequency of occurrence, mean, variance, range
+	\item Take out unwanted, common signal, e.g., seasonality
+	\item In statistics, \textbf{standardization} refers to subtracting off the means and dividing by the standard deviation
+\end{itemize}
+
+{The transformation $Y = T(X)$ should:\ns
+\begin{itemize}
+	\item preserve the relevant information of $X$
+	\item eliminates at least one of the problems of $X$
+	\item is more useful of $X$
+\end{itemize}}
+
+\subsubsection{Normalization}
+\begin{itemize}
+   \item Min-Max Normalization
+   \[
+   v' = \frac{v - min_A}{max_A - min_A} (new\_max_A - new\_min_A) + new\_min_A
+   \]
+   \item z-score Normalization
+   \[
+      v' = \frac{v - \mu}{\sigma} = \frac{v - mean_A}{stddev_A}
+   \] 
+   \item Decimal Scaling
+   \[
+      v' = \frac{v}{10^j} \qquad \textit{where } j \textit{ is the smallest integer such that } max(|v'|) < 1
+   \]
+\end{itemize}
+
+\subsubsection{Transformation functions}
+\begin{itemize}
+	\item Exponential Transformation
+	      \[
+		      T_p(x) = \begin{cases}
+			      ax^p + b     & (p \neq 0) \\
+			      c \log x + d & (p = 0)
+		      \end{cases}\]
+	      where $a,b,c,d,p \in \mathbb{R}$
+	      \begin{itemize}
+		      \item Preserve the order
+		      \item Preserve some basic statistics
+		      \item They are continuous functions
+		      \item They are derivable
+		      \item They are specified by simple functions
+	      \end{itemize}
+   \item Logarithmic Transformation - Stabilizing Variance
+   \[T(x) = c \log x + d\]
+   \begin{itemize}
+   	\item Applicable to positive values
+   	\item Makes homogenous the variance in log-normal distributions
+   	      \note{E.g.: normalize seasonal peaks}
+\end{itemize}
+\item ??? - Stabilizing Variance
+\[T(x) = ax^p + b\]
+\begin{itemize}
+	\item Square-root Transformation
+	      \begin{itemize}
+		      \item p = 1/c, c integer number
+		      \item To make homogenous the variance of particular
+		            distributions e.g., Poisson Distribution
+	      \end{itemize}
+	\item Reciprocal Transformation
+	      \begin{itemize}
+		      \item p < 0
+		      \item Suitable for analyzing time series, when the variance
+		            increases too much wrt the mean
+	      \end{itemize}
+\end{itemize}
+\end{itemize}
+
+
