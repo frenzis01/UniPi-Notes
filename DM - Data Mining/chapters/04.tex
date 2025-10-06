@@ -406,10 +406,10 @@ SSE = \sum_{i=1}^{K} \sum_{x \in C_i} ||x - \mu_i||^2
 	\colfill
 	K-means has problems when clusters are of differing
 	\begin{itemize}
-		\item Sizes
-		\item Densities
-		\item Non-globular shapes
-		\item K-means has problems when the data contains outliers.
+		\item Clusters have different sizes
+		\item Clusters have different densities
+		\item Clusters have Non-globular shapes
+		\item The data contains \textbf{outliers}.
 	\end{itemize}
 	\colfill
 	\switchcolumn
@@ -430,3 +430,76 @@ SSE = \sum_{i=1}^{K} \sum_{x \in C_i} ||x - \mu_i||^2
 	\caption{K-Means with different cluster densities and non-globular shapes}
 	\label{fig:04/kdensity}
 \end{figure}
+
+\subsubsection{Empty Clusters}
+
+\begin{paracol}{2}
+	
+	K-Means sometimes produces empty clusters. This happens when no points are assigned to a cluster during the assignment step. This can occur if the initial centroids are poorly chosen or if the data distribution is such that certain centroids end up being too far from any data points.
+
+	 Solutions include the following strategies, which may be iterated until no empty clusters remain:
+	\begin{itemize}
+		\item Choose a point and assign it to the cluster
+		\begin{itemize}
+			\item Choose the point that contributes most to SSE
+			\item Choose a point from the cluster with the highest SSE
+		\end{itemize}
+	\end{itemize}
+
+	\switchcolumn
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics{images/04/kempty.png}
+		\caption{K-Means with Empty Clusters}
+		\label{fig:04/kempty}
+	\end{figure}
+\end{paracol}
+
+\subsection{Workflow}
+\begin{enumerate}
+	\item Data Preprocessing
+	      \begin{itemize}
+		      \item Handle missing values
+		      \item Normalize/standardize data
+	      \end{itemize}
+	\item Choose the number of clusters $K$
+	\item Post processing and validation
+	      \begin{itemize}
+		      \item Eliminate small clusters that may represent outliers
+		      \item Split ‘loose’ clusters, i.e., clusters with relatively high
+		            SSE
+		      \item Merge clusters that are ‘close’ and that have relatively
+		            low SSE
+		      \item Can use these steps during the clustering process\\
+		            \texttt{ISODATA}
+	      \end{itemize}
+\end{enumerate}
+
+\subsection{Choosing the number of clusters K}
+If there are K ``real'' clusters then the chance of selecting
+one centroid from each cluster is small, especially if K is large.
+
+A solution is to run K-Means multiple times with different initial centroids and choose the best result, but probability of getting a good result is still small.
+
+A different approach is to use \textbf{hierarchical clustering} to determine initial centroids for K-Means.
+
+Another option is to \textbf{incrementally} update centroids as points are assigned to clusters, instead of waiting until all points are assigned.
+This is more expensive and introduces order dependence.
+\nl
+
+We can define a goodness measure of a cluster $c$ (hence of the set of Clusters $C$) as the SSE from the cluster centroid:
+\begin{align}
+	SSE_C(c,s) &= \sum_{i=1}^{n} (d_i, s_c)^2\\
+	G(C,s) &= \sum_{c \in C} SSE_C(c,s)
+\end{align}
+where $s_c$ is the centroid of cluster $c$, $d_i$ is a point in cluster $c$, and $C$ is the set of clusters.
+
+Re-assignment of points to clusters and re-computation of centroids is guaranteed to \textit{not increase} (or \textit{monotonically decreases}) $G(C,s)$, hence K-Means converges to a local minimum.
+
+At any step we have some value for G(C,s),
+\begin{enumerate}
+	\item Fix $s$, optimize $C$ $\rightarrow$ Assignment step: assign $d_i$ to the closest centroid $\Rightarrow G(C',s) \leq G(C,s)$
+	\item Fix $C'$, optimize $s$ $\rightarrow$ Update step: recompute centroids $\Rightarrow G(C',s') \leq G(C',s) \leq G(C,s)$
+\end{enumerate}
+In this way the new cost results smaller than the original one, leading to convergence to a local minimum.
