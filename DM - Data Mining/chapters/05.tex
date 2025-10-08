@@ -1,0 +1,50 @@
+\section{Cluster Validity}
+For supervised classification we have a variety of measures to evaluate how good our model is. such as accuracy, precision, recall, etc\dots
+
+
+\coolquote{
+   For cluster analysis, the analogous question is how to evaluate the ``goodness'' of the resulting clusters?
+}{}
+
+``Clusters are in the eye of the beholder'', but we still want to evaluate them to avoid finding patterns in noise, compare clustering algorithms, or to compare clusters or sets of clusters.
+
+\section{Towards cluster validation}
+
+\begin{enumerate}
+   \item 
+   Determining the \textbf{clustering tendency} of a set of data, i.e., distinguishing whether non-random structure actually exists in the data.
+   \item Comparing the results of a cluster analysis to externally known results, e.g., to externally given class labels.
+   \item Evaluating how well the results of a cluster analysis fit the data without reference to external information.
+   \item Comparing the results of two different sets of cluster analyses to determine which is better
+   \item Determining the ``correct'' number of clusters.
+\end{enumerate}
+
+Numerical measures that are applied to judge various aspects of cluster validity, are classified into the following three types:
+\begin{itemize}
+   \item \textbf{External} Index: Used to measure the extent to which cluster labels
+match externally supplied class labels.
+\note{Entropy}
+\item \textbf{Internal} Index: Used to measure the goodness of a clustering
+structure without respect to external information.
+\note{Sum of Squared Error (SSE)}
+\item \textbf{Relative} Index: Used to compare two different clusterings or
+clusters.
+\note{Often an external or internal index is used for this function, e.g., SSE or entropy}
+\end{itemize}
+Sometimes these are referred to as \textit{\textbf{criteria}} instead of \textit{indices}; however, sometimes criterion is the general strategy and index is the numerical measure that implements the criterion.
+
+\subsection{Measuring validity through correlation}
+
+Two matrices:
+\begin{itemize}
+   \item Proximity matrix
+   \item Ideal similarity matrix
+   \begin{itemize}
+      \item One row and one column for each data point
+      \item An entry is 1 if the associated pair of points belong to the same cluster
+      \item An entry is 0 if the associated pair of points belongs to different clusters
+   \end{itemize}
+\end{itemize}
+
+Compute the correlation between the two matrices; note that since the matrices are symmetric, only the correlation between
+$n(n-1) / 2$ entries needs to be calculated.

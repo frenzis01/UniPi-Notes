@@ -503,3 +503,164 @@ At any step we have some value for G(C,s),
 	\item Fix $C'$, optimize $s$ $\rightarrow$ Update step: recompute centroids $\Rightarrow G(C',s') \leq G(C',s) \leq G(C,s)$
 \end{enumerate}
 In this way the new cost results smaller than the original one, leading to convergence to a local minimum.
+
+\section{Hierarchical Clustering}
+
+Hierarchical clustering produces a set of nested clusters organized as a
+hierarchical tree can be visualized as a dendrogram, which is a tree-like diagram that records the sequences of merges or splits.
+
+We do not have to assume any particular number of clusters, any desired number of clusters can be obtained by ``cutting'' the dendrogram at the proper level, each possibly corresponding to meaningful taxonomies.
+
+\subsection{Agglomerative vs Divisive}
+
+There are two types of hierarchical clustering, both exploiting a similarity or distance matrix:
+\begin{itemize}
+	\item \textbf{Agglomerative} (bottom-up)\\
+	Start with the points as individual clusters, and, at each step, merge the closest pair of clusters until only one cluster (or $k$ clusters) remain.
+	\item \textbf{Divisive} (top-down)\\
+	Start with all points in one cluster and, at each step, split the cluster into smaller clusters until each point is its own cluster (or $k$ clusters are formed).
+\end{itemize}
+\begin{algorithm}[H]
+\caption{Agglomerative Hierarchical Clustering Algorithm}
+\begin{algorithmic}[1]
+\State Compute the proximity matrix
+\State Let each data point be a cluster
+\Repeat
+\State Merge the two closest clusters
+\State Update the proximity matrix
+\Until{only a single cluster remains}
+\end{algorithmic}
+\end{algorithm}
+\note{\textbf{Proximity} matrix is a square matrix that contains the distances (or similarities) between each pair of data points.\\
+``Proximity'' is just a general term that can refer to either distance or similarity, depending on the context.}
+
+\subsubsection{Updating Proximity Matrix}
+When two clusters $c_i$ and $c_j$ are merged into a new cluster $c_k$, we need to update the proximity matrix to reflect the distances between the new cluster $c_k$ and all other existing clusters. There are several methods to do this, each defining the distance between clusters differently:
+\begin{itemize}
+	\item \textbf{Single Linkage} (or Nearest Neighbor)
+	The distance between two clusters is defined as the minimum distance between any single point in the first cluster and any single point in the second cluster.
+	\[d(c_i, c_j) = \min_{x \in c_i, y \in c_j} d(x, y)\]
+	\item \textbf{Complete Linkage} (or Farthest Neighbor)
+	The distance between two clusters is defined as the maximum distance between any single point in the first cluster and any single point in the second cluster.
+	\[d(c_i, c_j) = \max_{x \in c_i, y \in c_j} d(x, y)\]
+	\item \textbf{Average Linkage}
+	The distance between two clusters is defined as the average distance between all pairs of points, one from each cluster.
+	\[d(c_i, c_j) = \frac{1}{|c_i| |c_j|} \sum_{x \in c_i} \sum_{y \in c_j} d(x, y)\]
+
+	\note{Note that \ul{\textbf{Single}, \textbf{Complete} and \textbf{Average} Linkage have all the same complexity}! $O(n^3)$, where $n$ is the number of data points.}
+	% \item \textbf{Mean/Median Linkage}
+	% The distance between two clusters is defined as the distance between their centroids (mean or median).
+	% \[d(c_i, c_j) = d(\mu_i, \mu_j)\]
+	% where $\mu_i$ and $\mu_j$ are the centroids of clusters $c_i$ and $c_j$, respectively.
+	\item \textbf{Centroid Linkage}
+	The distance between two clusters is defined as the distance between their centroids.
+	\[d(c_i, c_j) = d(\mu_i, \mu_j)\]
+	where $\mu_i$ and $\mu_j$ are the centroids of clusters $c_i$ and $c_j$, respectively.
+	\item \textbf{Ward's Method}
+	This method minimizes the total within-cluster variance. When two clusters are merged, the increase in the total within-cluster variance is calculated, and the pair of clusters that results in the smallest increase is merged.
+	\[d(c_i, c_j) = \frac{|c_i| |c_j|}{|c_i| + |c_j|} ||\mu_i - \mu_j||^2\]
+	where $|c_i|$ and $|c_j|$ are the sizes of clusters $c_i$ and $c_j$, and $\mu_i$ and $\mu_j$ are their centroids.
+\end{itemize}
+
+\subsection{Divisive Hierarchical Clustering}
+First of all, build MST (Minimum Spanning Tree) of the data points, then iteratively remove the longest edge in the MST to split the data into clusters.\\
+Start with a single cluster which consists of any point, and at each step, look for the closest pair of points $p,q$ such that $p$ is in the current tree while $q$ is not.
+Add $q$ to the tree and the edge $(p,q)$ to the MST. Repeat until all points are in the tree.
+
+\begin{algorithm}[H]
+\caption{Divisive Hierarchical Clustering Algorithm}
+\begin{algorithmic}[1]
+\State Compute a MST for the proximity graph
+\Repeat
+\State Create a new cluster by breaking the link corresponding to the longest edge in the MST (smallest proximity)
+\Until only singleton clusters remain
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Complexity and Limitations}
+\begin{itemize}
+	\item Time Complexity - $O(n^3)$ for naive implementations of hierarchical clustering
+	      \begin{itemize}
+		      \item $O(n^2)$ to compute the proximity matrix
+		      \item $O(n)$ to find the closest pair of clusters
+		      \item $O(n)$ to update the proximity matrix
+		      \item Repeated $n$ times
+	      \end{itemize}
+	More efficient algorithms can achieve $O(n^2 \log n)$.
+	\item Space Complexity - $O(n^2)$ for storing the proximity matrix
+\end{itemize}
+
+\subsubsection{Limitations}
+Once a decision is made to combine two clusters,
+it cannot be undone.\\
+No global objective function is directly minimized.\\
+Different schemes have problems with one or
+more of the following:
+\begin{itemize}
+	\item Sensitivity to noise and outliers
+	\item Difficulty handling clusters of different sizes and non-
+globular shapes
+	\item Breaking large clusters
+\end{itemize}
+
+\section{Density based - DBSCAN}
+
+\begin{definition}
+	[Density]
+	\textbf{Density} is the number of points within a specified radius (\textsc{Eps} or $\epsilon$).
+\end{definition}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics{images/04/densitypoints.png}
+	\caption{Core, Border, and Noise Points in DBSCAN}
+	\label{fig:04/densitypoints}
+\end{figure}
+
+A point is a \textbf{core point} if it has at least \textsc{MinPts} points within distance \textsc{Eps} (including itself). These are points which are at the interior of a cluster.\\
+A point is a \textbf{border point} if it has fewer than \textsc{MinPts} points within distance \textsc{Eps}, but is in the neighborhood of a core point. These are points which are on the edge of a cluster.\\
+A point is a \textbf{noise point} (or outlier) if it is neither a core point nor a border point. These are points which are not part of any cluster.
+
+\labelitemize{DBSCAN}{
+	\begin{enumerate}
+		\item Label points as core, border, or noise based on thresholds $R$ (radius of neighborhood) and \lstinline|min_pts| (min number of neighbors)
+		\item Connect core points that are within $R$ of each other, hence are neighbors, putting them in the same cluster
+		\item Associate border points to the nearest core point, hence to the same cluster as the core point, and remove noise.
+	\end{enumerate}
+}
+
+\begin{algorithm}[H]
+\caption{DBSCAN Algorithm}
+\begin{algorithmic}[1]
+\State $current\_cluster\_label \gets 0$
+\For{all core points}
+	\If{the core point has no cluster label}
+		\State $current\_cluster\_label \gets current\_cluster\_label + 1$
+		\State Label the current core point with cluster label $current\_cluster\_label$
+	\EndIf
+	\For{all points in the $Eps$-neighborhood, except $i^{th}$ the point itself}
+		\If{the point does not have a cluster label}
+			\State Label the point with cluster label $current\_cluster\_label$
+		\EndIf
+	\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\begin{figure}[htbp]
+	\centering
+	\includegraphics{images/04/dbscanLimitations.png}
+	\caption{DBSCAN Not behaving well in given situations}
+	\label{fig:04/dbscanLimitations}
+\end{figure}
+
+
+\framedt{Determining \textsc{Eps} and \textsc{MinPts}}{
+	To determine \textsc{Eps} and \textsc{MinPts}, we can use the k-distance graph.
+
+	The idea is that for points in a cluster, their $k^{th}$ nearest
+	neighbors are at roughly the same distance
+	Noise points have the $k^{th}$ nearest neighbor at distance.
+
+	So, plot sorted distance of every point to its $k^{th}$ nearest neighbor.
+}
