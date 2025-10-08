@@ -93,7 +93,7 @@ A WFG models the state of the system.
    \end{itemize}
 }
 
-Thew challenges in this system are \textbf{WFG maintenance}, which involves tracking resource dependencies across distributed nodes, and \textbf{cycle detection}, which involves searching cycles in the WFG. 
+The challenges in this system are \textbf{WFG maintenance}, which involves tracking resource dependencies across distributed nodes, and \textbf{cycle detection}, which involves searching cycles in the WFG. 
 In particular, such search should find \textit{all} cycles in \textit{finite} time. Besides no false ---aka \textit{phantom}--- deadlocks should be reported.
 
 {Having the Deadlocks detected, the system can then proceed to resolve them by \textbf{rollback}, \textbf{preemption}, or \textbf{termination}.\ns
@@ -101,7 +101,7 @@ In particular, such search should find \textit{all} cycles in \textit{finite} ti
 	\item Break the wait-for dependencies between deadlocked processes.
 	\item Roll back or abort one or more processes to free up resources.
 	\item Clean up the wait-for graph after resolution to avoid phantom deadlocks.
-	\item Untimely and inappropriate cleaning of broken wait-for dependencies is the main reason why many deadlock detection algorithms reported in the literature are incorrect
+	\item \ul{Untimely and inappropriate cleaning of broken wait-for dependencies is the main reason why many deadlock detection algorithms reported in the literature are incorrect}
 \end{itemize}}
 
 \section{Deadlock Models}
@@ -111,20 +111,28 @@ Since the maximum out-degree of a node in a WFG for the single resource model ca
 
 \subsection{AND Model}
 A process can request multiple resources simultaneously, and the request is granted only if all resources are available.
-A cycle in the WFG ---gues what--- implies a deadlock.\\
+A cycle in the WFG ---guess what--- implies a deadlock.\\
 In the AND model, if a cycle is detected in the WFG, it implies a deadlock but \textit{\textbf{not} vice versa}. That is, a process may not be a part of a cycle, it can still be deadlocked.
 
 \subsection{OR Model}
 In the OR model, a process can make a request for numerous resources simultaneously and the request is satisfied if any one of the requested resources is granted.\\
 Presence of a cycle in the WFG of an OR model does \textbf{not} imply a deadlock in the OR model.
 
-In the OR model, the presence of a \textbf{knot} indicates a deadlock. In a WFG,a vertex $v$ is in a knot if for all $u::u$ is reachable from $v:v$ is reachable from$u$. No paths originating from a knot shall have dead ends.
+In the OR model, the presence of a \textbf{knot} indicates a deadlock.
+% In a WFG,a vertex $v$ is in a knot if for all $u::u$ is reachable from $v:v$ is reachable from $u$.
+A knot is a set of processes such that each process in the set is waiting for a resource held by another process in the set.\\
+More formally, a knot $K$ is a non-empty subset of processes such that:
+\begin{itemize}
+      \item \textbf{Mutually reachable} - $\forall p,q \in K$ $p$ is reachable from $q$ and $q$ is reachable from $p$ ($K$ is \textit{strongly connected}).
+      \item \textbf{No dead ends} - $\forall p \in K$, if $p$ is waiting for a process $r$, then $r \in K$. In other words, there are no outgoing edges from processes in $K$ to processes outside $K$ (which could potentially lead to resource acquisition and deadlock resolution), so $K$ is closed with respect to reachability towards processes that can provide resources
+\end{itemize} 
+% No paths originating from a knot shall have dead ends.
 
 Note that, \ul{there can be a deadlocked process that is \textbf{not} a part of a knot}.\\
 So, in an OR model, a blocked process $P$ is deadlocked if it is either in a knot or it can only reach processes on a knot.
 
 \section{Deadlock Detection Algorithms}
-\subsection{Path-Pushing Algorithm}
+\subsection{Path-Pushing Algorithm - Global WFG}
 Distributed deadlocks are detected by
 maintaining an explicit global WFG
 \begin{itemize}
@@ -137,9 +145,9 @@ updated, WFG are updated
 dependencies.
 \end{itemize}
 
-\subsection{Edge-Chasing}
+\subsection{Edge-Chasing - Probing}
 Here, a process sends probes to check if it is part of a deadlock.
-Whenever a process that is executing receives a probe message, it simply discards this message and continues. Only blocked processes propagate probe messages along their outgoing edges. If the probe returns to the initiating process, a deadlock is detected.
+Whenever a process that is executing receives a probe message, it simply discards this message and continues. Only blocked processes propagate probe messages along their outgoing edges\footnote{I suppose of a WFG}. If the probe returns to the initiating process, a deadlock is detected.
 
 \begin{itemize}
 	\item P1 sends a \textit{probe} to P2, which forwards it to P3.
@@ -148,14 +156,13 @@ Whenever a process that is executing receives a probe message, it simply discard
 
 A probe is a message used in edge-chasing algorithms to \ul{trace the path of resource dependencies}.
 
-\subsection{Diffusion Computation Algorithm}
+\subsection{Diffusion Computation Algorithm - Query Propagation}
 \begin{itemize}
 	\item An algorithm for deadlock detection based on diffusion computation.
 	\item When a process is blocked, it propagates queries to other processes, otherwise it drops queries
 	\item Queries are discarded by a running process and are echoed back by blocked processes in the following way:
    \begin{itemize}
-   	\item When a blocked process first receives a query message for a particular deadlock detection initiation, it does not send a reply message until it has received a reply message for every query it sent
-   	\item to its successors in the WFG).
+   	\item When a blocked process first receives a query message for a particular deadlock detection initiation, it does not send a reply message until it has received a reply message for every query it sent (to its successors in the WFG).
    	\item For all subsequent queries for this deadlock detection initiation, it immediately sends back a reply message.
    	\item The initiator of a deadlock detection detects a deadlock when it has received a reply for every query it has sent out.
    \end{itemize}
@@ -208,3 +215,79 @@ In Misra-Chandy-Haas algorithm a process suspecting a deadlock sends a \textbf{p
 When the probe returns to $P_0$, a deadlock is detected and confirmed.
 
 The key difference between the AND and OR models is in the way the \ul{probe is propagated}. In the AND model, the probe is propagated along \textbf{all} outgoing edges, while in the OR model, the probe is propagated along \textbf{only one} outgoing edge.
+
+\subsubsection{Misra-Chandy-Haas Algorithm - Detailed Explanation}
+
+The Misra-Chandy-Haas algorithm is an edge-chasing, probe-based deadlock detection algorithm that works in distributed systems. It is designed to detect cycles in the Wait-For Graph (WFG) by propagating probe messages along dependency edges.
+
+\paragraph{Key Concepts}
+\begin{itemize}
+   \item \textbf{Probe Message}: A triplet $\langle P_0, P_i, P_k \rangle$ where:
+   \begin{itemize}
+      \item $P_0$ is the \textit{initiator} (the process suspecting it might be deadlocked)
+      \item $P_i$ is the \textit{sender} (the process currently forwarding the probe)
+      \item $P_k$ is the \textit{receiver} (the process that $P_i$ is waiting for)
+   \end{itemize}
+   \item \textbf{Probe Propagation}: Only blocked processes propagate probes; running processes discard them immediately.
+   \item \textbf{Deadlock Detection}: If a probe returns to its initiator $P_0$ (i.e., $P_0$ receives a probe $\langle P_0, P_j, P_0 \rangle$), a cycle is detected and a deadlock is confirmed.
+\end{itemize}
+
+\paragraph{Algorithm for AND Model}
+In the AND model, a blocked process must wait for \textit{all} resources it has requested. Therefore, when a blocked process $P_k$ receives a probe $\langle P_0, P_i, P_k \rangle$:
+\begin{enumerate}
+   \item If $P_k = P_0$, a deadlock is detected (the probe has completed a cycle).
+   \item If $P_k$ is running, it discards the probe.
+   \item If $P_k$ is blocked and waiting for processes $\{Q_1, Q_2, \ldots, Q_n\}$, it forwards the probe to \textbf{all} of them:
+   \[
+   \langle P_0, P_k, Q_1 \rangle, \quad \langle P_0, P_k, Q_2 \rangle, \quad \ldots, \quad \langle P_0, P_k, Q_n \rangle
+   \]
+\end{enumerate}
+
+This exhaustive propagation ensures that all dependency paths are explored, which is necessary because in the AND model, \textit{all} dependencies must be satisfied.
+
+\paragraph{Algorithm for OR Model}
+In the OR model, a blocked process needs only \textit{one} of the requested resources to proceed. Therefore, when a blocked process $P_k$ receives a probe $\langle P_0, P_i, P_k \rangle$:
+\begin{enumerate}
+   \item If $P_k = P_0$, a potential deadlock is detected.
+   \item If $P_k$ is running, it discards the probe.
+   \item If $P_k$ is blocked and waiting for processes $\{Q_1, Q_2, \ldots, Q_n\}$, it forwards the probe to \textbf{only one} of them (typically following a single outgoing edge):
+   \[
+   \langle P_0, P_k, Q_j \rangle \quad \text{for some } j \in \{1, \ldots, n\}
+   \]
+\end{enumerate}
+
+This selective propagation reflects the semantics of the OR model: since any one resource can break the wait, exploring a single path is sufficient to detect a knot. However, detecting all deadlocked processes in the OR model is more complex, as a process can be deadlocked even if not part of a cycle (if all its paths lead to a knot).
+
+\paragraph{Example: AND Model}
+Consider processes $P_1 \to P_2 \to P_3 \to P_1$ (a cycle). 
+\begin{itemize}
+   \item $P_1$ initiates a probe $\langle P_1, P_1, P_2 \rangle$.
+   \item $P_2$ (blocked, waiting for $P_3$) forwards $\langle P_1, P_2, P_3 \rangle$.
+   \item $P_3$ (blocked, waiting for $P_1$) forwards $\langle P_1, P_3, P_1 \rangle$.
+   \item $P_1$ receives the probe with itself as the receiver $\Rightarrow$ deadlock detected.
+\end{itemize}
+
+\paragraph{Example: OR Model}
+Consider $P_1 \to P_2$, $P_1 \to P_3$, $P_2 \to P_3$, $P_3 \to P_1$ (a knot).
+\begin{itemize}
+   \item $P_1$ initiates $\langle P_1, P_1, P_2 \rangle$ (choosing one edge).
+   \item $P_2$ forwards $\langle P_1, P_2, P_3 \rangle$.
+   \item $P_3$ forwards $\langle P_1, P_3, P_1 \rangle$.
+   \item $P_1$ receives the probe $\Rightarrow$ potential deadlock (knot) detected.
+\end{itemize}
+
+\paragraph{Advantages and Limitations}
+\begin{itemize}
+   \item \textbf{Advantages}:
+   \begin{itemize}
+      \item Distributed and scalable (no central coordinator).
+      \item Low message overhead compared to global WFG construction.
+      \item Detects deadlocks efficiently by tracing dependency chains.
+   \end{itemize}
+   \item \textbf{Limitations}:
+   \begin{itemize}
+      \item In the OR model, detecting all deadlocked processes (including those not in a cycle but reachable only to a knot) is more complex.
+      \item False positives (phantom deadlocks) can occur if the WFG changes during probe propagation.
+      \item Requires careful synchronization to avoid race conditions.
+   \end{itemize}
+\end{itemize}

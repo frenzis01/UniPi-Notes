@@ -121,11 +121,11 @@ Every site $S_i$, keeps a queue to store critical section requests ordered
 by their timestamps. $request\_queue_i$ denotes the queue of site $S_i$.
 
 \subsubsection{Entering the Critical Section}
-When a site $S_i$ wants to enter the critical section, it sends a request message $Request(ts_i, i)$ to all other sites and places the request on $request\_queue_i$. Here, $Ts_i$ denotes the timestamp of Site $Si$.
+When a site $S_i$ wants to enter the critical section, it sends a request message $Request(Ts_i, i)$ to all other sites and places the request on $request\_queue_i$. Here, $Ts_i$ denotes the timestamp of Site $Si$.
 A site $S_i$ can enter the critical section if it has received the message with timestamp larger than $(ts_i, i)$ from all other sites and its own request is at the top of $request_queue_i$
 
 \subsubsection{Leaving the Critical Section}
-When a site $S_i$ leaves the critical section, it removes its own request from the top of its request queue and it sends a release message $Release(ts_i, i)$ to all other sites and removes its request from $request_queue_i$.
+When a site $S_i$ leaves the critical section, it removes its own request from the top of its request queue and it sends a release message $Release(Ts_i, i)$ to all other sites and removes its request from $request_queue_i$.
 
 When a site $S_j$ receives the timestamped RELEASE message from site $S_i$, it removes the request of $S_i$ from its request queue.
 
@@ -148,7 +148,7 @@ Wrapping up we need
    \item (N - 1) reply messages
    \item (N - 1) release messages
 \end{itemize}
-So, the first drawback is that LDMEA incurs a high number of messages (3n) for each entry into the critical section. 
+So, the first drawback is that LDMEA incurs a high number of messages ($3n$) for each entry into the critical section. 
 Besides, LDMEA also has to handle \textbf{failures}: requires additional mechanisms to handle process failures and network partitions.
 
 However, the message passing in LDMEA, aside from making it suitable for distributed systems, even though it introduces overhead, it is still better than the polling mechanism in LBA, where processes have to continuously check for ticket values.
@@ -209,7 +209,7 @@ structures:
 \paragraph*{Requesting the CS}
 When process \lstinline|i| wants to enter the CS, if it does not have the token, it:
 \begin{itemize}
-	\item increments its sequence number \lstinline|RN_[i]|
+	\item increments its sequence number \lstinline|RN_i[i]|
 	\item sends a request message containing new sequence number to all processes in the system
 \end{itemize}
 

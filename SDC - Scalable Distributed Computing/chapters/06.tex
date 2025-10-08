@@ -55,10 +55,11 @@ States satisfying $P$ are called \textbf{legitimate} (safe) states, and those th
 
 A system $P$ is self-stabilizing with respect to predicate $P$ if it satisfies the following two properties:
 
-Closure $P$ is closed under the execution of $S$, that is, once $P$ is established in $S$, it cannot be falsified.
+\begin{enumerate}
+	\item Closure $P$ is closed under the execution of $S$, that is, once $P$ is established in $S$, it cannot be falsified.
+	\item \textbf{Convergence} starting from an arbitrary global state, $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
 
-\textbf{Convergence} starting from an arbitrary global state, $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
-
+\end{enumerate}
 
 \subsection{Issues in the design of self-stabilizing systems}
 Some of the main issues are:
@@ -72,21 +73,21 @@ Some of the main issues are:
 \end{itemize}
 
 \subsection{Dijkstra's Token Ring Algorithm}
-His system consisted of a set of $n$ finite-state machines connected in the form of a ring.
+His system consisted of a set of $n$ finite-state machines connected in the form of a \textbf{ring}.
 
-He defines a \textit{privilege} of a machine as the ability to change its current state.
+\ul{He defines a \textit{privilege} of a machine as the ability to change its current state}.
 This ability is based on a boolean preicate that consists of its current state and the states of its neighbors.
 
 When a machine has a privilege it is able to change its current state, which is referred to as a \textbf{move}.\\
-Furthermore, when multiple machines enjoy a privilege at the same time, the choice of the machine that is entitled to make a move is made by a central demon, which arbitrarily decides the order which privileged machine is allowed to move.
+Furthermore, when multiple machines enjoy a privilege at the same time, the choice of the machine that is entitled to make a move is made by a central daemon, which arbitrarily decides the order which privileged machine is allowed to move.
 
 A legitimate state must satisfy the following constraints:
-\begin{itemize}
+\begin{enumerate}
    \item There must be at least one privilege in the system (liveness, no deadlock).
    \item Every from move from a legal state must again put the system into a legal state (closure).
    \item During an infinite execution, each machine should enjoy a privilege an infinite number of times (no starvation).
    \item Given any two legal states, there is a series of moves that change one legal state to the other (reachability).
-\end{itemize}
+\end{enumerate}
 
 Dijkstra considered a legitimate (or legal) state as one in which exactly one machine enjoys the privilege.
 \begin{itemize}
