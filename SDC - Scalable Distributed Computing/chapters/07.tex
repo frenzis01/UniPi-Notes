@@ -2,24 +2,25 @@
 
 \section{Introduction}
 \textbf{Safety} and \textbf{liveness} are two fundamental properties of distributed systems.
-Safety is about avoiding incorrect decisions, while liveness is about -eventually- making progress.
+Safety is about avoiding incorrect decisions, while liveness is about ---eventually--- making progress.
 
-Consesus is about finding an agreement over a value.
+\textbf{Consesus} is about finding an agreement over a value.
 
 \subsection{Importance}
 With Distributed databases \& replication it is necessary to ensure consistency across replicas, or at least to ensure that the replicas eventually converge to a consistent state, implementing a synchronization mechanism.
 
-\note{\textit{Transparency} of a consesus algorithm to the DBMS depends on the level of abstraction, or the viewpoint considered in a given case. An SQL programmer may not care of a consesu algorithm on top, but a DBA (Admin) should.}
+\note{\textit{Transparency} of a consesus algorithm to the DBMS depends on the level of abstraction, or the viewpoint considered in a given case. An SQL programmer may not care of a consesus algorithm on top, but a DBA (Admin) should.}
 
 In general it may be also important for synchronizing behaviour in a distributed system, for example to agree on a leader, or allocate resources.
 \nl
 
-Consesus alorithm find wide application in Blockchains and Cryptocurrencies, where the agreement is about the validity of a transaction. An example are both Proof of Work and Proof of Stake, exploited by Bitcoin and Ethereum respectively.
+Consensus algorithms find wide application in \textbf{Blockchains} and \textbf{Cryptocurrencies}, where the agreement is about the validity of a transaction. An example are both Proof of Work and Proof of Stake, exploited by Bitcoin and Ethereum respectively.
 
-% // TODO microservices
+Also in \textbf{Microservices} architectures, consesus is important for coordinating services and ensuring data consistency across distributed components.
 
-\section{Mechanisms for Consesus}
-There are various ways for implementing consesus:
+\section{Mechanisms for Consensus}
+{\ns
+There are various ways for implementing consensus:
 \begin{itemize}
    \item Majority agreement:
    Paxos and Raft work by ensuring a majority of nodes agree on a value.
@@ -30,20 +31,18 @@ There are various ways for implementing consesus:
    The difference with majority agreement is that a quorum is a \textit{subset} of nodes, not necessarily all the nodes in the system. 
    \item Handling failures:
    Consesus algorithms are designed to tolerate node and network failures: timeouts, retries\dots
-   % // TODO
-\end{itemize}
+\end{itemize}}
 
 \section{Safety and Liveness}
 
-\textbf{Safety} ensures that the systems never 
-% //TODO
-
+\textbf{Safety} ensures that the systems never reach an incorrect state. In the context of consensus, safety means that if a value is decided, it must be the same across all nodes.\\
 \textbf{Safety} can be thought of as the ``nothing bad happens''.
 It prioritizes correctness: Even under failure conditions, the system should not violate its invariants.
 
 \textbf{Liveness} ensures that the system eventually makes progress and reaches a decision.
 The system must continue to work, eventually deciding on a value despite failure or delays.
 In other words, we must not have a deadlock \smiley.
+In the context of consensus, liveness means that all working nodes eventually decide on a value.
 
 
 \framedt{
@@ -83,11 +82,9 @@ On the other hand, ensuring safety means that we must wait for the node to recov
 \subsubsection{Implications}
 There is an impact on consesus algortihms:
 FLP shows that we must relax some assumptions on properties in real-world systems.
-Raft and Paxos manage this trade-off by making practical compromises. 
+\ul{Raft and Paxos manage this trade-off by making practical compromises}. 
 
 
-\section{Requirements}
-...
 
 \section{Paxos}
 Paxos is a family of algorithms for solving consesus in a network of unreliable processors.
@@ -107,19 +104,19 @@ Paxos is completely asynchronous, so it does \textbf{not} assume that all nodes 
 
 \begin{enumerate}
    \item Phase 1
-   \begin{itemize}
+   \begin{enumerate}[label=\alph*.]
       \item \textbf{Prepare} - 
-      Proposer sends a Prepare request with a proposal number. Then the proposer chooses a Quorum of Acceptors and sends the Prepare message containing n to them.
+      \textsc{Proposer} sends a \textsc{Prepare} request with a proposal number. Then the proposer chooses a \textsc{Quorum} of \textsc{Acceptors} and sends the \textsc{Prepare} message containing a proposal number $n$ to them.
       \item \textbf{Promise} - 
-      Acceptors respond with a Promise if the proposal number n is higher than any they've previously seen. Otherwise it may not respond or send a negative message back.
-   \end{itemize}
+      \textsc{Acceptors} respond with a \textsc{Promise} if the proposal number $n$ is higher than any they've previously seen. Otherwise they may not respond or send a negative message back.
+   \end{enumerate}
    \item Phase 2
-   \begin{itemize}
+   \begin{enumerate}[label=\alph*.]
       \item \textbf{Accept} -
-      Upon receiving a Promise from a majority of Acceptors, the Proposer sends an Accept request.
+      Upon receiving a \textsc{Promise} from a majority of \textsc{Acceptors}, the \textsc{Proposer} sends an \textsc{Accept} request.
       \item \textbf{Accepted} -
-      If an Acceptor receives an Accept message from a Proposer, it must accept it if and only if it has not already promised (in Phase 1b) to only consider proposals having an identifier greater than other received
-   \end{itemize}
+      If an \textsc{Acceptor} receives an \textsc{Accept} message from a \textsc{Proposer}, it must accept it \textit{if and only if} it has not already \textit{promised} (in Phase 1b) to only consider proposals having an identifier greater than other received
+   \end{enumerate}
 \end{enumerate}
 
 % //TODO or n>2f?
@@ -131,15 +128,16 @@ If faulty nodes are $f$ and total nodes are $n \geq 2f + 1 $, then Paxos can tol
    \item Overhead due to message exchanges
    \item Network partitions and node failures can affect Liveness
 \end{itemize}}
-   
 {
-   \begin{itemize}
-      \item 
-      Google chubby
-      //TODO
-   \end{itemize}
+\begin{itemize}
+	\item Distributed databases (e.g., Google Chubby).
+	\item Replicated state machines.
+	\item Systems requiring strong consistency guarantees.
+\end{itemize}
 }
 
 \section{Key Takeaways}
-Consesus is essential for coordination in distributed systems, and it is a fundamental problem in distributed computing.
+Consensus is essential for coordination in distributed systems, and it is a fundamental problem in distributed computing.
+Ensures multiple processes agree on a single value
+despite failures.
 

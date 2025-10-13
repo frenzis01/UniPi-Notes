@@ -228,7 +228,7 @@ The Misra-Chandy-Haas algorithm is an edge-chasing, probe-based deadlock detecti
       \item $P_i$ is the \textit{sender} (the process currently forwarding the probe)
       \item $P_k$ is the \textit{receiver} (the process that $P_i$ is waiting for)
    \end{itemize}
-   \item \textbf{Probe Propagation}: Only blocked processes propagate probes; running processes discard them immediately.
+   \item \textbf{Probe Propagation}: \ul{Only blocked processes propagate probes; running processes discard them immediately}.
    \item \textbf{Deadlock Detection}: If a probe returns to its initiator $P_0$ (i.e., $P_0$ receives a probe $\langle P_0, P_j, P_0 \rangle$), a cycle is detected and a deadlock is confirmed.
 \end{itemize}
 
@@ -237,7 +237,7 @@ In the AND model, a blocked process must wait for \textit{all} resources it has 
 \begin{enumerate}
    \item If $P_k = P_0$, a deadlock is detected (the probe has completed a cycle).
    \item If $P_k$ is running, it discards the probe.
-   \item If $P_k$ is blocked and waiting for processes $\{Q_1, Q_2, \ldots, Q_n\}$, it forwards the probe to \textbf{all} of them:
+   \item If $P_k$ is blocked and waiting for processes $\{Q_1, Q_2, \ldots, Q_n\}$, it \ul{forwards the probe to \textbf{all} of them}:
    \[
    \langle P_0, P_k, Q_1 \rangle, \quad \langle P_0, P_k, Q_2 \rangle, \quad \ldots, \quad \langle P_0, P_k, Q_n \rangle
    \]
@@ -250,7 +250,7 @@ In the OR model, a blocked process needs only \textit{one} of the requested reso
 \begin{enumerate}
    \item If $P_k = P_0$, a potential deadlock is detected.
    \item If $P_k$ is running, it discards the probe.
-   \item If $P_k$ is blocked and waiting for processes $\{Q_1, Q_2, \ldots, Q_n\}$, it forwards the probe to \textbf{only one} of them (typically following a single outgoing edge):
+   \item If $P_k$ is blocked and waiting for processes $\{Q_1, Q_2, \ldots, Q_n\}$, it \ul{forwards the probe to \textbf{only one} of them} (typically following a single outgoing edge):
    \[
    \langle P_0, P_k, Q_j \rangle \quad \text{for some } j \in \{1, \ldots, n\}
    \]

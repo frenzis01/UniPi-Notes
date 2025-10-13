@@ -53,11 +53,11 @@ We define self-stabilization for a system $S$ with respect to a predicate $P$ ov
 
 States satisfying $P$ are called \textbf{legitimate} (safe) states, and those that do not are called \textbf{illegitimate} (unsafe) states.
 
-A system $P$ is self-stabilizing with respect to predicate $P$ if it satisfies the following two properties:
+\ul{A system $P$ is \textbf{self-stabilizing} with respect to predicate $P$ if it satisfies the following two properties}:
 
 \begin{enumerate}
-	\item Closure $P$ is closed under the execution of $S$, that is, once $P$ is established in $S$, it cannot be falsified.
-	\item \textbf{Convergence} starting from an arbitrary global state, $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
+	\item Closure $P$ is closed under the execution of $S$: that is, once $P$ is established in $S$, it cannot be falsified.
+	\item \textbf{Convergence} starting from an arbitrary global state: $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
 
 \end{enumerate}
 
@@ -89,7 +89,7 @@ A legitimate state must satisfy the following constraints:
    \item Given any two legal states, there is a series of moves that change one legal state to the other (reachability).
 \end{enumerate}
 
-Dijkstra considered a legitimate (or legal) state as one in which exactly one machine enjoys the privilege.
+\ul{Dijkstra considered a legitimate (or legal) state as one in which \textit{exactly one machine enjoys the privilege}}.
 \begin{itemize}
 	\item This corresponds to a form of mutual exclusion, because the privileged process is the only process that is
 allowed in its critical section.
@@ -101,28 +101,60 @@ stabilization algorithm.
 
 \subsection{First Solution}
 
-Machine 0 is exceptional, and the other machines are identical.
-% // TODO
+Machine 0 is exceptional, and the other machines are identical, and follow the same following algorithm:
+\begin{itemize}
+	\item each machine compares its state with the state of the anti-clockwise neighbour;
+	\item if they are not the same, it updates its state to be the same as its neighbour.
+\end{itemize}
+if there are $n$ machines and each of them is initially at a random state $r \in K$,
+then all the machines (except the exceptional machine, machine 0) whose states are different from
+the one of their anti-clockwise neighbour are said to be \textbf{privileged}.\\
+There is a central demon that decides which of these privileged machines will make the move
+
+Below is the code for each machine, where $L$ and $R$ are the states of the left and right neighbors, respectively, and $S$ is the state of the machine itself.
+\begin{itemize}
+   \item \textbf{Machine 0} (exceptional)
+   \begin{lstlisting}
+      if L == S then
+         S := (S+1) mod K
+   \end{lstlisting}
+   \item \textbf{Other machines} ($i, 1 < i < n-1$)
+   \begin{lstlisting}
+      if L != S then
+         S := L
+   \end{lstlisting}
+\end{itemize}
+
+\note{
+\begin{itemize}
+	\item Suppose machine 6 (assume n >> 6) makes the first move
+	\item Its state is not the same as that of machine 5 and hence it had the privilege to make the move and finally sets its state to be the same as that of machine 5
+	\item Now machine 6 loses its privilege as its state is same as that of its anti- clockwise neighbour (machine 5).
+	\item Next, suppose machine 7, whose state is different from the state of machine 6, is given the privilege.
+	\item It results in making the state of machine 7 the same as that of machine 6.
+	\item Now machines 5, 6, and 7 are in the same state.
+\end{itemize}
+}
 
 \subsection{Second Solution}
 We can improve the first solution.
 
 The second solution uses only three state machines ${0,1,2}$.
 In the first solution there is only one exceptional machine, the one with state 0.
-Here, the machines with state 0 and n-1 are exceptional, the former referred to as bottom machine, the second as top machine.
-
+Here, the machines with state 0 and n-1 are exceptional, the former referred to as \textit{bottom machine}, the second as \textit{top machine}.
+Below is the code for each machine, where $L$ and $R$ are the states of the left and right neighbors, respectively, and $S$ is the state of the machine itself.
 \begin{itemize}
-   \item \textbf{Bottom} machine
+   \item \textbf{Bottom} machine (state $0$)
    \begin{lstlisting}
       if (S+1) mod 3 == R then
          S := (S-1) mod 3 
    \end{lstlisting}
-   \item \textbf{Top} machine
+   \item \textbf{Top} machine (state $n-1$)
    \begin{lstlisting}
       if L == R and (L+1) mod 3 != S then
          S := (L+1) mod 3 
    \end{lstlisting}
-   \item Other machines
+   \item Other machines ($i, 1 < i < n-1$)
    \begin{lstlisting}
       if (S+1) mod 3 == L then
          S := L
@@ -133,7 +165,7 @@ Here, the machines with state 0 and n-1 are exceptional, the former referred to 
 
 This schema forces the system to always have at least one privilege, hence to self-stabilize.
 Actually the number of privileged machines converges linearly to 1.
-% // TODO check
+% // TODO check   
 
 
 \subsubsection{Observations}
@@ -145,17 +177,30 @@ The number of states in each of the the individual units that each machine must 
 \section{To be or not to be\dots Uniform}
 In a distributed system, it is desirable and also possible to have each machine use the same algorithm.
 However, to design self-stabilizing systems, it is often necessary to have different machines use different algorithms.
-% // TODO
+
+
+The individual processes can be anonymous, meaning they are indistinguishable, and all run the
+same algorithm.
+Often, anonymous networks are called uniform networks.
+A network is semi-uniform if there is one process (the root) which executes a different algorithm.
+
 
 Uniformity may lead to not being able to decide who is entitled to make a move, which may lead to a deadlock.
 \nl
 
 Generally, the presence of a central demon is assumed in self-stabilizing systems.
-% // TODO
-
+Even though a demon is considered an undesireable constraint in distributed system, it is acceptable to have a \textit{distributed demon} in such cases.
+Some stabilization algorithms were designed to work with a centralized demon, but they can be easily adjusted to work with a distributed demon.
 
 
 \section{Costs of Self-Stabilization}
+Self-stabilization per se does not define an upper bound on the time required for convergence.
+Two measures are used to evaluate the performance of a self-stabilizing system:
+\begin{itemize}
+   \item \textbf{Convergence span}: the maximum time required for the system to reach a legitimate state from an arbitrary initial state.
+   \item \textbf{Response span}: the maximum time required for the system to return to a legitimate state after a perturbation that puts the system in an illegitimate state.
+\end{itemize}
+
 Clearly, the aim of the designer of a self-stabilizing system is to reduce the convergence span and the response span.
 
 The Time-complexity measure for self-stabilizing systems is the number of \textbf{rounds}.
@@ -172,4 +217,58 @@ In case the adversary succeeds, a self-stabilizing system is able to recover fro
 A common technique is \textbf{layering}, as it happens for internet protocols.
 This is thanks to the \textit{transitivity} property of self-stabilization: if a system is self-stabilizing and a subsystem is self-stabilizing, then the composed system is self-stabilizing.\\
 If $P \rightarrow Q$ ($P$ stabilizes $Q$) and $Q \rightarrow R$, then $P \rightarrow R$.
+\begin{itemize}
+	\item Thus, different layers of self-stabilizing programs (each by itself self-stabilizing) can be composed.
+	\item First step is to build a self-stabilizing ``platform'' and any program written on that platform automatically
+becomes self-stabilizing.
+	\item The basic idea behind a self-stabilizing platform is to provide primitives that can be used to write other
+programs.
+	\item To develop self-stabilizing systems using the technique of layering, \ul{we require primitives to provide
+structures on which algorithms may be built}.
+\end{itemize}
 
+First of all we must address clocks.
+\textbf{Unison} is the process of maintaining time through the use of local clocks in shared memory systems.
+There are two properties required:
+\begin{itemize}
+   \item \textbf{Safety}: All clocks have the same value (or differ by at most 1). 
+   % the difference between the values of the clocks of any two neighboring processors is at most 1.
+   \item \textbf{Progress} (\textit{Liveness}): each clock is incremented infinitely often by the same amount
+\end{itemize}
+
+Leader election is the most basic primitive with respect to arbitrary dynamic topologies.
+Electing a leader allows to build a spanning tree, which is a fundamental structure for many distributed algorithms.
+A spanning tree is a subgraph that includes all the vertices of the original graph, is connected, and has no cycles.
+A spanning tree with a designated root is called a \textbf{rooted spanning tree}.
+
+
+\subsection{Communication Protocols}
+
+A communication protocol is a collection of processes that exchange messages
+over communication links in a network.
+\note{A protocol may be adversely affected for several reasons:
+\begin{itemize}
+	\item Initialization to an illegal state.
+	\item A change in the mode of operation. Not all processes get the request for the change at the
+same time, so an illegal global state may occur.
+	\item Transmission errors because of message loss or corruption.
+	\item Process failure and recovery.
+	\item A local memory crash which changes the local state of a process.
+\end{itemize}}
+
+If a protocol is self-stabilizing, they will all be corrected in a finite number of steps,
+regardless of the reason for the loss of coordination.
+A communication protocol is stabilizing if and only if starting from any unsafe state
+(i.e., one that violates the intended invariant of the protocol), the protocol is
+guaranteed to converge to a safe state within a finite number of state transitions.
+Stabilization allows the processes in a protocol to reestablish coordination between one another whenever coordination is lost due to some failure.
+
+{Gouda and Multari showed that a communication protocol must satisfy the following three properties to be self-stabilizing:\ns
+\begin{itemize}
+	\item It must be \textit{non-terminating} (i.e., it must not reach a state from which no further state transitions are possible).
+   \item There are an infinite number of safe states (i.e. states that satisfy the intended invariant of the protocol) in every computation.
+	\item There are timeout actions in a non-empty subset of processes. These actions are enabled in every state of the process and can be executed at any time.
+\end{itemize}}
+\note{The reason for the first property is that if a protocol terminates, it may terminate in an unsafe state.\\
+The second property is required because if there are only a finite number of safe states, it is possible that the protocol may leave the safe states and never return to one.\\
+The third property is required because if there are no timeout actions, it is possible that the protocol may reach a state in which no further state transitions are possible.}

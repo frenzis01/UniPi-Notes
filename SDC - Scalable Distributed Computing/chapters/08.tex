@@ -2,6 +2,8 @@
 
 
 \section{Logs use case}
+Before delving into Raft, let's consider an interesting use case. 
+
 Bear in mind that a \ul{\textbf{log} is a \textit{sequence} of records}, it is meaningless if not ordered.
 Operations have an effect when executed in an order $s$, and may have a different one in another order $s'$.
 
@@ -13,7 +15,17 @@ Consesus is the backbone of consistency, fault tolerance, and coordination in di
 it enables systems to operate reliably and predictably, even in the presence of failures and network partitions.
 
 \subsection{Why is it relevant}
-%  // TODO
+
+\note{\begin{itemize}
+	\item \textbf{Coordination}: Synchronizes independent nodes to maintain a consistent state.
+	\item \textbf{Fault Tolerance}: Ensures progress and recovery in the presence of failures.
+	\item \textbf{Data Integrity}: Prevents data divergence in replicated systems.
+	\item \textbf{Avoids Split-Brain}: Manages network partitions to prevent conflicting operations.
+	\item \textbf{Strong Consistency}: Guarantees up-to-date data in distributed databases.
+	\item \textbf{Leader Election}: Allows seamless transitions of leadership in distributed environments.
+	\item \textbf{Transaction Atomicity}: Ensures reliable distributed transactions.
+	\item \textbf{State Machine Replication}: Maintains consistent replicated states across systems.
+\end{itemize}}
 
 \framedt{Converging}{
    Amongst other things, consesus is used to ensure \textit{\textbf{data integrity}, i.e. prevents \textbf{data divergence} in replicated systems}.
@@ -24,7 +36,6 @@ it enables systems to operate reliably and predictably, even in the presence of 
 
 }
 
-% \\ TODO
 
 \framedt{Paxos and paper}{
    Even though it was a standard until a few years ago, people realized that Paxos was too complex to implement, and could fit best raw paper than actual software.
@@ -32,14 +43,17 @@ it enables systems to operate reliably and predictably, even in the presence of 
 }
 
 \section{Raft}
+\ul{Paxos prioritizes safety over liveness}. It guarantees that once a value is chosen, it's always safe, but there may be cases where it fails to make progress quickly.\\
+\ul{Raft also ensures safety but uses leader election to optimize for liveness}, making faster decisions when the network conditions allow it.
+
 Raft achieves consesus through an \textit{elected leader} that coordinates the other nodes.
-An entity participating to a Raft cluster can either take the role of the leader or the role of follower;
-in the latter case, it may become leader through a ``candidacy'' process.\\
-The leader regularly informs the followers of its existence by sending a heartbeat message.
+\ul{An entity participating to a Raft cluster can either take the role of the \textbf{leader} or the role of \textbf{follower}};
+in the latter case, it may \ul{become leader through a \textit{``candidacy''} process}.\\
+{The leader regularly informs the followers of its existence by sending a heartbeat message.\ns
 \begin{itemize}
    \item There exist a timeout for the heartbeats from the leader
    \item In case no heartbeat is received the follower changes its status to candidate and starts a leader election.
-\end{itemize}
+\end{itemize}}
 
 Note that the \ul{\textbf{underlying assumption} is that \textit{everybody knows everybody}}.
 
@@ -58,9 +72,14 @@ The leader is responsible for replicating its log to the followers. Such log con
 Only the leader can append entries to the log, and each entry is committed once it is replicated to a majority of the nodes.
 \nl
 
-In case the leader crashes it is important to ensure that a new one is elected, and that it has the same log as the previous one.
+In case the leader crashes it is important to ensure that a new one is elected, and that it has the same log as the previous one.\\
+The new leader ensures that the system can continue operating without losing any of the commands already agreed upon by the majority of nodes.
 
-% // TODO
+\framedt{Log replication}{
+   Log replication is key for ensuring fault tolerance. It guarantees that a log entry is committed when the leader has replicated it to a majority of followers.\\
+   Once an entry is committed, it is applied to the state machine on the leader and followers.\\
+   This commitment ensures durability: the system guarantees that once a command is applied, it will not be lost, even in the face of failures. 
+}
 
 \subsection{Leader election}
 There are three states in Raft:
@@ -106,3 +125,107 @@ A log entry is considered committed when it is replicated to a majority of nodes
    \caption{State diagram}
    \label{fig:state_diagram}
 \end{figure}
+
+\subsubsection{Ensuring Safety and Liveness}
+\proscons{Safety}{Liveness}
+   {
+    \begin{itemize}
+    	\item Raft ensures that the logs of all nodes are consistent. No two nodes will decide on different values, maintaining the consistency property.
+    \end{itemize}
+   }
+   {
+    \begin{itemize}
+    	\item Raft guarantees that as long as a majority of nodes are functioning, the system will continue to make progress (Liveness). Raft avoids the Liveness issues that Paxos sometimes faces, especially with leader election and split-brain situations
+    \end{itemize}
+   }
+
+\subsection{Raft Election and Voting process}
+\subsubsection{Election}
+
+\begin{itemize}
+	\item Election Term and Leader State:
+	      \begin{itemize}
+		      \item term number represents a logical clock that increases monotonically whenever a new election is initiated.
+		      \item prevent conflicts during leader election and ensures a unique identifier for each term.
+	      \end{itemize}
+
+	\item Follower State:
+	      \begin{itemize}
+		      \item When a node starts or after a leader election, it begins in the follower state.
+
+	      \end{itemize}
+	\item Candidate state:
+	      \begin{itemize}
+		      \item If a follower does not receive any communication from the leader within a given timeout, it transitions to the candidate state and starts a new election term.
+		      \item The candidate increments its current term number and requests votes from other nodes.
+	      \end{itemize}
+\end{itemize}
+
+\subsubsection{Voting process}
+\begin{itemize}
+   \item \textsc{RequestVote}:
+   \begin{itemize}
+   	\item When a candidate transitions to the candidate state, it sends \textsc{RequestVote} to all other nodes in the cluster.
+	   \item \textsc{RequestVote} includes the candidate’s term number, its own last log index and term, and its eligibility for becoming the leader.
+   \end{itemize}
+   \item Voting process:
+   \begin{itemize}
+   	\item When a follower receives a \textsc{RequestVote}, it checks if the candidate’s term number is higher than its own.
+	   \item If so, it updates its current term and resets its election timeout, acknowledging the leader about the election
+   \end{itemize}
+   \item Candidate state:
+   \begin{itemize}
+	   \item if a candidate receives votes from a majority of the nodes in the cluster, it becomes the new leader for the current term.
+	   \item If a candidate does not receive enough votes, it returns to the follower state and waits for the next election timeout to start a new election term
+   \end{itemize}
+   \item Leader state:
+   \begin{itemize}
+	   \item Upon becoming the leader, the node starts sending \textsc{AppendEntries} to replicate log entries to the followers.
+	   \item The leader's election timeout is reset periodically to prevent unnecessary re-elections while it continues to serve as the leader.
+   \end{itemize}
+   \item Heartbeats:
+   \begin{itemize}
+      \item The leader regularly sends \textsc{AppendEntries} RPCs with empty log entries (heartbeats) to maintain its authority and prevent other nodes from starting new elections
+   \end{itemize}
+\end{itemize}
+
+\section{Consensus Takeaways}
+\begin{itemize}
+	\item Consensus Problem:
+	      \begin{itemize}
+		      \item Distributed consensus is the challenge of getting a set of distributed nodes (processes) to agree on a single value, despite failures and message delays.
+	      \end{itemize}
+	\item Importance of Consensus:
+	      \begin{itemize}
+		      \item Critical for ensuring data consistency and fault tolerance in distributed systems.
+		      \item Powers key systems like databases, replicated state machines, and blockchain technologies.
+	      \end{itemize}
+	\item Key Properties of Consensus:
+	      \begin{itemize}
+		      \item Safety: The algorithm ensures that nodes never decide on conflicting values. Once a value is decided, it
+		            remains fixed.
+		      \item Liveness: The system eventually reaches a decision, despite failures or delays, ensuring progress.
+
+	      \end{itemize}
+	\item Challenges in Asynchronous Systems:
+	      \begin{itemize}
+		      \item In asynchronous systems, where nodes can experience delays or crashes, achieving both safety and liveness simultaneously is challenging.
+		      \item The FLP Impossibility Theorem proves that no deterministic consensus algorithm can guarantee both safety and liveness in full y asynchronous systems with even a single faulty node.
+	      \end{itemize}
+	\item Paxos:
+	      \begin{itemize}
+		      \item A widely used consensus algorithm focused on safety. It guarantees that nodes will agree on a value, but it may fail to make progress in some situations, hence not guaranteeing liveness in every case.
+	      \end{itemize}
+	\item Raft:
+	      \begin{itemize}
+		      \item Raft is a consensus algorithm designed for understandability and practicality. It divides the consensus process into two dist inct phases: leader election and log replication.
+		      \item Raft guarantees safety by ensuring that only one leader is elected, and achieves liveness under normal conditions, though like Paxos, it may struggle under certain network partitioning scenarios.
+		      \item Its straightforward structure and clear separation of roles make it widely adopted in distributed systems that prioritize clarity and
+		            maintainability.
+
+	      \end{itemize}
+	\item Consensus Mechanisms in Practice:
+	      \begin{itemize}
+		      \item Consensus algorithms like Paxos and Raft are the backbone of many distributed systems to ensure reliability, consistency, and fault tolerance, from databases to large-scale cloud systems.
+	      \end{itemize}
+\end{itemize}
