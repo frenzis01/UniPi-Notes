@@ -1,0 +1,214 @@
+\chapter{Anomaly Detection}
+
+We may refer to anomalies in data also as \textit{outliers.}
+
+\section{Outliers}
+\begin{itemize}
+	\item Inherently \textbf{fuzzy} - An instance has a degree of outlierness, which we can threshold to decide whether an instance is an outlier or not.
+	\item \textbf{Data-dependent} - Outlier are exceptions to the data. But outliers themselves define the data...?
+	\item \textbf{Not noise} - Noise is random, outliers are exceptional.
+	\item \textbf{Mono/multi-dimensional} - An outlier can be so on one just one dimension, or on multiple.
+\end{itemize}
+
+Outliers are something that is either \textbf{unusual} or \textbf{extreme}, or both.\\
+Outliers are, by nature, defined in terms of other instances. Whatever approach we use to detect them, we should take into account that they influence it as well.
+
+\section{Outlier Detection Algorithms}
+Algorithms used to detect outliers usually involve two key steps:
+\begin{enumerate}
+   \item \textbf{Grading} - Define a grading function $\tilde{o}$ that assigns to each instance $x$ a degree of outlierness/anomaly $\tilde{o}(x)$.
+   \item \textbf{Thresholding} - Decide on a threshold $\hat{o}$ such that instances with $\tilde{o}(x) > \hat{o}$ are considered outliers.
+\end{enumerate}
+
+We can categorize outlier detection algorithms depending on the \textit{axis} on which they operate:
+\begin{itemize}
+   \item \textbf{Locality} - is the outlier detection performed in a local neighborhood (local) or considering the entire dataset (global)?
+   \item \textbf{Sensitivity} - is the outlier detection sensitive to the presence of other outliers (sensitive) or not (robust)?
+   \item \textbf{Interpretability} - can we interpret/explain why an instance is considered an outlier (interpretable) or not (black-box)?
+\end{itemize}
+
+\begin{table}
+   \begin{tabular}{|c|c|}
+      \textbf{Locality} & \textbf{Global}/\textbf{Local} \\
+      \hline
+      \textbf{Sensitive} & \textbf{Robust}/\textbf{Sensitive} \\
+      \hline
+      \textbf{Interpretable} & \textbf{Black-box}/\textbf{Interpretable} \\
+   \end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/06/outlierfunction}
+   \caption{Distribution, manifold, neighborhood}
+   \label{fig:}
+\end{figure}
+
+\subsection{Distributions}
+\begin{paracol}{2}
+   In case of a normal distribution $\mathcal{N}(\mu, \sigma)$, we can define outliers as instances that are more than $k$ standard deviations away from the mean $\mu$ (see Figure~\ref{fig:06/normaldistribution}).\\
+   This approach is \textbf{global}, \textbf{robust} and \textbf{interpretable}.
+
+   The degree of anomaly $\tilde{o}(x)$ can be defined as:
+   \[
+      \text{z-score} = \tilde{o}(x) = \frac{|x - \mu|}{\sigma}
+   \]
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/06/normaldistribution.png}
+      \caption{For a normal distribution $\mathcal{N}(\mu, \sigma)$, we can define outliers as instances that are more than $k$ standard deviations away from the mean $\mu$.}
+      \label{fig:06/normaldistribution}
+   \end{figure}
+\end{paracol}
+
+\subsubsection{Grubbs test}
+$z-scores$ generate sample-dependent outlier degrees $\tilde{o}(x_1), \tilde{o}(x_2), \ldots, \tilde{o}(x_n)$, but does not tackle the \textbf{+1 problem}.
+
+The +1 problem is the problem of deciding whether the most extreme instance in a dataset is an outlier or not.\\
+Grubb's test iterates over detected outliers, removing one layer of outliers at a time, until no more outliers are found.
+\begin{algorithm}
+   \caption{Grubb's test for outliers}
+   \begin{algorithmic}[1]
+      \State Find current outlier set $\hat{X}$
+      \State If $\hat{X} = \emptyset$, stop
+      \State $X = X \setminus \hat{X}$ - remove outliers from dataset
+      \State Go to step 1
+   \end{algorithmic}
+\end{algorithm}
+
+\begin{table}
+   \begin{tabular}{|c|c|}
+      \textbf{Locality} & \textbf{Global} \\
+      \hline
+      \textbf{Sensitive} & Outliers influence the distribution but may be removed by Grubb's test \\
+      \hline
+      \textbf{Interpretable} & \textbf{Black-box}, no clear explanation for outlierness, simply, there are not many similar instances.\\
+   \end{tabular}
+\end{table}
+
+
+Data may vary \textit{locally}: subsets of the data each follow a different distribution.\\
+Assumption: there exists a partition of the data, each block distributed according to a Normal distribution.\\
+Thus we could use multiple models to model the data, and define outliers as instances that are outliers with respect to their local distribution.\\
+
+One of $k$ models $M_{\theta_{0}}, M_{\theta_{1}}, \ldots, M_{\theta_{k-1}}$ is sampled, each with a sampling probability $m_i$. Different distributions sample different regions of the density.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/06/mixture.png}
+   \caption{A mixture of Normals $M_{\theta_0}, M_{\theta_1}, M_{\theta_2}$; each sampled with probability $m_0, m_1, m_2$, respectively.}
+   \label{fig:06/mixture}
+\end{figure}
+
+\begin{table}
+   \begin{tabular}{|c|c|}
+      \textbf{Locality} & \textbf{Local} \\
+      \hline
+      \textbf{Sensitive} & Outliers influence the distribution, may be unstable, but may be removed by Grubb's test (?) \\
+      \hline
+      \textbf{Interpretable} & \textbf{Black-box}, no clear explanation for outlierness, simply, there are not many similar instances.\\
+   \end{tabular}
+\end{table}
+
+
+\subsection{Thresholding}
+\framedt{Grubb's test}{
+   Choosing a threshold $\hat{o}$ is arbitrary, but there are algorithms such as Grubb's test which define their own thresholding mechanism.
+   In Grubb's test, the threshold is defined as:
+   \[
+      \hat{o} = n \frac{\sum(x_i - \bar{X})^4}{(\sum(x_i - \bar{X})^2)^2}
+   \]
+}
+
+\textit{z-scores} assume a Normal distribution, but often this is not the case. Yet, we can still
+identify tails of a distribution, and in turn, anomalies.
+
+\begin{itemize}
+   \item Markov inequality - for a variable (distribution )$X$ with positive values and threshold $\beta$, it holds
+   \[
+      P(X \geq \beta) \leq \frac{\mathbb{E}(X)}{\beta}
+   \]
+   Thus, given an estimate of the variable's expected value, we can retrieve the inverse of an image of its cumulative distribution
+   \item Chebyshev inequality - for a variable (distribution) $X$ with mean $\mu$ ($=\mathbb{E}(X)$) and standard deviation $\sigma$, and threshold $\beta$, it holds
+   \[
+   P(|X - \mathbb{E}(X)| > \beta) \leq \frac{\sigma^2}{\beta^2}
+   \]
+   That is, the probability of deviation from the mean is inversely proportional to the deviation
+\end{itemize}
+
+\subsection{Manifold}
+
+Distributional approaches define the density, but do not describe the data itself. $\tilde{o}$ is defined in terms of the manifold: does the given instance lie in the manifold? Just like
+the distributional approach, we must assume the manifold family.
+To preserve the interpretability of our results, we initially stick to linear manifolds.
+
+We can define the anomaly degree $\tilde{o}(x)$ as the distance of $x$ from the manifold.\\
+We can use PCA to find the linear manifold that best fits the data.\\
+PCA finds the directions of maximum variance in the data, and uses them as a new basis for the data.
+
+A matrix $A$ spans a linear space, thus every vector $b$ in its spanned space is defined as a
+linear combination of $A: b = Ax$. For non fullrank matrices $A$, such a solution $x$ may not exist. Thus, we need to project on the data manifold.
+
+\framedt{Least Squares}{
+   Least Squares is a method to find the best fitting solution to an overdetermined system of equations $Ax = b$ (more equations than unknowns).\\
+   The best fitting solution is the one that minimizes the residual sum of squares (RSS):
+   \[
+      RSS = ||Ax - b||^2_2
+   \]
+
+   Least squares assumes a linear manifold, and squared norm as distance metric.
+
+
+   The instability of least squares is due to the data collinearity. A possible solution: de-correlate the data! PCA does exactly that.
+}
+
+\note{Some mathy examples are displayed in the lecture slides\dots}
+
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|}
+      \textbf{Locality} & \textbf{Global} \\
+      \hline
+      \textbf{Sensitive} & Strongly influenced by outliers \\
+      \hline
+      \textbf{Interpretable} & Partial: which instances have lower degrees? What even is a ``low'' degree?\\
+      
+   \end{tabular}
+   \caption{Least squares}
+   \label{tab:least_squares}
+\end{table}
+
+Manifold-based algorithms are as flexible as the defined manifold. Like with mixture models, neighbor-based approaches reintroduce locality: outliers are defined in function of their neighbors:
+\begin{itemize}
+	\item \textbf{Connectivity} - An outlier is defined in terms of the connectivity to its neighbors
+	\item \textbf{Concentration} - An outlier is defined in terms of its neighbor concentration
+\end{itemize}
+
+Each instance has a posting list of neighbors, from
+the closest to the farthest: the lower the aggregated
+position in other lists, the higher the connectivity
+degree.
+\begin{itemize}
+	\item Posting position defines connectivity: it is not density
+	\item Connectivity is asymmetric: I may be your closest instance, you may not be mine
+\end{itemize}
+
+\subsubsection{Grading neighbors connectivity}
+Posting matrices are often used as a base on which
+to measure different indices of connectivity, e.g.,
+\begin{itemize}
+   \item \textbf{hub} - instance $x_i$ is at least the $t^{th}$ neighbor of at least $k$ instances.
+   
+   Definition used by ODIN: given a posting matrix $A$,$x_i$ is a \textit{hub} if it appears at least $k$ times in the first $t$ columns of $A$. Hence,$x_i$ is an outlier if the opposite is true:
+   \[
+      \tilde{o}(x_i) = \begin{cases}
+         1 \quad\textit{if }\quad |{i|i \in A_{\neq i, \leq t}} | < k\\
+         0 \quad\textit{otherwise}
+      \end{cases}
+   \]
+   \item \textbf{popularity} - instance $x_i$ is on average the $t^{th}$ neighbor of at least $k$ instances
+   \item \textbf{ostracism} - instance $x_i$ is at worst $t^{th}$ neighbor of other $k$ instances
+\end{itemize}
