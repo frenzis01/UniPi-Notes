@@ -210,5 +210,234 @@ to measure different indices of connectivity, e.g.,
       \end{cases}
    \]
    \item \textbf{popularity} - instance $x_i$ is on average the $t^{th}$ neighbor of at least $k$ instances
+   
+   Given a posting matrix $A$, $x_i$ is an outlier if, on average, is not less than the $t-th$ neighbor of other instances:
+   \[
+      \hat{o}(x_i) = \frac{\sum_{l=0, l \neq i}^{n-1} \sum_{j=0}^{n-1} \mathbb{1}\{a_{l,j} = x_i\}l}{n-1} > t.
+   \]
+   where $\mathbb{1}\{a_{l,j} = x_i\}$ is an indicator function that equals 1 if $a_{l,j} = x_i$ and 0 otherwise, representing the position in the posting list.
+   
    \item \textbf{ostracism} - instance $x_i$ is at worst $t^{th}$ neighbor of other $k$ instances
 \end{itemize}
+
+\begin{paracol}{2}
+   
+   \colfill
+   Connectivity and concentration can be
+   approximated through similar
+   structures: we go from \textit{postings} matrix to
+   distance matrix!
+   To ease notation, we use a row-sorted
+   distance matrix $A_{\gamma}$, so that row $i$ holds
+   increasing distances from instance $x_i$.
+   \colfill
+
+   \switchcolumn
+
+   \[
+   A = \begin{bmatrix}
+   0 & 2.28 & 0.16 & 0.21 \\
+   2.21 & 0 & 1.21 & 3.91 \\
+   0.16 & 1.21 & 0 & 0.76 \\
+   0.21 & 3.91 & 0.76 & 0
+   \end{bmatrix}
+   \]
+   
+   \[
+   A_{\gamma} = \begin{bmatrix}
+   0.16 & 0.21 & 2.28 \\
+   1.21 & 2.28 & 3.91 \\
+   0.16 & 0.76 & 1.21 \\
+   0.21 & 0.76 & 3.91
+   \end{bmatrix}
+   \]
+   
+   A distance matrix $A$ (top), and its row-sorted version $A_{\gamma}$ (bottom). First column of 0s trimmed from $A_{\gamma}$.
+\end{paracol}
+
+
+\subsection{Reach}
+An instance $x$ has reach $\gamma^k(x)$ if the $k-th$ nearest neighbor is at distance $\gamma^k$, and average reach $\bar{\gamma}^k(x)$ if the average of $\{\gamma^1, \ldots, \gamma^k\}$ is $\bar{\gamma}^k(x)$.
+
+Our row-sorted distance matrix $A_{\gamma}$ is the \textit{reach} matrix of the data! Indeed, $A_{\gamma}$ defines both reach and average reach.
+\nl
+
+The reach of instance $x_i$ is encoded in the row-sorted distance matrix $A_{\gamma}$ as follows:
+
+\[
+A_{\gamma} = \begin{bmatrix}
+\gamma^1(x_1) & \gamma^2(x_1) & \gamma^3(x_1) \\
+\gamma^1(x_2) & \gamma^2(x_2) & \gamma^3(x_2) \\
+\gamma^1(x_3) & \gamma^2(x_3) & \gamma^3(x_3)
+\end{bmatrix}
+\]
+
+where $\gamma^j(x_i)$ denotes the $j$-th nearest neighbor of instance $x_i$.
+
+For example, consider the following transformation:
+
+\[
+A_{\gamma} \begin{bmatrix}
+1 & \frac{1}{2} & \frac{1}{3} \\
+0 & \frac{1}{2} & \frac{1}{3} \\
+0 & 0 & \frac{1}{3}
+\end{bmatrix} = \begin{bmatrix}
+\bar{\gamma}^1(x_1) & \bar{\gamma}^2(x_1) & \bar{\gamma}^3(x_1) \\
+\bar{\gamma}^1(x_2) & \bar{\gamma}^2(x_2) & \bar{\gamma}^3(x_2) \\
+\bar{\gamma}^1(x_3) & \bar{\gamma}^2(x_3) & \bar{\gamma}^3(x_3)
+\end{bmatrix}
+\]
+
+$A_{\gamma}$ explicitly encodes reach ($A_{\gamma}$ itself) and average reach.
+
+\subsubsection{Reach ratio factor}
+Assumption: Inliers have lower reach than their neighbors. We formalize this in a reach
+(ratio factor:
+\[
+   \tilde{o}^k_{i,j} = \frac{\bar{\gamma}^k(x_i)}{\bar{\gamma}^k(x_j)}
+\]
+which 1 is for pairs $x_i,x_j$ with equal k-neighbors concentration, and $>1$  for instances
+with different concentrations, $x_i$ laying in a sparser area of the space.
+\nl
+
+\begin{paracol}{2}
+
+   \colfill
+	\textbf{Local outlier factor} generalizes outlier factor by averaging the outlier factor over the
+	neighbors of an instance:
+	\[
+		\tilde{o}(x_i) = \sum_{x_j \in neigh(x_i)} \tilde{o}^k_{i,j}
+	\]
+   \colfill
+
+	\switchcolumn
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics[width=0.9\columnwidth]{images/06/reachneighbors.png}
+		\caption{Neighbors at different $k$ values.}
+		Local outlier factor respects the postings matrix, as it creates \textit{clusters} of neighbors.
+		\label{fig:06/reachneighbors}
+	\end{figure}
+\end{paracol}
+
+
+\begin{paracol}{2}
+   \colfill
+   \textbf{Connectivity outlier factor} is based on the idea that outliers are poorly connected to their neighbors. It is defined as:
+   \[
+		\tilde{o}(x_i) = \sum_{x_j \in \textit{connect\_neigh}(x_i)} \tilde{o}^k_{i,j}
+      \]
+      \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/06/cof.png}
+      \caption{Neighbors with different $k$ values.}
+      Connectivity Outlier Factor does not respects the posting matrix. Rather, it creates \textit{chains} of neighbors.
+      \label{fig:06/cof}
+   \end{figure}
+\end{paracol}
+
+\begin{paracol}{2}
+   \colfill
+   \textbf{k-NN} outlier factor (\textsc{kOF}) replaces the average reach at $k$ (denoted with $\bar{\gamma}^k)$ with the maximum reach at $k$ (denoted with $\hat{\gamma}^k$):
+   \[
+   \tilde{o}(x_i) = \gamma^k(x_i)
+   \]
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/06/kof.png}
+      \caption{Neighbors at different $k$ values}
+      \label{fig:06/kof}
+   \end{figure}
+\end{paracol}
+
+\newpage
+\subsection{Concentration}
+
+\begin{paracol}{2}
+   We compute concentration on a two-radii approach:
+   \begin{itemize}
+      \item \textbf{concentration radius} $\varepsilon$: determines the hyperspheres $B(x_i, \varepsilon)$ estimating concentration $c^{\varepsilon}(x_i)$ of $x_i$ within a radius $\varepsilon$
+      \item \textbf{neighborhood radius} $\delta$: proportional to $\varepsilon$, determines the neighborhood $B_i$ of $x_i$ as the instances laying within $B(x_i, \delta)$
+   \end{itemize}
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/06/tworadii.png}
+      \caption{The two radii $\varepsilon, \delta$: the former is used to estimate \textit{concentration}, the latter to choose which neighbors to compare concentration against. \textbf{Note:} $\delta$ may also be larger than $\varepsilon$!}
+      \label{fig:06/tworadii}
+   \end{figure}
+\end{paracol}
+
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|}
+      \hline
+      \textbf{Locality} & \textbf{Local} \\
+      \hline
+      \textbf{Sensitive} & Choice of neighborhood, connectivity parameter \\
+      \hline
+      \textbf{Interpretable} & Partial: can inspect what instances lead to different reaches\\
+      \hline
+   \end{tabular}
+   \caption{Grading connectivity factors}
+   \label{tab:06/connectivity}
+\end{table}
+
+\subsection{Neighborhoods}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/06/hyperplanes.png}
+   \caption{Faster and easier to compute hyperplane-based neighborhoods.}
+   \label{fig:06/hyperplanes}
+\end{figure}
+
+\begin{paracol}{2}
+   
+   An \textbf{isolation tree} $t$ is a random tree which randomly
+   partitions the space into a set of blocks.
+   \begin{itemize}
+      \item Splits are sampled randomly
+      \item Tree grows up to a predefined height, or until all
+      leaves contain one instance
+   \end{itemize}
+   Outlier degree \(\tilde{o}^t(x_i) = \frac{path(x_i,t)}{c} \), where $c$ defines the average path length in the tree.
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/06/isoltree.png}
+      \caption{Isolation tree}
+      \label{fig:06/isoltree}
+   \end{figure}
+\end{paracol}
+
+An isolation forest $T$ is comprised of several isolation trees,
+further sampling the hyperplane space.
+Outlier degree \(\tilde{o}(x_i) = 2 - \frac{\sum_{t \in T} path(x_i,t)}{|T|c}\), where $|T|$ is the number of trees in the forest.
+
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|}
+      \hline
+      \textbf{Locality} & \textbf{Global} and \textbf{local} \\
+      \hline
+      \textbf{Sensitive} & Dataset noise can be interpreted as outlier \\
+      \hline
+      \textbf{Interpretable} & One of the most interpretable. Splits are induced by the tree, if the tree is univariate. \\
+      \hline
+      
+   \end{tabular}
+   \caption{Grading Isolation Forests}
+   \label{tab:06/isolation_forests}
+\end{table}
