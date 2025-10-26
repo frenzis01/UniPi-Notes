@@ -12,14 +12,14 @@ This is also known in data-analysis as \textit{split-apply-combine}.
 \begin{paracol}{2}
    \begin{center}
       \texttt{Map}\\
-      $Map(key_a), value_1) \rightarrow list(key_b, value_2)$
+      $\texttt{Map}(\langle key_a, value_1 \rangle) \rightarrow \texttt{list}(\langle key_b, value_2\rangle)$
    \end{center}
    Various kind of processing on the input data may be done, typically filtering and sorting.
    \note{Note how the signature is slightly different from the typical map}
    \switchcolumn
    \begin{center}
       \texttt{Reduce}\\
-      $Reduce(key_b, list(value_2)) \rightarrow list((key_c,value_3))$
+      $\texttt{Reduce}(\langle key_b, \texttt{list}(value_2)\rangle) \rightarrow \texttt{list}((\langle key_c,value_3\rangle))$
    \end{center}
    \texttt{Reduce} refers to the summarization, produced in an associative way, of the results produced by \lstinline|Map|.
    \note{Each Reduce call typically produces either one key value pair or an empty return, though one call is allowed to return more than one key value pair.}
@@ -49,9 +49,8 @@ This is also known in data-analysis as \textit{split-apply-combine}.
 \end{figure}
 
 \begin{itemize}
-   \item One \texttt{JobTracker} to which client applications
-   submit MapReduce jobs
-   \item JobTracker pushes work to available \texttt{TaskTracker} nodes in the cluster keeping the work close to the data
+   \item One \texttt{JobTracker} to decide to which client applications submit MapReduce jobs
+   \item \texttt{JobTracker} pushes work to available \texttt{TaskTracker} nodes in the cluster keeping the work close to the data
    \item With a \textbf{rack-aware} file system the \texttt{JobTracker} knows which node contains the data.
    \note{If the work cannot be hosted on the actual node where the data resides, priority is given to nodes in the same rack}
 \end{itemize}
@@ -64,7 +63,7 @@ A heartbeat is sent from the \texttt{TaskTracker} to the \texttt{JobTracker} eve
 \subsection{Issues}
 The allocation of work to \texttt{TaskTracker}s is based on \textbf{slots}:
 every \texttt{TaskTracker} has a fixed number of slots for map tasks and reduce tasks, and the \texttt{JobTracker} allocates tasks to the \texttt{TaskTracker} based on the number of free slots.\\
-Hence there is no consideration concerning the actual workload of tasks, which may be heterogeneous, leading to an unbalanced workload amond the nodes.
+\ul{Hence there is no consideration concerning the actual workload of tasks}, which may be heterogeneous, leading to an unbalanced workload amond the nodes.
 
 If even one node is slow, the whole job is slow, as the \texttt{JobTracker} waits for the slowest task to finish.
 \note{With speculative execution enabled, however, a single task can be executed on multiple
@@ -79,6 +78,9 @@ The master node consists of a \textit{JobTracker}, \textit{TaskTracker},
 \textit{NameNode}, and \textit{DataNode}.
 A slave or worker node acts as both a \textit{DataNode} and
 \textit{TaskTracker}; it is possible to have data-only and compute-only worker nodes.
+
+The \textit{NameNode} manages the file system namespace and regulates access to files by clients. The \textit{DataNode} manages storage attached to the nodes that it runs on.\\
+The \textit{JobTracker} receives jobs from clients and distributes them to \textit{TaskTracker}s. The \textit{TaskTracker} is responsible for executing the individual tasks as directed by the \textit{JobTracker}.
 
 \begin{figure}[htbp]
    \centering
@@ -145,8 +147,8 @@ Every Spark application consists of a \textit{driver} program running the \texti
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics[width=0.9\columnwidth]{images/14/spark_rdd.png}
-      \caption{RDD schema}
+      \includegraphics[width=0.8\columnwidth]{images/14/spark_rdd.png}
+      % \caption{RDD schema}
       \label{fig:14/spark_rdd}
    \end{figure}
 
@@ -155,7 +157,7 @@ Every Spark application consists of a \textit{driver} program running the \texti
 \note{Note that since an RDD is a single \textit{immutable} distributed collection of objects, it fits nicely in the functional programming paradigm.}
 
 \begin{paracol}{2}
-   \begin{lstlisting}[language=Python, caption={Creating an RDD}]
+   \begin{lstlisting}[language=python, caption={Creating an RDD}]
       data = [1, 2, 3, 4, 5]
       distData = sc.parallelize(data)
       distFile = sc.textFile("data.txt")
@@ -179,11 +181,12 @@ When Spark runs a function in parallel as a set of tasks on different nodes, it 
 
 {RDDs support two types of operations: \textbf{transformations} and \textbf{actions}.\ns
 \begin{itemize}
-   \item \textbf{Transformations} - create a new dataset from an existing one. These are \textit{lazy} operations, meaning that Spark doesn't apply the transformation immediately, but remembers the transformation applied to the base dataset.
+   \item \textbf{Transformations} - These are operations ---such as \verb|map| and \verb|filter|--- that create a new dataset from an existing one. These are \textit{lazy} operations, meaning that Spark doesn't apply the transformation immediately, but remembers the transformation applied to the base dataset.
    \item \textbf{Actions} - return a value to the driver program after running a computation on the dataset.
    When an action is called, Spark computes the result of the transformation chain.
 \end{itemize}}
 
+\lstset{language=python}
 \begin{paracol}{2}
    \begin{lstlisting}
       lineLengths = lines.map(lambda s: len(s))
@@ -196,7 +199,7 @@ When Spark runs a function in parallel as a set of tasks on different nodes, it 
    
    \switchcolumn
 
-   \lstinline|lineLengths| holds the result of the \lstinline|map| \textbf{transformation}, which however is not computed instantaneously ---due to \textit{lazyness}---, and \lstinline|totalLength| holds the result of the \lstinline|reduce| \textbf{action}.
+   \verb|lineLengths| holds the result of the \verb|map| \textbf{transformation}, which however is not computed instantaneously ---due to \textit{lazyness}---, and \lstinline|totalLength| holds the result of the \verb|reduce| \textbf{action}.
    At this point, 
    Spark breaks the computation into tasks to run on
    separate machines, and each machine runs both its part of the map and a local reduction, returning only its answer to the driver program.

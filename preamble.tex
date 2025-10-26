@@ -214,6 +214,18 @@
 \newcommand{\cmark}{\ding{51}}% TICK
 \newcommand{\xmark}{\ding{55}}% CROSS
 
+% Save original \verb command and redefine only \verb| syntax
+\let\oldverb\verb
+
+\definecolor{verbBG}{RGB}{235, 231, 255}
+\definecolor{verbText}{RGB}{24,0,156}
+
+% Redefine \verb to use colorbox with custom styling
+\makeatletter
+\def\verb{\@ifnextchar|{\verb@colored}{\oldverb}}
+\def\verb@colored|#1|{\colorbox{verbBG}{\footnotesize\ttfamily\color{verbText}\detokenize{#1}}}
+\makeatother
+
 \newcommand\hcancel[2][black]{\setbox0=\hbox{$#2$}%
 \rlap{\raisebox{.45\ht0}{\textcolor{#1}{\rule{\wd0}{1pt}}}}#2} 
 

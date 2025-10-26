@@ -34,13 +34,13 @@ Messages are written in \textit{Batches}, which are collections of messages prod
 \\
 
 
-Messages are categorized into topics, which in turn are broken down into partitions, where they are written in append-only fashion are read in order from beginning to end.
-Each partition can be hosted on a different server, hence a single topic may be scaled horizontally across multiple server to \textbf{scale-out}.
+Messages are categorized into \textbf{topics}, which in turn are broken down into \textbf{partitions}, where they are written in append-only fashion and are read in order from beginning to end.
+Each partition can be hosted on a different server, hence a single topic may be scaled horizontally across multiple servers to \textbf{scale-out}.
 
 
 \ul{Multiple partitions imply there's not guarantee of message time-ordering across the entire topic.}
 
-Kafka sacrifices a global order of messages for scalability, and allows to have multiple consumers reading from the same topic, and even the same partition, at the same time.
+Kafka sacrifices a global order of messages for scalability, and allows to have multiple consumers reading from the same topic, and even the same partition\footnote{if they belong to different groups. This will be discussed later} at the same time.
 In general it is not impossible to have a global order ---see blockchains--- but it may be very costful in a distributed environment.\\
 However, \ul{if it is necessary for a topic to have a global order, it is possible to have a single partition for that topic.}
 
@@ -120,6 +120,7 @@ These questions are important to correctly use the API for the producer, which c
    The callback is invoked when the message is successfully delivered, or when an error occurs.
 \end{itemize}
 
+\newpage
 \subsubsection{Message record format}
 \begin{paracol}{2}
    \begin{itemize}
@@ -178,7 +179,7 @@ In general it is reasonable to have many partitions, allowing to scale when need
    \switchcolumn
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/16/groups.png}
+      \includegraphics[width=0.5\columnwidth]{images/16/groups.png}
       \caption{Multiple Consumer Groups}
       \label{fig:16/groups}
    \end{figure}
@@ -187,7 +188,7 @@ In general it is reasonable to have many partitions, allowing to scale when need
 
 \subsection{Rebalancing}
 
-Moving partition ownership from one consumer to another is called a rebalance. Rebalances are important because they provide the consumer group with high availability and scalability,
+Moving partition ownership from one consumer to another is called a \textbf{rebalance}. Rebalances are important because they provide the consumer group with high availability and scalability,
 but \ul{in the normal course of events they are \textit{fairly undesirable}}, because during a rebalance, \ul{consumers can’t consume messages}, so a rebalance is basically a short \textbf{window of unavailability} of the entire consumer group.
 
 When partitions are moved from one consumer to another, the consumer loses its current state; if it was caching any data, it will need to refresh its caches—slowing down the application until the consumer sets up its state again.

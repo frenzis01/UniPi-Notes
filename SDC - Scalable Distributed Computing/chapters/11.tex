@@ -22,13 +22,15 @@ Clearly, different partitions may reside on different nodes, enabling scalabilit
 \subsection{Combining partitioning with replication}
 
 \begin{paracol}{2}
-   Partitioning can be combined with replication to improve the performance and reliability of the system. Replication is the process of creating multiple copies of the data and storing them on different nodes. This ensures that the data is available even if one of the nodes fails. By combining partitioning with replication, you can achieve high availability and fault tolerance.
+   \colfill
+   Partitioning can be combined with replication to improve the performance and reliability of the system. Replication is the process of creating multiple copies of the data and storing them on different nodes. This ensures that the data is available even if one of the nodes fails. \ul{By combining partitioning with replication, you can achieve high availability and fault tolerance.}
+   \colfill
    
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/11/leader_follower.png}
+      \includegraphics[width=0.95\columnwidth]{images/11/leader_follower.png}
       \caption{Leader-follower model}
       \label{fig:11/leader_follower}
    \end{figure}
@@ -38,9 +40,9 @@ This can be achieved in various ways:
 \begin{enumerate}
    \item Node Storage of Multiple Partitions
    \begin{itemize}
-      \item Nodes can store more than one partition, and each partition can be stored on multiple nodes.
+      \item Nodes can store more than one partition, and \ul{each partition can be stored on multiple nodes}.
    \end{itemize}
-   \item Leader and Follower assignment
+   \item \textbf{Leader} and \textbf{Follower} assignment
    \begin{itemize}
       \item Each node stores a partition, and one of the nodes is designated as the leader. The leader is responsible for handling all write operations, while the followers replicate the data from the leader.
    \end{itemize}

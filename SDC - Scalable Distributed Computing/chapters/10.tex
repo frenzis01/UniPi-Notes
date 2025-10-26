@@ -10,8 +10,8 @@ The aims of replication are reducing latency, increasing availability, and scali
 However replication clearly poses some potential problems when handling changes to replicated data.
 {The possible approaches to replication are:\ns
 \begin{itemize}
-   \item single-leader,
-   \item multi-leader, and
+   \item single-leader
+   \item multi-leader
    \item leaderless replication
 \end{itemize}}
 
@@ -26,18 +26,18 @@ replication log.
 
 \subsection{Synchronous vs Asynchronous Replication}
 \begin{itemize}
-   \item \textbf{Synchronous} - The leader waits for the followers to acknowledge the write before acknowledging the write itself.
+   \item \textbf{Synchronous} - The \ul{leader waits for the followers} to acknowledge the write before acknowledging the write itself.
    \begin{itemize}
       \item Ensures that followers have an up-to-date copy of the data.
       \item The disadvantage is that the system may become unavailable if a follower is slow to respond.
    \end{itemize}
-   \item \textbf{Asynchronous} - The leader does not wait for the followers to acknowledge the write before acknowledging the write itself.
+   \item \textbf{Asynchronous} - The \ul{leader does \textbf{not} wait for the followers} to acknowledge the write before acknowledging the write itself.
    \begin{itemize}
       \item Follower may fall behind the leader.
       \item The advantage is that the system continues processing even if a follower is slow to respond.
       \item The disadvantage is that the system may lose data if the leader fails before the followers have caught up, so there's the need for methods to ensure data integrity.
    \end{itemize}
-   \item \textbf{Semi-synchronous} - The leader waits for a quorum of followers (at least one follower, typically always the same and placed in another location) to acknowledge the write before acknowledging the write itself.
+   \item \textbf{Semi-synchronous} - The \ul{leader waits for a \textbf{quorum} of followers} (at least one follower, typically always the same and placed in another location) to acknowledge the write before acknowledging the write itself.
    \begin{itemize}
       \item Ensures that at least one follower has an up-to-date copy of the data.
       \item Typically there is \ul{only one node fully synchronous}, while others are asynchronous, and it is \ul{placed far away from the leader}.
@@ -46,10 +46,10 @@ replication log.
 
 \section{Failure}
 \begin{itemize}
-   \item Node failures - Nodes can fail due to faults or planned maintenance. The goal is to minimize impact and keep the system running.
-   \item Follower failure: Catch up recovery - Followers keep a log of data changes, but can catch up with the leader if they fall behind.
-   \item Leader failure: Failover - Failover process involves promoting ---hence reconfiguring--- a follower to leader. Failover can be manual or automatic
-   \item Challenges in Failover - Asynchronous replication may lead to data loss, as stated before.
+   \item \textbf{Node} failures - Nodes can fail due to faults or planned maintenance. The goal is to minimize impact and keep the system running.
+   \item \textbf{Follower} failure: Catch up recovery - Followers keep a log of data changes, but can catch up with the leader if they fall behind.
+   \item \textbf{Leader} failure: Failover - Failover process involves promoting ---hence reconfiguring--- a follower to leader. Failover can be manual or automatic
+   \item Challenges in \textbf{Failover} - Asynchronous replication may lead to data loss, as stated before.
 \end{itemize}
 
 \subsection{Implementing Replication Logs}
@@ -73,24 +73,68 @@ However, many modern applications require heavy reading workload, but light writ
 Besides it is possible to increase capacity for read- only requests by adding more followers. Removes load from the leader. Allows read requests to be served by nearby replicas 
 
 \subsection{Read-after-write consistency}
-In asynchronous replication it is not trivial to ensure \textit{read-your-write} consistency, i.e. if a client writes a value to the leader, it should be able to read it.
-In other words, a user may think their data is lost, because they cannot see it, but it is actually there, just not yet replicated to the follower.
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/10/readafterwrite.png}
+      \caption{Read-after-write consistency time schema}
+      \label{fig:10/readafterwrite}
+   \end{figure}
 
-\textit{Read-after-write} consistency guarantees that \ul{users see their own updates, but not necessarily the updates of others.}
-It may be implemented by reading user-modified data from the leader.
+
+   \switchcolumn
+   \colfill
+   In asynchronous replication it is not trivial to ensure \textit{read-your-write} consistency, i.e. if a client writes a value to the leader, it should be able to read it.
+   In other words, a user may think their data is lost, because they cannot see it, but it is actually there, just not yet replicated to the follower.
+   
+   \textit{Read-after-write} consistency guarantees that \ul{users see their own updates, but not necessarily the updates of others.}
+   It may be implemented by reading user-modified data from the leader.
+   \colfill
+\end{paracol}
+
 
 \subsection{Monotonic Reads}
-\textit{Monotonic reads} consistency guarantees that if a user has read the value of a key, it will not read an older value of the same key in the future.
-It is stronger than eventual consistency, but weaker than strong consistency.
 
-In asynchronous replication may see data moving backward in time when reading from different replicas with varying lag.\\
-Monotonic reads can be achieved by ensuring that reads are always performed on the same replica.
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/10/monotonic.png}
+      \caption{Monotonic reads time schema}
+      \label{fig:10/monotonic}
+   \end{figure}
+   
+   
+   \switchcolumn
+   \colfill
+   \textit{Monotonic reads} consistency guarantees that if a user has read the value of a key, it will not read an older value of the same key in the future.
+   It is stronger than eventual consistency, but weaker than strong consistency.
+   
+   In asynchronous replication may see data moving backward in time when reading from different replicas with varying lag.\\
+   Monotonic reads can be achieved by ensuring that reads are always performed on the same replica.
+   \colfill
+\end{paracol}
 
+
+\newpage
 \subsection{Consistent Prefix Reads w/different DBs}
-\textit{Consistent prefix reads} consistency guarantees that if a sequence of writes happens in a certain order, then a read will see those writes in the same order.
 
-Suppose that $A$ asks $B$ something, and $C$ is listening, but hears first the answers and later the question: weird, ain't it?\\
-This may happen due to replication lag. We want to prevent casuality violations.
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/10/consistentprefix.png}
+      \caption{Consistent prefix reads with different DBs}
+      \label{fig:10/consistentprefixs}
+   \end{figure}
+
+   \switchcolumn
+   \colfill
+   \textit{Consistent prefix reads} consistency guarantees that if a sequence of writes happens in a certain order, then a read will see those writes in the same order.
+   
+   Suppose that $A$ asks $B$ something, and $C$ is listening, but hears first the answers and later the question: weird, ain't it?\\
+   This may happen due to replication lag. We want to prevent casuality violations.
+   \colfill
+\end{paracol}
+
 
 
 \section{Multi-Leader Replication}
@@ -99,7 +143,7 @@ With a single-leader configuration, the leader is a bottleneck, and if it fails,
 With multi-leader replication, there are multiple leaders, and each leader can accept writes. This is useful for geographically distributed systems, where each region has its own leader.
 
 \subsection{Collaborative Editing}
-Real-time collaborative editing is a use case for multi-leader replication.\\
+\ul{Real-time collaborative editing is a use case for multi-leader replication.}\\
 Changes are instantly appied to the user's local replica and then asynchronously replicated to the server and other users.
 
 Application must obtain a lock on the document before editing, as with single leader replication with transactions (?).\\

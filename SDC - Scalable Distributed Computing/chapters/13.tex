@@ -6,22 +6,22 @@ Distributed computing is the key to Big Data processoing, as it allows to \texti
 \textbf{Horizontally scaling} is the key to Big Data processing, both from a Strong Scaling and Weak Scaling perspective (see \autoref{sec:weak_strong_scalability}).
 
 \section{MapReduce Framework}
-Google was a pioneer in Big Data processing, and introduced the MapReduce framework in 2004.
+Google was a pioneer in Big Data processing, and introduced the \textsc{MapReduce} framework in 2004.
 It is a programming model and an associated implementation for processing and generating large data sets with a parallel, distributed algorithm on a cluster.
 
 \framedt{Hadoop}{
    Initially BigData was built on top of Apache Hadoop, an open-source framework for distributed storage and processing of large datasets.
 
-   It allowed to used frameworks such as MapReduce to process data across large clusters.
+   It allowed to used frameworks such as \textsc{MapReduce} to process data across large clusters.
 }
 
 
 \section{Infrastucture requirements}
 
 Not only powerful CPUs and GPUs are required, but also a \textbf{high-speed network} to allow for fast data transfer between nodes.\\
-This may come in many flavours and architectures, such as \textbf{Ethernet}, \textbf{Infiniband}, or \textbf{Myrinet}. Often RDMA (Remote Direct Memory Access) is used to reduce latency and CPU overhead.
+This may come in many flavours and architectures, such as \textbf{Ethernet}, \textbf{Infiniband}, or \textbf{Myrinet}. Often \textsc{RDMA} (Remote Direct Memory Access) is used to reduce latency and CPU overhead.
 
-However, there is also the need for a distributed File System, to allow for a seamless and efficient way to manage and access data that is distributed across multiple machines or nodes in a network.
+However, there is also the need for a \textbf{distributed File System}, to allow for a seamless and efficient way to manage and access data that is distributed across multiple machines or nodes in a network.
 
 We want also to \textbf{abstract over distributed data}, hiding the complexity of data distribution, allowing users and applications to access files with a \textbf{unified view} as if they were stored on a single machine, ultimately providing also \textbf{location transparency}, i.e. decoupling the physical location of data from its logical location.
 

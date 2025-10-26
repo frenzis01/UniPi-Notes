@@ -101,8 +101,21 @@ Messages are delivered asynchronously, and the order of delivery is not guarante
 \textbf{Quasi-commutativity} is a property of the actor model that states that the \textit{order} of messages sent by an actor to another actor does \textit{not} affect the outcome of the computation (in some cases).\\
 In other words, there must be some flexibility concerning the order of messages, to avoid making the system obey a strict order of messages dictated by delays, errors, and lost messages.
 
-\subsection{Fault tolerance}
-The actor model is inherently fault-tolerant, as the failure of one actor does not prevent the rest of the system from functioning, besides, actor may be restarted or moved to another machine in case of failure.
+\subsection{Fault tolerance and Scalability}
+The actor model is inherently fault-tolerant, as the failure of one actor does not prevent the rest of the system from functioning, besides, actor may be restarted or moved to another machine in case of failure.\\
+Furthermore, it provides a scalable approach to building systems by allowing actors to be dynamically created and distributed across multiple machines, enabling systems to scale horizontally by adding more machines to handle increasing loads.\
+This is even simplified by the absence of primitives such as locks and semaphores, reducing the risk deadlocks, race conditions and bootlenecks due to busy waiting.
+One-way asynchronous communication allows all this.
+
+\textbf{Self-organising} systems, as well as \textbf{adaptive} systems, may be built using the actor model framework, where actors can adapt their behavior based on the state of the system and the messages they receive, aiming at a global goal.\
+Not to mention IoTs where, essentially, each device may be implemented as an actor.
 
 \subsection{Challenges}
-% // TODO
+
+\begin{itemize}
+	\item \textbf{Complexity}: Designing and implementing actor-based systems can be complex
+	\item \textbf{Testing}: Testing and debugging actor-based systems can be challenging due to their concurrent and asynchronous nature. It can be difficult to reproduce and isolate bugs that arise from race conditions
+	\item \textbf{Overhead}: The actor model adds some performance overhead due to the need to manage and schedule actors, and the cost of message passing between actors
+	\item \textbf{Consistency}: Ensuring consistency and coordination between actors can be challenging, especially when dealing with distributed systems where actors may be running on different machines or in different data centres.
+	\item \textbf{Integration}: Integrating actor-based systems with existing systems and technologies can be challenging, especially when dealing with legacy systems or systems that use different programming languages or platforms.
+\end{itemize}

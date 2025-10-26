@@ -88,8 +88,8 @@ tolerance of network disruption.
 	\item Data Partitioning - Different data may require different
    consistency and availability.\\
    Example:
-   A Shopping cart requires high availability, responsive, can
-sometimes suffer anomalies, while Product information need to be available, slight variations in inventory are sufferable.
+   A \textit{Shopping cart} requires high availability, responsive, can
+sometimes suffer anomalies, while \textit{Product information} need to be available, slight variations in inventory are sufferable.
 Checkout, billing, shipping records must be consistent.
 	\item Operational Partitioning - Different operations may require different consistency and availability.\\
    Example:
@@ -128,28 +128,21 @@ Checkout, billing, shipping records must be consistent.
    \end{itemize}
 }
 
+There are some systems which adopt various PACELC flavors:
+\begin{itemize}
+	\item \textit{Give up}/\textbf{PA/EL} - \textsc{Dynamo}, \textsc{Cassandra}: Give up consistency for availability and lower latency.
+	\item \textit{Refuse}/\textbf{PC/EC} - \textsc{BigTable}, \textsc{HBase}, \textsc{VoltDB}, \textsc{H-Store}: Refuse to give up (compromise) consistency for availability and lower latency.
+	\item \textit{Give up(?)}/\textbf{PA/EC} - \textsc{MongoDB}: Give up consistency when a partition happens, and keep consistency in normal operations, when there is no partition.
+	\item \textit{Keep}/\textbf{PC/EL} - \textsc{Yahoo! PNUTS}: Keep consistency when a partition happens, and give up consistency for lower latency in normal operations, when there is no partition.
+\end{itemize}
 \section{Takeaways}
 
 \begin{itemize}
-	\item Consistency Models Define Expectations: Each model sets specific rules on how data should
-behave across distributed nodes, defining when data changes become visible across the
-system.
-	\item Trade-offs Are Inevitable: No single model can satisfy all consistency, availability, and partition
-tolerance (CAP theorem), so systems often need to choose between strong consistency and
-high availability, especially during network partitions.
-	\item Choosing the Right Model Depends on Use Case: Strong consistency is essential for
-scenarios demanding strict accuracy (e.g., banking), while eventual or weak consistency is more
-practical for applications prioritizing availability and low latency (e.g., social media).
-	\item Causal and Sequential Consistency Balance Practicality and Order: These models allow for
-some flexibility while still preserving the order of events, making them useful in collaborative
-applications or messaging systems.
-	\item Eventual Consistency is the Backbone of High Scalability: Systems prioritizing high availability
-and partition tolerance, like DNS or e-commerce platforms, often rely on eventual consistency,
-accepting slight delays in consistency for better performance.
-	\item CAP and PACELC Guide Model Selection: CAP helps in understanding consistency trade-offs
-during partitions, while PACELC addresses trade-offs between latency and consistency even in
-the absence of partitions, providing a more nuanced framework for design decisions.
-\item Practical Knowledge Matters: Understanding how each model impacts system performance,
-reliability, and usability is crucial for system architects and developers to make informed
-decisions, especially in large-scale distributed environments.
+	\item \ul{Consistency Models Define Expectations}: Each model sets specific rules on how data should behave across distributed nodes, defining when data changes become visible across the system.
+	\item \ul{Trade-offs Are Inevitable}: No single model can satisfy all consistency, availability, and partition tolerance (CAP theorem), so systems often need to choose between strong consistency and high availability, especially during network partitions.
+	\item \ul{Choosing the Right Model Depends on Use Case}: Strong consistency is essential for scenarios demanding strict accuracy (e.g., banking), while eventual or weak consistency is more practical for applications prioritizing availability and low latency (e.g., social media).
+	\item \ul{Causal and Sequential Consistency Balance Practicality and Order}: These models allow for some flexibility while still preserving the order of events, making them useful in collaborative applications or messaging systems.
+	\item \ul{Eventual Consistency is the Backbone of High Scalability}: Systems prioritizing high availability and partition tolerance, like DNS or e-commerce platforms, often rely on eventual consistency, accepting slight delays in consistency for better performance.
+	\item \ul{CAP and PACELC Guide Model Selection}: CAP helps in understanding consistency trade-offs during partitions, while PACELC addresses trade-offs between latency and consistency even in the absence of partitions, providing a more nuanced framework for design decisions.
+	\item \ul{Practical Knowledge Matters}: Understanding how each model impacts system performance, reliability, and usability is crucial for system architects and developers to make informed decisions, especially in large-scale distributed environments.
 \end{itemize}
