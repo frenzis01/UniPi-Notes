@@ -346,3 +346,119 @@ To handle such values we have various methods:
 \note{
    // TODO skipped support counting with hash tree
 }
+
+
+\section{Association Rule Mining}
+Association Rule Mining refers to, given a set of transactions, finding rules that will predict the occurrence of an item based on the occurrences of other items in the transaction. Formally, an association rule is an implication of the form $X \Rightarrow Y$, where $X$ and $Y$ are disjoint itemsets. The goal is to discover interesting relationships between items in large datasets.
+
+\subsection{Rule lists}
+ A rule list is a sorted set of rules: starting from rule $1$, if rule $i$ does not support the given instance, move to rule $i+1$.
+
+ \lstset{language=python}
+ \begin{lstlisting}
+(1) if age in (23, 26) and priors in (2, 3) then recidivous
+(2) if age in (18, 20) then recidivous
+(3) if sex is male and age in (21, 22) then recidivous
+(4) if priors > 3 then recidivous
+(5) else not_recidivous
+ \end{lstlisting}
+
+ Support, confidence, and other measures still hold, but we need to reconsider support: in
+a rule list, the first rule to support an instance is the one predicting.
+To adjust, we treat support as an indicator variable, evaluating to $1$ for the \textit{first} rule of a given list to apply, and otherwise: $0$.
+
+\[
+supp_A(r,x) = \begin{cases}
+   1 \quad \textit{if } r \in A \textit{ is the first rule to satisfy instance } x\\
+   0 \quad \textit{otherwise}
+\end{cases}
+\]
+
+
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c|c|c|c|c|c|c|}
+      \hline
+      age & priors & sex & $r_1$ & $r_2$ & $r_3$ & $r_4$ \\
+      \hline
+      24 & 4 & m & 0 & 0 & 0 & 1 \\
+      20 & 1 & f & 0 & 1 & 0 & 0 \\
+      20 & 5 & m & 0 & 1 & 0 & 0 \\
+      \hline
+   \end{tabular}
+   \caption{Support indicator variable for a rule list}
+   \label{tab:08/support_indicator}
+\end{table}
+
+\subsection{Branch and bound algorithms}
+
+Family of optimization algorithms that defines a space of solutions to search, according
+to a given objective function. Exploring the whole space is unfeasible, hence branch and
+bound algorithms define:
+\begin{itemize}
+	\item A set of feasible solutions to explore from a starting set: the branches of the solution tree to explore
+	\item A bound for the objective: it allows to prune branches, thus reducing the search space
+\end{itemize}
+
+A search tree has an
+exponentially large number
+of states! For a tree of order $k$ and depth $d$, $\mathcal{O}(k^d)$ states!
+So we do not need to go very deep in the tree, just enough to find a good solution.
+
+Exploration populates a queue of states to consider: the larger the queue, the larger the computational cost. A search algorithm simply
+\begin{itemize}
+	\item Inserts states in the queue
+	\item Pops states from the queue
+\end{itemize}
+
+\section{FP Tree Growth}
+
+The FP-tree contains a compressed
+representation of the transaction database.
+
+A trie (prefix-tree) data structure is used
+
+Each transaction is a path in the tree (paths may overlap).
+Once the FP-tree is constructed the recursive, divide-and-conquer FP-Growth algorithm is used to enumerate all frequent itemsets.
+
+Since transactions are sets of items, we
+need to transform them into ordered
+sequences so that we can have
+prefixes
+% • Otherwise, there is no common prefix
+% between sets {A,B} and {B,C,A}
+We need to impose an order to the items.Initially, we assume a lexicographic order.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/08/trie1.png}
+   \caption{Each transaction is a path in the trie. There is a header table to point to the first occurrence of each item in the tree.}
+   \label{fig:08/trie1}
+\end{figure}
+
+The size of the tree depends on the compressibility
+of the data
+\begin{itemize}
+	\item \textit{Extreme case}: All transactions are the same, the FP-tree is a single branch
+	\item \textit{Extreme case}: All transactions are different the size of the tree is the same as that of the database (bigger actually since we need additional pointers)
+\end{itemize}
+
+The size of the tree also depends on the ordering of the items.
+We could order the items according to their frequency from larger to smaller, but we need to do an extra pass over the dataset to count frequencies.
+
+\begin{algorithm}
+\caption{FP-Growth Algorithm}
+\begin{algorithmic}[1]
+\For{each suffix $X$}
+    \State \textbf{Phase 1:} Construct the prefix tree for $X$ and compute the support using the header table and the pointers
+    \If{$X$ is frequent}
+        \State \textbf{Phase 2:} Construct the \textit{conditional} FP-tree for $X$:
+        \State \quad 1. Recompute support
+        \State \quad 2. Prune infrequent items
+        \State \quad 3. Prune leaves and recurse
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\note{// TODO There are examples in the slides.}

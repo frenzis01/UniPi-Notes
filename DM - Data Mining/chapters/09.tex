@@ -1,1 +1,58 @@
-\chapter{Pattern}
+\chapter{Sequential Pattern Mining}
+
+Sequential pattern mining is the
+task of discovering statistically relevant patterns between data examples
+where the values are delivered in a sequence. A sequence is an ordered list
+of events. Each event is a set of items that occur together. A sequential
+pattern is a sequence that occurs frequently in a sequence database.
+
+
+Consider the following example of a sequence of different transactions by a customer at an online store:\\
+\verb|< {Digital Camera,iPad} {memory card} {headphone,iPad cover} >|\\
+This sequence indicates that the customer first bought a digital camera and an iPad, then later bought a memory card, and finally bought a headphone and an iPad cover together.
+
+The knowledge we can extract here is that probably the customer didn't realized he needed the memory card when he bought the digital camera, so he bought it later. Also, after buying the iPad, he probably realized he needed accessories for it, so he bought them together.
+
+Databases of transactions usually have a temporal information which \textit{Sequential patterns} can exploit.
+
+\section{Definitions}
+A sequence is an ordered list of elements (transactions/itemsets). An element is a set of items that occur at the same time, and it is also associated with a timestamp.
+\[s = \langle e_1 e_2 e_3 \rangle \]
+\[e_i = \{i_1, i_2, \dots , i_k\}\]
+
+Length of a sequence, $|s|$, is given by the number of elements of the
+sequence.\\
+A k-sequence is a sequence that contains k events (items).
+
+A sequence $s_a = \langle a_1 a_2 \dots a_n \rangle$ is a subsequence of another sequence $s_b = \langle b_1 b_2 \dots b_m \rangle$ (denoted as $s_a \subseteq s_b$) if there exist integers $1 \leq i_1 < i_2 < \dots < i_n \leq m$ such that $a_1 \subseteq b_{i_1}, a_2 \subseteq b_{i_2}, \dots , a_n \subseteq b_{i_n}$.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Data sequence} & \textbf{Subsequence} & \textbf{T/F} \\ \hline
+$\langle \{2,4\} \{3,5,6\} \{8\} \rangle$ & $\langle \{2\} \{3,5\} \rangle$ & $\mathbb{T}$ \\ \hline
+$\langle \{1,2\} \{3,4\} \rangle$ & $\langle \{1\} \{2\} \rangle$ & $\mathbb{F}$ \\ \hline
+$\langle \{2,4\} \{2,4\} \{2,5\} \rangle$ & $\langle \{2\} \{4\} \rangle$ & $\mathbb{T}$ \\ \hline
+\end{tabular}
+\caption{Examples of subsequence containment}
+\label{tab:subsequence-examples}
+\end{table}
+
+\begin{definition}
+   [Subsequence support]
+   The \textbf{support} of a subsequence $w$ is the fraction of data sequences in the sequence database $S$ that contain $w$.
+\end{definition}
+
+\subsection{Exercises}
+\subsubsection{Exercise 1}
+Find instances/occurences of the following subsequences in the sequence database 
+
+\begin{align*}
+   <\{C\}\{H\}\{C\}> \\
+   <\{A\} \{F\} > \\
+   <\{A\}\{A\}\{D\}> \\
+   <\{A\}\{A,B\}\{F\}> 
+\end{align*}
+% < {A,C} {C,D} {F,H} {A,B} {B,C,D} {E} {A,B,D} {F} >
+% t=0 t=1 t=2 t=3 t=4 t=5 t=6 t=7
