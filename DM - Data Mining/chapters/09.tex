@@ -48,11 +48,42 @@ $\langle \{2,4\} \{2,4\} \{2,5\} \rangle$ & $\langle \{2\} \{4\} \rangle$ & $\ma
 \subsubsection{Exercise 1}
 Find instances/occurences of the following subsequences in the sequence database 
 
-\begin{align*}
-   <\{C\}\{H\}\{C\}> \\
-   <\{A\} \{F\} > \\
-   <\{A\}\{A\}\{D\}> \\
-   <\{A\}\{A,B\}\{F\}> 
-\end{align*}
-% < {A,C} {C,D} {F,H} {A,B} {B,C,D} {E} {A,B,D} {F} >
-% t=0 t=1 t=2 t=3 t=4 t=5 t=6 t=7
+\begin{gather*}
+   \langle\{C\}\{H\}\{C\}\rangle \\
+   \langle\{A\} \{F\} \rangle \\
+   \langle\{A\}\{A\}\{D\}\rangle \\
+   \langle\{A\}\{A,B\}\{F\}\rangle 
+\end{gather*}
+\begin{gather*}
+   \langle \{A,C\} \{C,D\} \{F,H\} \{A,B\} \{B,C,D\} \{E\} \{A,B,D\} \{F\} \rangle\\
+   t=0\ t=1\ t=2\ t=3\ t=4\ t=5\ t=6\ t=7
+\end{gather*}
+
+\subsubsection{Exercise 2}
+Find instances/occurences of the following subsequences in the sequence database
+
+\begin{gather*}
+   \langle\{C\}\{H\}\{C\}\rangle
+   \langle\{A\} \{B\}\rangle
+   \langle\{C\} \{C\} \{E\}\rangle
+   \langle\{A\} \{E\}\rangle
+\end{gather*}
+
+\begin{gather*}
+   \langle\{A,C\}\{C,D,E\}\{F\}\{A,H\}\{B,C,D\}\{E\}\{A,B,D\}\{F\}\rangle\\
+   t=0\ t=1\ t=2\ t=3\ t=4\ t=5\ t=6\ t=7
+\end{gather*}
+
+\section{Towards an Algorithm}
+\begin{definition}
+   [Sequential Pattern Mining]
+   Given a sequence database $S$ and a minimum support threshold $min\_sup$,
+   the \textbf{sequential pattern mining} task is to find all subsequences $w$ such that $support(w) \geq min\_sup$.
+\end{definition}
+
+The most trivial, yet inefficient, way to find all sequential patterns is to generate all possible $k-subsequences$ for $k=1,2,\ldots$ and count their support in the sequence database. This approach is computationally expensive due to the exponential number of possible subsequences.
+
+\subsection{GSP - Generalized Sequential Pattern}
+
+\note{Yet to be presented}
+% To be done on monday
