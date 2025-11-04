@@ -85,5 +85,174 @@ The most trivial, yet inefficient, way to find all sequential patterns is to gen
 
 \subsection{GSP - Generalized Sequential Pattern}
 
-\note{Yet to be presented}
-% To be done on monday
+Follows the same structure of the Apriori algorithm, i.e. starting from short patterns and finding longer ones at each iteration.\\
+It is based on ``Apriori principle'' (or ``anti-monotonicity of support'') which states that if a sequence is not frequent, none of its super-sequences can be frequent.
+\[
+S_1 \subseteq S_2 \implies support(S_1) \geq support(S_2)
+\]
+\note{\textbf{Proof}: Any input sequence that contains S2 will also contain S1}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/09/gspExample.png}
+   \caption{GSP example}
+   \label{fig:09/gspExample}
+\end{figure}
+
+\begin{algorithm}
+\caption{GSP - Generalized Sequential Pattern}
+\begin{algorithmic}[1]
+\State \textbf{Step 1:} Make the first pass over the sequence database $D$ to yield all the 1-element frequent sequences
+\State
+\Repeat
+    \State \textbf{Candidate Generation:}
+    \State \hspace{\algorithmicindent} Merge pairs of frequent subsequences found in the $(k-1)$-th pass to generate candidate sequences that contain $k$ items
+    \State
+    \State \textbf{Candidate Pruning:}
+    \State \hspace{\algorithmicindent} Prune candidate $k$-sequences that contain infrequent $(k-1)$-subsequences
+    \State
+    \State \textbf{Support Counting:}
+    \State \hspace{\algorithmicindent} Make a new pass over the sequence database $D$ to find the support for these candidate sequences
+    \State
+    \State \textbf{Candidate Elimination:}
+    \State \hspace{\algorithmicindent} Eliminate candidate $k$-sequences whose actual support is less than $min\_sup$
+\Until{no new frequent sequences are found}
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Candidate Generation in GSP}
+
+Given $n$ events: $i_1, i_2, i_3, \dots, i_n$
+
+\begin{itemize}
+    \item Candidate 1-subsequences:
+    \[\langle\{i_1\}\rangle, \langle\{i_2\}\rangle, \langle\{i_3\}\rangle, \dots, \langle\{i_n\}\rangle\]
+    
+    \item Candidate 2-subsequences:
+    \[\langle\{i_1, i_2\}\rangle, \langle\{i_1, i_3\}\rangle, \dots, \langle\{i_1\} \{i_1\}\rangle, \langle\{i_1\} \{i_2\}\rangle, \dots, \langle\{i_{n-1}\} \{i_n\}\rangle\]
+    
+    \item Candidate 3-subsequences:
+    \begin{align*}
+    &\langle\{i_1, i_2, i_3\}\rangle, \langle\{i_1, i_2, i_4\}\rangle, \dots, \langle\{i_1, i_2\} \{i_1\}\rangle, \langle\{i_1, i_2\} \{i_2\}\rangle, \dots,\\
+    &\langle\{i_1\} \{i_1, i_2\}\rangle, \langle\{i_1\} \{i_1, i_3\}\rangle, \dots, \langle\{i_1\} \{i_1\} \{i_1\}\rangle, \langle\{i_1\} \{i_1\} \{i_2\}\rangle, \dots
+    \end{align*}
+\end{itemize}
+
+\textbf{Remark:} events within an element are ordered
+
+\begin{itemize}
+    \item YES: $\langle\{i_1, i_2, i_3\}\rangle$ \quad NO: $\langle\{i_3, i_1, i_2\}\rangle$
+\end{itemize}
+
+\subsubsection{Candidate Generation - Merging Procedure}
+
+\begin{itemize}
+    \item \textbf{Base case ($k=2$):}
+    \begin{itemize}
+        \item Merging two frequent 1-sequences $\langle\{i_1\}\rangle$ and $\langle\{i_j\}\rangle$ will produce two candidate 2-sequences: $\langle\{i_1\} \{i_j\}\rangle$ and $\langle\{i_1, i_j\}\rangle$
+        \item Special case: $i_1$ can be merged with itself: $\langle\{i_1\} \{i_1\}\rangle$
+    \end{itemize}
+    
+    \item \textbf{General case ($k>2$):}
+    \begin{itemize}
+        \item A frequent $(k-1)$-sequence $w_1$ is merged with another frequent $(k-1)$-sequence $w_2$ to produce a candidate $k$-sequence if the subsequence obtained by removing the \textbf{first event} in $w_1$ is the same as the one obtained by removing the \textbf{last event} in $w_2$
+        
+        \begin{itemize}
+            \item The resulting candidate after merging is given by the sequence $w_1$ extended with the last event of $w_2$.
+            
+            \begin{itemize}
+                \item If last two events in $w_2$ belong to the same element $\Rightarrow$ last event in $w_2$ becomes part of the last element in $w_1$:
+                \[\langle\{d\}\{a\}\{b\}\rangle + \langle\{a\}\{b,c\}\rangle = \langle\{d\}\{a\}\{b,c\}\rangle\]
+                
+                \item Otherwise, the last event in $w_2$ becomes a separate element appended to the end of $w_1$:
+                \[\langle\{a,d\}\{b\}\rangle + \langle\{d\}\{b\}\{c\}\rangle = \langle\{a,d\}\{b\}\{c\}\rangle\]
+            \end{itemize}
+            
+            \item Special case: check if $w_1$ can be merged with itself
+            \begin{itemize}
+                \item Works when it contains only one event type: $\langle\{a\}\{a\}\rangle + \langle\{a\}\{a\}\rangle = \langle\{a\}\{a\}\{a\}\rangle$
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Merging Examples}
+
+\begin{itemize}
+    \item Merging the sequences $w_1 = \langle\{1\} \{2\ 3\} \{4\}\rangle$ and $w_2 = \langle\{2\ 3\} \{4\ 5\}\rangle$
+    \begin{itemize}
+        \item will produce the candidate sequence $\langle\{1\} \{2\ 3\} \{4\ 5\}\rangle$ because the last two events in $w_2$ (4 and 5) belong to the same element
+    \end{itemize}
+    
+    \item Merging the sequences $w_1 = \langle\{1\} \{2\ 3\} \{4\}\rangle$ and $w_2 = \langle\{2\ 3\} \{4\} \{5\}\rangle$
+    \begin{itemize}
+        \item will produce the candidate sequence $\langle\{1\} \{2\ 3\} \{4\} \{5\}\rangle$ because the last two events in $w_2$ (4 and 5) do not belong to the same element
+    \end{itemize}
+    
+    \item We \textbf{do not have to} merge the sequences $w_1 = \langle\{1\} \{2\ 6\} \{4\}\rangle$ and $w_2 = \langle\{1\} \{2\} \{4\ 5\}\rangle$ to produce the candidate $\langle\{1\} \{2\ 6\} \{4\ 5\}\rangle$
+    \begin{itemize}
+        \item Notice that if the latter is a viable candidate, it will be obtained by merging $w_1$ with $\langle\{2\ 6\} \{4\ 5\}\rangle$
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Candidate Pruning}
+Candidate pruning follows ---again--- the Apriori principle:
+If a k-sequence $W$ contains a $(k-1)$-subsequence that is not frequent, then $W$ is not frequent and can be pruned.
+
+\textbf{Method:}
+\begin{itemize}
+    \item Enumerate all $(k-1)$-subsequences:
+    \begin{itemize}
+        \item $\{a,b\}\{c\}\{d\} \rightarrow \{b\}\{c\}\{d\}, \{a\}\{c\}\{d\}, \{a,b\}\{d\}, \{a,b\}\{c\}$
+    \end{itemize}
+    
+    \item Each subsequence generated by cancelling 1 event in $W$
+    \begin{itemize}
+        \item Number of $(k-1)$-subsequences = $k$
+    \end{itemize}
+    
+    \item Remark: candidates are generated by merging two ``mother'' $(k-1)$-subsequences that we know to be frequent
+    \begin{itemize}
+        \item Correspond to remove the first event or the last one
+        \item Number of significant $(k-1)$-subsequences to test = $k - 2$
+        \item Special cases: at step $k=2$ the pruning has no utility, since the only $(k-1)$-subsequences are the ``mother'' ones
+    \end{itemize}
+\end{itemize}
+
+\section{Timing Constraints}
+In some applications, it is useful to impose timing constraints on the sequential patterns to be mined. Typical timing constraints include:
+
+\begin{itemize}
+   \item $x_g$ - \textbf{max gap}: Each element of the pattern instance must be at most $x_g$ time after the previous one 
+   \item $n_g$ - \textbf{min gap}: Each element of the pattern instance must be at least $n_g$ time after the previous one
+   \item $m_s$ - \textbf{max span}: The overall duration of the pattern instance must be at most $m_s$ time
+\end{itemize}
+
+\subsection{Contiguous Subsequences}
+
+\begin{definition}[Contiguous Subsequence]
+$s$ is a \textbf{contiguous subsequence} of $w = \langle e_1 \rangle \langle e_2 \rangle \dots \langle e_k \rangle$ if any of the following conditions hold:
+\begin{enumerate}
+    \item $s$ is obtained from $w$ by deleting an item from either $e_1$ or $e_k$ \hfill \textit{(avoids internal ``jumps'')}
+    \item $s$ is obtained from $w$ by deleting an item from any element $e_i$ that contains \textbf{at least 2 items} \hfill \textit{(not interesting for our usage)}
+    \item $s$ is a contiguous subsequence of $s'$ and $s'$ is a contiguous subsequence of $w$ \hfill \textit{(recursive definition)}
+\end{enumerate}
+\end{definition}
+
+\textbf{Examples:} Consider $s = \langle \{1\} \{2\} \rangle$
+
+\begin{itemize}
+    \item $s$ \textbf{is} a contiguous subsequence of:
+    \[\langle \{1\} \{2,3\} \rangle\]
+    
+    \item $s$ is \textbf{not} a contiguous subsequence of:
+    \[\langle \{1\} \{3\} \{2\} \rangle \quad \text{and} \quad \langle \{2\} \{1\} \{3\} \{2\} \rangle\]
+\end{itemize}
+
+In some domains, we may have only one very long time series, for example:
+\begin{itemize}
+	\item monitoring network traffic events for attacks
+	\item monitoring telecommunication alarm signals
+\end{itemize}
+Goal is to find frequent sequences of events in the time series, so we have to count ``instances'', but which ones?\\
+This problem is also known as \textit{frequent episode mining}.
