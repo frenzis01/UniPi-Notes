@@ -17,13 +17,13 @@ it enables systems to operate reliably and predictably, even in the presence of 
 \subsection{Why is it relevant}
 
 \note{\begin{itemize}
-	\item \textbf{Coordination}: Synchronizes independent nodes to maintain a consistent state.
+	\item \textbf{Coordination}: Synchronizes independent nodes, such as in \textit{Microservices}, to maintain a consistent state.
 	\item \textbf{Fault Tolerance}: Ensures progress and recovery in the presence of failures.
 	\item \textbf{Data Integrity}: Prevents data divergence in replicated systems.
 	\item \textbf{Avoids Split-Brain}: Manages network partitions to prevent conflicting operations.
 	\item \textbf{Strong Consistency}: Guarantees up-to-date data in distributed databases.
 	\item \textbf{Leader Election}: Allows seamless transitions of leadership in distributed environments.
-	\item \textbf{Transaction Atomicity}: Ensures reliable distributed transactions.
+	\item \textbf{Blockchain and Transaction atomicity}: Ensures reliable distributed transactions and maintains consensus in decentralized networks.
 	\item \textbf{State Machine Replication}: Maintains consistent replicated states across systems.
 \end{itemize}}
 
@@ -32,19 +32,56 @@ it enables systems to operate reliably and predictably, even in the presence of 
    That is that different data (replicas) will eventually converge to the same value.
 
    \textit{But to which of the replicas should the others converge?}\\
-   Consesus!   
-
+   Consesus!
 }
 
 
+
+\begin{itemize}
+	\item \textbf{Safety} - ``nothing bad happens''\\
+	Safety ensures that the system never reaches an incorrect state, this is achieved by making sure no two nodes decide on different values; there may not happen any divergence, once a value is chosen, it is final and all nodes eventually agree on it.
+	\item \textbf{Liveness} - ``something good eventually happens''\\ 
+	Liveness ensures that the system eventually makes progress and reaches a decision, guaranteeing that the system does not get stuck in an indecisive state, all non-faulty nodes eventually decide on a value.
+\end{itemize}
+
+Liveness might occasionally compromise safety by making premature decisions, especially in asynchronous systems. 
+For example, network delays can cause a node to make a decision based on outdated information, violating safety.\\
+Processes can fail temporarily (crash) or permanently, while messages can be lost or delayed indefinitely.
+These failures make it impossible to guarantee both safety and liveness simultaneously in an asynchronous system, as stated by the FLP impossibility result.
+
+In the real world, compromises are often made between safety and liveness based on the specific requirements of the system. Paxos and Raft carefully manage this trade-off, using timeouts or allowing temporary failures.
+
+\section{Paxos}
 \framedt{Paxos and paper}{
-   Even though it was a standard until a few years ago, people realized that Paxos was too complex to implement, and could fit best raw paper than actual software.
-   Too many aspects were left to the implementer, and it was hard to get it right.
+	Even though it was a standard until a few years ago, people realized that Paxos was too complex to implement, and could fit best raw paper than actual software.
+	Too many aspects were left to the implemented, and it was hard to get it right.
 }
+
+\begin{itemize}
+	\item \textbf{Roles}:
+	      \begin{itemize}
+		      \item \textbf{Proposers} - Propose values to be agreed upon.
+		      \item \textbf{Acceptors} - Vote on proposed values.
+		      \item \textbf{Learners} - Learn the chosen value.
+	      \end{itemize}
+	\item \textbf{Phases}:
+	      \begin{itemize}
+		      \item 1a - \textbf{Prepare Phase} - A proposer selects a proposal number and sends a prepare request to a quorum of acceptors.
+		      \item 1b - \textbf{Promise Phase} - Acceptors respond with a promise not to accept any proposals with a lower number and may include the highest-numbered proposal they have accepted.
+		      \item 2a - \textbf{Accept Phase} - If the proposer receives promises from a quorum of acceptors, it sends an accept request with the proposal number and value.
+		      \item 2b - \textbf{Accepted Phase} - Acceptors respond to the accept request, and if a majority accept, the value is chosen.
+	      \end{itemize}
+	\item \textbf{Key Properties}:
+	      \begin{itemize}
+		      \item \textbf{Safety} - Paxos guarantees that once a value is chosen, it is final and all nodes eventually agree on it.
+		      \item \textbf{Liveness} - Paxos may not always make progress, especially in the presence of failures or network partitions
+		   \end{itemize}
+\end{itemize}
 
 \section{Raft}
 \ul{Paxos prioritizes safety over liveness}. It guarantees that once a value is chosen, it's always safe, but there may be cases where it fails to make progress quickly.\\
 \ul{Raft also ensures safety but uses leader election to optimize for liveness}, making faster decisions when the network conditions allow it.
+Raft is \textbf{not} a byzantine fault tolerant (BFT) algorithm, nodes trust the leader.
 
 Raft achieves consesus through an \textit{elected leader} that coordinates the other nodes.
 \ul{An entity participating to a Raft cluster can either take the role of the \textbf{leader} or the role of \textbf{follower}};

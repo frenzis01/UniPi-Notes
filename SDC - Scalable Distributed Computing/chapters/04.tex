@@ -105,6 +105,9 @@ Its major \textbf{drawback} is that it may suffer from performance issues (e.g.,
 However, it nicely environments where shared memory is available and the number of processes is relatively small.
 
 \subsection{LDMEA - Lamport's Distributed Mutual Exclusion Algorithm}
+LBA cannot be directly applied in distributed systems, as there is no shared memory to store ticket values.
+In a distributed system, processes run on different nodes and must be aware of each other's states through message passing.
+
 LDMEA is a distributed version of Lamport's Bakery Algorithm that allows processes to access shared resources across multiple nodes, exploiting logical clocks for coordination.
 
 \begin{figure}[htbp]
@@ -141,6 +144,9 @@ When a site $S_j$ receives the timestamped RELEASE message from site $S_i$, it r
       message to \textbf{P2} and \textbf{P3}
    \end{enumerate}
 }
+
+If \textbf{P1} sends a \texttt{REQUEST} message to \textbf{P2} and \textbf{P3}, it must wait for their replies before entering the critical section.\\
+If both \textbf{P1} and \textbf{P2} send \texttt{REQUEST} messages, the process with the smaller timestamp will be granted access first, ensuring fairness.
 
 Wrapping up we need
 \begin{itemize}
@@ -235,7 +241,7 @@ Besides, if a token is lost, processes can hang; token recovery mechanisms or
 timeout strategies may be implemented to handle token loss.
 
 
-On the other hand it is \textbf{efficient} in terms of message passing, as it only requires up to N messages for each CS invocation, and the synchronization delay is is 0 or N (N-1 requests and 1 reply).
+On the other hand it is \textbf{efficient} in terms of message passing, as it only requires up to N messages for each CS invocation, and the synchronization delay is 0 or N (N-1 requests and 1 reply).
 It suits high-latency networks.
 
 

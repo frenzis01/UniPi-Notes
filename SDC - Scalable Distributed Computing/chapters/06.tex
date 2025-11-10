@@ -56,19 +56,53 @@ States satisfying $P$ are called \textbf{legitimate} (safe) states, and those th
 \ul{A system $P$ is \textbf{self-stabilizing} with respect to predicate $P$ if it satisfies the following two properties}:
 
 \begin{enumerate}
-	\item Closure $P$ is closed under the execution of $S$: that is, once $P$ is established in $S$, it cannot be falsified.
+	\item Closure $P$ is closed under the execution of $S$: that is, once $P$ is established in $S$, it cannot be falsified, it can't go in an illegitimate state.
 	\item \textbf{Convergence} starting from an arbitrary global state: $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
-
 \end{enumerate}
+
+Safe states are those that are reachable under normal program execution from the set of legitimate start states, referred as the \textbf{reachable set}.
+So, when we say that a program is self-stabilizing without explicitly mentioning a predicate, we mean with respect to the reachable set.
+By definition, the \ul{\textbf{reachable set} is closed under program execution}, and it corresponds to a predicate over the set of states.
+
+\subsection{Classification}
+Self-stabilization may be classified as either \textbf{randomized} or \textbf{probabilistic}, depending on the stabilization time.
+
+\begin{itemize}
+   \item A system is said to be randomized selfstabilizing system, if and only if it is selfstabilizing and the expected number of rounds needed to reach a correct state (legal state) is bounded by some constant k.
+   \item A system $S$ is said to be \textbf{probabilistically self-stabilizing} with respect to a predicate $P$ if it satisfies the following two properties:
+   \begin{itemize}
+      \item \textbf{Closure}: $P$ is closed under the execution of $S$. That is, once $P$ is established in $S$, it cannot be falsified.   
+      \item \textbf{Convergence}: There exists a function $f$ from natural numbers to $[0,1]$ satisfying $\lim_{k \to \infty} f(k) = 0$, such that the \textbf{probability of reaching a state satisfying $P$}, starting from an arbitrary global state within $k$ state transitions, is $1 - f(k)$.
+   \end{itemize}
+\end{itemize}
+
+\framedt{Pseudo or non-pseudo}{
+A \textbf{pseudo-stabilizing} system is one that, if started in an arbitrary state, is
+guaranteed to reach a state after which it \textit{\textbf{does not}} deviate from its intended
+specification.\\
+A stabilizing system, instead, is one that, if started at an arbitrary state, is guaranteed to
+reach a state after which it \textit{\textbf{cannot}} deviate from its intended specification.
+
+Thus, the difference between the two notions comes down to the difference
+between ``\textit{cannot}'' and ``\textit{does not}'' – a difference that hardly matters in many
+practical situations.
+}
+
+\framedt{Transient failures}{
+   A \textbf{transient failure} is \textit{temporary} (short lived) and it does not persist. 
+   A transient failure may be caused by corruption of local state of processes or by corruption of channels. 
+   A transient failure may change the \textbf{state} of the system, but \textit{not} its behaviour.
+}
 
 \subsection{Issues in the design of self-stabilizing systems}
 Some of the main issues are:
 \begin{itemize}
-   \item Number of states in each of the individual units in a distributed systems
-   \item Uniform and non-uniform algorithms in distributed systems
-   \item Central and distribution uniform
+   \item \textbf{Number of states} in each of the individual units in a distributed systems
+   \item \textbf{Uniform} and \textbf{non-uniform} algorithms in distributed systems
+   \item Central and distributed demon
    \item Reducing the number of states in a token ring
-   \item Shared memory models Mutual exclusion 
+   \item Shared memory models 
+   \item Mutual exclusion 
    \item Costs of self-stabilization
 \end{itemize}
 
@@ -91,12 +125,10 @@ A legitimate state must satisfy the following constraints:
 
 \ul{Dijkstra considered a legitimate (or legal) state as one in which \textit{exactly one machine enjoys the privilege}}.
 \begin{itemize}
-	\item This corresponds to a form of mutual exclusion, because the privileged process is the only process that is
-allowed in its critical section.
+	\item This corresponds to a form of mutual exclusion, because the privileged process is the only process that is allowed in its critical section.
 	\item Once the process leaves the critical section, it passes the privilege to one of its neighbours.
 \end{itemize}
-With this background, let us see how the above issues affect the design of a self-
-stabilization algorithm.
+With this background, let's see how the above issues affect the design of a self-stabilization algorithm.
 
 
 \subsection{First Solution}
@@ -109,7 +141,7 @@ Machine 0 is exceptional, and the other machines are identical, and follow the s
 if there are $n$ machines and each of them is initially at a random state $r \in K$,
 then all the machines (except the exceptional machine, machine 0) whose states are different from
 the one of their anti-clockwise neighbour are said to be \textbf{privileged}.\\
-There is a central demon that decides which of these privileged machines will make the move
+There is a \textit{central demon} that decides which of these privileged machines will make the move
 
 Below is the code for each machine, where $L$ and $R$ are the states of the left and right neighbors, respectively, and $S$ is the state of the machine itself.
 \begin{itemize}
@@ -127,7 +159,7 @@ Below is the code for each machine, where $L$ and $R$ are the states of the left
 
 \note{
 \begin{itemize}
-	\item Suppose machine 6 (assume n >> 6) makes the first move
+	\item Suppose machine 6 (assume $n \gg 6$) makes the first move
 	\item Its state is not the same as that of machine 5 and hence it had the privilege to make the move and finally sets its state to be the same as that of machine 5
 	\item Now machine 6 loses its privilege as its state is same as that of its anti- clockwise neighbour (machine 5).
 	\item Next, suppose machine 7, whose state is different from the state of machine 6, is given the privilege.
@@ -135,6 +167,16 @@ Below is the code for each machine, where $L$ and $R$ are the states of the left
 	\item Now machines 5, 6, and 7 are in the same state.
 \end{itemize}
 }
+
+Eventually, all the machines will be in the same state in the similar manner.\\
+At this point, only the exceptional machine (machine 0) will be privileged as its condition $L = S$ is
+satisfied.\\
+Now there exists only one privilege or token in the system (machine 0), which increments its state by 1 (mod K), 
+making the next machine (machine 1) privileged, as its state is now different from that of machine 0.
+In turn, machine 1 updates its state to be the same as that of machine 0, making machine 2 privileged, and so on.
+Thus, the privilege circulates around the ring.\\
+This solution, rather simple, requires $K \geq n$ states for each machine to guarantee self-stabilization, besides, also an ordering on the machines is required.
+
 
 \subsection{Second Solution}
 We can improve the first solution.
@@ -149,11 +191,14 @@ Below is the code for each machine, where $L$ and $R$ are the states of the left
       if (S+1) mod 3 == R then
          S := (S-1) mod 3 
    \end{lstlisting}
+   Its state depends upon its current state and the state of its right neighbor.
    \item \textbf{Top} machine (state $n-1$)
    \begin{lstlisting}
       if L == R and (L+1) mod 3 != S then
-         S := (L+1) mod 3 
+         S := (L+1) mod 3     // note that L == R 
    \end{lstlisting}
+   Its state depends upon the states of both its left and right neighbors (the \textit{bottom machine} and machine $n-2$).\\
+   The condition states that the left and right neighbors must be in the same state, and the state of the top machine must not be equal to the incremented state of its neighbors.
    \item Other machines ($i, 1 < i < n-1$)
    \begin{lstlisting}
       if (S+1) mod 3 == L then
@@ -161,18 +206,64 @@ Below is the code for each machine, where $L$ and $R$ are the states of the left
       if (S+1) mod 3 == R then
          S := R
    \end{lstlisting}
+   Their state depends upon the states of both their left and right neighbors.
+   If the first condition is not satisfied, the second one is checked.
 \end{itemize}
 
-This schema forces the system to always have at least one privilege, hence to self-stabilize.
-Actually the number of privileged machines converges linearly to 1.
-% // TODO check   
+This schema forces the system to always have at least one privilege, hence to self-stabilize.\\
+Initially, \ul{three privileges} exist in the system.
+Actually the number of privileged machines converges linearly to 1.\\
+
+
+\begin{table}[htbp]
+\centering
+\setlength{\arrayrulewidth}{0.8pt}
+\renewcommand{\arraystretch}{1.3}
+\footnotesize
+\begin{tabular}{|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{1.8cm}|>{\raggedright\arraybackslash}p{2.2cm}|>{\raggedright\arraybackslash}p{2.2cm}|}
+\hline
+\textbf{State of machine 0} & \textbf{State of machine 1} & \textbf{State of machine 2} & \textbf{State of machine 3} & \textbf{Privileged machines} & \textbf{Machine to make move} \\
+\hline
+0 & 1 & 0 & 2 & 0, 2, 3 & 0 \\
+\hline
+2 & 1 & 0 & 2 & 1, 2 & 1 \\
+\hline
+2 & 2 & 0 & 2 & 1 & 1 \\
+\hline
+2 & 0 & 0 & 2 & 0 & 0 \\
+\hline
+1 & 0 & 0 & 2 & 1 & 1 \\
+\hline
+1 & 1 & 0 & 2 & 2 & 2 \\
+\hline
+1 & 1 & 1 & 2 & 2 & 2 \\
+\hline
+1 & 1 & 2 & 2 & 1 & 1 \\
+\hline
+1 & 2 & 2 & 2 & 0 & 0 \\
+\hline
+0 & 2 & 2 & 2 & 1 & 1 \\
+\hline
+0 & 0 & 2 & 2 & 2 & 2 \\
+\hline
+0 & 0 & 0 & 2 & 3 & 3 \\
+\hline
+0 & 0 & 0 & 1 & 2 & 2 \\
+\hline
+\end{tabular}
+\caption{Execution trace of Dijkstra's second solution with 4 machines. Here machine 0 is the bottom machine and machine 3 is the top machine.\\
+In the first row, the privileged machines are 0, 2, and 3, because their conditions are satisfied. The central demon chooses machine 0 to make the move. After machine 0 makes the move, the new configuration is shown in the second row, and so on.}
+\label{tab:dijkstra-second-solution-trace}
+\end{table}
+
+
+
 
 
 \subsubsection{Observations}
 
-The number of states in each of the the individual units that each machine must have for the self-stabilization is an important issue. Dijkstra offered three solutions for a directed ring with $n$ machines, 0,1, \dots, n-1, each having $K$ states, $K \geq n, K=4, K=3.$
+The number of states in each of the the individual units that each machine must have for the self-stabilization is an important issue. Dijkstra offered three solutions for a directed ring with $n$ machines, $0,1, \dots, n-1$, each having $K$ states, $K \geq n, K=4, K=3.$
 
-% // TODO
 
 \section{To be or not to be\dots Uniform}
 In a distributed system, it is desirable and also possible to have each machine use the same algorithm.
@@ -205,7 +296,7 @@ Clearly, the aim of the designer of a self-stabilizing system is to reduce the c
 
 The Time-complexity measure for self-stabilizing systems is the number of \textbf{rounds}.
 
-% // TODO
+Generally, communicatino between any two processors in a given system takes at least $\sigma$ rounds, where $\sigma$ is the \textbf{synchronization delay} of the system (?).
 
 \section{Designing Self-Stabilizing Systems}
 Self-stabilization is characterized in terms of a ``malicious adversary''  that may disrupt the system.
@@ -219,13 +310,20 @@ This is thanks to the \textit{transitivity} property of self-stabilization: if a
 If $P \rightarrow Q$ ($P$ stabilizes $Q$) and $Q \rightarrow R$, then $P \rightarrow R$.
 \begin{itemize}
 	\item Thus, different layers of self-stabilizing programs (each by itself self-stabilizing) can be composed.
-	\item First step is to build a self-stabilizing ``platform'' and any program written on that platform automatically
-becomes self-stabilizing.
-	\item The basic idea behind a self-stabilizing platform is to provide primitives that can be used to write other
-programs.
-	\item To develop self-stabilizing systems using the technique of layering, \ul{we require primitives to provide
-structures on which algorithms may be built}.
+	\item First step is to build a self-stabilizing ``platform'' and any program written on that platform automatically becomes self-stabilizing.
+	\item The basic idea behind a self-stabilizing platform is to provide primitives that can be used to write other programs.
+	\item To develop self-stabilizing systems using the technique of layering, \ul{we require primitives to provide structures on which algorithms may be built}.
 \end{itemize}
+
+
+\subsection{Main structuring mechanism primitives}
+We have common clock primitives and topology-based primitives.
+\note{Note that a ``primitive'' is a basic building block that can be used to construct more complex systems or algorithms.
+They are the fundamental operations or functionalities that serve as the foundation for higher-level abstractions.\\
+In the discussion below, ``unison'' and ``leader election'' are examples of such primitives, so mechanisms that provide basic functionalities that can be used to build more complex algorithms.
+}
+
+These primitives serve as foundational building blocks for constructing more complex distributed algorithms and systems, and are associated to key problems in self-stabilization.
 
 First of all we must address clocks.
 \textbf{Unison} is the process of maintaining time through the use of local clocks in shared memory systems.
@@ -236,7 +334,7 @@ There are two properties required:
    \item \textbf{Progress} (\textit{Liveness}): each clock is incremented infinitely often by the same amount
 \end{itemize}
 
-Leader election is the most basic primitive with respect to arbitrary dynamic topologies.
+\textbf{Leader election} is the most basic primitive with respect to arbitrary dynamic topologies.
 Electing a leader allows to build a spanning tree, which is a fundamental structure for many distributed algorithms.
 A spanning tree is a subgraph that includes all the vertices of the original graph, is connected, and has no cycles.
 A spanning tree with a designated root is called a \textbf{rooted spanning tree}.
@@ -244,8 +342,8 @@ A spanning tree with a designated root is called a \textbf{rooted spanning tree}
 
 \subsection{Communication Protocols}
 
-A communication protocol is a collection of processes that exchange messages
-over communication links in a network.
+\ul{A communication protocol is a collection of processes that exchange messages
+over communication links in a network.}
 \note{A protocol may be adversely affected for several reasons:
 \begin{itemize}
 	\item Initialization to an illegal state.
@@ -256,19 +354,18 @@ same time, so an illegal global state may occur.
 	\item A local memory crash which changes the local state of a process.
 \end{itemize}}
 
-If a protocol is self-stabilizing, they will all be corrected in a finite number of steps,
-regardless of the reason for the loss of coordination.
-A communication protocol is stabilizing if and only if starting from any unsafe state
-(i.e., one that violates the intended invariant of the protocol), the protocol is
-guaranteed to converge to a safe state within a finite number of state transitions.
+If a protocol is self-stabilizing, they will all be corrected in a finite number of steps, regardless of the reason for the loss of coordination.
+A communication protocol is stabilizing if and only if starting from any unsafe state (i.e., one that violates the intended invariant of the protocol), the protocol is guaranteed to converge to a safe state within a finite number of state transitions.
 Stabilization allows the processes in a protocol to reestablish coordination between one another whenever coordination is lost due to some failure.
 
 {Gouda and Multari showed that a communication protocol must satisfy the following three properties to be self-stabilizing:\ns
 \begin{itemize}
 	\item It must be \textit{non-terminating} (i.e., it must not reach a state from which no further state transitions are possible).
-   \item There are an infinite number of safe states (i.e. states that satisfy the intended invariant of the protocol) in every computation.
-	\item There are timeout actions in a non-empty subset of processes. These actions are enabled in every state of the process and can be executed at any time.
+   \item There is an \textit{infinite} number of safe states (i.e. states that satisfy the intended invariant of the protocol) in every computation.
+	\item There are \textit{timeout actions} in a non-empty subset of processes. These actions are enabled in every state of the process and can be executed at any time.
 \end{itemize}}
 \note{The reason for the first property is that if a protocol terminates, it may terminate in an unsafe state.\\
 The second property is required because if there are only a finite number of safe states, it is possible that the protocol may leave the safe states and never return to one.\\
 The third property is required because if there are no timeout actions, it is possible that the protocol may reach a state in which no further state transitions are possible.}
+
+The spanning-tree construction in distributed systems is a fundamental operation that forms the basis for many other network algorithms, and in fact we've seen how many self-stabilizing algorithms rely on the knowledge of the neighbors.

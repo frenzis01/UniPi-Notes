@@ -11,8 +11,8 @@ Time is fundamental for two reasons:
 \begin{enumerate}
    \item \textbf{Ordering}: to order events, we need to know when they happened
    \item \textbf{Causal Relationships}: to determine cause-effect relationships, we need to know when they happened
-   \item Handle \textbf{inconsistencies} between nodes
-   \item Handle \textbf{conflicts}, such as multiple updates to a shared resource
+   \item[$\circ$] Handle \textbf{inconsistencies} between nodes
+   \item[$\circ$] Handle \textbf{conflicts}, such as multiple updates to a shared resource
 \end{enumerate}
 
 Going a bit deeper, there are distributed systems which are highly time-dependant:
@@ -31,6 +31,8 @@ It matters because over time, unsynchronized clocks on different nodes will show
 Also \textbf{network latencies} are an issue
 Messages between nodes can be delayed due to network congestion, causing events to be perceived in a different order than they occurred.
 
+In DS nodes may \textbf{fail} or be \textbf{unreachable}, making it difficult to maintain synchronized time across all nodes.
+
 \subsection{NTP and PTP - Protocols Solving Drift}
 \begin{paracol}{2}
    Network Time Protocol (NTP) is a protocol used to synchronize the clocks of computers over a network.
@@ -47,14 +49,52 @@ Messages between nodes can be delayed due to network congestion, causing events 
    \end{figure}
 \end{paracol}
 
+
 PTP (Precision Time Protocol) is a protocol used to synchronize clocks in a network with sub-microsecond accuracy. Typically used in high-frequency trading, telecommunications, and industrial automation.
 
 P TP uses a master-slave architecture, with a grandmaster clock providing time to all slaves.
 PTP timestamps are often hardware-assisted for higher precision (e.g., using Network Interface Cards (NICs) with timestamping capabilities).
 
-According to prof. Dazzi, PTP allows for more precision than NTP, but it still limited by the underlying hardware: if there isn't good hardware to support the protocol, than we can't achieve the high precision.
+According to prof. Dazzi, PTP allows for more precision than NTP, but it still limited by the underlying hardware: if there isn't good hardware to support the protocol, then we can't achieve the high precision.
 
-\note{In future lessons theses two protocols will be covered in more detail}
+% \note{In future lessons theses two protocols will be covered in more detail}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/02/ntp.png}
+   \caption{NTP protocol example}
+   \label{fig:02/ntp}
+\end{figure}
+
+\begin{align*}
+   \Theta = (T_2 - T_1) + (T_3 - T_4) / 2 \qquad \textit{Offset between clocks}\\
+   \sigma = (T_4 - T_1) - (T_3 - T_2) \qquad \textit{Round-trip delay}
+\end{align*}
+
+NTP performs also some statistical analysis to filter out outliers and improve accuracy.
+
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/02/ptp.png}
+   \caption{PTP protocol example}
+   \label{fig:02/ptp}
+\end{figure}
+
+\begin{align*}
+   \Theta = (t_2 - t_1) + (T_3 - T_4) / 2 \qquad \textit{Offset between clocks}\\
+   \sigma = (t_4 - t_1) - (T_3 - T_2) \qquad \textit{Round-trip delay}
+\end{align*}
+
+In a simple architecture there are \textbf{slaves} and a \textbf{master}.
+In case of more complex architectures, there are multiple masters in a hierarchy.
+There is a \textbf{grandmaster clock} which is the most accurate clock in the network, and all other clocks, including regular masters, synchronize to it.
+\textbf{Boundary clocks} are used to connect different segments of the network, acting as both slaves to the grandmaster and masters to other slaves.
+\textbf{Transparent clocks} do not participate in the synchronization process but instead measure and account for the time taken by packets to traverse them, helping to improve overall accuracy.\\
+PTP requires specialized hardware support to achieve high precision, such as network interface cards (NICs) that can timestamp packets at the hardware level.
+
+PTP is used in specialized environments such as financial trading systems, telecommunications networks, and industrial automation where high precision time synchronization is critical.
+NTP is preferred for general-purpose applications where millisecond accuracy is sufficient, such as logging and internet services.
 
 \subsection{Logical and Phyisical Clocks}
 Logical clocks do not represent the actual time, but they are used to order events in a distributed system, ensuring that causally related events are ordered correctly even if the actual phyisical clocks are not synchronized.\\
@@ -69,9 +109,46 @@ Common examples are \textbf{Lamport} timestamps and vector clocks.
    \end{enumerate}
 }
 
+Lamport timestamps are useful in distributed file systems to maintain consistency across multiple clients accessing and modifying files concurrently.
+Notice however that Lamport timestamps do not capture causality completely; they only provide a partial ordering of events.
+This means that they cannot determine an ordering between two not-causally-related events.\\
+Furthermore, adding Lamport timestamps to messages introduces some overhead, as each message must carry the timestamp information. This may become relevant in systems with high message throughput or limited bandwidth.
+
 \note{If Client A writes to a file and then Client B reads from the same file, Lamport timestamps can help ensure that Client B sees the updated file contents.
 Client A’s write operation is assigned a timestamp, and when Client B reads the file, it updates its counter to reflect the most recent write.
 This ensures that all subsequent operations by Client B are correctly ordered after Client A’s write, maintaining the consistency of the file system.}
+
+Being $C_i$ the clock value of process $P_i$:
+\begin{enumerate}
+	\item Before executing an event $e$, $P_i$ sets $C_i = C_i + 1$
+	\item When $P_i$ sends a message $m$, it sets $m.timestamp = C_i$ .
+	\item Upon receiving a message $m$, process $P_i$ sets $C_j =
+\max(C_j, m.timestamp) + 1$
+   \item[$\diamond$] These rules ensure that the logical clocks respect the
+causal relationships between events.
+\end{enumerate}
+
+\framedt{Lamport Example}{
+   The events $a, b, c, d$ occur in the following
+sequence:
+\begin{itemize}
+	\item $P_1$ executes event $a$.
+	\item $P_1$ sends a message $m$ (containing event $b$) to $P_2$.
+	\item $P_2$ executes event $c$ upon receiving $m$.
+	\item $P_2$ sends a message $n$ (containing event $d$) to $P_3$.
+\end{itemize}
+
+The logical clocks evolve as follows:
+\begin{itemize}
+	\item $P_1$ executes event $a$: $C_1 = 1$
+	\item $P_1$ sends $m$ to $P_2$: $C_2 = 2$, $m.timestamp = 2$
+	\item $P_2$ receives $m$ and executes $c$: $C_2 = \max(C_2, 2) + 1 = 3$
+	\item $P_2$ sends $n$ to $P_3$: $C_2 = 4$, $n.timestamp=4$
+	\item $P_3$ receives $n$ and updates its clock: $C_3 = \max(C_3, 4) + 1 = 5$
+\end{itemize}
+
+This ensures that the events are ordered as $a \rightarrow b \rightarrow c \rightarrow d$ across the processes.
+}
 
 \subsubsection{Vector Clocks}
 \labelitemize{Vector}{
@@ -84,3 +161,25 @@ This ensures that all subsequent operations by Client B are correctly ordered af
 
 \note{This helps in merging conflicts in collaborative editing applications such as Google Docs.
 By examining the vector clocks, the system can determine the causality of edits and merge changes appropriately, ensuring that all users see a consistent view of the document}
+
+\framedt{Vector Clock Rules}{
+\begin{itemize}
+   \item \textbf{Vector Clock}: Each process $P_i$ maintains a vector $VC_i$ of length $N$, where $N$ is the total number of processes.
+   
+   \item Each element $VC_i[j]$ represents the logical clock of process $P_j$ as known by $P_i$.
+   
+   \item \textbf{Initialization}: All elements of $VC_i$ are initialized to zero.
+   
+   \item \textbf{Event Occurrence}: When an event occurs at process $P_i$, it increments its own entry in its vector clock: $VC_i[i] = VC_i[i] + 1$
+   
+   \item \textbf{Message Sending}: When $P_i$ sends a message to $P_j$, it includes a copy of its vector clock $VC_i$ in the message.
+   
+   \item \textbf{Message Receiving}: When $P_j$ receives a message from $P_i$ with vector clock $VC_i$, it updates its own vector clock: $VC_j[k] = \max(VC_j[k], VC_i[k])$ for all $k$. Then, $P_j$ increments its own entry: $VC_j[j] = VC_j[j] + 1$
+\end{itemize}
+}
+
+Implementing and maintaining vector clocks is more complex than simpler mechanisms like Lamport timestamps.
+The complexity increases with the number of processes in the system.
+
+The size of the vector clock grows linearly with the number of processes, leading to higher memory and communication overhead. 
+This can be a concern in systems with a large number of processes.
