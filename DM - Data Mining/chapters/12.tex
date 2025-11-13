@@ -8,46 +8,73 @@ Examples of classification rules include $(Blood\ Type=Warm) \land (Lay\ Eggs=Ye
 
 \subsection{Example of Rule-based Classifier}
 
-Consider the following rule set:
-\begin{itemize}
-    \item R1: $(Give\ Birth = no) \land (Can\ Fly = yes) \rightarrow Birds$
-    \item R2: $(Give\ Birth = no) \land (Live\ in\ Water = yes) \rightarrow Fishes$
-    \item R3: $(Give\ Birth = yes) \land (Blood\ Type = warm) \rightarrow Mammals$
-    \item R4: $(Give\ Birth = no) \land (Can\ Fly = no) \rightarrow Reptiles$
-    \item R5: $(Live\ in\ Water = sometimes) \rightarrow Amphibians$
-\end{itemize}
+\begin{paracol}{2}
+   \colfill
+   Consider the following rule set:
+   \begin{itemize}
+      \item R1: $(Give\ Birth = no) \land (Can\ Fly = yes) \rightarrow Birds$
+      \item R2: $(Give\ Birth = no) \land (Live\ in\ Water = yes) \rightarrow Fishes$
+      \item R3: $(Give\ Birth = yes) \land (Blood\ Type = warm) \rightarrow Mammals$
+      \item R4: $(Give\ Birth = no) \land (Can\ Fly = no) \rightarrow Reptiles$
+      \item R5: $(Live\ in\ Water = sometimes) \rightarrow Amphibians$
+   \end{itemize}
+   \colfill
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/12/mammals.png}
+      \caption{Mammals example table}
+      \label{fig:12/mammals}
+   \end{figure}
+
+\end{paracol}
+
 
 \subsection{Application of Rule-Based Classifier}
 
 A rule $r$ \textbf{covers} an instance $x$ if the attributes of the instance satisfy the condition of the rule. For example, the rule R1 covers a hawk (classifying it as a Bird), while the rule R3 covers the grizzly bear (classifying it as a Mammal).
 
-\section{Rule Coverage and Accuracy}
+\framedt{Rule Coverage and Accuracy}{
+   
+   The \textbf{coverage} of a rule is the fraction of records that satisfy the antecedent of the rule, while the \textbf{accuracy} is the fraction of records that satisfy the antecedent that also satisfy the consequent of the rule. For example, the rule $(Status=Single) \rightarrow No$ might have a coverage of 40\% and an accuracy of 50\%.
+}
 
-The \textbf{coverage} of a rule is the fraction of records that satisfy the antecedent of the rule, while the \textbf{accuracy} is the fraction of records that satisfy the antecedent that also satisfy the consequent of the rule. For example, the rule $(Status=Single) \rightarrow No$ might have a coverage of 40\% and an accuracy of 50\%.
+% \subsection{How does a Rule-based Classifier Work?}
 
-\subsection{How does a Rule-based Classifier Work?}
-
-When applying a rule-based classifier, different scenarios can occur. A lemur triggers rule R3 and is classified as a mammal. A turtle triggers both R4 and R5, which requires a conflict resolution strategy. A dogfish shark triggers none of the rules, necessitating the use of a default class.
 
 \section{Characteristics of Rule Sets}
 
-\subsection{Strategy 1: Mutually Exclusive and Exhaustive Rules}
+When applying a rule-based classifier, different scenarios can occur. A lemur triggers rule R3 and is classified as a mammal. A turtle triggers both R4 and R5, which requires a conflict resolution strategy. A dogfish shark triggers none of the rules, necessitating the use of a default class.
 
-A classifier contains \textbf{mutually exclusive rules} if the rules are independent of each other, meaning every record is covered by at most one rule. The classifier has \textbf{exhaustive coverage} if it accounts for every possible combination of attribute values, ensuring that each record is covered by at least one rule.
 
-\subsection{Strategy 2: Non-mutually Exclusive and Non-exhaustive Rules}
 
-When rules are not mutually exclusive, a record may trigger more than one rule. This conflict can be resolved using either an ordered rule set or an unordered rule set with voting schemes. When rules are not exhaustive, a record may not trigger any rules, and the solution is to use a default class for such cases.
+\subsection{Mutually Exclusive and Exhaustive Rules}
+
+A classifier contains \textbf{mutually exclusive rules} if the rules are independent of each other, meaning every record is covered by at most one rule. 
+
+The classifier has \textbf{exhaustive coverage} if it accounts for every possible combination of attribute values, ensuring that each record is covered by at least one rule.
+
+\nl
+
+When rules are \textbf{not} mutually exclusive, a record may trigger more than one rule. This conflict can be resolved using either an \textbf{ordered rule set} or an unordered rule set with \textbf{voting} schemes. 
+
+When rules are not exhaustive, a record may not trigger any rules, and the solution is to use a default class for such cases.
 
 \subsection{Ordered Rule Set}
 
 In an ordered rule set, rules are rank ordered according to their priority. Such an ordered rule set is known as a \textbf{decision list}. When a test record is presented to the classifier, it is assigned to the class label of the highest ranked rule it has triggered. If none of the rules fired, it is assigned to the default class (typically the majority class).
 
-\subsection{Rule Ordering Schemes}
+\subsubsection{Rule Ordering Schemes}
 
-\textbf{Rule-based ordering:} Individual rules are ranked based on their quality measured by accuracy, coverage, or size (number of attribute tests in the rule antecedent). The resulting rule set is known as a decision list, where the record $X$ is classified by the rule with the highest priority and any other rule that satisfies is ignored. Each rule in a decision list implies the negation of the rules that come before it in the list, making rules in a decision list more difficult to interpret.
+\textbf{Rule-based ordering:} Individual rules are ranked based on their quality measured by accuracy, coverage, or size (number of attribute tests in the rule antecedent). \\
+The resulting rule set is known as a \textbf{decision list}, where the record $X$ is classified by the rule with the highest priority and any other rule that satisfies is ignored.
+\ul{Each rule in a decision list implies the negation of the rules that come before it in the list}, making rules in a decision list more difficult to interpret.
 
-\textbf{Class-based ordering:} Rules that belong to the same class appear together. The classes are sorted in order of decreasing ``importance'', such as by decreasing order of prevalence, or alternatively based on the misclassification cost per class. Within each class, the rules are not ordered.
+\textbf{Class-based ordering:} Rules that belong to the same class appear together. 
+The classes are sorted in order of decreasing ``importance'', such as by decreasing order of prevalence, or alternatively based on the misclassification cost per class. 
+\ul{Within each class, the rules are not ordered.}
 
 \textbf{Unordered rules:} These use a voting schema to resolve conflicts.
 
@@ -55,7 +82,7 @@ In an ordered rule set, rules are rank ordered according to their priority. Such
 
 There are two main approaches for building classification rules. The \textbf{direct method} extracts rules directly from data (examples include RIPPER, CN2, and Holte's 1R), while the \textbf{indirect method} extracts rules from other classification models such as decision trees or neural networks (e.g., C4.5rules).
 
-\section{Direct Method: Sequential Covering}
+\subsection{Direct Method: Sequential Covering}
 
 \textbf{Algorithm:}
 \begin{enumerate}
@@ -68,19 +95,36 @@ There are two main approaches for building classification rules. The \textbf{dir
     \end{enumerate}
 \end{enumerate}
 
-\subsection{Learn-One-Rule Function}
+\subsubsection{Learn-One-Rule Function}
 
-The goal of the Learn-One-Rule function is to extract a classification rule covering many positive records and none (or few) negative ones. Since finding the optimal rule requires high computational time, a greedy strategy is employed by refining an initial rule based on some evaluation measure. Rules are extracted one class at a time, and the criterion for deciding the order of the class to consider depends on class prevalence and misclassification error for a given class.
+The goal of the Learn-One-Rule function is to extract a classification rule covering many positive records and none (or few) negative ones.
+Since finding the optimal rule requires high computational time, a greedy strategy is employed by refining an initial rule based on some evaluation measure. 
 
-\subsection{Rule Growing Strategies}
+Rules are extracted one class at a time, and the criterion for deciding the order of the class to consider depends on class prevalence and misclassification error for a given class.
 
-Two common strategies exist for growing rules. The \textbf{general-to-specific} approach starts with an empty rule $\{\ \}$ and iteratively adds conjuncts like $Refund=No$, $Status=Single$, $Income>80K$ until the rule is sufficiently specific. Conversely, the \textbf{specific-to-general} approach starts with a specific rule covering a selected record (e.g., $Refund=No, Status=Single, Income=85K$ with Class=Yes) and then generalizes it by removing conditions.
+\subsubsection{Rule Growing Strategies}
+
+There are two common strategies exist for growing rules.
+
+The \textbf{general-to-specific} approach starts with an empty rule $\{\ \}$ and iteratively adds conjuncts like $Refund=No$, $Status=Single$, $Income>80K$ until the rule is sufficiently specific.\\
+Conversely, the \textbf{specific-to-general} approach starts with a specific rule covering a selected record (e.g., $Refund=No, Status=Single, Income=85K$ with Class=Yes) and then generalizes it by removing conditions.
 
 \section{Rule Evaluation for Growing Rules}
 
 \subsection{Based on Rule Coverage}
 
 Evaluation measures can be based on the coverage of the rule with respect to records with class $c$.
+\begin{align*}
+   Accuracy = \frac{n_c}{n}\\
+   Laplace = \frac{n_c + 1}{n + k}\\
+   M-estimate = \frac{n_c + k \cdot p}{n + k}
+\end{align*}
+\begin{itemize}
+   \item $n_c$: number of records covered by the rule with class $c$
+   \item $n$: total number of records covered by the rule
+   \item $k$: number of classes
+   \item $p$: prior probability (of class $c$?)
+\end{itemize}
 
 \subsection{Based on Support Count: FOIL's Information Gain}
 
@@ -114,21 +158,33 @@ Dataset: 60 positive records and 100 negative records
 
 \subsection{For 2-class Problem}
 
-For a 2-class problem, RIPPER chooses one of the classes as the positive class and the other as the negative class. It then learns rules for the positive class, while the negative class becomes the default class.
+For a 2-class problem, RIPPER chooses one of the classes as the positive class and the other as the negative class.
+It then learns rules for the positive class, while the negative class becomes the default class.
 
 \subsection{For Multi-class Problem}
 
-For multi-class problems, RIPPER orders the classes according to increasing class prevalence (the fraction of instances that belong to a particular class). It learns the rule set for the smallest class first, treating the rest as the negative class, then repeats the process with the next smallest class as the positive class.
+For multi-class problems, RIPPER orders the classes according to increasing class prevalence (the fraction of instances that belong to a particular class). 
+It learns the rule set for the smallest class first, treating the rest as the negative class, then repeats the process with the next smallest class as the positive class.
 
 \subsection{Growing a Rule in RIPPER}
 
-RIPPER starts from an empty rule and adds conjuncts as long as they improve FOIL's information gain. It stops when the rule no longer covers negative examples and then immediately prunes the rule using incremental reduced error pruning. The measure for pruning is $v = (p-n)/(p+n)$, where $p$ is the number of positive examples covered by the rule in the validation set and $n$ is the number of negative examples. The pruning method deletes any final sequence of conditions that maximizes $v$.
+
+
+% RIPPER starts from an empty rule and adds conjuncts as long as they improve FOIL's information gain. It stops when the rule no longer covers negative examples and then immediately prunes the rule using incremental reduced error pruning. The measure for pruning is $v = (p-n)/(p+n)$, where $p$ is the number of positive examples covered by the rule in the validation set and $n$ is the number of negative examples. The pruning method deletes any final sequence of conditions that maximizes $v$.
+\begin{itemize}
+   \item RIPPER starts from an empty rule and adds conjuncts as long as they improve FOIL's information gain.
+   \item It stops when the rule no longer covers negative examples and then immediately prunes the rule using incremental reduced error pruning.
+   \item The measure for pruning is $v = (p-n)/(p+n)$, where $p$ is the number of positive examples covered by the rule in the validation set and $n$ is the number of negative examples.
+   \item The pruning method deletes any final sequence of conditions that maximizes $v$.
+\end{itemize}
 
 \subsection{Building a Rule Set in RIPPER}
 
-RIPPER uses a sequential covering algorithm that finds the best rule covering the current set of positive examples and eliminates both positive and negative examples covered by the rule. Each time a rule is added to the rule set, the algorithm computes the new description length and stops adding new rules when this description length is $d$ bits longer than the smallest description length obtained so far.
+RIPPER uses a \textbf{sequential covering algorithm} that finds the best rule covering the current set of positive examples and eliminates both positive and negative examples covered by the rule.
 
-\section{Minimum Description Length (MDL)}
+Each time a rule is added to the rule set, the algorithm computes the new description length and stops adding new rules when this description length is $d$ bits longer than the smallest description length obtained so far.
+
+\subsection{Minimum Description Length (MDL)}
 
 The Minimum Description Length principle is expressed as $Cost(Model, Data) = Cost(Data|Model) + \alpha \times Cost(Model)$, where Cost is the number of bits needed for encoding. The goal is to search for the least costly model. Here, $Cost(Data|Model)$ encodes the misclassification errors, while $Cost(Model)$ uses node encoding (number of children) plus splitting condition encoding.
 
@@ -136,21 +192,49 @@ The Minimum Description Length principle is expressed as $Cost(Model, Data) = Co
 
 \subsection{Algorithm}
 
-C4.5rules extracts rules from an unpruned decision tree. For each rule $r: A \rightarrow y$, it considers an alternative rule $r': A' \rightarrow y$ where $A'$ is obtained by removing one of the conjuncts in $A$. The algorithm compares the pessimistic error rate for $r$ against all $r'$s and prunes the rule if one of the alternative rules has a lower pessimistic error rate. This process repeats until generalization error can no longer be improved. After removing duplicate rules, C4.5rules uses class ordering instead of ordering individual rules. For multi-class problems, rather than assigning a default class to test records not covered by any rule, C4.5rules looks for the rule that most closely matches the record.
+% C4.5rules extracts rules from an unpruned decision tree. For each rule $r: A \rightarrow y$, it considers an alternative rule $r': A' \rightarrow y$ where $A'$ is obtained by removing one of the conjuncts in $A$. The algorithm compares the pessimistic error rate for $r$ against all $r'$s and prunes the rule if one of the alternative rules has a lower pessimistic error rate. This process repeats until generalization error can no longer be improved. After removing duplicate rules, C4.5rules uses class ordering instead of ordering individual rules. For multi-class problems, rather than assigning a default class to test records not covered by any rule, C4.5rules looks for the rule that most closely matches the record.
+
+C4.5rules extracts rules from an unpruned decision tree. \\
+For each rule $r: A \rightarrow y$:
+\begin{itemize}
+   \item considers an alternative rule $r': A' \rightarrow y$ where $A'$ is obtained by removing one of the conjuncts in $A$.
+   \item The algorithm compares the pessimistic error rate for $r$ against all $r'$s and prunes the rule if one of the alternative rules has a lower pessimistic error rate.
+   \item This process repeats until generalization error can no longer be improved.
+   \item After removing duplicate rules, C4.5rules uses class ordering instead of ordering individual rules.
+   \item For multi-class problems, rather than assigning a default class to test records not covered by any rule, C4.5rules looks for the rule that most closely matches the record.
+\end{itemize}
 
 \subsection{Pessimistic Error Estimate}
 
-The Pessimistic Error Estimate of a rule set $T$ with $k$ rules is computed as $err(T) + W \times \frac{k}{N_{train}}$, where $err(T)$ is the error rate on all training records, $W$ is a trade-off hyper-parameter representing the relative cost of adding a rule, $k$ is the number of rule nodes, and $N_{train}$ is the total number of training records.
+The Pessimistic Error Estimate of a rule set $T$ with $k$ rules is computed as 
+\[err(T) + W \times \frac{k}{N_{train}}\]
+
+where $err(T)$ is the error rate on all training records, $W$ is a trade-off hyper-parameter representing the relative cost of adding a rule, $k$ is the number of rule nodes, and $N_{train}$ is the total number of training records.
+
+This measure can be used to evaluate whether pruning a rule improves the overall performance of the rule set.
 
 \subsection{Class Ordering in C4.5rules}
 
-C4.5rules orders subsets of rules rather than individual rules, using class ordering. Each subset is a collection of rules with the same rule consequent (class). The algorithm computes the description length of each subset as $L(error) + g \times L(model)$, where $g$ is a parameter that takes into account the presence of redundant attributes in a rule set (with a default value of 0.5).
+C4.5rules orders subsets of rules rather than individual rules, using class ordering. Each subset is a collection of rules with the same rule consequent (class). 
+
+The algorithm computes the description length of each subset as 
+\[L(error) + g \times L(model)\]
+where $g$ is a parameter that takes into account the presence of redundant attributes in a rule set (with a default value of 0.5).
 
 \section{Advantages of Rule-Based Classifiers}
 
-Rule-based classifiers have characteristics quite similar to decision trees: they are as highly expressive as decision trees, easy to interpret, have comparable performance, and can handle redundant attributes. Additionally, they are better suited for handling imbalanced classes, though they are harder to handle missing values in the test set.
+\ul{Rule-based classifiers have characteristics quite similar to decision trees}: they are as highly expressive as decision trees, easy to interpret, have comparable performance, and can handle redundant attributes. 
+
+Additionally, they are better suited for handling imbalanced classes, though they are harder to handle missing values in the test set.
 
 \section{Example: C4.5 vs C4.5rules vs RIPPER}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/12/decisiontree.png}
+   \caption{Decision tree for Table \ref{fig:12/mammals:}}
+   \label{fig:12/decisiontree}
+\end{figure}
 
 \subsection{C4.5rules}
 

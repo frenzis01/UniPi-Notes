@@ -51,6 +51,59 @@ The general procedure of Hunt's algorithm is as follows:
 	\item If $D_t$ contains records that belong to more than one class, use an attribute test to split the data into smaller subsets. Recursively apply the procedure to each subset.
 \end{itemize}
 
+\subsubsection{Splitting data}
+The \textbf{split} consists in selecting an attribute $A$ and partitioning the set of records $D_t$ into subsets based on the values of $A$.\\
+The idea is that if the value of an attribute is strongly correlated with the class label, then splitting on that attribute will create child nodes that are more homogeneous in terms of class distribution.
+In other terms, if the majority of records where $A = a_i$ belong to class $C_j$, then it is likely that an unseen record with $A = a_i$ also belongs to class $C_j$.
+
+\paragraph{Example: Understanding Splits}
+
+Consider a simple dataset with car types and classes:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{ID} & \textbf{CarType} & \textbf{Class} \\
+\hline
+1 & Sports & C1 \\
+2 & Family & C2 \\
+3 & Sports & C1 \\
+4 & Luxury & C2 \\
+5 & Family & C2 \\
+\hline
+\end{tabular}
+\caption{Example dataset for splitting}
+\end{table}
+
+\textbf{Before the split:} All 5 records are together in one node (the parent node), with mixed classes.
+
+{\textbf{After splitting on ``CarType = Sports'':}\ns
+\begin{itemize}
+    \item \textbf{Group 1 (CarType = Sports):} Records 1, 3 $\rightarrow$ majority class C1
+    \item \textbf{Group 2 (CarType $\neq$ Sports):} Records 2, 4, 5 $\rightarrow$ majority class C2
+\end{itemize}}
+
+We have therefore \textbf{divided/separated} (split!) the original dataset into two more homogeneous groups. This split is useful because it creates subsets where the class distribution is more uniform, making predictions more reliable.
+
+\textbf{Why is it called a ``split''?} Because we literally \textit{split/divide/separate} the dataset into smaller subsets based on a condition on an attribute, similar to separating a deck of cards into red cards vs black cards.
+
+{\textbf{Purpose of splitting:}\ns
+\begin{enumerate}
+    \item \textbf{Reduce impurity:} Create groups where data is more homogeneous with respect to the target class
+    \item \textbf{Build the tree:} Each split creates branches in the decision tree
+    \item \textbf{Make predictions:} By following splits, we reach leaf nodes that predict the class
+\end{enumerate}}
+
+{The goal is to find the \textbf{best split}, i.e., the one that:\ns
+\begin{itemize}
+    \item Best separates the classes (reduces impurity)
+    \item Makes the resulting groups as ``pure'' as possible (all or most from the same class)
+\end{itemize}}
+
+This is why we compute measures like the \textit{Gini Index} (discussed later): to quantify how well a split separates the classes.
+
+\newpage
 \subsubsection{Example: Building a Decision Tree Step-by-Step}
 
 \begin{figure}[htbp]
@@ -522,18 +575,85 @@ We need a method to \ul{specify a \textbf{test condition}} and a measure to eval
 \subsection{Test conditions}
 Defining the test conditions to split the attributes depends on the type of attributes, whether they are categorical, binary, nominal, or continuous.
 
+In the slides there are some examples of test conditions for different attribute types.
+They are not reported here for brevity.
 
 
-\section{Model Selection}
+\section{Classification Model Evaluation}
+
+Model selection is performed during model building to ensure not to choose an overly complex model that would most likely overfit data.
 
 \subsection{Metrics for Performance evaluation}
 
 To evaluate the performance of a classification model we must focus on the predictive capability of a model.
 Rather than how fast it takes to classify or build models, scalability, etc.
 
-We exploit a \textbf{confusion matrix} to evaluate the performance of a classification model, built like the following:
 
-% // TODO
+\begin{paracol}{2}
+      
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[scale=1.2]
+    % Draw the main grid
+    \draw[thick] (0,0) rectangle (4,4);
+    \draw[thick] (0,2) -- (4,2);
+    \draw[thick] (2,0) -- (2,4);
+    
+    % Header labels
+    \node[font=\bfseries] at (2,4.5) {Predicted Class};
+    \node[font=\bfseries, rotate=90] at (-1.6,3) {Actual Class};
+    
+    % Column headers (Predicted)
+    \node[font=\small] at (1,3.5) {Positive};
+    \node[font=\small] at (3,3.5) {Negative};
+    
+    % Row headers (Actual)
+    \node[font=\small] at (0.5,3) {Positive};
+    \node[font=\small] at (0.5,1) {Negative};
+    
+    % Fill cells with colors
+    \fill[green!20] (2,2) rectangle (4,4);
+    \fill[green!20] (0,0) rectangle (2,2);
+    \fill[red!20] (2,0) rectangle (4,2);
+    \fill[red!20] (0,2) rectangle (2,4);
+    
+    % Redraw grid lines on top of colors
+    \draw[thick] (0,0) rectangle (4,4);
+    \draw[thick] (0,2) -- (4,2);
+    \draw[thick] (2,0) -- (2,4);
+    
+    % Cell labels
+    \node[font=\Large\bfseries] at (3,3) {TP};
+    \node[font=\small, text width=2.5cm, align=center] at (3,2.5) {True Positive};
+    
+    \node[font=\Large\bfseries] at (1,3) {FN};
+    \node[font=\small, text width=2.5cm, align=center] at (1,2.5) {False Negative};
+    
+    \node[font=\Large\bfseries] at (3,1) {FP};
+    \node[font=\small, text width=2.5cm, align=center] at (3,0.5) {False Positive};
+    
+    \node[font=\Large\bfseries] at (1,1) {TN};
+    \node[font=\small, text width=2.5cm, align=center] at (1,0.5) {True Negative};
+    
+\end{tikzpicture}
+\caption{Confusion Matrix structure}
+\label{fig:confusion-matrix-structure}
+\end{figure}
+
+\switchcolumn
+\colfill
+We exploit a \textbf{confusion matrix} to evaluate the performance of a classification model, built like the one on the left.
+
+\begin{itemize}
+      \item \textbf{True Positive (TP):} Correctly predicted positive instances
+      \item \textbf{True Negative (TN):} Correctly predicted negative instances
+      \item \textbf{False Positive (FP):} Incorrectly predicted as positive (Type I error)
+      \item \textbf{False Negative (FN):} Incorrectly predicted as negative (Type II error)
+\end{itemize}
+\colfill
+
+\end{paracol}
+
 The most widely used metric based on the matrix is the \textbf{accuracy}.
 \[
 Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
@@ -543,6 +663,15 @@ Note that accuracy may be misleading when dealing with imbalanced classes.
 Consider a dataset where 95\% of instances belong to class A and only 5\% to class B. A model that always predicts class A will have an accuracy of 95\%, but it fails to identify any instances of class B.
 
 Another metric is $C(i|j)$, the \textbf{cost of erroneously classifying} an instance of class $j$ as class $i$.
+
+\begin{figure}[h]
+\centering
+\includegraphics{images/11/costMatrix.png}
+\caption{Cost Matrix: $C(i|j)$ represents the cost of misclassifying class $j$ as class $i$}
+\label{fig:cost-matrix}
+\end{figure}
+
+The cost matrix allows us to assign different penalties to different types of misclassifications. Typically, correct classifications have zero cost, while misclassifications have positive costs that reflect their real-world impact.
 
 We have also:
 \begin{itemize}
@@ -571,7 +700,39 @@ We have also:
 
 \section{Methods for Performance evaluated}
 
-% // TODO
+It is key that test data is \textbf{not} used in any way to create the classifier.
+
+Having \textbf{training}, \textbf{validation} and \textbf{test} sets is a good practice to avoid overfitting and get an unbiased estimate of the model's performance.
+
+After having built the basic strucutre of the model, validation data may be used to tune hyperparameters and select the best model.
+
+Finally, the test set is used only once at the very end to get an unbiased estimate of the generalization error.
+\nl
+
+In general, the more data we have for training, the better the model will perform, but there is a threshold after which adding more data is not that impactful
+
+\begin{figure}[htbp]
+      \centering
+      \includegraphics{images/11/learningCurve.png}
+      \caption{Learning Curve displaying how accuracy changes with varying sample size.}
+      \label{fig:11/learningCurve}
+\end{figure}
+
+\subsection{Estimation methods}
+
+The following methods can be used to estimate the performance of a classification model.
+They consists in splitting the available dataset into training and test sets in different ways, leading to different trade-offs between bias and variance of the performance estimate.
+
+\begin{itemize}
+      \item 
+      The \textbf{holdout} method involves splitting the dataset into two separate sets: 2/3 for training set and 1/3 for a test set.
+      \item \textbf{Random subsampling} involves randomly splitting the dataset into training and test sets multiple times, training the model on each training set, and evaluating it on the corresponding test set. The final performance is averaged over all iterations.
+      \note{This is essentially a repeated holdout method.}
+      \item \textbf{Cross-validation} involves partitioning the dataset into k subsets (folds). The model is trained on k-1 folds and tested on the remaining fold. This process is repeated k times, with each fold serving as the test set once. The final performance is averaged over all k iterations.
+      \item \textbf{Stratified sampling} is a variation of cross-validation that ensures each fold has a representative distribution of classes, which is particularly important for imbalanced datasets.\\
+      Instead of blindly assigning 2/3 and 1/3 of instances to training and test sets, stratified sampling aims also at maintaining the same class proportions in both sets as in the original dataset.
+      \item \textbf{Bootstrap} involves creating multiple training sets by sampling with replacement from the original dataset. Each bootstrap sample is used to train the model, and the instances not included in the sample (out-of-bag instances) are used for testing. The final performance is averaged over all bootstrap samples.
+\end{itemize}
 
 \section{Methods for Model Comparison}
 
@@ -582,10 +743,28 @@ Comparing models is key when tuning hyperparameters, selecting features, or choo
 \subsection{ROC - Receiver Operating Characteristic}
 
 ROC curves plot the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings.\\
-The area under the ROC curve (AUC) provides a single measure of overall model performance.\\
+A model provides a probability of an instance belonging to the positive class, and by varying the threshold for classification, we can obtain different TPR and FPR values.
+
+If threshold $t = 0$ implies that, in order to classify an instance as positive, the predicted probability must be equal to 1, then all instances will be classified as negative, leading to $TPR = 0$ and $FPR = 0$; explaining why all ROC curves start at the origin $(0,0)$.\\
+Conversely, if threshold $t = 1$ implies that all instances will be classified as positive, leading to $TPR = 1$ and $FPR = 1$; explaining why all ROC curves end at the point $(1,1)$.\\
+When varying the threshold from 0 to 1, we move from the point $(0,0)$ to $(1,1)$ on the ROC curve. Depending on the model, different thresholds may yield different TPR and FPR values, resulting in different ROC curves.\\
+Note that lowering the threshold increases FPR, they are essentially inversely related. This is due to the fact that as the threshold gets closer to zero, all instances are classified as positive, so the number of false positives can only increase.
+
+\ul{The area under the ROC curve (\textbf{AUC}) provides a single measure of overall model performance; the bigger, the better.}\\
 Every point on the ROC curve represents the performance of each classifier, each having different trade-off between sensitivity and specificity.
 
-% // TODO
+
+\begin{figure}[htbp]
+      \centering
+      \includegraphics{images/11/rocCurve.png}
+      \caption{ROC curve example}
+
+      Here the diagonal line represent random guessing, so on average both TPR and FPR are equal. 
+      If a model performs below the diagonal line is worse than random guessing, it's essentially predicting more wrong classes than correct ones.\\
+      The two models in the figure perform similarly, they are better for different things.
+      $M_1$ has high TPR for high thresholds (so for low FPR), while $M_2$ has high TPR for low thresholds (so for high FPR).
+      \label{fig:11/rocCurve}
+\end{figure}
 
 \subsection{Significance Testing}
 
@@ -602,3 +781,7 @@ We can use significance testing to answer these questions.
 
 \subsubsection{Confidence Interval for accuracy}
 We can determine a confidence interval for accuracy, in order to estimate the range within which the true accuracy of the model lies, with a certain level of confidence.
+
+Prediction can be regarded as a Bernoulli trial, where each prediction is either correct (success) or incorrect (failure).
+A collection of Bernoulli trials has a Binomial distribution.
+There are some practical formulas in the slides which ain't reported here.
