@@ -90,12 +90,14 @@ in the latter case, it may \ul{become leader through a \textit{``candidacy''} pr
 \begin{itemize}
    \item There exist a timeout for the heartbeats from the leader
    \item In case no heartbeat is received the follower changes its status to candidate and starts a leader election.
+   \item Heartbeat messages may be piggybacked with log (see below) entries to replicate them to the followers.
 \end{itemize}}
 
 Note that the \ul{\textbf{underlying assumption} is that \textit{everybody knows everybody}}.
 
 \subsection{Key points}
 \begin{itemize}
+	\item \textbf{Log} - Log contains a sequence of client commands and updates to be applied in the same order by all nodes.
    \item \textbf{Leader election} - Raft uses a randomized timeout to elect a leader.
    \item \textbf{Log replication} - The leader replicates its log to the followers.
    \item \textbf{Safety and Liveness} - Raft ensures safety and liveness under failure conditions.
@@ -109,7 +111,7 @@ The leader is responsible for replicating its log to the followers. Such log con
 Only the leader can append entries to the log, and each entry is committed once it is replicated to a majority of the nodes.
 \nl
 
-In case the leader crashes it is important to ensure that a new one is elected, and that it has the same log as the previous one.\\
+In case the leader crashes it is important to ensure that a new one is elected, and that it has the same log as the previous one; in case it has incomplete log entries compared to other nodes, it fetches the missing entries from the followers.\\
 The new leader ensures that the system can continue operating without losing any of the commands already agreed upon by the majority of nodes.
 
 \framedt{Log replication}{
@@ -135,7 +137,9 @@ There are three states in Raft:
 }
 
 Once a leader is elected, the leader appends new log entries and replicates them to all followers.
-A log entry is considered committed when it is replicated to a majority of nodes. Followers always accept entries from the current leader to maintain consistency.
+\ul{A log entry is considered committed when it is replicated to a majority of nodes}. 
+Followers always accept entries from the current leader to maintain consistency.
+
 
 \tikzset{every loop/.style={min distance=10mm,in=50,out=490,looseness=10}}
 \begin{figure}[htbp]
@@ -155,7 +159,7 @@ A log entry is considered committed when it is replicated to a majority of nodes
   \draw[arrow] (follower) -- node[above] {Suspects leader failure} (candidate);
   \draw[arrow] (candidate) -- node[above] {win election} (leader);
   \draw[arrow, bend left] (leader) to node[above] {heartbeat timeout} (follower);
-  \draw[arrow, bend left] (leader) to node[below] {step down} (follower);
+  \draw[arrow, bend left] (leader) to node[below] {discovers new \textit{term}} (follower);
   \draw[arrow, loop above] (candidate) to node[above] {election timeout} (candidate);
   
   \end{tikzpicture}
@@ -164,17 +168,18 @@ A log entry is considered committed when it is replicated to a majority of nodes
 \end{figure}
 
 \subsubsection{Ensuring Safety and Liveness}
-\proscons{Safety}{Liveness}
-   {
-    \begin{itemize}
-    	\item Raft ensures that the logs of all nodes are consistent. No two nodes will decide on different values, maintaining the consistency property.
-    \end{itemize}
-   }
-   {
-    \begin{itemize}
-    	\item Raft guarantees that as long as a majority of nodes are functioning, the system will continue to make progress (Liveness). Raft avoids the Liveness issues that Paxos sometimes faces, especially with leader election and split-brain situations
-    \end{itemize}
-   }
+\begin{itemize}
+	\item Safety\\
+	Raft ensures that the logs of all nodes are consistent.
+	No two nodes will decide on different values, maintaining the consistency property.
+	\item Liveness\\
+	Raft guarantees that as long as a majority of nodes are functioning, the system will continue to make progress (Liveness).
+	Raft avoids the Liveness issues that Paxos sometimes faces, especially with leader election and split-brain situations.
+\end{itemize}
+
+Raft separates the consensus process into distinct stages: leader election, log replication, and commitment.
+The leader-driven structure is intuitive and provides clear responsibilities.\\
+Compared to Paxos, its safety is simpler to reason about since all decisions are centralized around the leader.
 
 \subsection{Raft Election and Voting process}
 \subsubsection{Election}
@@ -182,7 +187,7 @@ A log entry is considered committed when it is replicated to a majority of nodes
 \begin{itemize}
 	\item Election Term and Leader State:
 	      \begin{itemize}
-		      \item term number represents a logical clock that increases monotonically whenever a new election is initiated.
+		      \item \ul{\textit{term} number represents a logical clock} that increases monotonically whenever a new election is initiated.
 		      \item prevent conflicts during leader election and ensures a unique identifier for each term.
 	      \end{itemize}
 

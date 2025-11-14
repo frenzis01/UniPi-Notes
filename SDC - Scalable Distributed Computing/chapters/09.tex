@@ -36,62 +36,44 @@ systems:\ns
 	This cannot exist in a distributed system; network partitions are inevitable. 
 \end{itemize}}
 
-Both AP and CP systems can offer a degree of consistency, and availability, as well as partition tolerance.
+\ul{Both AP and CP systems can offer a degree of consistency, and availability, as well as partition tolerance}.
 
 \section{Consistency}
 AP systems provide best effort consistency, meaning that they will eventually become consistent, but not necessarily at the time of the request.\\
 Examples are web caching and DNS.
 
 \begin{itemize}
-	\item \textbf{Strong} Consistency - all users see the same data at the same time
-	\item \textbf{Weak} Consistency - Reads may return stale data
+	\item \textbf{Strong} Consistency - all users see the same data at the same time. Any read operation returns the result of the most recent write operation (linearizability). This is used for financial transactions.
+	\item \textbf{Weak} Consistency - Reads may return stale data. Common in systems that prioritize high availability and low latency, with minimal constraints on ordering and visibility.
 	\item \textbf{Eventual} Consistency - If no new updates are made to object, eventually all accesses will return the last updated value
    \begin{itemize}
-   	\item \textit{Causal} consistency - Processes that have causal
-   	      relationship will see
-   	      consistent data
-   	\item \textit{Read-your-write}
-   	      consistency - A process always accesses
-   	      the data item after it’s update
-   	      operation and never sees an
-   	      older value
-   	\item \textit{Session} consistency - As long as session exists,
-   	      system guarantees read-your-
-   	      write consistency
-   	      Guarantees do not overlap
-   	      sessions
-   
-   	\item \textit{Monotonic read} consistency - If a process has seen a particular value of data item, any subsequent processes will never return any previous values
-   
-   	\item \textit{Monotonic write} consistency - The system guarantees to serialize the writes by the same process
+   	\item \textit{Causal} consistency - Processes that have causal relationship will see consistent data. Preserves the causality of operations by ensuring that causally related updates are seen in the same order by all nodes.
+   	\item \textit{Read-your-write} consistency - A process always accesses the data item after it’s update operation and never sees an older value.
+   	\item \textit{Session} consistency - As long as session exists, system guarantees read-your- write consistency.\\ 
+		Guarantees do not overlap sessions.
+   	\item \textit{Monotonic read} consistency - If a process has seen a particular value of data item, any subsequent processes will never return any previous values.
+   	\item \textit{Monotonic write} consistency - The system guarantees to serialize the writes by the same process.
    	\item[] These two properties may be combined
    \end{itemize}
 \end{itemize}
 
-% // TODO slides 30-40
 
-\section{Example Scenarios}
-\subsection{Dynamic Tradeoff - Dynamic Reservation}
-In an airline reservation system when most of seats are available it is ok to rely on somewhat out-of-date data, availability
-is more critical.
+\subsection{Example Scenario - Dynamic Tradeoff - Dynamic Reservation}
+In an airline reservation system when most of seats are available it is ok to rely on somewhat out-of-date data, availability is more critical.
 
-When the plane is close to be filled instead, it needs
-more accurate data to ensure the plane is not
-overbooked, consistency becomes more critical.
+When the plane is close to be filled instead, it needs more accurate data to ensure the plane is not overbooked, consistency becomes more critical.
 
-Neither strong consistency nor guaranteed
-availability, but it may significantly increase the
-tolerance of network disruption.
+Neither strong consistency nor guaranteed availability, but it may significantly increase the tolerance of network disruption.
 
 \section{Partitioning}
 \begin{itemize}
-	\item Data Partitioning - Different data may require different
+	\item \textbf{Data} Partitioning - Different data may require different
    consistency and availability.\\
    Example:
    A \textit{Shopping cart} requires high availability, responsive, can
 sometimes suffer anomalies, while \textit{Product information} need to be available, slight variations in inventory are sufferable.
 Checkout, billing, shipping records must be consistent.
-	\item Operational Partitioning - Different operations may require different consistency and availability.\\
+	\item \textbf{Operational} Partitioning - Different operations may require different consistency and availability.\\
    Example:
    A user login requires high availability, responsive, can sometimes suffer anomalies, while a transaction requires consistency.\\
    In general,
@@ -99,10 +81,12 @@ Checkout, billing, shipping records must be consistent.
    	\item \textit{Reads} -  high availability; e.g. ``query''
 	   \item \textit{Writes} -  high consistency, lock when writing; e.g. ``purchase''
    \end{itemize}
-	\item Functional Partitioning
-	% // TODO
-	\item User Partitioning
-	\item Hierarchical Partitioning
+	\item \textbf{Functional} Partitioning - System consists of sub-services. Different sub-services provide different balances.
+	\item \textbf{User} Partitioning - Try to keep related data close together to assure better performance. Besides, having geographical distribution of users may help to decide the trade-off, since users querying servers closer to them may have lower latency.
+	\item \textbf{Hierarchical} Partitioning - Different levels of consistency and availability may be provided at different levels of the system architecture.\\
+	Example:
+	A multi-tier architecture may provide strong consistency at the database level, while allowing for eventual consistency at the application level to improve responsiveness.
+	Local servers (better connected) guarantee more consistency and availability. Global servers has more partition and relax one of the requirement.
 \end{itemize}
 
 
@@ -126,6 +110,8 @@ Checkout, billing, shipping records must be consistent.
    	\item If there is a partition (P), how does the system trade off availability and consistency (A and C);
       \item else (E), when the system is running normally in the absence of partitions, how does the system trade off latency (L) and consistency (C)?
    \end{itemize}
+
+	In other terms, PACELC states that in presence of a network partition, a distributed system must choose between consistency and availability (as per CAP theorem). However, even when there is no partition, the system must still make a trade-off between latency and consistency.
 }
 
 There are some systems which adopt various PACELC flavors:

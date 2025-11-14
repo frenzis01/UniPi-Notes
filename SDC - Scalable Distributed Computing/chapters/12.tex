@@ -1,5 +1,10 @@
 \chapter{Transactions}
 
+Everything may fail at any time in a distributed system.
+Nodes may crash, networks may partition, messages may be lost or duplicated, clients may disconnect unexpectedly, race conditions may occur\dots
+In this scenario, it is crucial to maintain data consistency across multiple nodes.
+\ul{Transactions provide a framework for maintaining data consistency in the presence of failures.}
+
 \begin{definition}
    [Transaction]
    A \textbf{transaction} is a sequence of operations that are executed as a single unit of work. A transaction can consist of multiple operations, such as reads, writes, and updates.
@@ -9,13 +14,8 @@
 
 Transactions are clearly crucial in a distributed system, as they build a framework for allowing to maintain data consistency across multiple nodes.
 
-
-
-% Lesson 14/11
 Transactions come at a cost, since in a distributed system even a simple mechanism such as a mutex may become costly to implement.\\
 Transactions hence provide all-or-nothing guarantees, simplifying \textbf{error handling}, since partial failures are not to be managed.
-
-
 
 
 \section{Deeper into DBs}
@@ -45,6 +45,24 @@ However, some NoSQL databases provide limited support for transactions on a sing
 
 These were coined by \textit{Jim Gray} in 1983.
 
+\subsection{Atomicity}
+Ensures no other thread can see a half-finished operation. System is either in the state before or after the operation.
+It is not about concurrency, but about handling faults during transactions. Ensures all writes in a transaction are discarded if a fault occurs.
+Prevents partial changes and ensures data integrity.
+
+\subsection{Consistency}
+Involves statements about data (\textit{invariants}) that must always be true. 
+\note{Example: In accounting, credits and debits must always balance}
+Application must define transactions correctly to preserve consistency: database cannot guarantee consistency if application writes bad data.
+
+Database can check specific invariants using constraints, but these are application specific.
+Atomicity, isolation, and durability are \textit{database properties}, but \textbf{Consistency}, instead, is an \textit{application property} relying on atomicity and isolation.
+
+\subsection{Isolation}
+Multiple clients accessing the same records can cause race conditions.
+Isolation ensures transactions are isolated from each other, thus they appear to run serially.
+In fact it is formalized as serializability.
+
 \subsection{Durability}
 Durability is the property that ensures that once a transaction is committed, the changes are permanent.
 
@@ -55,7 +73,19 @@ Given the absence of a one-size-fits-all solution, typically the approach involv
 
 \subsection{Single-Object and Multi-Object Transactions}
 If a \ul{transaction involves multiple objects, it is a multi-object transaction, which causes \textbf{performance} and \textbf{deadlock} issues.}
+Multi-object transactions require some way of determining which read and write operations belong to which transaction.
 
+Single-object operations prevent lost updates when multiple clients write concurrently.
+These operations are not traditional transactions, since they do not provide atomicity across multiple objects.
+Terms like ``lightweight transactions'' or ``ACID for single objects'' can be misleading.
+\nl
+
+Transactions require aborting and rolling back changes if something goes wrong. Note however that retrying after permanent errors (e.g., constraint violations), or overload-related errors is pointless.
+It is also important to manage side effects, such as sending emails or updating caches, which may not be rolled back and must be performed only once the transaction is committed.
+
+\section{Avoiding Transactions}
+Transactions can safely run in parallel if they do not modify the same data. Concurrency issues arise when two transactions modify the same data simultaneously.\\
+Race conditions can occur when one transaction reads data that is concurrently modified by another transaction.
 
 Databases hide concurrency issues by providing transaction isolation.
 Isolation allows the application to pretend that no concurrency is happening.
@@ -64,10 +94,10 @@ Isolation allows the application to pretend that no concurrency is happening.
 Serializable isolation comes with a performance cost which makes it less common in practice.
 Weaker isolation levels are common, but are harder to understand and may lead to subtle bugs.
 
-\section{Avoiding Transactions}
 \subsection{Read Committed}
 In \textit{Read Committed} isolation level, a transaction can only read, and overwrite, committed data.
 This is the default isolation level in most databases.
+Databases prevent dirty reads using an approach that stores both the old committed value and the new value set by the current transaction.
 
 \begin{definition}
    [Dirty Read]
@@ -87,7 +117,8 @@ This model is more reliable than Non-transactional models, but still allows to a
 
 \begin{definition}
    [Non-repeatable Read]
-   A \textbf{non-repeatable read} occurs when a transaction reads the same data twice and gets different results.
+   A \textbf{non-repeatable read} occurs when a transaction reads the same data twice and gets different results.\\
+   This is also called \textbf{read skew}.
 \end{definition}
 
 Non-repeatable reads are possible in \textit{Read Committed} isolation level, 
@@ -109,7 +140,6 @@ In \textit{Snapshot Isolation}, a transaction reads a snapshot of the database a
 
 The snapshot allows transactions to see all the data that was commited at the start of the transaction.
 
-% // TODO there is some other stuff about explicit locks, I'm not sure how important it is, the slides are a bit messed up
 
 \note{It is possible to use some techniques for locking the database, using locks or atomic operations. 
 However it is costful}
@@ -122,6 +152,12 @@ In practice, each write creates a new version of the object, and the old version
 Compared to \textit{Read Committed}, we could say that while \textit{Read Committed} uses a \ul{separate snapshot for each \textbf{query}}, \textit{Snapshot Isolation} uses a \ul{single snapshot for the whole \textbf{transaction}}.
 
 \section{Write Skew and Phantoms}
+There may happen write-write conflicts, causing \textbf{lost updates}. They occur during read-modify-write cycles, when two transactions read the same data, then update ---possibly separate--- objects based on the read data, and then commit, causing a conflict.
+
+A key solution is to eliminate the read-modify-write cycle by using atomic operations.
+When these are insufficient, it is possible to use explicit locks to prevent concurrent access to the data.\\
+Alternatively, the DB could also detect lost updates and in case abort one of the transactions.
+
 
 \begin{paracol}{2}
   
