@@ -20,6 +20,7 @@ Note however that trying to create point-to-point communication with publish-sub
 
 Introducing a server in the middle simplifies the topology, and allows to have a single point of contact for all clients, which forwards messages to the correct recipient.
 On the other hand, it is not distributed, not scalable, and may become a bottleneck!
+Besides, if you need also a different server gathering different clients' messages, you are back to square one.
 
 We could also have single queues for each client, but this is not scalable, and may lead to a single point of failure, again.
 
@@ -32,13 +33,15 @@ Messages in Kafka are similar to DB rows, and are stored in topics, which are si
 
 Messages are written in \textit{Batches}, which are collections of messages produced to the same topic and partition within a short time window. Batching improves throughput and reduces latency, but is a tradeoff: larger batches allows for more messages to be stored, but it might take longer for a message to be propagated.
 \\
+Messages are opaque byte array to Kafka, which simply stores and forwards them. It is the responsibility of producers and consumers to serialize and deserialize messages.
+Hence, it is recommended that additional structure be imposed on the message content; JSON and XML are common portable choices, but many developers use \textbf{Apache Avro}.
 
 
 Messages are categorized into \textbf{topics}, which in turn are broken down into \textbf{partitions}, where they are written in append-only fashion and are read in order from beginning to end.
 Each partition can be hosted on a different server, hence a single topic may be scaled horizontally across multiple servers to \textbf{scale-out}.
 
 
-\ul{Multiple partitions imply there's not guarantee of message time-ordering across the entire topic.}
+\ul{Multiple partitions imply there's no guarantee of message time-ordering across the entire topic.}
 
 Kafka sacrifices a global order of messages for scalability, and allows to have multiple consumers reading from the same topic, and even the same partition\footnote{if they belong to different groups. This will be discussed later} at the same time.
 In general it is not impossible to have a global order ---see blockchains--- but it may be very costful in a distributed environment.\\
@@ -54,9 +57,12 @@ However, \ul{if it is necessary for a topic to have a global order, it is possib
 \subsection{Producers and Consumers}
 
 Producers write messages to topics, and consumers read messages from topics. Producers and consumers can be scaled horizontally to improve throughput and fault tolerance.
-Scaling out consumers allows to consume message-intense topics. 
+Scaling out consumers allows to consume message-intense topics.\\
+Producers may specify the partition to which the message should be written, use a custom partitioner, or let Kafka decide based on a partitioning strategy (e.g., round-robin, hash-based).
 
+Consumers subscribe to topics and reads messages in order.
 The \textbf{offset} is a unique identifier for each message within a partition, and is used by consumers to keep track of their progress. The offset is always increased, and is never reset.
+Consumers work as part of a consumer \textbf{group}, which assures that each partition is consumed by only one consumer in the group.
 
 Note that, in order to preserve the ordering of the message within a partition, \ul{a partition may be consumed only by one member of a consumer group at a time}.\\
 In this way, the sequential semantics of a partition are preserved.\\
@@ -68,37 +74,35 @@ However, Kafka has a feature called \textit{rebalancing}, which allows to dynami
 However, it is a bit of a mess, and requires the provisioning to stop, compute the rebalancing plan, and then restart the provisioning.
 
 \subsubsection{Brokers and Clusters}
-A single Kafka server is called a \textit{broker}, and a group of brokers is called a \textit{cluster}. Each broker is responsible for a set of partitions, and is able to handle reads and writes for those partitions.
+A single Kafka server is called a \textit{broker}, and a group of brokers is called a \textit{\textbf{cluster}}. Each broker is responsible for a set of partitions, and is able to handle reads and writes for those partitions.
 
-Brokers communicate with each other to \textbf{replicate} data and keep the cluster in sync. Each partition has a leader broker, which is responsible for handling reads and writes for that partition in the cluster. The leader broker replicates data to follower brokers, which can take over as leader if the current leader fails.
+Brokers communicate with each other to \textbf{replicate} data and keep the cluster in sync. Each partition has a \textbf{leader} broker, which is responsible for handling reads and writes for that partition in the cluster. The leader broker replicates data to follower brokers, which can take over as leader if the current leader fails.
 
 Consumers always get messages from the leader, never from the replicas, allowing to enforce asynchronous consistency.
 
 \subsubsection{Retention}
 
-For each topic it is possible to define a retention policy, which specifies how long messages should be retained in the topic. Messages can be retained for a fixed amount of time, or until a certain size limit is reached.
+For each topic it is possible to define a \textbf{retention policy}, which specifies how long messages should be retained in the topic. Messages can be retained for a fixed amount of time, or until a certain size limit is reached.
 
 Kafka brokers are configured with a default retention
 setting for topics, defining either size or time limits, which once reached, messages are deleted.
 
 
-\subsubsection{Multiple Groups}
+\subsubsection{Multiple Clusters}
 
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/16/clusters.png}
    \caption{Clusters and \texttt{MirrorMaker}s schema}
+   Here datacenter A and B locally produce messages. They both have a MirrorMaker consuming messages from the local cluster and from the other remote cluster. MirrorMakers produce messages to their respective \textbf{Kafka Cluster Aggregate}, which is a cluster getting a comprehensive view of the messages of all Datacenters.
+   There is also a datacenter C, which does not produce any messages, only consumers are present; it has a MirrorMaker consuming messages from the Cluster Aggregate of datacenter B (which contains also messages from datacenter A) and producing them to its local Kafka Cluster Aggregate from which local consumers may read.
    \label{fig:16/clusters}
 \end{figure}
 
 As kafka deployments grow, it is often advantageous to have multiple clusters, in order to have \textbf{segregation}, \textbf{isolation}, and \textbf{fault tolerance}.
 
-When working with multiple datacenters
-it could be required that messages be
-copied between them.
-Kafka includes a tool called \texttt{MirrorMaker},
-used for this purpose, which simply is a Kafka consumer and producer, linked together with a queue:
-messages are consumed from one Kafka cluster and produced for another
+When working with multiple datacenters it could be required that messages be copied between them.
+Kafka includes a tool called \texttt{MirrorMaker}, used for this purpose, which simply is a Kafka consumer and producer, linked together with a queue: messages are consumed from one Kafka cluster and produced for another
 
 \section{Using Kafka}
 
@@ -120,7 +124,6 @@ These questions are important to correctly use the API for the producer, which c
    The callback is invoked when the message is successfully delivered, or when an error occurs.
 \end{itemize}
 
-\newpage
 \subsubsection{Message record format}
 \begin{paracol}{2}
    \begin{itemize}
@@ -130,11 +133,8 @@ These questions are important to correctly use the API for the producer, which c
       \item Value
    \end{itemize}
    
-   Once sent the \texttt{ProducerRecord}, the
-   producer will serialize the key and value
-   objects so can be sent over the network.\\
-   Later on, if a partition is
-   specified in the \texttt{ProducerRecord}, the partitioner simply returns the partition we specified.
+   Once sent the \texttt{ProducerRecord}, the producer will serialize the key and value objects so can be sent over the network.\\
+   Later on, if a partition is specified in the \texttt{ProducerRecord}, the partitioner simply returns the partition we specified, otherwise it computes the partition based on the key (if present) or in round-robin fashion.
    
    A separate thread is responsible for sending those batches of records to the appropriate Kafka brokers,
    which yield a Metadata record upon successful delivery.
@@ -209,7 +209,17 @@ During those seconds, no messages will be processed from the partitions owned by
 Instead, when closing a consumer cleanly, the consumer will notify the group coordinator that it is leaving, and the group coordinator will trigger a rebalance immediately.
 
 \section{Kafka Strengths}
-Kafka is able to seamlessly handle multiple producers, whether those clients
-are using many topics or the same topic, and multiple consumers, whether they are in the same group or different groups, and also allow to seamlessly read from the same stream without interfering with each other, opposed to many queuing systems where once a message is consumed by one client, it is not available to any other.
+Kafka is able to seamlessly handle multiple producers, whether those clients are using many topics or the same topic, and multiple consumers, whether they are in the same group or different groups, and also allows to seamlessly read from the same stream without interfering with each other, opposed to many queuing systems where once a message is consumed by one client, it is not available to any other.
 
 Disk-based retention allows consumers to avoid working necessarily in real-time, and to catch up with the stream at their own pace.
+Durable retention means that if a consumer falls behind, either due to slow processing or a burst in traffic, there is no danger of losing data.
+This also means that maintenance can be performed on consumers, taking applications offline for a short period of time, with no concern about messages backing up on the producer or getting lost.
+
+{All the presented features make Kafka a powerful and flexible messaging system, suitable for a wide range of use cases in distributed computing, especially:\ns
+\begin{itemize}
+   \item Activity tracking
+   \item Messaging
+   \item Metrics and logging
+   \item Commit log
+   \item Stream processing
+\end{itemize}}

@@ -75,23 +75,21 @@ This allows for efficient processing of large graphs, as the data can be partiti
 GraphX exploits the concept of TLAV - Think Like a Vertex, which is a programming model for graph processing that allows the user to define a function that is executed on each vertex of the graph.
 
 \subsubsection{TLAV - Think Like a Vertex}
-In TLAV, the programming logic is organized around vertices, which are the primary
-units of computation.
+In TLAV, the programming logic is organized around vertices, which are the primary units of computation.
 
-Each vertex maintains its state (i.e., its label and attribute) and can send messages
-to its neighbouring vertices based on its state and the state of its neighbours.
-The messages are then received by the neighbouring vertices, which can update
-their state accordingly.
+Each vertex maintains its state (i.e., its label and attribute) and can send messages to its neighbouring vertices based on its state and the state of its neighbours.
+The messages are then received by the neighbouring vertices, which can update their state accordingly.
+\note{This is similar to the actor model, where each actor maintains its own state and communicates with other actors through message passing.}
 
-TLAV is a powerful abstraction that can be used to express a wide range of graph
-algorithms in a concise and efficient manner. By thinking like a vertex, you can
-design efficient and scalable graph algorithms that can process large-scale graphs
-in a distributed environment.
+TLAV is a powerful abstraction that can be used to express a wide range of graph algorithms in a concise and efficient manner.
+By thinking like a vertex, you can design efficient and scalable graph algorithms that can process large-scale graphs in a distributed environment.
 
-\subsubsection{Actor Model and TLAV}
+\subsubsection{Actor Model, BSP and TLAV}
 
 In GraphX, the actor model is used to represent vertices in a graph and to perform distributed graph processing.
 
 Each vertex is represented as an actor, which communicates with other actors by exchanging messages. By using the actor model, GraphX provides a programming model for distributed graph processing that is based on vertex-centric computations.
 
-In GraphX, the computation proceeds in a series of supersteps, where each superstep consists of message passing and vertex computations. In each superstep, each vertex receives messages from its neighbours and updates its state based on those messages. After each superstep, the vertices exchange messages and the computation proceeds to the next superstep.
+In GraphX, the computation proceeds in a series of supersteps, where each superstep consists of message passing and vertex computations.
+In each superstep, each vertex receives messages from its neighbours and updates its state based on those messages. 
+After each superstep, the vertices exchange messages and the computation proceeds to the next superstep.

@@ -49,6 +49,7 @@ for each iteration
       update internal state
       send data to neighbors
 \end{lstlisting}
+Note that each node can know something without seeing the whole network.
 
 TLAV's logic is very simple and straightforward, making it very flexible; it may be applied to:\ns
 \begin{itemize}
@@ -67,28 +68,28 @@ A paper by Emanuele Carlini, Alessandro Lulli, Patrizio Dazzi, Claudio Lucchese 
    A \textbf{Connected Component} (\texttt{CC}) is a subset of vertices in which there is a path between any pair of vertices.
 \end{definition}
 
-The paper talks about an algorithm called \textit{``Cracker''}, which is a vertex-centric algorithm to find connected components in undirected graphs, which exploits an incremental approach and message passing to achieve its goal.
+The paper talks about an algorithm called \textit{``Cracker''}, which is a vertex-centric algorithm to find connected components in undirected graphs, which exploits an \textbf{incremental} approach and \textbf{message passing} to achieve its goal.
 
 \begin{paracol}{2}
    \colfill
-   The key idea is to incrementally remove ndodes when we are sure of their \texttt{CC}. 
-   Each CC is identified by a unique ID
+   The key idea is to incrementally remove nodes when we are sure of their \texttt{CC}. 
+   Each CC is identified by a unique ID.
+   Each iteration takes less time than the previous one.
    \colfill
-   % // TODO
    \switchcolumn
    \begin{lstlisting}
       while (not finished)
          // find the seeds
          selection()
          simplification()
-      % propagate the seeds
+      // propagate the seeds
       propagation()
    \end{lstlisting}
 \end{paracol}
 
 This was used as backend for a web page crawler.
 Many web pages were represented as nodes, with edges representing similarities computed with locality-sensitive hashing (was this the name?).
-% // TODO 
+
 Computing the CCs allowed to group similar pages together, and perform more specific heuristics on them, which, being polynomial (worse than linear) would have taken too much time to be performed on the whole graph.
 
 \subsection{Decentralized minimum vertex cover}
@@ -102,6 +103,6 @@ Computing the CCs allowed to group similar pages together, and perform more spec
    \item Every node starts as deselected.
    \item Superstep 1 - Mark as selected the node with the highest degree among the neighbors and the node itself
    \item If the node is selected or all of its neighbors are, do nothing
-   \item Superstep 2 - Otherwise, select 
-   % // TODO 
+   \item Superstep 2 - Otherwise, select among all non selected neighbors, the one with the best gain, until you find a worst neighbor, and select yourself.
+   \item Superstep 3 - If the node and all its neighbors are selected, deselect the node
 \end{itemize}

@@ -5,30 +5,24 @@ Computing infrastructures in 2024 are characterized by strong \textbf{pervasiven
 
 This is the \textbf{Compute Continuum}, a concept that describes the continuous interaction between the physical and digital worlds, and the seamless integration of the digital world into the physical world.
 
-\section{Towards the Actor Model}
-
-Given the strong decentralization of the Compute Continuum, the need for a decentralized computational models became strong.
-
-The \textbf{Actor Model} is a computational model for decentralized concurrent computation that treats \ul{actors as the universal primitives of concurrent computation}. 
-In response to a message that it receives, an actor can make local decisions, create more actors, send more messages, and determine how to respond to the next message received. \ul{Actors may modify their own private state, but can only affect each other indirectly through messaging} (removing the need for locks).
-
-{This model nicely fits modern computing challenges:\ns
+All assumptions which can (sometimes) be made in traditional programming models, cannot ever be made in the Compute Continuum:
 \begin{itemize}
-   \item Self-organisation programming
-   \item Collective adaptive systems
-   \item Cyber-physical systems and IoTs
-   \item Edge and fog computing
-\end{itemize}}
+   \item Centralized management and control
+   \item Homogeneous resources
+   \item Seamless access and well-defined security and identity mechanisms
+   \item Performance predictability
+   \item Uniform management and reliability processes
+   \item \dots we could go on \dots
+\end{itemize}
 
-Fun fact, the Actor Model was first proposed by Carl Hewitt in 1973, and it was inspired by the work of Alonzo Church on the \textit{Lambda Calculus}, it was oriented for implemeting AI.
+\section{Meet up with today's necessities}
 
-\subsection{MapReduce - Why not?}
-The key issue is that MapReduce does not fit well scenarios where we don't know the number of steps in advance, or where we don't know where the computation will take place.
-In general MapReduce is not a good fit for heterogeneous environments.
+Even MapReduce, which was designed for distributed computing, is not a good fit for this scenario.
+It does not deal well with heterogeneity, and it requires to know in advance where the computation will take place, which is not possible in the Compute Continuum, instead, often the infrastructure is managed by different parties, inducing further heterogeneity, lack of control, and oscillations in latencies and bandwidths.
 
 However, we will see that the MapReduce is an instance of a more general concept/model: the \textit{Bulk Synchronous Parallel} model.
 
-\section{BSP - Bulk Synchronous Parallel model}
+\subsection{BSP - Bulk Synchronous Parallel model}
 This model is a \textit{bridging model} for designing parallel algorithms.
 {It defines three global super-steps:\ns
 \begin{enumerate}
@@ -40,7 +34,7 @@ This model is a \textit{bridging model} for designing parallel algorithms.
 The problem with having a full synchronization at the end, is that reliability and network partitioning can cause the system to hang a lot.
 This is a more critical issue than latency, throughput, and bandwidth.
 
-\section{Delegation}
+\subsection{Delegation}
 In order to reach the scalability we are looking for we want model that are by design decentralized.
 
 \begin{itemize}
@@ -60,6 +54,34 @@ In order to reach the scalability we are looking for we want model that are by d
 The underlying architecture is typically not simply threads, because a single machine may also manage millions of actors, and threads are not a good fit for this scenario.
 Actors may be organized, for instance in a list, and a single thread may invoke them in a round-robin fashion.
 We could also have multiple threads, handling such lists of actors; there are many possible implementations.
+
+\section{Towards the Actor Model}
+
+Given the strong decentralization of the Compute Continuum, the need for a decentralized computational models became strong.
+
+Decentralized programming models provide unique features that are fundamental to support the development and efficient management of resources and applications in the compute continuum
+\begin{itemize}
+	\item Adaptability - Many devices and platforms with different capabilities. Applications must adapt to different hardware and software environments.
+	\item Openness - By using open standards and protocols, decentralized programming models enable applications to interoperate seamlessly across different devices and platforms.
+	\item Modular philosophies - Applications as systems of interacting components, allowing for easier maintenance, updates, and scalability.
+	\item Resilience - Systems must be able to recover from failures and continue operating.
+\end{itemize}
+
+The \textbf{Actor Model} is a computational model for decentralized concurrent computation that treats \ul{actors as the universal primitives of concurrent computation}. 
+In response to a message that it receives, an actor can make local decisions, create more actors, send more messages, and determine how to respond to the next message received. \ul{Actors may modify their own private state, but can only affect each other indirectly through messaging} (removing the need for locks).
+
+Often compared to OOP, the Actor Model differs in distribution and concurrency handling: while OOP typically relies on shared state, locks and synchronous method calls, the Actor Model emphasizes message passing and asynchronous communication between independent actors to achieve concurrency.\\
+Furthermore, Actors are based on ``behaviour'', rather than ``class'' as in OOP. 
+
+{This model nicely fits modern computing challenges:\ns
+\begin{itemize}
+   \item Self-organisation programming
+   \item Collective adaptive systems
+   \item Cyber-physical systems and IoTs
+   \item Edge and fog computing
+\end{itemize}}
+
+Fun fact, the Actor Model was first proposed by Carl Hewitt in 1973, and it was inspired by the work of Alonzo Church on the \textit{Lambda Calculus}, it was oriented for implemeting AI.
 
 
 
@@ -88,15 +110,16 @@ It emphasizes message passing and actor isolation, which helps to improve the mo
    \end{itemize}
 \end{definition}
 
-Modularity in the Actor model comes from one-way asynchronous communication. Once a message has been sent, it is the responsibility of the receiver.
-
-Messages in the Actor model are decoupled from the sender and are delivered by the system on a best-effort basis.
+Modularity in the Actor model comes from \textit{one-way asynchronous communication}. Once a message has been sent, it is the responsibility of the receiver.
+Messages in the Actor model are \textbf{decoupled} from the sender and are delivered by the system on a best-effort basis.
 
 
 Note also that since Actors can create new Actors, they implicitly create a hierarchical relation between them, allowing to exploit the locality of the computation.
 
 \subsection{Indeterminacy and quasi-commutativity}
 Messages are delivered asynchronously, and the order of delivery is not guaranteed, hence, \ul{the actor model is \textbf{not} completely \textbf{deterministic}}.
+This is called \textbf{indeterminacy}.\\
+Furthermore, when multiple messages are waiting in an actor’s mailbox, \ul{the order} in which they are processed is \ul{determined by the actor’s scheduling policy}, which may be non-deterministic.
 
 \textbf{Quasi-commutativity} is a property of the actor model that states that the \textit{order} of messages sent by an actor to another actor does \textit{not} affect the outcome of the computation (in some cases).\\
 In other words, there must be some flexibility concerning the order of messages, to avoid making the system obey a strict order of messages dictated by delays, errors, and lost messages.
@@ -104,7 +127,7 @@ In other words, there must be some flexibility concerning the order of messages,
 \subsection{Fault tolerance and Scalability}
 The actor model is inherently fault-tolerant, as the failure of one actor does not prevent the rest of the system from functioning, besides, actor may be restarted or moved to another machine in case of failure.\\
 Furthermore, it provides a scalable approach to building systems by allowing actors to be dynamically created and distributed across multiple machines, enabling systems to scale horizontally by adding more machines to handle increasing loads.\
-This is even simplified by the absence of primitives such as locks and semaphores, reducing the risk deadlocks, race conditions and bootlenecks due to busy waiting.
+This is even simplified by the \textbf{absence} of primitives such as locks and semaphores, reducing the risk deadlocks, race conditions and bootlenecks due to busy waiting.
 One-way asynchronous communication allows all this.
 
 \textbf{Self-organising} systems, as well as \textbf{adaptive} systems, may be built using the actor model framework, where actors can adapt their behavior based on the state of the system and the messages they receive, aiming at a global goal.\

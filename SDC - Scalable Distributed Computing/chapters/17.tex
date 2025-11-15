@@ -11,13 +11,24 @@ We have high latency, but also high throughput, and the system is easier to reas
 
 The key paradigm here is clearly MapReduce, and the key frameworks are Hadoop and Spark.
 
+Batch processing is characterized by a trade-off between throughput and latency;
+it typically has high throughput but can have high latency depending on the size and complexity of the workload.
+
 \section{Stream Processing}
 
-Here the focus is on processing data as soon as it is generated, providing low-latency results, and thus enabling near-real-time processing.
+Here the focus is on processing data as soon as it is generated, providing low-latency results, and thus enabling near-real-time processing.\\
+Stream processing is designed to handle unbounded datasets, such as those generated ---typically in a continuous flow--- by IoT devices, allowing to compute real-time analytics, monitoring, and decision-making.
+
+\subsection{Challenges}
+
+Stream processing requires efficient \textbf{state management} in a system with high data velocity.\\
+\textbf{Fault tolerance} is a key challenge in stream processing due to the potential for data loss if a node fails.\\
+\textbf{Consistency} for data spread across multiple nodes is not trivial to achieve.\\
+Furthermore, stream processing system feature the \textbf{windowing} concept, which is powerful, but bears with it the need to define proper \textbf{window boundaries}.
 
 
 Data consistency refers to the accuracy and correctness of data over time.
-In stream processing, \ul{data consistency is crucial to ensure that real-time analytics are accurate and reliable}. 
+In stream processing, \ul{data \textbf{consistency} is crucial to ensure that real-time analytics are accurate and reliable}. 
 There are three main types of data consistency models used in stream processing systems:
 \begin{itemize}
    \item \textbf{Exactly-once} processing ensures that each data item is processed exactly once, preventing duplicates or omissions. This is the most desirable level of consistency, but it can be challenging to achieve in distributed systems.
@@ -36,6 +47,8 @@ There are three main types of data consistency models used in stream processing 
 Watermarks are used to track the progress of event time, and to determine when to emit results. In general aim to manage late-arrive data.
 
 In \textbf{Stream} processing there are \ul{\textbf{Transactions}, which are atomic operations between streams}.
+They are implemented with two-phase commit protocols, where a coordinator manages the transaction and ensures that all participants either commit or abort the transaction together, or idempotent writes, i.e. writing the same data multiple times has the same effect as writing it once.\\
+To address Fault Tolerance in stream processing, systems often implement checkpointing and state backends, or log replay, to periodically save the state of the stream processing application. This allows the system to recover from failures by restoring the state from the last checkpoint, minimizing data loss and ensuring continuity in processing.\\
 Clearly it may happen also that \ul{events arrive out of order}, and we need to handle this, either by buffering to wait for more data, or by allowing lateness in \textit{windowing}.
 
 \begin{itemize}
@@ -44,7 +57,7 @@ Clearly it may happen also that \ul{events arrive out of order}, and we need to 
 	\item \textbf{Session-based windowing} groups events based on inactivity periods.
 \end{itemize}
 
-\subsection{Lambda architectures}
+\section{Lambda architectures}
 
 \begin{figure}[htbp]
    \centering
@@ -66,16 +79,23 @@ A \textbf{lambda architecture} is a data processing architecture designed to han
 \end{itemize}
 }
 
-The architecture provides a unified view
-of both batch (hence, historical) and real-time data
-processing, possibly handling large volumes of data and scaling horizontally.
+The architecture provides a unified view of both batch (hence, historical) and real-time data processing, possibly handling large volumes of data and scaling horizontally.
 However it may be complex to implement and maintain, and may generate redundant data processing and storage costs.
 
+Lambda architecture requires careful coordination between batch and speed layers.
+The architecture may even need to be redesigned or updated as data processing needs evolve.
 
-\subsection{Kappa architectures}
+\section{Kappa architectures}
 Lambda difficulties in implementation led to the development of \textsc{Kappa}, which simplifies the architecture by removing the batch layer, focusing on streams, ultimately offering better scaling and fault tolerance than lambda.\\
 \textsc{Kappa} relies on recomputing state from streams rather than storing it.
 It exploits checkpointing and state backends to manage state.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/17/kappaarchitecture.png}
+   \caption{Kappa Architecture}
+   \label{fig:17/kappaarchitecture}
+\end{figure}
 
 \textsc{Kappa} is very well suited for processing data from IoT devices, or analytics in general.
 
@@ -83,8 +103,7 @@ A \textsc{Kappa} architecture is a data processing architecture designed to hand
 
 It is still more complex than traditional stream processing techniques, but it is more efficient and scalable.
 
-
-\newpage
+\section{Other Architectural flavors}
 \subsection{CQRS - Command Query Responsibility Segregation}
 
 
@@ -100,18 +119,38 @@ It is still more complex than traditional stream processing techniques, but it i
    \switchcolumn
    \colfill
 
-   What happens if i have many writes and few reads?
+   \coolquote{
+      What happens if i have many writes and few reads?
+   }{}
    
    {\textbf{Command Query Responsibility Segregation} (\texttt{CQRS}) is a design pattern that separates the read and write operations of a system into two separate components, along with a UI to interact with them:\ns
    \begin{itemize}
       \item The \textbf{command model} (write) is responsible for handling the write operations of the system, such as creating, updating, and deleting data.
+      Hence it is responsible for altering the system \textbf{state}.
       \item The \textbf{query model} (read) is responsible for handling the read operations of the system, such as retrieving data.
    \end{itemize}}
+
    This allows for better scalability, performance, and maintainability of the system.
    
    This looks good on the paper, but it is not always easy to implement, and may lead to inconsistencies between the read and write models, alongside with latency and communication overhead.
    \colfill
 \end{paracol}
+
+\subsection{Shared-Nothing}
+A shared-nothing architecture is a distributed computing architecture in which each node is self-sufficient and has its own private memory and storage.
+The nodes communicate with each other by passing messages.
+This seems to nicely fit the Actor Model approach, as each actor can be seen as a node in a shared-nothing architecture.
+In this paradigm, data is split across multiple nodes, with each node responsible for a subset of the data, on which it has complete control.
+
+This architecture allows for horizontal scaling by
+adding more nodes to the cluster, enabling also fault-tolerace, as a failure in one node does not affect the rest of the cluster.\\
+In general its design favors high availability and low-latency.
+
+This is cool and has many advantages, but it also poses challenges in terms of complexity, communication overhead, and data partitioning strategies.
+Despite offering a high degree of flexibility, it may be complex to standardize and maintain.
+
+Shared-nothing architectures are commonly used for big data processing and web applications.
+\note{Hadoop and DynamoDB exploit shared-nothing architectures.}
 
 \section{Data Processing Frameworks}
 
@@ -159,13 +198,6 @@ It is still more complex than traditional stream processing techniques, but it i
 
 
 
-\subsection{Sharing or not}
-
-In shared-nothing architectures each node is self-sufficient, has its own private memory and storage, and communicates with others using message passing.\\
-These are typically used in big data processing and web applications, as they easily allow horizontal scaling.
-
-Examples of shared-nothing architectures are Hadoop, DynamoDB, Couchbase, and Facebook TAO.
-
 \subsection{Data Lakehouse}
 
 This is a modern data architecture that combines the best features of data lakes and data warehouses. It allows for the storage of raw data in a data lake, and the processing of that data in a data warehouse.
@@ -197,7 +229,7 @@ and complex data systems, especially in distributed organizations. It emphasizes
 \begin{itemize}
 	\item \textbf{Lambda Architecture}: Best for systems needing both real-time and historical data processing.
 	\begin{itemize}
-		\item \textit{Example}: Log analysis systems combining real-time alerts and long-term trend reports.
+		\item \textit{Example}: Log analysis systems combining real-time alerts and long-term trend reports, or big data analytics platforms.
 	\end{itemize}
 	
 	\item \textbf{Kappa Architecture}: Ideal for real-time data applications with high throughput.
