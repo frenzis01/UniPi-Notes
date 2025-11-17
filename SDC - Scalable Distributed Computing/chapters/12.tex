@@ -116,13 +116,11 @@ In this model, \ul{\textbf{no} dirty reads nor dirty writes are allowed}.
 This model is more reliable than Non-transactional models, but still allows to avoid ``paying'' for transactions.
 
 \begin{definition}
-   [Non-repeatable Read]
-   A \textbf{non-repeatable read} occurs when a transaction reads the same data twice and gets different results.\\
-   This is also called \textbf{read skew}.
+   [Read Skew]
+   A \textbf{read skew} occurs when a transaction reads different temporal versions of the same data, leading to a \textit{temporary inconsistency}, violating an invariant.
 \end{definition}
 
-Non-repeatable reads are possible in \textit{Read Committed} isolation level, 
-
+Read skews are possible in \textit{Read Committed} isolation level, 
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/12/readcommitted_issue.png}
@@ -134,15 +132,29 @@ Non-repeatable reads are possible in \textit{Read Committed} isolation level,
 %    A \textbf{phantom read} occurs when a transaction reads a set of records that satisfy a certain condition, but when it reads the same records again, the set of records has changed.
 
 \subsection{Snapshot Isolation}
-\textit{Snapshot Isolation} is a more relaxed isolation level than serializable isolation, but it is still stricter than \textit{Read Committed} isolation.
 
-In \textit{Snapshot Isolation}, a transaction reads a snapshot of the database at the beginning of the transaction and writes to the database at the end of the transaction.
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/12/mvcc.png}
+      \caption{Snapshot isolation and MVCC}
+      \label{fig:12/mvcc}
+   \end{figure}
 
-The snapshot allows transactions to see all the data that was commited at the start of the transaction.
+   \switchcolumn
+   \colfill
+   \textit{Snapshot Isolation} is a more relaxed isolation level than serializable isolation, but it is still stricter than \textit{Read Committed} isolation.
+   
+   In \textit{Snapshot Isolation}, a transaction reads a snapshot of the database at the beginning of the transaction and writes to the database at the end of the transaction.
+   
+   The snapshot allows transactions to see all the data that was commited at the start of the transaction.
+   
+   
+   \note{It is possible to use some techniques for locking the database, using locks or atomic operations. 
+   However it is costful}
+   \colfill
 
-
-\note{It is possible to use some techniques for locking the database, using locks or atomic operations. 
-However it is costful}
+\end{paracol}
 
 This model implements isolation by means of a lock to prevent dirty writes, but allows dirty reads (?), since reads do not acquire any locks.
 Readers never block writers, and writers never block readers.\\

@@ -51,7 +51,7 @@ These failures make it impossible to guarantee both safety and liveness simultan
 
 In the real world, compromises are often made between safety and liveness based on the specific requirements of the system. Paxos and Raft carefully manage this trade-off, using timeouts or allowing temporary failures.
 
-\section{Paxos}
+\section{Paxos recalls}
 \framedt{Paxos and paper}{
 	Even though it was a standard until a few years ago, people realized that Paxos was too complex to implement, and could fit best raw paper than actual software.
 	Too many aspects were left to the implemented, and it was hard to get it right.
@@ -252,7 +252,7 @@ Compared to Paxos, its safety is simpler to reason about since all decisions are
 	\item Challenges in Asynchronous Systems:
 	      \begin{itemize}
 		      \item In asynchronous systems, where nodes can experience delays or crashes, achieving both safety and liveness simultaneously is challenging.
-		      \item The FLP Impossibility Theorem proves that no deterministic consensus algorithm can guarantee both safety and liveness in full y asynchronous systems with even a single faulty node.
+		      \item The FLP Impossibility Theorem proves that no deterministic consensus algorithm can guarantee both safety and liveness in fully asynchronous systems with even a single faulty node.
 	      \end{itemize}
 	\item Paxos:
 	      \begin{itemize}

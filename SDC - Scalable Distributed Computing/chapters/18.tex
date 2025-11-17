@@ -21,21 +21,24 @@ checkpointing and \textbf{Write-Ahead Logs}.
 When we say ``exactly-once semantics'' we mean that each incoming event affects the final results exactly once. Even in case of a machine or software failure, there’s no duplicate data and no data that goes unprocessed.
 
 \begin{paracol}{2}
-   The key idea in structured streaming is to treat a live stream as if it were a table that is being continuously appended. This allows for writing SQL queries that process the data in real-time, and to get the results as soon as new data arrives.
+   \ul{The key idea in structured streaming is to treat a live stream as if it were a table that is being continuously appended.}
+   This allows for writing SQL queries that process the data in real-time, and to get the results as soon as new data arrives.
    
    Consider the input data stream as the ``Input Table''. Every data item that is arriving on the stream is like a new row being appended to the Input Table.
 
    A query on the input will generate the ``Result Table''. Every trigger interval, new rows get appended to the Input Table, which eventually updates the Result Table. Whenever the result table gets updated, we would want to write the changed result rows to an external sink
-\switchcolumn
+   \switchcolumn
+   \colfill
    \begin{figure}[htbp]
-      \centering
-      \includegraphics{images/18/sparktable.png}
-      \caption{Structured Streaming schema}
-      \label{fig:18/sparktable}
+   	\centering
+   	\includegraphics{images/18/sparktable.png}
+   	\caption{Structured Streaming schema}
+   	\label{fig:18/sparktable}
    \end{figure}
-
-\end{paracol}
-
+   \colfill
+   
+   \end{paracol}
+   
 \framedt{Output mode}{
 \begin{itemize}
 	\item \textbf{Complete} Mode - The entire updated Result Table will be written to the external storage. It is up to the storage connector to decide how to handle writing of the entire table.
@@ -43,7 +46,7 @@ When we say ``exactly-once semantics'' we mean that each incoming event affects 
 	\item \textbf{Update} Mode - Only the rows that were updated in the Result Table since the last trigger will be written to the external storage.
       \begin{itemize}
       	\item Note that this is different from the Complete Mode in that this mode only outputs the rows that have changed since the last trigger.
-      	\item If the query doesn’t contain aggregations, it will be equivalent to Append mode
+      	\item If the query doesn't contain aggregations, it will be equivalent to Append mode, because without aggregations (e.g., simple \texttt{SELECT}, \texttt{WHERE}, \texttt{MAP} operations), each input row produces a new output row independently, without modifying existing rows in the Result Table. Aggregations (e.g., \texttt{COUNT}, \texttt{SUM}, \texttt{AVG}) are what cause existing result rows to be updated when new data arrives, since they maintain state across multiple input rows.
       \end{itemize}
 \end{itemize}
 }

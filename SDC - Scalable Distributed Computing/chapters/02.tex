@@ -293,12 +293,25 @@ In other words, an open distributed system should also be \textbf{extensible}.
 
 \subsection{Policy and Mechanism Separation}
 
-To achieve flexibility in open distributed systems
-it is crucial that the system be organized as a collection of relatively small and easily replaceable or adaptable components.
+To achieve flexibility in open distributed systems, it is crucial that the system be organized as a collection of relatively small and easily replaceable or adaptable components.
 
-This implies to provide definitions not only for the highest-level interfaces, i.e., those seen by users and applications, but also for interfaces to internal parts of the system and describe how those parts interact.
+A fundamental principle for achieving this flexibility is the \textbf{separation of policy and mechanism}:
+\begin{itemize}
+   \item \textbf{Mechanism} defines \textit{how} something is done - the low-level implementation that provides capabilities and operations
+   \item \textbf{Policy} defines \textit{what} and \textit{when} to do - the high-level decision-making rules and strategies
+\end{itemize}
 
-This approach is an alternative to the classical monolithic approach in which components are implemented as one, huge program makes hard to replace or adapt a component without affecting the entire system.
+By separating these concerns, the system becomes more flexible: policies can be changed or adapted without modifying the underlying mechanisms, and different policies can use the same mechanisms.
+
+\textbf{Examples in distributed systems}:
+\begin{itemize}
+   \item \textit{Load balancing}: The mechanism provides request routing and node communication, while the policy decides which server receives each request (e.g., round-robin, least-loaded, geographic proximity)
+   \item \textit{Caching}: The mechanism implements the cache data structure and access operations, while the policy decides which items to evict (e.g., LRU, LFU, FIFO)
+   \item \textit{Resource allocation}: The mechanism manages resource availability and assignment, while the policy determines priorities and quotas for different users or applications
+   \item \textit{Security}: The mechanism implements authentication and access control infrastructure, while the policy defines who can access what resources and under which conditions
+\end{itemize}
+
+This implies providing definitions not only for the highest-level interfaces (those seen by users and applications), but also for interfaces to internal parts of the system, describing how those parts interact. This approach is an alternative to the classical monolithic approach in which components are implemented as one huge program, making it hard to replace or adapt a component without affecting the entire system.
 
 \section{Scalability}
 We were used to having relatively powerful desktop computers for office applications and storage.
@@ -382,6 +395,18 @@ Incostincency occurs always, and to what extent it can be tolerated depends high
    Global synchronization mechanisms are typically not scalable. So\dots
 
    \ul{\textit{Scaling by replication may introduce inherently non-scalable solutions}}.
+   
+   This is a fundamental paradox: replication is used to \textit{improve} scalability, but maintaining strong consistency across replicas requires global coordination, which is \textit{inherently non-scalable}. The more replicas you add, the more coordination overhead is needed:
+   \begin{itemize}
+      \item Every update must be propagated to all replicas and confirmed before completion
+      \item With N replicas, coordination involves N nodes, increasing communication overhead
+      \item Latency is determined by the slowest replica (geographical distance matters)
+      \item The coordination mechanism itself becomes a bottleneck
+   \end{itemize}
+   
+   \textbf{Example}: A database replicated across 3 continents to improve availability. With strong consistency, each write must wait for confirmation from all data centers (~200-300ms inter-continental latency × 3), making writes very slow. Adding a 4th replica makes it worse.
+   
+   This leads to the \textbf{CAP theorem}: you cannot simultaneously have strong \textit{Consistency}, high \textit{Availability}, and \textit{Partition tolerance}. Most modern distributed systems choose eventual consistency instead of strong consistency to maintain scalability and availability.
 }
 
 

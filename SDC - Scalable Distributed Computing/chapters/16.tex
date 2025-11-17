@@ -61,24 +61,41 @@ Scaling out consumers allows to consume message-intense topics.\\
 Producers may specify the partition to which the message should be written, use a custom partitioner, or let Kafka decide based on a partitioning strategy (e.g., round-robin, hash-based).
 
 Consumers subscribe to topics and reads messages in order.
-The \textbf{offset} is a unique identifier for each message within a partition, and is used by consumers to keep track of their progress. The offset is always increased, and is never reset.
+\ul{The \textbf{offset} is a unique identifier for each message within a partition, and is used by consumers to keep track of their progress. The offset is always increased, and is never reset.}
+By storing the offset of the last consumed message for each partition a consumer can stop and restart without losing its place.
 Consumers work as part of a consumer \textbf{group}, which assures that each partition is consumed by only one consumer in the group.
 
 Note that, in order to preserve the ordering of the message within a partition, \ul{a partition may be consumed only by one member of a consumer group at a time}.\\
 In this way, the sequential semantics of a partition are preserved.\\
 This implies that the maximum degree of scalability is given by the number of partitions, and not by the number of consumers.
 
-\subsubsection{Rebalancing}
+\subsubsection{Rebalancing (Partitions number)}
 The number of partitions is set when the topic is created, and in general cannot be changed during the provisioning of the topic.\\
 However, Kafka has a feature called \textit{rebalancing}, which allows to dynamically create partitions, allowing for more consumers to consume from the same topic.
 However, it is a bit of a mess, and requires the provisioning to stop, compute the rebalancing plan, and then restart the provisioning.
 
+\note{Consumer group rebalancing (discussed later in Section on Rebalancing) is different and more common: it reassigns existing partitions among available consumers when members join or leave the group, without changing the number of partitions. This happens automatically and frequently in production systems.}
+
+\newpage
 \subsubsection{Brokers and Clusters}
-A single Kafka server is called a \textit{broker}, and a group of brokers is called a \textit{\textbf{cluster}}. Each broker is responsible for a set of partitions, and is able to handle reads and writes for those partitions.
+\begin{paracol}{2}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/16/singlecluster.png}
+      \caption{Kafka brokers cluster}
+      \label{fig:16/singlecluster}
+   \end{figure}
 
-Brokers communicate with each other to \textbf{replicate} data and keep the cluster in sync. Each partition has a \textbf{leader} broker, which is responsible for handling reads and writes for that partition in the cluster. The leader broker replicates data to follower brokers, which can take over as leader if the current leader fails.
+   \switchcolumn
 
-Consumers always get messages from the leader, never from the replicas, allowing to enforce asynchronous consistency.
+   
+   A single Kafka server is called a \textit{broker}, and a group of brokers is called a \textit{\textbf{cluster}}. Each broker is responsible for a set of partitions, and is able to handle reads and writes for those partitions.
+   
+   Brokers communicate with each other to \textbf{replicate} data and keep the cluster in sync. Each partition has a \textbf{leader} broker, which is responsible for handling reads and writes for that partition in the cluster. The leader broker replicates data to follower brokers, which can take over as leader if the current leader fails.
+   
+   Consumers always get messages from the leader, never from the replicas, allowing to enforce asynchronous consistency.
+   
+   \end{paracol}
 
 \subsubsection{Retention}
 
@@ -126,6 +143,7 @@ These questions are important to correctly use the API for the producer, which c
 
 \subsubsection{Message record format}
 \begin{paracol}{2}
+   \colfill
    \begin{itemize}
       \item Topic
       \item Key  (optional)
@@ -138,13 +156,14 @@ These questions are important to correctly use the API for the producer, which c
    
    A separate thread is responsible for sending those batches of records to the appropriate Kafka brokers,
    which yield a Metadata record upon successful delivery.
+   \colfill
 
 
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/16/producerRecord.png}
+      \includegraphics[width=0.95\columnwidth]{images/16/producerRecord.png}
       \caption{Sending \texttt{ProducerRecord}}
       \label{fig:16/producerRecord}
    \end{figure}
@@ -172,6 +191,7 @@ Kafka consumers are typically part of a group. When multiple consumers are subsc
 Having more consumers than partitions is not a problem, as the consumers will simply be idle.\\
 In general it is reasonable to have many partitions, allowing to scale when needed.
 
+\newpage
 \begin{paracol}{2}
    It is not uncommon to have multiple applications that need to receive the same data.
    Simply assigning different consumers groups to different applications ensures that messages are delivered to all of them.

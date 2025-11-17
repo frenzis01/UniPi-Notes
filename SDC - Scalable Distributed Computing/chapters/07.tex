@@ -20,12 +20,12 @@ Also in \textbf{Microservices} architectures, consesus is important for coordina
 
 \section{Mechanisms for Consensus}
 {\ns
-There are various ways for implementing consensus:
+There are various ways for implementing consensus. They typically exploit some of the following mechanisms:
 \begin{itemize}
    \item Majority agreement:
-   Paxos and Raft work by ensuring a majority of nodes agree on a value.
+   Paxos works by ensuring a majority of nodes agree on a value.
    \item Leader-based coordination:
-   Sometimes protocols use a leader to drive agreement.
+   Sometimes protocols use a leader to drive agreement, such as in Raft.
    \item Voting and Quorums:
    Nodes vote on proposed values, and a \textit{Quorum} (majority) must agree.
    The difference with majority agreement is that a quorum is a \textit{subset} of nodes, not necessarily all the nodes in the system. 
@@ -35,11 +35,12 @@ There are various ways for implementing consensus:
 
 \section{Safety and Liveness}
 
-\textbf{Safety} ensures that the systems never reach an incorrect state. In the context of consensus, safety means that if a value is decided, it must be the same across all nodes.\\
+\textbf{Safety} ensures that the systems never reaches an incorrect state. In the context of consensus, safety means that if a value is decided, it must be the same across all nodes.\\
 \textbf{Safety} can be thought of as the ``nothing bad happens''.
 It prioritizes correctness: Even under failure conditions, the system should not violate its invariants.
 
 \textbf{Liveness} ensures that the system eventually makes progress and reaches a decision.
+It can be thought as the ``something good eventually happens''.
 The system must continue to work, eventually deciding on a value despite failure or delays.
 In other words, we must not have a deadlock \smiley.
 In the context of consensus, liveness means that all working nodes eventually decide on a value.
@@ -115,9 +116,27 @@ Paxos is completely asynchronous, so it does \textbf{not} assume that all nodes 
       \item \textbf{Accept} -
       Upon receiving a \textsc{Promise} from a majority of \textsc{Acceptors}, the \textsc{Proposer} sends an \textsc{Accept} request.
       \item \textbf{Accepted} -
-      If an \textsc{Acceptor} receives an \textsc{Accept} message from a \textsc{Proposer}, it must accept it \textit{if and only if} it has not already \textit{promised} (in Phase 1b) to only consider proposals having an identifier greater than other received
+      If an \textsc{Acceptor} receives an \textsc{Accept} message from a \textsc{Proposer}, it must accept it \textit{if and only if} it has not already \textit{promised} (in Phase 1b) to only consider proposals having an identifier greater than other received.
    \end{enumerate}
 \end{enumerate}
+
+\subsubsection{Why the Promise Check is Essential}
+The promise mechanism in Phase 2b guarantees \textbf{safety} by preventing older proposals from overriding newer ones.
+
+When an \textsc{Acceptor} sends a \textsc{Promise(n)} in Phase 1b, it commits to ignoring any future proposals with number $< n$.
+
+\textbf{Example scenario without this check:}
+\begin{enumerate}
+   \item Proposer A sends \textsc{Prepare(10)} $\rightarrow$ Acceptor responds \textsc{Promise(10)}
+   \item Proposer B sends \textsc{Prepare(20)} $\rightarrow$ Acceptor responds \textsc{Promise(20)} (more recent!)
+   \item Proposer A sends \textsc{Accept(10, value\_A)}
+   \begin{itemize}
+      \item \textit{Without the check}: Acceptor would accept $value\_A$
+      \item \textit{With the check}: Acceptor rejects because it already promised to only consider $n \geq 20$
+   \end{itemize}
+\end{enumerate}
+
+This prevents "stale" proposals from being accepted after newer proposals have been initiated, ensuring the system converges to a single consistent value and avoiding race conditions that could lead to conflicting decisions.
 
 % //TODO or n>2f?
 If faulty nodes are $f$ and total nodes are $n \geq 2f + 1 $, then Paxos can tolerate $f$ faulty nodes, since it exploits strict majority.

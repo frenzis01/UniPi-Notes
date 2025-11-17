@@ -38,13 +38,62 @@ There are three main types of data consistency models used in stream processing 
 
 
 \subsection{Time semantics}
+
+In stream processing systems, understanding different time semantics is crucial for correctly handling events, especially when dealing with out-of-order data or latency issues. The three main time concepts are defined from the \textbf{perspective of the stream processing system} (e.g., Flink, Kafka Streams, Spark Streaming):
+
 \begin{itemize}
-   \item \textit{Event} time - the time when the event occurred.
-   \item \textit{Processing} time - the time when the event is processed. 
-   \item \textit{Ingestion} time - the time when the event was received. 
+   \item \textbf{Event time}: The timestamp when the event \textit{actually occurred} in the real world, typically embedded in the event data itself. For example, when a sensor detects a temperature reading, the event time is the moment the sensor took that measurement. This is the most accurate representation of when something happened.
+   
+   \item \textbf{Ingestion time}: The timestamp when the event \textit{enters the stream processing system} (e.g., when it arrives at the Kafka broker or is read by the streaming application). There may be delays between event time and ingestion time due to network latency, batching, or other factors.
+   
+   \item \textbf{Processing time}: The timestamp when the stream processing system \textit{actually processes} the event (e.g., when a Flink operator applies a transformation or aggregation to it). This is the system's wall-clock time at the moment of processing. Processing time can differ significantly from event time due to system load, backpressure, or processing delays.
 \end{itemize}
 
-Watermarks are used to track the progress of event time, and to determine when to emit results. In general aim to manage late-arrive data.
+\textbf{Example scenario}: A temperature sensor records 25°C at \texttt{10:00:00} (event time). Due to network delays, this data reaches Kafka at \texttt{10:00:05} (ingestion time). The Flink application processes this event at \texttt{10:00:10} (processing time) because it was busy handling previous events.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=3cm,
+    box/.style={rectangle, draw, rounded corners, minimum width=2.5cm, minimum height=0.8cm, align=center, font=\small},
+    event/.style={box, fill=blue!20},
+    system/.style={box, fill=green!20},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Nodes
+\node[event] (sensor) {Sensor\\Event Occurs};
+\node[system, right=of sensor] (ingestion) {System\\Receives Event};
+\node[system, right=of ingestion] (processing) {System\\Processes Event};
+
+% Timeline
+\draw[thick, gray] ([yshift=-1.5cm]sensor.south) -- ([yshift=-1.5cm]processing.south);
+\foreach \x in {0,1,2,3} {
+    \draw[gray] ([yshift=-1.5cm, xshift=\x*2.8cm]sensor.south) -- ++(0,-0.15);
+}
+
+% Time labels
+\node[below, font=\scriptsize] at ([yshift=-1.65cm]sensor.south) {10:00:00};
+\node[below, font=\scriptsize] at ([yshift=-1.65cm]ingestion.south) {10:00:05};
+\node[below, font=\scriptsize] at ([yshift=-1.65cm]processing.south) {10:00:10};
+
+% Arrows
+\draw[arrow, blue!70] (sensor) -- node[above, font=\tiny] {network delay} (ingestion);
+\draw[arrow, green!70!black] (ingestion) -- node[above, font=\tiny] {processing delay} (processing);
+
+% Time type labels
+\node[below=0.3cm of sensor, font=\scriptsize\bfseries, blue!70!black] {Event Time};
+\node[below=0.3cm of ingestion, font=\scriptsize\bfseries, green!70!black] {Ingestion Time};
+\node[below=0.3cm of processing, font=\scriptsize\bfseries, orange!70!black] {Processing Time};
+
+\end{tikzpicture}
+\caption{Time semantics in stream processing: the lifecycle of an event from occurrence to processing}
+\label{fig:17/time-semantics}
+\end{figure}
+
+The choice of time semantics affects windowing, aggregations, and correctness guarantees. \ul{Event time is preferred for accurate analytics}, but requires handling out-of-order events and late arrivals. Processing time is simpler but can produce incorrect results if events are delayed.
+
+\textbf{Watermarks} are used to track the progress of event time, and to determine when to emit results. They act as markers indicating that no more events with timestamps earlier than the watermark should be expected (or that such events will be considered late). In general, watermarks aim to manage late-arriving data by providing a mechanism to balance between result accuracy and latency.
 
 In \textbf{Stream} processing there are \ul{\textbf{Transactions}, which are atomic operations between streams}.
 They are implemented with two-phase commit protocols, where a coordinator manages the transaction and ensures that all participants either commit or abort the transaction together, or idempotent writes, i.e. writing the same data multiple times has the same effect as writing it once.\\
@@ -97,9 +146,20 @@ It exploits checkpointing and state backends to manage state.
    \label{fig:17/kappaarchitecture}
 \end{figure}
 
-\textsc{Kappa} is very well suited for processing data from IoT devices, or analytics in general.
-
 A \textsc{Kappa} architecture is a data processing architecture designed to handle massive quantities of data by taking advantage of stream processing methods. It consists of a single layer that processes both batch and real-time data in a fault-tolerant and scalable manner.
+
+The main components, as shown in Figure~\ref{fig:17/kappaarchitecture}, are:
+\begin{itemize}
+   \item \textbf{Kafka Cluster (Input Topic)}: Acts as the immutable event log that stores all incoming data. This distributed messaging system provides durability, scalability, and fault tolerance for the data stream. All events are retained for a configurable period, enabling replay and reprocessing.
+   
+   \item \textbf{Stream Processing System}: The core computation layer that processes events from Kafka in real-time. Multiple job versions (e.g., \texttt{job\_version\_n}, \texttt{job\_version\_n+1}) can run simultaneously, allowing for seamless updates and deployments without downtime. This enables A/B testing and gradual migration to new versions.
+   
+   \item \textbf{Serving DB (Output Tables)}: Stores the materialized views and results produced by the stream processing jobs. Different job versions write to separate output tables, allowing clients to query the appropriate version. This database must support high write throughput and low-latency reads.
+   
+   \item \textbf{App (Client)}: End-user applications that query the serving database to access processed results. The app can send queries to specific output table versions based on requirements.
+\end{itemize}
+
+\textsc{Kappa} is very well suited for processing data from IoT devices, or analytics in general, where continuous stream processing is the primary requirement.
 
 It is still more complex than traditional stream processing techniques, but it is more efficient and scalable.
 
@@ -109,12 +169,14 @@ It is still more complex than traditional stream processing techniques, but it i
 
 \begin{paracol}{2}
    
+   \colfill
    \begin{figure}[htbp]
       \centering
       \includegraphics[width=0.95\columnwidth]{images/17/cqrs.png}
       \caption{CQRS architecture}
       \label{fig:17/cqrs}
    \end{figure}
+   \colfill
 
    \switchcolumn
    \colfill
@@ -137,8 +199,8 @@ It is still more complex than traditional stream processing techniques, but it i
 \end{paracol}
 
 \subsection{Shared-Nothing}
-A shared-nothing architecture is a distributed computing architecture in which each node is self-sufficient and has its own private memory and storage.
-The nodes communicate with each other by passing messages.
+A shared-nothing architecture is a distributed computing architecture in which \ul{each node is \textbf{self-sufficient} and has its own private memory and storage}.
+The \ul{nodes communicate with each other by \textbf{passing messages}}.
 This seems to nicely fit the Actor Model approach, as each actor can be seen as a node in a shared-nothing architecture.
 In this paradigm, data is split across multiple nodes, with each node responsible for a subset of the data, on which it has complete control.
 
@@ -214,15 +276,24 @@ An example is \textsc{Snowflake}, which is a cloud-based data warehouse that sup
 \subsubsection{Data Mesh}
 Data Mesh is a modern architectural approach designed to address the challenges of managing large-scale
 and complex data systems, especially in distributed organizations. It emphasizes decentralization, domain-driven design, and treating data as a product.
-\note{
+
+\textbf{Key difference from Data Lakehouse}: While \textbf{Data Lakehouse} is a \textit{technical architecture} focused on \textit{where and how data is stored} (combining lake and warehouse capabilities in a unified platform), \textbf{Data Mesh} is an \textit{organizational and architectural paradigm} focused on \textit{who owns and manages data} (decentralized ownership by domain teams).
+
+{Main characteristics:\ns
 \begin{itemize}
-	\item Decentralization: Data responsibility is distributed across domain teams, avoiding a centralized data teamas a bottleneck.
-	\item Interoperability: Data products across domains are designed to be interoperable.
-	\item Scalability: Scales naturally with organizational and data growth.
-	\item Data Discovery: Metadata and catalogs help discover data assets.
-	\item Automation: Strong reliance on automation for deploying and managing data pipelines.
-	\item Example - Netflix, to provide teams with the autonomy to own their datasets while maintaining consistency and governance
+	\item \textbf{Decentralization}: Data responsibility is distributed across domain teams, avoiding a centralized data team as a bottleneck. Each domain owns its data as a product.
+	\item \textbf{Domain-oriented ownership}: Data is organized and owned by business domains (e.g., Sales, Marketing, Logistics), not by a central data platform team.
+	\item \textbf{Data as a Product}: Each domain treats its data as a product with clear ownership, quality standards, and APIs for consumption.
+	\item \textbf{Self-serve data infrastructure}: Provides platform capabilities that enable domain teams to manage their own data pipelines and products autonomously.
+	\item \textbf{Federated computational governance}: Establishes global policies and standards while allowing domains autonomy in implementation.
+	\item \textbf{Interoperability}: Data products across domains are designed to be interoperable through standard interfaces and contracts.
+	\item \textbf{Scalability}: Scales naturally with organizational and data growth, as each domain independently manages its data.
+	\item \textbf{Data Discovery}: Metadata and catalogs help discover data assets across the distributed domains.
+	\item \textbf{Automation}: Strong reliance on automation for deploying and managing data pipelines.
+	\item \textit{Example}: Netflix uses Data Mesh principles to provide teams with the autonomy to own their datasets while maintaining consistency and governance.
 \end{itemize}}
+
+\textbf{Data Lakehouse vs Data Mesh}: A Data Lakehouse can be used \textit{within} a Data Mesh architecture as the technical storage layer for individual domain data products. They are complementary: Lakehouse solves the \textit{``what storage technology''} problem, while Mesh solves the \textit{``how to organize teams and ownership''} problem.
 
 \subsubsection{Choosing the right architecture}
 
@@ -250,7 +321,7 @@ and complex data systems, especially in distributed organizations. It emphasizes
 
 \subsection{Federated Learning}
 
-With federated learning, the model is trained on the edge devices, and the updates are sent to a central server. This allows for better privacy and security, as the data never leaves the edge devices.
+With federated learning, the model is trained on the \textbf{edge} devices, and the updates are sent to a central server. This allows for better privacy and security, as the data never leaves the edge devices.
 
 This approach is well suited for IoT devices, as it allows for the training of models on the edge devices, and the updates are sent to a central server for aggregation.
 
@@ -259,6 +330,6 @@ Abstracts infrastrcture management, and allows for the deployment of data proces
 This paradigm is increasingly applied to data
 processing workflows.
 
-The key difference with traditional architectures is that serverless computing automatically manages the allocation of compute resources, scaling them up or down based on demand.
+The key difference with traditional architectures is that \ul{serverless computing automatically manages the allocation of compute resources}, scaling them up or down based on demand.
 There is no need to provision or manage servers, as the cloud provider takes care of that.
  

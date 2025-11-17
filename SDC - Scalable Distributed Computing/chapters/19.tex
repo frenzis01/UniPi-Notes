@@ -65,8 +65,47 @@ A paper by Emanuele Carlini, Alessandro Lulli, Patrizio Dazzi, Claudio Lucchese 
 
 \begin{definition}
    [Connected Component]
-   A \textbf{Connected Component} (\texttt{CC}) is a subset of vertices in which there is a path between any pair of vertices.
+   A \textbf{Connected Component} (\texttt{CC}) in an \textit{undirected graph} is a maximal subset of vertices in which there is a path between any pair of vertices. In \textit{directed graphs}, we distinguish between \textbf{Strongly Connected Components} (SCC, with directed paths in both directions) and \textbf{Weakly Connected Components} (ignoring edge direction).
 \end{definition}
+
+\textbf{Note}: A Connected Component is different from a \textbf{knot} (as seen in deadlock detection in directed graphs). In undirected graphs, a CC is based on bidirectional connectivity. A knot (in directed graphs) requires that every node has at least one outgoing edge to another node in the subset, forming a cyclic structure. While a knot is always within a (weakly) connected component, a connected component is not necessarily a knot.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=2cm,
+    vertex/.style={circle, draw, minimum size=0.8cm, font=\small},
+    arrow/.style={->, >=stealth, thick},
+    edge/.style={-, thick}
+]
+
+% Undirected graph - Connected Component (not a knot)
+\node[vertex] (A) at (0,0) {A};
+\node[vertex] (B) at (2,0) {B};
+\node[vertex] (C) at (4,0) {C};
+
+\draw[edge] (A) -- (B);
+\draw[edge] (B) -- (C);
+
+\node[above=0.3cm of B, font=\small\bfseries] {Undirected: CC (NOT a knot)};
+\node[below=0.5cm of B, font=\scriptsize, align=center] {All nodes connected (undirected),\\linear structure};
+
+% Directed graph - Knot (which is also a weakly CC)
+\node[vertex] (D) at (7,0) {D};
+\node[vertex] (E) at (9,0) {E};
+\node[vertex] (F) at (8,-1.5) {F};
+
+\draw[arrow] (D) -- (E);
+\draw[arrow] (E) -- (F);
+\draw[arrow] (F) -- (D);
+
+\node[above=0.3cm of E, font=\small\bfseries] {Directed: Knot (SCC)};
+\node[below=0.3cm of F, font=\scriptsize, align=center] {Every node has outgoing edge,\\forms a cycle};
+
+\end{tikzpicture}
+\caption{Difference between Connected Component and Knot: the left shows an undirected CC (linear structure, paths exist in both directions due to undirected edges), while the right shows a directed knot which is also a Strongly Connected Component (cyclic structure with directed paths)}
+\label{fig:19/cc-vs-knot}
+\end{figure}
 
 The paper talks about an algorithm called \textit{``Cracker''}, which is a vertex-centric algorithm to find connected components in undirected graphs, which exploits an \textbf{incremental} approach and \textbf{message passing} to achieve its goal.
 
@@ -95,7 +134,7 @@ Computing the CCs allowed to group similar pages together, and perform more spec
 \subsection{Decentralized minimum vertex cover}
 \begin{definition}
    [Vertex Cover]
-   A \textbf{Vertex Cover} on an undirected graph G is a subset C of the nodes of the graph, such that for each edge, at least one endpointo of the edge is included in C. The minimum vertex cover problem consists in finding the C of minimum size.
+   A \textbf{Vertex Cover} on an undirected graph G is a subset C of the nodes of the graph, such that for each edge, at least one endpoint of the edge is included in C. The minimum vertex cover problem consists in finding the C of minimum size.
 \end{definition}
 
 

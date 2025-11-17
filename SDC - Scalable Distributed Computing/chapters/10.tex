@@ -53,15 +53,68 @@ When a new follower has to be set up, a standard file copy may result in inconsi
 \end{itemize}
 
 \subsection{Implementing Replication Logs}
+The replication log is the mechanism by which changes are propagated from the leader to the followers. Different approaches exist, each with specific trade-offs in terms of flexibility, consistency guarantees, and implementation complexity.
+
+The choice of replication strategy depends on the database architecture, the need for cross-version compatibility, and the desired level of abstraction between the storage engine and the replication mechanism.
+
 \begin{itemize}
-   \item \textbf{Statement-based} replication - Replicate SQL write requests statements from the leader to the followers.
-   \note{We cannot ensure a fully consistent system, due to issues with non-deterministic functions, autoincrementing columns, and side effects.\\
-   This was used in VoltDB and MySQL before version 5.1.}
-   \item \textbf{Write-ahead log (WAL)} shipping - Replicate the log of changes to the database from the leader to the followers.
-   \note{Still some problems here, because we assume that the leader and the followers are using the same database engine, same architecture an so on, so that the log is the same.}
-   \item \textbf{Logical log} replication - Replicate a logical representation of changes to the database from the leader to the followers.
-   \note{This is advantageous and flexible, but it is dischouraged by the fact that some expertise and coding are required. Instead, with the first two approaches there is no need to modify the database in any way.}
-   \item \textbf{Trigger-based} replication - Replicate changes to the database by using triggers.
+   \item \textbf{Statement-based} replication - The leader logs and sends the actual SQL statements (e.g., \texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE}) to followers, which then execute them.
+   
+   \textit{Example}: Leader executes \texttt{UPDATE users SET balance = balance + 100 WHERE id = 42} and sends this exact statement to followers.
+   
+   \textit{Problems}:
+   \begin{itemize}
+      \item Non-deterministic functions like \texttt{NOW()}, \texttt{RAND()} produce different results on each replica
+      \item Auto-incrementing columns may generate different values
+      \item Statements with side effects (triggers, stored procedures) may behave differently
+   \end{itemize}
+   \note{This was used in VoltDB and MySQL before version 5.1.}
+   
+   \item \textbf{Write-ahead log (WAL)} shipping - The leader ships its low-level write-ahead log (containing byte-level changes to disk blocks) to followers, which replay the exact same disk modifications.
+   
+   \textit{Example}: PostgreSQL replicates the WAL that describes which bytes changed in which disk pages.
+   
+   \textit{Problems}:
+   \begin{itemize}
+      \item Tightly coupled to the storage engine internals
+      \item Leader and followers must run the \textbf{same database version} and architecture
+      \item Zero-downtime upgrades become difficult (cannot upgrade followers first)
+   \end{itemize}
+   
+   \item \textbf{Logical (row-based) log} replication - Replicates a logical representation of changes at the row level, decoupled from the storage engine internals.
+   
+   \textit{Example}: For an inserted row, the log contains: \texttt{\{table: "users", operation: "INSERT", values: \{id: 42, name: "Alice"\}\}}. For updates, it includes old and new values.
+   
+   \textit{Advantages}:
+   \begin{itemize}
+      \item Storage-engine independent: allows different database versions or even different database systems
+      \item Easier to parse by external applications (e.g., data warehouses, caches)
+      \item Supports backward compatibility
+   \end{itemize}
+   \textit{Disadvantages}:
+   \begin{itemize}
+      \item Requires additional implementation effort and expertise
+      \item Need to maintain the logical log format separately from storage internals
+   \end{itemize}
+   \note{Used by MySQL's binlog (in row-based mode), PostgreSQL's logical decoding.}
+   
+   \item \textbf{Trigger-based} replication - Uses database triggers to capture changes and write them to a separate replication log table, which is then read by an external process that applies changes to followers.
+   
+   \textit{Example}: A trigger on \texttt{INSERT/UPDATE/DELETE} writes change records to a \texttt{replication\_log} table; a replication daemon reads this table and applies changes to other databases.
+   
+   \textit{Use cases}:
+   \begin{itemize}
+      \item Flexible replication (e.g., replicate subset of data, transform data during replication)
+      \item Replication to different database systems
+      \item Custom conflict resolution logic
+   \end{itemize}
+   \textit{Disadvantages}:
+   \begin{itemize}
+      \item Higher overhead and performance impact
+      \item More prone to bugs due to application-level code
+      \item Trigger logic can become complex to maintain
+   \end{itemize}
+   \note{Used by Oracle GoldenGate, Databus for Oracle, Bucardo for PostgreSQL.}
 \end{itemize}
 
 
@@ -92,7 +145,6 @@ Besides it is possible to increase capacity for read- only requests by adding mo
    \colfill
 \end{paracol}
 
-
 \subsection{Monotonic Reads}
 
 \begin{paracol}{2}
@@ -115,7 +167,6 @@ Besides it is possible to increase capacity for read- only requests by adding mo
 \end{paracol}
 
 
-\newpage
 \subsection{Consistent Prefix Reads w/different DBs}
 
 \begin{paracol}{2}
@@ -164,13 +215,12 @@ With single-leader replication, the second writer blocks or aborts if first writ
 With multi-leader replication, the system must resolve the conflict, and the user must be notified of the resolution.
 
 \subsection{Conflict Avoidance}
-\labelitemize{Strategies}{
+\labelitemize{\textit{Strategies}}{
    \begin{itemize}
       \item Routing writes towards the same leader prevents conflicts.
       \item Routing user requests towards the same datacenter allows to use only the leader of that datacenter; furthermore, geographical locality may be applied, to serve a user with the closest datacenter.
+      \item[] Conflict resolution may happen \textit{on write}, \textit{on read}, or at \textit{row/document} level.
    \end{itemize}
-
-   Conflict resolution may happen \textit{on write}, \textit{on read}, or at \textit{row/document} level.
 }
 
 % // Prof SKIPPING a few slides starting from "consistent and converging to a state"
@@ -207,14 +257,10 @@ However, especially for geographically spread databases, it is not trivial to de
 For this reason the \textit{happens-before} relationship is used, which is a partial order on events, which reflects the order in which events have occurred.
 
 \section{Key Takeaways}
-Replication ensures data availability even if some nodes fail. 
-Allows systems to operate offline, useful for applications needing to function without network connection.
-Reduces latency by placing replicas closer to users, enhancing user experience.
+Replication is a fundamental technique in distributed systems that ensures data availability even when nodes fail, allowing systems to continue operating and serving requests. By maintaining multiple copies of data across different locations, replication also enables systems to function offline, which is particularly useful for applications that need to work without continuous network connectivity.
 
-Besides, it scales read operations by distributing the load across multiple replicas.
-Essential for handling large volumes of read requests efficiently.
-Managing concurrent writes and ensuring data consistency across replicas can be challenging.
+One of the primary benefits of replication is \textbf{latency reduction}: by placing replicas geographically closer to users, we can significantly enhance user experience through faster response times. Additionally, replication naturally \textbf{scales read operations} by distributing the workload across multiple replicas, making it essential for handling large volumes of read-heavy requests efficiently.
 
-Different replication strategies offer various trade-offs in terms of consistency, availability, and performance.
-Understanding consistency models like eventual consistency and strong consistency is crucial.
-Effective strategies for fault tolerance are necessary to maintain system integrity.
+However, replication introduces significant challenges, particularly in managing concurrent writes and ensuring data consistency across replicas. The fundamental tension lies in balancing consistency, availability, and performance---a trade-off that manifests in different replication strategies (single-leader, multi-leader, leaderless) and consistency models (strong consistency, eventual consistency, causal consistency).
+
+Understanding these consistency models is crucial for designing robust distributed systems. Each model offers different guarantees: \textit{eventual consistency} prioritizes availability and performance but allows temporary inconsistencies, while \textit{strong consistency} ensures all replicas are always synchronized but may sacrifice availability. Effective fault tolerance strategies, including proper failover mechanisms and conflict resolution policies, are necessary to maintain system integrity and reliability in the face of network partitions and node failures.

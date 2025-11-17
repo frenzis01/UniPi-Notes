@@ -55,7 +55,13 @@ This is also known in data-analysis as \textit{split-apply-combine}.
    \note{If the work cannot be hosted on the actual node where the data resides, priority is given to nodes in the same rack}
 \end{itemize}
 
-If a \texttt{TaskTracker} fails or times out, that part of the job is rescheduled.
+\textbf{TaskTracker failure}: If a \texttt{TaskTracker} fails or times out, that part of the job is automatically rescheduled by the \texttt{JobTracker} to another available node. Since the input data is stored in HDFS (with replication, typically 3 copies), the failed task can be re-executed on a different node that has a replica of the required data blocks. This provides fault tolerance at the task level. The \texttt{JobTracker} detects failures through the heartbeat mechanism: if a \texttt{TaskTracker} stops sending heartbeats, it is marked as failed and its tasks are reassigned.
+
+\textbf{Data locality}: Each \texttt{TaskTracker} preferably works on data stored locally (on the same node) or within the same rack, following the principle of \textbf{data locality}. The \texttt{JobTracker} exploits the rack-aware file system to assign tasks to nodes that already have the data, minimizing network transfers. If local execution is not possible, the scheduler tries to assign the task to a node in the same rack; only as a last resort will it schedule the task on a node in a different rack, incurring higher network overhead.
+
+This data locality optimization is enabled by \textbf{HDFS} (Hadoop Distributed File System): the \textit{NameNode} maintains metadata about which data blocks are stored on which \textit{DataNode}s, and the \texttt{JobTracker} queries this information to make intelligent task placement decisions. Since worker nodes typically run both \textit{DataNode} (storage) and \texttt{TaskTracker} (compute) roles, computation can be co-located with data, embodying the principle of \ul{\textit{``moving computation to data rather than data to computation''}}.
+
+\textbf{JobTracker failure recovery}: If the \texttt{JobTracker} fails, the work is not lost because the job information and metadata are typically persisted to a reliable storage (such as HDFS). When the \texttt{JobTracker} restarts, it can recover the job state from this persistent storage and resume coordination. However, in classic Hadoop MapReduce (v1), \texttt{JobTracker} was a \textbf{single point of failure} (SPOF) ---without automatic failover---, meaning that job recovery required manual intervention. In Hadoop 2.x (YARN), this limitation was addressed by introducing high availability for the \texttt{ResourceManager} (YARN's equivalent of \texttt{JobTracker}), with automatic failover to a standby instance, significantly improving fault tolerance.
 
 A heartbeat is sent from the \texttt{TaskTracker} to the \texttt{JobTracker} every few minutes to check its status. The
 \texttt{JobTracker} and \texttt{TaskTracker} status and information can be viewed from a web browser.
@@ -69,17 +75,17 @@ If even one node is slow, the whole job is slow, as the \texttt{JobTracker} wait
 \note{With speculative execution enabled, however, a single task can be executed on multiple
 slave nodes.}
 
-\section{Hadoop}
+\section{Hadoop in depth}
 Hadoop is an open-source framework for distributed storage and processing of large datasets. It allows to use frameworks such as MapReduce to process data across large clusters.
 
 A small Hadoop cluster includes a single master and
 multiple worker nodes.
 The master node consists of a \textit{JobTracker}, \textit{TaskTracker},
 \textit{NameNode}, and \textit{DataNode}.
-A slave or worker node acts as both a \textit{DataNode} and
-\textit{TaskTracker}; it is possible to have data-only and compute-only worker nodes.
+A slave or \ul{worker node acts as both a \textit{DataNode} and
+\textit{TaskTracker}; it is possible to have \textbf{data-only} and \textbf{compute-only} worker nodes}.
 
-The \textit{NameNode} manages the file system namespace and regulates access to files by clients. The \textit{DataNode} manages storage attached to the nodes that it runs on.\\
+The \ul{\textit{NameNode} manages the file system namespace and regulates access} to files by clients. The \ul{\textit{DataNode} manages storage attached} to the nodes that it runs on.\\
 The \textit{JobTracker} receives jobs from clients and distributes them to \textit{TaskTracker}s. The \textit{TaskTracker} is responsible for executing the individual tasks as directed by the \textit{JobTracker}.
 
 \begin{figure}[htbp]
@@ -215,9 +221,9 @@ Note that being RDDs immutable allows for three key advantages:
 \end{enumerate}
 
 
-Implementing a simple WordCount in Spark is quite simple, as shown in \autoref{fig:14/spark_wordcount}.
+Implementing a simple WordCount in Spark is quite simple, as shown in Listing \ref{fig:14/spark_wordcount}.
 This is much simpler than setting up hadoop.
-\begin{lstlisting}[language=Python, caption={Spark WordCount example}]
+\begin{lstlisting}[language=Python, caption={Spark WordCount example}, label={fig:14/spark_wordcount}]
    import sys
    from pyspark import SparkContext
    sc = SparkContext(appName="WordCountExample")

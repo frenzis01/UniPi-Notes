@@ -52,7 +52,7 @@ A Wait-For Graph is a directed graph, a simplified RAG, that models the wait-for
 
 There are some challenges in detecting deadlocks in distributed systems, such as the lack of a global state, communication delays, and the need for coordination among nodes. More specifically, we risk:
 \begin{itemize}
-   \item False positives due to delays in the netowrk or inconsistent state information
+   \item False positives due to delays in the network or inconsistent state information
    \item Overhead due to message passing
    \item Dynamic changes in resource allocation
 \end{itemize}
@@ -122,11 +122,55 @@ In particular, such search should find \textit{all} cycles in \textit{finite} ti
 \subsection{Single Resource Model}
 In this model, each process requires a single resource to proceed. The deadlock detection algorithm is simple and efficient, but it is not very realistic.
 Since the maximum out-degree of a node in a WFG for the single resource model can be 1, the presence of a cycle in the WFG shall indicate that there is a deadlock
-
-\subsection{AND Model}
-A process can request multiple resources simultaneously, and the request is granted only if all resources are available.
-A cycle in the WFG ---guess what--- implies a deadlock.\\
-In the AND model, if a cycle is detected in the WFG, it implies a deadlock but \textit{\textbf{not} vice versa}. That is, a process may not be a part of a cycle, it can still be deadlocked.
+\newpage
+\begin{paracol}{2}
+   \subsection{AND Model}
+   \colfill
+   A process can request multiple resources simultaneously, and the request is granted only if all resources are available.
+   A cycle in the WFG ---guess what--- implies a deadlock.\\
+   In the AND model, if a cycle is detected in the WFG, it implies a deadlock but \textit{\textbf{not} vice versa}. That is, a process may not be a part of a cycle, it can still be deadlocked.
+   \colfill   
+   \switchcolumn
+   
+   
+   \begin{figure}[htbp]
+      \centering
+      \begin{tikzpicture}[
+         node distance=2.5cm,
+         process/.style={circle, draw, minimum size=1cm, font=\small},
+         arrow/.style={->, >=stealth, thick}
+         ]
+         
+         % Deadlocked process not in cycle
+         \node[process, fill=orange!30] (P0) at (0,0) {$P_0$};
+         \node[process, fill=red!20] (P1) at (3,1) {$P_1$};
+         \node[process, fill=red!20] (P2) at (5,0) {$P_2$};
+         \node[process, fill=red!20] (P3) at (3,-1) {$P_3$};
+         
+         % P0 waits for BOTH P1 and P3 (AND model)
+         \draw[arrow, orange!70!black, thick] (P0) -- (P1) node[midway, above, font=\tiny] {waits};
+         \draw[arrow, orange!70!black, thick] (P0) -- (P3) node[midway, below, font=\tiny] {waits};
+         
+         % Cycle among P1, P2, P3
+         \draw[arrow, red!70!black] (P1) -- (P2);
+         \draw[arrow, red!70!black] (P2) -- (P3);
+         \draw[arrow, red!70!black] (P3) -- (P1);
+         
+         \node[above=0.5cm of P1, font=\small\bfseries] {AND Model: Deadlock without being in cycle};
+         
+         \node[below=0.5cm of P3, font=\scriptsize, align=center] {
+            $P_0$ waits for \textbf{both} $P_1$ AND $P_3$ (AND model)\\
+            $\{P_1, P_2, P_3\}$ form a cycle (deadlocked)\\
+            $P_0$ is deadlocked but NOT part of the cycle\\
+            (must wait for resources that will never be released)
+            };
+            
+         \end{tikzpicture}
+         \caption{AND Model deadlock: $P_0$ (orange) is deadlocked without being part of the cycle. Since $P_0$ must wait for BOTH $P_1$ AND $P_3$ (AND semantics), and both are stuck in a cycle $\{P_1 \to P_2 \to P_3 \to P_1\}$, $P_0$ will never proceed even though it's not in the cycle itself.}
+         \label{fig:05/and-deadlock-no-cycle}
+      \end{figure}
+   
+   \end{paracol}
 
 \subsection{OR Model}
 In the OR model, a process can make a request for numerous resources simultaneously and the request is satisfied if any one of the requested resources is granted.\\
@@ -140,7 +184,47 @@ More formally, a knot $K$ is a non-empty subset of processes such that:
       \item \textbf{Mutually reachable} - $\forall p,q \in K$ $p$ is reachable from $q$ and $q$ is reachable from $p$ ($K$ is \textit{strongly connected}).
       \item \textbf{No dead ends} - $\forall p \in K$, if $p$ is waiting for a process $r$, then $r \in K$. In other words, there are no outgoing edges from processes in $K$ to processes outside $K$ (which could potentially lead to resource acquisition and deadlock resolution), so $K$ is closed with respect to reachability towards processes that can provide resources
 \end{itemize} 
-% No paths originating from a knot shall have dead ends.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=2.5cm,
+    process/.style={circle, draw, minimum size=1cm, font=\small},
+    arrow/.style={->, >=stealth, thick}
+]
+
+% Graph with a knot
+\node[process, fill=red!20] (P1) at (0,0) {$P_1$};
+\node[process, fill=red!20] (P2) at (2,0) {$P_2$};
+\node[process, fill=red!20] (P3) at (1,-1.5) {$P_3$};
+\node[process] (P4) at (4,0) {$P_4$};
+
+\draw[arrow, red!70!black] (P1) -- (P2);
+\draw[arrow, red!70!black] (P2) -- (P3);
+\draw[arrow, red!70!black] (P3) -- (P1);
+\draw[arrow] (P4) -- (P2);
+
+\node[above=1.8cm of P3, font=\small\bfseries] {Graph WITH a knot};
+\node[below=0.3cm of P3, font=\scriptsize, align=center] {$K = \{P_1, P_2, P_3\}$\\Strongly connected,\\no outgoing edges};
+
+% Graph without a knot
+\node[process] (Q1) at (7,0) {$Q_1$};
+\node[process] (Q2) at (9,0) {$Q_2$};
+\node[process] (Q3) at (8,-1.5) {$Q_3$};
+\node[process] (Q4) at (11,-0.75) {$Q_4$};
+
+\draw[arrow] (Q1) -- (Q2);
+\draw[arrow] (Q2) -- (Q3);
+\draw[arrow] (Q3) -- (Q1);
+\draw[arrow, blue] (Q2) -- (Q4);
+
+\node[above=1.8cm of Q3, font=\small\bfseries] {Graph WITHOUT a knot};
+\node[below=0.3cm of Q3, font=\scriptsize, align=center] {$Q_2$ has outgoing edge\\to $Q_4$ outside the cycle\\(violates ``No dead ends'')};
+
+\end{tikzpicture}
+\caption{Comparison of graphs with and without a knot: Left shows a knot (red nodes form a strongly connected component with no outgoing edges). Right shows a cycle that is NOT a knot because $Q_2$ has an outgoing edge to $Q_4$ outside the cycle, potentially allowing deadlock resolution.}
+\label{fig:05/knot-examples}
+\end{figure}
 
 Note that, \ul{there can be a deadlocked process that is \textbf{not} a part of a knot}.\\
 So, in an OR model, a blocked process $P$ is deadlocked if it is either in a knot or it can only reach processes on a knot.
@@ -191,7 +275,7 @@ These algorithms exploit the following facts:
 	\item a consistent snapshot may not represent the system state at any moment in time, but if a stable property holds in the system before the snapshot collection is initiated, this property will still hold in the snapshot.
 \end{itemize}
 
-Therefore, distributed deadlocks can be detected by taking a snapshot of the system and examining it for the condition of a deadlock.
+Therefore, \ul{distributed deadlocks can be detected by taking a \textbf{snapshot} of the system and examining it for the condition of a deadlock}.
 
 
 

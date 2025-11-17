@@ -93,6 +93,7 @@ Once the process completes its operations in the critical section, it releases i
       number[i] = 1 + max(number[0], ..., number[N-1]);
       choosing[i] = false;
       for (int j = 0; j < N; j++) {
+         // busy waiting
          while (choosing[j]); // Wait until other processes have chosen
          while (number[j] != 0 && (number[j] < number[i] || (number[j] == number[i] && j < i)));
       }
@@ -101,11 +102,11 @@ Once the process completes its operations in the critical section, it releases i
 
 Note that unlike some hardware-based synchronization mechanisms (like spinlocks or test-and-set instructions), LBA does not require atomic operations or specific CPU instructions. Besides, LBA relies on simple ticketing logic and does not depend on hardware features, it can be implemented in various environments, enhancing its portability.
 
-Its major \textbf{drawback} is that it may suffer from performance issues (e.g., high communication overhead) in large systems due to continuous polling of ticket values.
+Its major \textbf{drawback} is that it may suffer from performance issues (e.g., high communication overhead) in large systems due to continuous polling (\textbf{busy waiting}) of ticket values.
 However, it nicely environments where shared memory is available and the number of processes is relatively small.
 
 \subsection{LDMEA - Lamport's Distributed Mutual Exclusion Algorithm}
-LBA cannot be directly applied in distributed systems, as there is no shared memory to store ticket values.
+\ul{LBA \textit{cannot} be directly applied in distributed systems, as there is no shared memory to store ticket values}.
 In a distributed system, processes run on different nodes and must be aware of each other's states through message passing.
 
 LDMEA is a distributed version of Lamport's Bakery Algorithm that allows processes to access shared resources across multiple nodes, exploiting logical clocks for coordination.
@@ -125,12 +126,21 @@ by their timestamps. $request\_queue_i$ denotes the queue of site $S_i$.
 
 \subsubsection{Entering the Critical Section}
 When a site $S_i$ wants to enter the critical section, it sends a request message $Request(Ts_i, i)$ to all other sites and places the request on $request\_queue_i$. Here, $Ts_i$ denotes the timestamp of Site $Si$.
-A site $S_i$ can enter the critical section if it has received the message with timestamp larger than $(ts_i, i)$ from all other sites and its own request is at the top of $request_queue_i$
+A site $S_i$ can enter the critical section if it has received the message with timestamp larger than $(Ts_i, i)$ from all other sites and its own request is at the top of $request\_queue_i$
+
+\textbf{Handling incoming requests}: When a site $S_j$ receives a $Request(Ts_i, i)$ from site $S_i$:
+\begin{itemize}
+   \item $S_j$ adds the request to its $request\_queue_j$ (ordered by timestamp)
+   \item If $S_j$ is \textbf{not} in the critical section or has a request with timestamp \textit{larger} than $(Ts_i, i)$, it immediately sends a $Reply$ to $S_i$
+   \item If $S_j$ is \textbf{in} the critical section or has a pending request with timestamp \textit{smaller} than $(Ts_i, i)$, it \textbf{defers} the reply until it exits the critical section
+\end{itemize}
+
+This ensures that requests are processed in timestamp order, maintaining fairness and preventing deadlock.
 
 \subsubsection{Leaving the Critical Section}
-When a site $S_i$ leaves the critical section, it removes its own request from the top of its request queue and it sends a release message $Release(Ts_i, i)$ to all other sites and removes its request from $request_queue_i$.
+When a site $S_i$ leaves the critical section, it removes its own request from the top of its request queue and it sends a release message $Release(Ts_i, i)$ to all other sites and removes its request from $request\_queue_i$.
 
-When a site $S_j$ receives the timestamped RELEASE message from site $S_i$, it removes the request of $S_i$ from its request queue.
+When a site $S_j$ receives the timestamped $Release$ message from site $S_i$, it removes the request of $S_i$ from its request queue.
 
 \subsubsection{Considerations and drawbacks}
 \labelitemize{Example}{
@@ -169,7 +179,6 @@ Typically they are classified in three categories:
    \item Quorum-based algorithms
 \end{enumerate}
 
-\newpage
 \section{Token-based Algorithms}
 A Token-Based Approach is a method used in distributed systems to manage access to a critical section. In this approach, \ul{a \textbf{unique token} circulates among the processes. Only the process that holds the token is allowed to enter the critical section}, ensuring \textbf{mutual exclusion}.
 
@@ -215,14 +224,14 @@ structures:
 \paragraph*{Requesting the CS}
 When process \lstinline|i| wants to enter the CS, if it does not have the token, it:
 \begin{itemize}
-	\item increments its sequence number \lstinline|RN_i[i]|
+	\item increments its sequence number \lstinline|RN_i[i] := RN_i[i] + 1|
 	\item sends a request message containing new sequence number to all processes in the system
 \end{itemize}
 
 \paragraph*{Releasing the CS}
 When process \lstinline|i| leaves the CS, it:
 \begin{itemize}
-	\item Sets \lstinline|LN[i]| of the token equal to \lstinline|RN_i[i]|. This indicates that its request \lstinline|RN_i[i]| has been executed.
+	\item Sets \lstinline|LN[i] := RN_i[i]|. This indicates that its request \lstinline|RN_i[i]| has been executed.
 	\item for every process k not in the token queue \lstinline|Q|, it appends \lstinline|k| to \lstinline|Q| if \lstinline|RN_i[k] == LN[k]+1|. This indicates that process \lstinline|k| as a pending request
 	\item if the token queue \lstinline|Q| is not empty after this update, it pops
    a process ID \lstinline|j| from \lstinline|Q| and sends the token to \lstinline|j|

@@ -25,7 +25,7 @@ Going a bit deeper, there are distributed systems which are highly time-dependan
 
 \section{Challenges}
 First of all, \textbf{Clock Drift} is one the key problems.
-Every machine has its own \textit{phyisical} clock, which may gradually drift over time due to hardware imperfections.
+Every machine has its own \textit{physical} clock, which may gradually drift over time due to hardware imperfections.
 It matters because over time, unsynchronized clocks on different nodes will show different times, leading to inconsistent timestamps for events.
 
 Also \textbf{network latencies} are an issue
@@ -67,11 +67,13 @@ According to prof. Dazzi, PTP allows for more precision than NTP, but it still l
 \end{figure}
 
 \begin{align*}
-   \Theta = (T_2 - T_1) + (T_3 - T_4) / 2 \qquad \textit{Offset between clocks}\\
+   \theta = \frac{(T_2 - T_1) + (T_3 - T_4)}{2} \qquad \textit{Offset between clocks}\\
    \sigma = (T_4 - T_1) - (T_3 - T_2) \qquad \textit{Round-trip delay}
 \end{align*}
 
 NTP performs also some statistical analysis to filter out outliers and improve accuracy.
+Note that the first term $(T_2 - T_1)$ would be positive, while the second term $(T_3 - T_4)$. This is to account for the time it takes for messages to travel in both directions.\\
+Note also that if the server's clock is ahead of the client's clock, the offset $\theta$ will be positive, indicating that the client needs to advance its clock, while if the server's clock is behind, $\theta$ will be negative, indicating that the client needs to set its clock back.
 
 
 \begin{figure}[htbp]
@@ -82,8 +84,8 @@ NTP performs also some statistical analysis to filter out outliers and improve a
 \end{figure}
 
 \begin{align*}
-   \Theta = (t_2 - t_1) + (T_3 - T_4) / 2 \qquad \textit{Offset between clocks}\\
-   \sigma = (t_4 - t_1) - (T_3 - T_2) \qquad \textit{Round-trip delay}
+   \theta = \frac{(t_2 - t_1) + (t_3 - t_4)}{2} \qquad \textit{Offset between clocks}\\
+   \sigma = \frac{(t_4 - t_1) - (t_3 - t_2)}{2} \qquad \textit{Round-trip delay}
 \end{align*}
 
 In a simple architecture there are \textbf{slaves} and a \textbf{master}.
@@ -122,7 +124,7 @@ Being $C_i$ the clock value of process $P_i$:
 \begin{enumerate}
 	\item Before executing an event $e$, $P_i$ sets $C_i = C_i + 1$
 	\item When $P_i$ sends a message $m$, it sets $m.timestamp = C_i$ .
-	\item Upon receiving a message $m$, process $P_i$ sets $C_j =
+	\item Upon receiving a message $m$, process $P_j$ sets $C_j =
 \max(C_j, m.timestamp) + 1$
    \item[$\diamond$] These rules ensure that the logical clocks respect the
 causal relationships between events.

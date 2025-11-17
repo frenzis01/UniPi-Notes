@@ -53,11 +53,13 @@ We define self-stabilization for a system $S$ with respect to a predicate $P$ ov
 
 States satisfying $P$ are called \textbf{legitimate} (safe) states, and those that do not are called \textbf{illegitimate} (unsafe) states.
 
-\ul{A system $P$ is \textbf{self-stabilizing} with respect to predicate $P$ if it satisfies the following two properties}:
+\ul{A system $S$ is \textbf{self-stabilizing} with respect to predicate $P$ if it satisfies the following two properties}:
 
 \begin{enumerate}
-	\item Closure $P$ is closed under the execution of $S$: that is, once $P$ is established in $S$, it cannot be falsified, it can't go in an illegitimate state.
-	\item \textbf{Convergence} starting from an arbitrary global state: $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
+	\item \textbf{Closure} -  $P$ is closed under the execution of $S$: that is, once $P$ is established in $S$, it cannot be falsified, it can't go in an illegitimate state due to its normal execution, only transient faults can bring it to an illegitimate state.\\
+	A \textbf{transient\footnote{"Transitorio"/"Temporaneo" in italian} fault} is a temporary fault that may arbitrarily change the state of the system, it may be external (e.g., a cosmic ray flipping a bit in memory) or internal (e.g., a software bug causing incorrect state updates), but independent from the normal operation of the system.\\
+   Persistent faults such as a broken link or a crashed (unreplaced) node/hardware are not considered transient faults.
+	\item \textbf{Convergence} - starting from an arbitrary global state $S$ is guaranteed to reach a global state satisfying $P$ within a finite number of state transitions.
 \end{enumerate}
 
 Safe states are those that are reachable under normal program execution from the set of legitimate start states, referred as the \textbf{reachable set}.
@@ -68,7 +70,7 @@ By definition, the \ul{\textbf{reachable set} is closed under program execution}
 Self-stabilization may be classified as either \textbf{randomized} or \textbf{probabilistic}, depending on the stabilization time.
 
 \begin{itemize}
-   \item A system is said to be randomized selfstabilizing system, if and only if it is selfstabilizing and the expected number of rounds needed to reach a correct state (legal state) is bounded by some constant k.
+   \item A system is said to be randomized self-stabilizing system, if and only if it is self-stabilizing and the expected number of rounds needed to reach a correct state (legal state) is bounded by some constant k.
    \item A system $S$ is said to be \textbf{probabilistically self-stabilizing} with respect to a predicate $P$ if it satisfies the following two properties:
    \begin{itemize}
       \item \textbf{Closure}: $P$ is closed under the execution of $S$. That is, once $P$ is established in $S$, it cannot be falsified.   
@@ -92,6 +94,7 @@ practical situations.
    A \textbf{transient failure} is \textit{temporary} (short lived) and it does not persist. 
    A transient failure may be caused by corruption of local state of processes or by corruption of channels. 
    A transient failure may change the \textbf{state} of the system, but \textit{not} its behaviour.
+   Persistent faults such as a broken link or a crashed (unreplaced) node/hardware are not considered transient faults.
 }
 
 \subsection{Issues in the design of self-stabilizing systems}
@@ -120,7 +123,7 @@ A legitimate state must satisfy the following constraints:
    \item There must be at least one privilege in the system (liveness, no deadlock).
    \item Every from move from a legal state must again put the system into a legal state (closure).
    \item During an infinite execution, each machine should enjoy a privilege an infinite number of times (no starvation).
-   \item Given any two legal states, there is a series of moves that change one legal state to the other (reachability).
+   \item Given any two legal states, there is a series of moves that changes one legal state to the other (reachability).
 \end{enumerate}
 
 \ul{Dijkstra considered a legitimate (or legal) state as one in which \textit{exactly one machine enjoys the privilege}}.
@@ -138,7 +141,7 @@ Machine 0 is exceptional, and the other machines are identical, and follow the s
 	\item each machine compares its state with the state of the anti-clockwise neighbour;
 	\item if they are not the same, it updates its state to be the same as its neighbour.
 \end{itemize}
-if there are $n$ machines and each of them is initially at a random state $r \in K$,
+if there are $n$ machines and each of them is initially at a random state $r \in K$ ($K$ is the set of possible states, with $|K| \geq n$),
 then all the machines (except the exceptional machine, machine 0) whose states are different from
 the one of their anti-clockwise neighbour are said to be \textbf{privileged}.\\
 There is a \textit{central demon} that decides which of these privileged machines will make the move
@@ -289,7 +292,7 @@ Self-stabilization per se does not define an upper bound on the time required fo
 Two measures are used to evaluate the performance of a self-stabilizing system:
 \begin{itemize}
    \item \textbf{Convergence span}: the maximum time required for the system to reach a legitimate state from an arbitrary initial state.
-   \item \textbf{Response span}: the maximum time required for the system to return to a legitimate state after a perturbation that puts the system in an illegitimate state.
+   \item \textbf{Response span}: the maximum time required for the system to return to a legitimate state after a perturbation (transient fault) that puts the system in an illegitimate state.
 \end{itemize}
 
 Clearly, the aim of the designer of a self-stabilizing system is to reduce the convergence span and the response span.
@@ -358,7 +361,7 @@ If a protocol is self-stabilizing, they will all be corrected in a finite number
 A communication protocol is stabilizing if and only if starting from any unsafe state (i.e., one that violates the intended invariant of the protocol), the protocol is guaranteed to converge to a safe state within a finite number of state transitions.
 Stabilization allows the processes in a protocol to reestablish coordination between one another whenever coordination is lost due to some failure.
 
-{Gouda and Multari showed that a communication protocol must satisfy the following three properties to be self-stabilizing:\ns
+{\ul{Gouda and Multari showed that a communication protocol must satisfy the following three properties to be self-stabilizing}:\ns
 \begin{itemize}
 	\item It must be \textit{non-terminating} (i.e., it must not reach a state from which no further state transitions are possible).
    \item There is an \textit{infinite} number of safe states (i.e. states that satisfy the intended invariant of the protocol) in every computation.
