@@ -1,0 +1,157 @@
+\chapter{Gradient-based optimization}
+// TODO first 7 slides
+
+\section{Initial notions - Computational graphs}
+
+\begin{paracol}{2}
+   
+   We can generalize several gradient-based optimization to computational graphs,
+   objects which compute a generic function $f(x)$. Functional form: $h(\omega^T x)$. Note: $\omega^T x$ is
+   simply a linear combination of $x$.
+   
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/15/computationalGraph.png}
+      \caption{A computational graph: nodes indicate objects involved in the computation, and edges indicate their flow in the graph.}
+      \label{fig:15/computationalGraph}
+   \end{figure}
+
+\end{paracol}
+
+Forward pass: given input $x$, compute $f(x)$ by following the graph from input to output.
+
+Backward pass: given a loss function $l(f(x), y)$, compute the gradient of the loss wrt the parameters of the graph.
+
+\section{Scaling up - Layering graphs}
+
+\begin{paracol}{2}
+   
+   The backward pass is made possible by the
+   differentiability of the loss... but this can be applied
+   also to the functions within $g$: if a function $h_i$
+   within $g$ is differentiable, then I can \textbf{recursively compute gradients} on it.
+   
+   
+   \begin{definition}
+      [Chain Rule of Calculus]
+      If $f(x) = h(g(x)) = h \circ g $, then
+      \[
+         \frac{\vartheta f}{\vartheta x} = \frac{\vartheta h}{\vartheta g} \cdot \frac{\vartheta g}{\vartheta x}
+         \]
+      \end{definition}
+
+      \switchcolumn
+
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics{images/15/backwardpass.png}
+         \caption{A backward pass in $g$: change parameters indicated by the gradient indicates the direction towards which move parameters to minimize the loss $l$}
+         \label{fig:12/backwardpass}
+      \end{figure}
+   \end{paracol}
+
+Applying the chain rule recursively, and going down the computational graph, we can
+compute optimization directions for all parameters! The algorithm chaining back the
+loss gradient is called \textbf{backpropagation}.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/15/chainrule.png}
+   \caption{A multi-layered computational graph, and its forward (left) and backward (right) pass. The chain rule enables propagation of
+updates back and over the entire network.}
+   \label{fig:15/chainrule}
+\end{figure}
+
+\subsection{Neural Networks}
+Neural networks implement computational graphs.
+\begin{itemize}
+	\item \textbf{Layer}: set of all adjacent nodes
+	\item \textbf{Block}: collection of consecutive layers
+	\item \textbf{Activation function}: functions found in nodes
+	\item \textbf{Hidden layer}: a layer, except the first or last one
+	\item \textbf{Output layer/nodes}: layer/nodes yielding the computed output $f_\theta(x)$
+\end{itemize}
+
+Fitting a neural network consists in, at a very high level, repeatedly computing forward and backward passes, each pair improving on the current loss.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/15/NN.png}
+   \caption{Consecutive foreward and backward passes on a network, each backward pass leverages gradients of the loss to find local
+directions of loss minimization, which are then used to fit the model.}
+   \label{fig:15/NN}
+\end{figure}
+
+\subsection{Learning - Stochastic learning}
+
+Backpropagation takes care of defining optimal directions for the parameters, but how
+do we estimate and leverage these directions?
+
+\begin{paracol}{2}
+   
+   Estimating directions: Through stochastic
+   gradient, by computing gradient on a
+   batch of data, rather than the whole
+   dataset.
+   
+   Provides a good approximation and a
+   much faster computation.
+
+   Batches can be aggregated, the directions
+they yield combined: a training-specific
+approach to combat overfit
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/15/gradientDirections.png}
+      \caption{The gradient $\nabla L^X$ estimated on some data $X$, and gradients $\nabla L^{X_1}$ and $\nabla L^{X_2}$ estimated on two batches  $X_1$ and $X_2$ (subsets of X). The batch gradients can be combined to approximate the full gradient.}
+      \label{fig:15/gradientDirections}
+   \end{figure}
+
+\end{paracol}
+
+\subsubsection{Momentum}
+Estimating weight update: Update
+directions are weighted by a possibly
+decaying learning rate $\eta$, and possibly
+weighted by past updates (Adam,
+RMSProp, Nesterov momentum).
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/15/momentum.png}
+   \caption{Momentum}
+   \label{fig:15/momentum}
+\end{figure}
+
+// TODO regularization
+// TODO Early stopping
+
+Activation functions impact the flow of data throughout the network, and their outputs
+are called \textbf{activations}. Different activations define different \textbf{representations} of the data,
+which, unlike in PCA, are dependent on learned parameters.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Formulation} & \textbf{Heads} \\
+\hline
+Identity & $\omega^T x$ & 1 \\
+\hline
+Logistic & $\displaystyle\frac{1}{1 + e^{-\omega^T x}}$ & 1 \\
+\hline
+ReLU & $\max\{0, \omega^T x\}$ & 1 \\
+\hline
+Softmax & $\displaystyle\frac{exp(\omega_i x_i)}{exp(\omega^T x)}$ & $\geq 1$ \\
+\hline
+$\ldots$ & $\ldots$ & $\ldots$ \\
+\hline
+\end{tabular}
+\caption{Common activation functions in neural networks}
+\label{tab:activation-functions}
+\end{table}
+
+Remember, $\omega^T x$ is the sum of the incoming edges in the node.

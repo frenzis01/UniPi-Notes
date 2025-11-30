@@ -1,0 +1,335 @@
+\chapter{Decision Tree Simulation}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\textbf{index} & \textbf{state} & \textbf{contract} & \textbf{sex} & \textbf{calls} & \textbf{churn} \\
+\hline
+1 & it & C & F & >10 & Y \\
+\hline
+2 & ge & T & M & <=10 & N \\
+\hline
+3 & it & T & M & >10 & Y \\
+\hline
+4 & ge & Y & F & <=10 & N \\
+\hline
+5 & ge & T & F & >10 & N \\
+\hline
+2 & ge & C & M & >10 & Y \\
+\hline
+2 & ge & C & M & <=10 & Y \\
+\hline
+2 & ge & Y & F & <=10 & Y \\
+\hline
+2 & ge & Y & M & >10 & N \\
+\hline
+2 & ge & T & F & <=10 & N \\
+\hline
+2 & ge & Y & F & >10 & Y \\
+\hline
+2 & it & C & F & >10 & N \\
+\hline
+\end{tabular}
+\caption{Customer churn dataset}
+\label{tab:churn-dataset}
+\end{table}
+
+\section{Simulating DT}
+
+Initial dataset statistics:
+\begin{itemize}
+   \item Y = 6
+   \item N = 6 
+   \item ME = 6/12
+\end{itemize}
+
+The formula for calculating the expected misclassification error after a split is given by:
+\[
+E = \sum_{i=1}^{k} ME(S_i) \cdot \frac{|S_i|}{|S|}
+\]
+where:
+\begin{itemize}
+	\item \(k\) is the number of subsets created by the split,
+	\item \(ME(S_i)\) is the misclassification error of subset \(S_i\),
+	\item \(|S_i|\) is the number of instances in subset \(S_i\),
+	\item \(|S|\) is the total number of instances before the split.
+\end{itemize}
+
+The misclassification error for a subset is calculated as:
+\[
+ME(S_i) = 1 - \frac{\max(Y_i, N_i)}{|S_i|}
+\]
+where:
+\begin{itemize}
+   \item \(Y_i\) is the number of positive instances in subset \(S_i\),
+   \item \(N_i\) is the number of negative instances in subset \(S_i\).
+\end{itemize}
+
+\subsection{Splitting by STATE}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & \textbf{IT} & \textbf{GE} \\
+\hline
+\textbf{Y} & 2 & 4 \\
+\hline
+\textbf{N} & 1 & 5 \\
+\hline
+\end{tabular}
+\caption{Split by STATE attribute}
+\label{tab:split-state}
+\end{table}
+
+\[
+\begin{aligned}
+ME(IT) &= 1/3 \\
+ME(GE) &= 4/9 \\
+E &= \frac{1}{3} \cdot \frac{3}{12} + \frac{4}{9} \cdot \frac{9}{12} = \frac{5}{12}
+\end{aligned}
+\]
+
+
+\subsection{Splitting by CONTRACT}
+
+\subsubsection{3-way split: C, T, Y}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+ & \textbf{C} & \textbf{T} & \textbf{Y} \\
+\hline
+\textbf{Y} & 3 & 1 & 2 \\
+\hline
+\textbf{N} & 1 & 3 & 2 \\
+\hline
+\end{tabular}
+\caption{3-way split by CONTRACT attribute}
+\label{tab:split-contract-3way}
+\end{table}
+
+\[
+\begin{aligned}
+ME(C) &= 1/4 \\
+ME(T) &= 1/4 \\
+ME(Y) &= 2/4 \\
+E &= \frac{1}{4} \cdot \frac{4}{12} + \frac{1}{4} \cdot \frac{4}{12} + \frac{2}{4} \cdot \frac{4}{12} = \frac{4}{12}
+\end{aligned}
+\]
+
+\subsubsection{2-way split: CT, Y}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & \textbf{CT} & \textbf{Y} \\
+\hline
+\textbf{Y} & 4 & 2 \\
+\hline
+\textbf{N} & 4 & 2 \\
+\hline
+\end{tabular}
+\caption{2-way split by CONTRACT: CT vs Y}
+\label{tab:split-contract-2way-cty}
+\end{table}
+
+\[
+\begin{aligned}
+ME(CT) &= 4/8 \\
+ME(Y) &= 2/4 \\
+E &= \frac{4}{8} \cdot \frac{8}{12} + \frac{2}{4} \cdot \frac{4}{12} = \frac{6}{12}
+\end{aligned}
+\]
+
+\subsubsection{2-way split: C, TY}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & \textbf{C} & \textbf{TY} \\
+\hline
+\textbf{Y} & 3 & 3 \\
+\hline
+\textbf{N} & 1 & 5 \\
+\hline
+\end{tabular}
+\caption{2-way split by CONTRACT: C vs TY}
+\label{tab:split-contract-2way-cty2}
+\end{table}
+
+\[
+\begin{aligned}
+ME(C) &= 1/4 \\
+ME(TY) &= 3/8 \\
+E &= \frac{1}{4} \cdot \frac{4}{12} + \frac{3}{8} \cdot \frac{8}{12} = \frac{4}{12}
+\end{aligned}
+\]
+
+\subsubsection{2-way split: CY, T}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & \textbf{CY} & \textbf{T} \\
+\hline
+\textbf{Y} & 5 & 1 \\
+\hline
+\textbf{N} & 3 & 3 \\
+\hline
+\end{tabular}
+\caption{2-way split by CONTRACT: CY vs T}
+\label{tab:split-contract-2way-cyt}
+\end{table}
+
+\[
+\begin{aligned}
+ME(CY) &= 3/8 \\
+ME(T) &= 1/4 \\
+E &= \frac{3}{8} \cdot \frac{8}{12} + \frac{1}{4} \cdot \frac{4}{12} = \frac{4}{12}
+\end{aligned}
+\]
+
+\subsection{Splitting by SEX}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & \textbf{F} & \textbf{M} \\
+\hline
+\textbf{Y} & 3 & 3 \\
+\hline
+\textbf{N} & 4 & 2 \\
+\hline
+\end{tabular}
+\caption{Split by SEX attribute}
+\label{tab:split-sex}
+\end{table}
+
+\[
+\begin{aligned}
+ME(F) &= 3/7 \\
+ME(M) &= 2/5 \\
+E &= \frac{3}{7} \cdot \frac{7}{12} + \frac{2}{5} \cdot \frac{5}{12} = \frac{5}{12}
+\end{aligned}
+\]
+
+\subsection{Splitting by CALLS}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+ & \textbf{>10} & \textbf{<=10} \\
+\hline
+\textbf{Y} & 2 & 4 \\
+\hline
+\textbf{N} & 3 & 3 \\
+\hline
+\end{tabular}
+\caption{Split by CALLS attribute}
+\label{tab:split-calls}
+\end{table}
+
+\[
+\begin{aligned}
+ME(>10) &= 2/5 \\
+ME(<=10) &= 3/7 \\
+E &= \frac{2}{5} \cdot \frac{5}{12} + \frac{3}{7} \cdot \frac{7}{12} = \frac{5}{12}
+\end{aligned}
+\]
+
+
+\section{Sequential Pattern Mining}
+
+\subsection{Exercise Setup}
+
+Given the sequential rule: \(\{B\} \rightarrow \{CD\}\) with constraint MIN-GAP = 1.
+
+For each of the sequences below, list all the subsequences that satisfy the constraint (if any).
+
+\subsection{Sequence 1}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\{ABF\} & \{C\} & \{CDF\} & \{E\} & \{CD\} \\
+$t_0$ & $t_1$ & $t_2$ & $t_3$ & $t_4$ \\
+\end{tabular}
+\end{center}
+
+\textbf{No constraints:}
+\begin{itemize}
+   \item $\langle t_0, t_2 \rangle$
+   \item $\langle t_0, t_4 \rangle$
+\end{itemize}
+
+\textbf{With min-gap = 1:}
+\begin{itemize}
+   \item $\langle t_0, t_2 \rangle$
+   \item $\langle t_0, t_4 \rangle$
+\end{itemize}
+
+\subsection{Sequence 2}
+
+\begin{center}
+\begin{tabular}{cccc}
+\{AB\} & \{C\} & \{AB\} & \{CD\} \\
+$t_0$ & $t_1$ & $t_2$ & $t_3$ \\
+\end{tabular}
+\end{center}
+
+\textbf{No constraints:}
+\begin{itemize}
+   \item $\langle t_0, t_2 \rangle$
+   \item $\langle t_0, t_3 \rangle$
+\end{itemize}
+
+\textbf{With min-gap = 1:}
+\begin{itemize}
+   \item $\langle t_0, t_3 \rangle$
+\end{itemize}
+
+\subsection{Sequence 3}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\{AF\} & \{BC\} & \{AB\} & \{E\} & \{D\} \\
+$t_0$ & $t_1$ & $t_2$ & $t_3$ & $t_4$ \\
+\end{tabular}
+\end{center}
+
+\textbf{No constraints:}
+\begin{itemize}
+   \item None
+\end{itemize}
+
+\textbf{With min-gap = 1:}
+\begin{itemize}
+   \item None
+\end{itemize}
+
+\subsection{Sequence 4}
+
+\begin{center}
+\begin{tabular}{ccccc}
+\{A,B,F\} & \{A,C\} & \{A,B,D\} & \{C\} & \{C,D\} \\
+$t_0$ & $t_1$ & $t_2$ & $t_3$ & $t_4$ \\
+\end{tabular}
+\end{center}
+
+\textbf{Rule:} \(\{A\} \rightarrow \{C,D\}\)
+
+\textbf{No constraints:}
+\begin{itemize}
+   \item $\langle t_0, t_4 \rangle$
+   \item $\langle t_1, t_4 \rangle$
+   \item $\langle t_2, t_4 \rangle$
+\end{itemize}
+
+\textbf{Rule:} \(\{A\} \rightarrow \{D\}\)

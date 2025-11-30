@@ -1,0 +1,20 @@
+\chapter{Time series}
+% // TODO first 23 slides
+
+\section{Sinusoids}
+Fourier analysis is a method to decompose a time series into a sum of sinusoidal functions, each characterized by a specific frequency, amplitude, and phase. This decomposition allows us to analyze the frequency components of the time series, which can be useful for identifying periodic patterns, trends, and noise.
+
+\textbf{Sinusoids} are mathematical functions that describe smooth, periodic oscillations. 
+They are $sin/cos$ functions defined by a \textbf{phasor} $\psi$.
+Sinusoids define \textbf{amplitude}, which is the height of the wave, and \textbf{frequency}, which is how many cycles occur in a unit of time.
+At a time $t$, the phasor defines a series component with amplitude
+\[
+s_t = 
+\underbrace{\alpha}_{\text{amplitude scaling}}
+\,
+\cos(
+\overbrace{2\pi f_0 t}^{\text{angle } \theta_{0,t}}
+\underbrace{+\phi}_{\text{shifting}}
+).
+\]
+
