@@ -1,1 +1,349 @@
-\chapter{Lecture 18/11/2025 missing}
+\chapter{Supervised Tasks}
+
+Supervised learning tasks can be grouped into two main categories:
+\begin{itemize}
+   \item \textbf{Classification:} the target variable is categorical (e.g., spam vs. not spam)
+   \item \textbf{Regression:} the target variable is continuous (e.g., house price)
+\end{itemize}
+
+We will focus on \textbf{classification} tasks.
+
+\section{Splitting trees}
+
+\subsection{Introduction to classification}
+There are three main approaches to classification.
+\begin{itemize}
+   \item \textbf{Trees} - Learning a space partitition separating data according to its label
+   \item \textbf{Linear} - Predicting the label through a linear combination of the input features
+   \item \textbf{Neural} - Predicting the label through \textbf{computational graphs}
+\end{itemize}
+
+\subsection{Split function}
+
+{Inducing Decision Trees depends roughly on two factors:
+\begin{itemize}\ns
+	\item Split function $f_i$: how do I route instances in my subtrees?
+	\item Split loss $L$: how do I measure the quality of a split?
+\end{itemize}}
+
+\begin{paracol}{2}
+   
+   \colfill
+   \textbf{Univariate} split functions are the most common, they test a single attribute at a time. When plotted, they correspond to axis-aligned splits. They are highly interpretable and their complexity is easily manageable, but they have limited expressiveness.
+      \[
+      f_i(x) \equiv x_i \leq \Theta_i
+      \]
+   \colfill
+      
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/univariate.png}
+      \caption{Univariate split}
+      \label{fig:14/univariate}
+   \end{figure}
+\end{paracol}
+
+\newpage
+\begin{paracol}{2}
+   
+   \colfill
+   \textbf{Multivariate} split functions test multiple attributes at a time. When plotted, they correspond to oblique splits;
+   in fact, they are also called \textbf{oblique} splits.
+   They are more expressive than univariate splits, but less interpretable and more complex to manage.
+      \[
+      f_i(x) \equiv x_\Theta + \Theta^0
+      \]
+   \colfill
+      
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/multivariate.png}
+      \caption{Multivariate split}
+      \label{fig:14/multivariate}
+   \end{figure}
+\end{paracol}
+
+\begin{paracol}{2}
+   
+   \colfill
+   \textbf{Probabilistic} split functions route instances to subtrees with a certain probability. They are mostly used in \textbf{soft} decision trees, where instances can be routed to multiple subtrees at once.\\
+   Instances are routed to all leaves in the tree, accumulating probability density at each node. The prediction can then be given by the leaf with higher probability mass, or average class probabilities across leaves.
+
+      \[
+      f_i(x) \equiv p_i(x;\Theta_i)
+      \]
+
+   These work best on non-relational data, such as images. However, they suffer from interpretability issues, and are more complex to train.
+   \colfill
+      
+   \switchcolumn
+
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/probabilistic.png}
+      \caption{Probabilistic split}
+      \label{fig:14/probabilistic}
+   \end{figure}
+   \colfill
+\end{paracol}
+
+\section{Linear Models}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/14/linear.png}
+   \caption{Two classes dataset and a linear model separating them}
+   \label{fig:14/linear}
+\end{figure}
+
+{Linear models are simple, generally interpretable, family of models. Typically used for tasks on
+\begin{itemize}
+	\item \textbf{Representation}, e.g., PCA, PLA: can I find an alternative, linear representation of my data?
+	\item \textbf{Classification}, e.g., Linear \textit{regression}: can I predict a variable as a linear model of my data?
+\end{itemize}}
+
+\newpage
+\subsection{Formally}
+
+\begin{paracol}{2}
+   
+   \colfill
+   A linear model makes predictions according to a linear combination of the input features.
+   When parametrized by $\omega$ it has the form:
+      \[
+      f \equiv \omega^T x
+      \]
+
+   It can be leveraged for classification by applying an activation function (threshold) to the output:
+      \[
+      f(x) \equiv \sigma(\omega^T x) 
+      % \begin{cases}
+      % 1 & \text{if } \omega^T x \geq 0\\
+      % 0 & \text{otherwise}
+      % \end{cases}
+      \]
+   
+      They are interpretable, actionable (each feature may be tuned independently), and easily optimizable (the loss function is convex, allowing for efficient optimization and few local minima) but have limited expressiveness.
+   \colfill
+      
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/linear1.png}
+      \caption{An architectural illustration of a linear model. Note: such models include a bias term, not included in the figure.}
+      \label{fig:14/linear1}
+   \end{figure}
+\end{paracol}
+
+The interpretability of linear models comes from their additive nature: each component has a measurable and \textit{independent}\footnote{Indenpendency here refers to the model, there still may be actual dependency between data} contribution $\omega_i x_i$.
+Their limitation also comes from this, as there is no real learned representation of the data.
+
+\begin{paracol}{2}
+   
+   \colfill
+   \textbf{Generalized Addictive Models} (\textsc{GAM}s) extend linear models by applying non-linear functions to each feature before combining them additively.
+      \[
+      f(x) \equiv \sum^{m}\omega_i f_i (x_i) + \omega_0
+      \]
+   Each feature enjoys a learned representation given by a parametric \textit{shape} function $f_i$ of arbitrary complexity.
+   \colfill
+      
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/gam.png}
+      \caption{Generalized Addictive Model}
+      \label{fig:14/gam}
+   \end{figure}
+\end{paracol}
+
+
+
+\section{Bagging}
+
+{As highlighted by the bias-variance decomposition, learning algorithms can incur in a
+variance in terms of generalization. We have seen two strategies to mitigate this:\ns
+\begin{itemize}
+	\item \textbf{Cross validation}: reduce variance by increasing samples
+	\item \textbf{Regularization}: reduce variance by reducing capacity
+\end{itemize}
+There exists a third way, somewhat related, approach: leverage variance.}
+
+A ``bag'' essentially is a bootstrap sample of the original dataset: a dataset created by sampling with replacement from the original data.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/14/bagging.png}
+   \caption{Bagging process illustration}
+   \label{fig:14/bagging}
+\end{figure}
+
+\textbf{Bagging} (Bootstrap Aggregating) is an ensemble method which aims to reduce variance by combining multiple models trained on different samples of the data.
+The idea is to create multiple datasets by sampling with replacement from the original dataset (bootstrapping), train a model on each dataset, and combine their predictions (aggregating).\\
+This works because the variance of the average of multiple independent models is lower than the variance of a single model.
+\[f_\Theta = \sum_{i=1}^{T}\eta f_i(x)\qquad \eta \in \mathbb{R} \]
+
+Bagging is particularly effective for high-variance, low-bias models, such as decision trees.
+In fact, the underlying assumption is that models retain a low-enough bias to be accurate on their respective bags.
+
+The overall computational complexity depends on the complexity of each model, and the number of models $T$.
+For a uniform learning time of $\mathcal{O}(c)$ of $k$ bags, the cost is $\mathcal{O}(k\cdot c) \cong \mathcal{O}(c)$.\\
+For non-uniform costs, there is an upper bound of $\max_{c \in C} \mathcal{O}(c)$.
+
+
+\subsection{Random Forests}
+Decision Trees show a moderate variance, and thus are a perfect candidate. \textbf{Random
+Forests} sample a set of bags by \ul{sampling both \textit{instances} and \textit{features}}, training a decision tree on each bag, and aggregating their predictions (by majority vote for classification, or averaging for regression).
+
+Note that Random Forests sample bags with \textbf{replacement}, so \ul{some instances may appear multiple times in a bag, while others may not appear at all}.
+
+As a bagging model, the computational complexity is given by the complexity of the single tree.
+
+\proscons{Pros}{Cons}{
+   \begin{itemize}
+   	\item Simple definition with high variance models
+	   \item Interpretable-ish results
+	   \item Fast learning
+   \end{itemize}
+}{
+\begin{itemize}
+	\item Weak to high degrees of covariance
+	\item Sampling with replacement: risk of high correlation
+	\item Random bagging
+\end{itemize}
+}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/14/randomForests.png}
+   \caption{Random Forests process illustration}
+   On the bottom, the bagged data, each bag indicated by a different color. On top, a set of learned trees, color-coded as the bag they have been learned from: the red tree has been learned on the red bag, and so forth.
+   \label{fig:14/randomForests}
+\end{figure}
+
+\subsection{Boosting}
+Boosting creates fuzzy soft bags, wherein instances are jointly predicted by all models,
+thus decomposing the task, rather than the data! Each model is trained to correct the mistakes of the previous one, by focusing more on the instances that were misclassified. The final prediction is made by combining the predictions of all models, typically through a weighted vote or sum.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/14/boosting.png}
+   \caption{Bagging VS Boosting. In bagging, each bag is used to learn a model. In boosting, bags are fuzzy, and the task is decomposed so
+that each model predicts a subset of it.}
+   \label{fig:14/boosting}
+\end{figure}
+
+In boosting, the model has the following form:
+\[f_T(x) = \sum_{i=1}^{T}\eta_i f^i (x), \eta_i \in \mathbb{R}\]
+where each model $f^i$ is trained to correct the mistakes of the previous models, hence it is iteratively built(learned).
+
+\subsubsection{Towards linear algebra}
+Boosting can be interpreted as a gradient descent in function space, where each model is a step in the direction of the negative gradient of the loss function with respect to the current ensemble prediction.
+
+Let's address this step by step.
+
+Since we are operating with finite datasets, we can interpret functions as vectors $\vec{f}_i = [f_i(x_1), \ldots, f_i(x_n)]$ in a finite-dimensional vector space, where each dimension corresponds to an instance in the dataset.
+Hence, we can interpret operations on functions as operations on vectors:
+\begin{itemize}
+   \item Function addition: $(f + g)(x) \equiv f(x) + g(x)$ corresponds to vector addition $\vec{f} + \vec{g}$
+   \item Scalar multiplication: $(\eta f)(x) \equiv \eta f(x)$ corresponds to scalar multiplication $\eta \vec{f}$
+   \item Funciton multiplication: $(f \cdot g)(x) \equiv f(x) \cdot g(x)$ corresponds to element-wise vector multiplication $\vec{f} \circ \vec{g}$
+\end{itemize}
+
+\begin{paracol}{2}
+   \colfill
+   As said before, boosting models are learned iteratively, each additional model $f_{t+1}$ looking to reduce the loss
+   \[L_{t+1} = l(Y_i,f_t(x) + \eta_{n+1}f_{t+1}) \]
+   The additional function $f_{t+1}$ is one of possibly many (possibly infinite) directions we can take in functional space.
+   We want to pick the direction minimizing loss.
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/f1f2.png}
+      \caption{$f_1$ and some of the infinite possible directions $f_2$}
+      \label{fig:14/f1f2}
+   \end{figure}
+
+\end{paracol}
+
+\begin{paracol}{2}
+   \colfill
+   To get the direction of maximum loss reduction, we can compute the gradient of the loss with respect to the current model's predictions, i.e. the gradient of $L^{t+1}$ w.r.t. $f^t:\nabla_{f_T}L^{t+1}$.
+   The negated gradient indicates the direction in which we should adjust our predictions to minimize the loss.
+   \colfill
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/14/minimizingloss.png}
+      \caption{Boosting and iterative optimization: we construct the model one loss improvement at a time, exploring the loss space.}
+      \label{fig:14/minimizingloss}
+   \end{figure}
+\end{paracol}
+
+Note that the space of models $\mathcal{F}$ to which $f_{t+1}$ belongs may not be continuous, e.g., decision trees. In such cases, we cannot directly follow the gradient direction, and we choose the closest match $f_{t+1} in \mathcal{F}$ maximizing its similarity to the negative gradient direction:
+\[f_{t+1} = arg \max_{f \in \mathcal{F}} f \cdot - \nabla_f^T L^{t+1}\]
+
+In boosting models, gradient of the loss gives us a search direction, but also a \textbf{residual}: practically, since each model is additive, gradients define directions as much as residuals we want to optimize.
+Thus, we fit models on datasets $(X, -\nabla L^t)$
+
+
+\subsubsection{Algorithm}
+
+We can define a generic algorithm for boosting models as follows:
+
+\begin{algorithm}
+\caption{Generic Boosting Procedure}
+\begin{algorithmic}[1]
+   \State Initialize $f_1$
+   \State Find optimal direction $-\nabla_{f_t} L^t$
+   \State Find admissible direction $f_t$ (choose $f_t \in \mathcal{F}$ approximating the negative gradient)
+   \State Find learning step $\eta_t$
+   \State Update ensemble: $f_{t+1} \gets f_t + \eta_t f_t$
+   \State Go to step 2 (until stopping criterion)
+\end{algorithmic}
+\label{alg:generic-boosting}
+\end{algorithm}
+
+\labelitemize{Notes}{
+   \begin{itemize}
+      \item The function space could be anything: the space of Decision Trees (Gradient-Boosted Trees), of Logistic Regression (Logitboost), etc.
+      \item Regularization is usually applied to $f_t$: allows to have weak learners, which helps with decreasing overfit
+   \end{itemize}
+}
+
+\begin{itemize}
+	\item \textbf{Adaboost} -  Uses an exponential loss, adapts with a closed form search
+	\item \textbf{Gradient-Boosted Trees} -  Leverage Decision Trees as models
+	\item \textbf{XGBoost} -  Leverages trees, and uses a more robust loss approximation through the Hessian, rather than the gradient
+\end{itemize}
+
+\textbf{Regularization} is the process of constraining models to reduce their variance, at the cost of increasing their bias. This is particularly important in boosting, where each model is trained to fit the residuals of the previous models, which can lead to overfitting if the models are too complex.\\
+Regularization is performed directly on the weak learners (to make sure we keep
+variance high), but can be applied post-hoc too through pruning!
+
+Unlike bagging, boosting models are learned iteratively. Thus the
+computational complexity for $k$ models is given by $\mathcal{O}(k \cdot c)$, where $c$ is the cost of learning a single model. 
+
+\proscons{Pros}{Cons}{
+   \begin{itemize}
+   	\item Model-agnostic
+	\item Given some relatively likely theoretical assumptions, has extremely low bias
+	\item Unlikely to overfit
+	\item Computationally quick
+   \end{itemize}
+}{
+   \begin{itemize}
+   	\item Largely un-interpretable
+   \end{itemize}
+}
