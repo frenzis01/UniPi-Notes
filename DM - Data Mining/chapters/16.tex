@@ -1,6 +1,217 @@
 \chapter{Time series}
 % // TODO first 23 slides
 
+\section{Definitions}
+\begin{definition}
+   [Univariate series]
+   A \textbf{univariate series} $s \in \mathcal{X}^n$ is a sequence $s = [s_1, \dots, s_n]$ of $n$ values belonging to a domain $\mathcal{X}$ ordered in time, where each value $s_i \in \mathcal{X}$ is a real number.\\
+   {A series has five properties:\ns
+   \begin{itemize}
+      \item \textbf{Type} - discrete or continuous (e.g nucleotide bases vs temperature values)
+      \item \textbf{Sampling rate} - how often values are sampled
+      \item \textbf{Amplitude} - the range of values taken by the series
+      \item \textbf{Seasonality} - periodic patterns that repeat over fixed intervals
+      \item \textbf{Period} - the length of the interval over which patterns (or the overall series) repeat
+   \end{itemize}
+   }
+\end{definition}
+
+A \textbf{\textit{multivariate} time series}, instead, generalizes time series to multiple variables. Each instance is comprised of multiple time series, each representing a different feature.
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/16/multivariate.png}
+   \caption{A multivariate time series, with a variable in \textred{red} and one in \text{\color{blue} blue}}
+   \label{fig:16/multivariate}
+\end{figure}
+
+\subsection{Metrics for Time Series}
+\begin{itemize}
+   \item Mean - Expected value $\mathbb{E}[s]$ of the series $s$
+   \[
+   \mu = \mathbb{E}[s] = \frac{1}{n} \sum_{i=1}^{n} s_i
+   \]
+   \item Variance 
+   \[
+   Var(s) = \frac{1}{n} \sum_{i=1}^{n} (s_i - \mathbb{E}[s])^2
+   \]
+   \item Trend - slope $\Delta$ of a linear model modeling the series
+   \[
+   s_i = \Delta \cdot i + b
+   \]
+   \item Interquantile Range - difference between the $a^{th}$ and $b^{th}$ percentiles
+   \[
+   IQN(s) = q_a(s) - q_b(s)
+   \]
+   \item Skewness - asymmetry of the distribution of values in the series
+   \[
+   Skewness(s) = \frac{1}{n} \sum_{i=1}^{n} \left(\frac{s_i - \mathbb{E}[s]}{\sigma}\right)^3 = \mathbb{E}\left[\left(\frac{s - \mu}{\sigma}\right)^3\right]
+   \]
+   \item Kurtosis - "tailedness" of the distribution of values in the series
+   \[
+   Kurtosis(s) = \frac{1}{n} \sum_{i=1}^{n} \left(\frac{s_i - \mathbb{E}[s]}{\sigma}\right)^4 = \mathbb{E}\left[\left(\frac{s - \mu}{\sigma}\right)^4\right]
+   \]
+\end{itemize}
+
+
+\subsection{Local analysis}
+\subsubsection{Rolling statistics}
+In order to capture Seasonality and Trend, we must analyze time series over \textbf{windows} of time, thus locally.
+\textbf{Rolling statistics} compute metrics over a sliding window of fixed size $w$.
+In general \textbf{rolling} indicates the act of extracting a series of consecutive subsequences of given dimensionalities $w^1, \dots, w^k$, named \textbf{windows} given a different view of the original series $s$.
+\begin{itemize}
+   \item \textbf{Rolling mean} - mean over a sliding window of size $w$
+   \item \textbf{Rolling variance} - variance over a sliding window of size $w$
+   \item \textbf{Rolling min/max} - minimum/maximum value over a sliding window of size $w$
+   \item quantiles, skewness, kurtosis and so on\dots 
+\end{itemize}
+
+\subsubsection{Sliding statistics}
+Unlike rolling statistics, which compute metrics over non-overlapping windows, hence a subseries of given series $s$, \textbf{sliding statistics} slide a series $t$ over $s$ computing statistics between the two.
+The act of sliding a windows through a function is called \textbf{convolution}.
+
+\begin{itemize}
+   \item \textbf{Autocovariance} - covariance of a series with itself at different lags. High autocovariances may indicate seasonality in the series.\\
+   \textit{``How much does a component of a time series correlate with previous and future components?''}
+   \begin{align*}
+      \gamma(k) = Cov(s_i, s_{i+k}) = \mathbb{E}[(s_i - \mu)(s_{i+k} - \mu)] \qquad \textit{Copilot}\\
+      cov(s_{t:},s_{:t+\Delta:}) = \frac{1}{n - \Delta} \sum_{i=1}^{n-\Delta} s_i \cdot s_{i+\Delta} \qquad \textit{Slides}
+   \end{align*}
+   \note{The $-\Delta$ in the summation upper bound is to avoid exceeding the bounds of the series.}
+   \item \textbf{Cross-correlation} - Shifted pointwise correlation of the two series $s,t$ , measured as a sliding inner product.\\
+   For univariate time series, the inner product is simply a multiplication.
+   \[
+      CC_{\Delta}(s,t) = \sum_{i=1}^{n-\Delta} s_i \cdot t_{i+\Delta}
+   \]
+   \item[$\circ$] There might be more, but they are not presented in the slides.
+\end{itemize}
+
+\section{Segmentation}
+
+\begin{definition}
+   [Segmentation]
+   Given a set of time series $S = \{s^1, s^2, \dots, s^N\}$, let $S^\subset $ be a set of $k$ subseries $s_{\subset}^1, \dots, s_{\subset}^k$ extracted from the series in $S$.
+   We define an alphabet $\Sigma$ of symbols, each symbol representing a subseries in $S^\subset$.
+   We can now \textbf{segment} each series into a sequence of subseries, each represented by a symbol in $\Sigma^*$.
+
+   \[
+   s^i \rightarrow \underbrace{[s^{i,1}|\dots | s^{i,k_i}]}_{\in \Sigma^*}
+   \]
+   
+   % where each series $s^i$ has length $n_i$, the \textbf{segmentation} problem consists in partitioning each series $s^i$ into a set of contiguous segments $\{s^i_1, s^i_2, \dots, s^i_{k_i}\}$ such that each segment $s^i_j$ can be approximated by a simple model (e.g., constant, linear, polynomial) within a specified error tolerance.
+\end{definition}
+\coolquote{
+   How to split the series into segments?
+   What symbols do we use to represent each segment?
+}{}
+
+\newpage
+\subsection{Segmentation methods}
+\subsubsection{Fixed window}
+\begin{paracol}{2}
+   
+   \colfill
+   The simplest segmentation method is to use a fixed-size sliding window of size $w$ to partition the series into segments.
+   Each series $s^i$ is divided into $\altfrac{n}{m}$ non-overlapping segments of length $w$.
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/16/windowSegment.png}
+      \caption{$w=2$ here}
+      \label{fig:16/windowSegment}
+   \end{figure}
+\end{paracol}
+
+\subsubsection{Learned segmentation}
+\begin{paracol}{2}
+   
+   We can learn segmentation which minimize an approximation error.
+   \textbf{Piecewise Linear Approximation} (PLA) approximates each segment with a linear function.
+   It defines a segmentation minimizingg segment-local linear models of the data.
+   {It works by either providing a maximum number of segments $k$ or a maximum error tolerance $\epsilon$.\ns
+   \begin{itemize}
+      \item Given $k$, it iteratively adds segments until reaching $k$, distributing approximation error as evenly as possible among segments (approximation error refers to the difference between the original series and its linear approximation within each segment).
+      \item Given $\epsilon$, it generates the minimum number of segments such that the approximation error within each segment does not exceed $\epsilon$.
+   \end{itemize}
+   }
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/16/pla.png}
+      \caption{Segmentation on given error bound (top) and on given number of segments (bottom) }
+      \label{fig:16/pla}
+   \end{figure}
+
+\end{paracol}
+
+\begin{table}[h]
+\centering
+\rowcolors{2}{verylightgray}{white}
+\begin{tabular}{@{} l p{7cm} c c c @{}}
+\toprule
+\textbf{Method} & \textbf{Description} & \textbf{Type} & $\mathbf{f^\Sigma}$ & $\mathbf{\Sigma}$ \\
+\midrule
+Piecewise Average (PA) & Average value of the segment & Continuous & $\mu_{s_i}^{c}$ & $\mathbb{R}$ \\
+Piecewise Linear (PL)  & Slope (gradient) of the segment & Continuous & $\nabla_{s_i}^{c}$ & $\mathbb{R},\ \mathbb{R}^2$ \\
+\bottomrule
+\end{tabular}
+\caption{Segment-based feature functions (PA = Piecewise Average, PL = Piecewise Linear)}
+\label{tab:segment-features}
+\note{$\mathbb{R}^2$ is given by storing both slope and intercept of the linear model.}
+\end{table}
+
+\subsubsection{Learned Equidistributional windows}
+We \textit{learn} windows (segmentation) by their likelihood: given a desired number of segments $k$, we search for $k-1$ cutting points which maximize the likelihood that the segments are equiprobable as possible, ideally following a uniform distribuition.
+
+\subsubsection{Two-tier segmentations}
+Windows segmentations create a series of symbols themselves. We can learn representations through a two-tier algorithm. Symbols may be either categorical or ordinal.
+\begin{enumerate}
+   \item continous transformation, yielding segments $S^\subset$ with symbols in $\Sigma^\subset$
+   \item transformation partitioning, mapping symbols in $\Sigma^\subset$ to discrete symbols in $\Sigma$
+\end{enumerate}
+
+\textbf{Symbolic aggregate approximation} (SAX) implements a two-tier transformation to \ul{create discrete \textit{and} ordinal symbols}.
+\begin{itemize}
+   \item fixed-windows segmentation followed by piecewise average transformation in sybsymbols $(\Sigma^\subset)^*$
+   \item aggregation of subsymbols into equiprobable symbols in $\Sigma$: partition the subsymbol distribution into equiprobable buckets, each defined by a symbol in $\Sigma$.
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/16/sax.png}
+   \caption{The three steps of SAX. First, fixed-window average segmentation creates a set of segments and segment-wise averages. Then, their empirical distribution is estimated, and a set of buckets of equal density is extracted by considering the distribution's quantiles. Finally, each bucket is assigned a symbol, and the series is mapped to the symbols through substitution.}
+   \label{fig:16/SAX}
+\end{figure}
+
+\section{Signals}
+
+Segmentations can be tricky to handle, and simply offer a representation in a domain quite different from the original.\\
+\textbf{Signal representations}, on the other hand, \ul{aim to define a series in terms of other series}. To stick with the signal processing literature, where they are most prevalent, we'll refer to series as signals.
+
+\begin{paracol}{2}
+   \colfill
+   
+   \textbf{Fourier analysis} tackles \textbf{periodic} (or \textit{``stationary''}) signals. 
+   Note that we can linearly combine sine and cosine signals to obtain any periodic signal.
+   In the figure we have two signals, $cos(x)$ and $cos(2x)$ and their linear combination $cos(x) + cos(2x)$.\\
+   As a lineare transformation we need to learn a set of coefficients $\alpha$ which map the basis to the signal $s$. In Fourier analysis, we constrain $\alpha \in \mathbb{R}^+$. Basis signals are sinusoids of different frequencies. The ones not contributing to the signal have coefficient 0, otherwise it's positive real-valued.   
+   \colfill
+\switchcolumn
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/16/linearcomb.png}
+   % \caption{}
+   \label{fig:16/linearcomb}
+\end{figure}
+
+\end{paracol}
+
+
+
 \section{Sinusoids}
 Fourier analysis is a method to decompose a time series into a sum of sinusoidal functions, each characterized by a specific frequency, amplitude, and phase. This decomposition allows us to analyze the frequency components of the time series, which can be useful for identifying periodic patterns, trends, and noise.
 
@@ -17,4 +228,115 @@ s_t =
 \underbrace{+\phi}_{\text{shifting}}
 ).
 \]
+Where:
+\begin{itemize}
+   \item $\alpha$ is the amplitude scaling factor
+   \item $f_0 = t_0^{-1}$ is the frequency of the sinusoid, the reciprocal of the period $t_0$
+   \item $\phi$ is the phase shift, determining the horizontal shift of the wave
+\end{itemize}
 
+\newpage
+\begin{paracol}{2}
+   \colfill
+   By Euler, we can map complex numbers to the complex unit circle
+   \[
+   e^{-i\Theta} = \cos(\Theta) + i \sin(\Theta)
+   \]
+   
+   In \autoref{fig:16/eulerComplex}, the complex unit circle and an imaginary number $z = e^{-i\Theta}$. As in linear algebra, we can define a vector $(z_\mathbb{R},z_\mathbb{C})$ through the standard basis $(1,0),(0,i)$.
+   \colfill
+   \switchcolumn
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/16/eulerComplex.png}
+      \caption{}
+      \label{fig:16/eulerComplex}
+   \end{figure}
+
+\end{paracol}
+
+
+Slides from 28 to 30 display some formulas concerning the computation of coefficients $\alpha$. The takeaway is that we can compute coefficients through inner products between the signal and basis sinusoids.\\
+The \textbf{Discrete Fourier Transform} (DFT) computes the coefficients for all frequencies up to the Nyquist frequency $f_N = \frac{1}{2\Delta t}$, where $\Delta t$ is the sampling interval of the time series.
+\proscons{Pros}{Cons}{
+   \begin{itemize}
+      \item Quick: $\mathcal{O}(n \log n)$ with FFT
+      \item Exact decomposition in separate and different signals
+   \end{itemize}
+}{
+   \begin{itemize}
+   	\item Decomposition defined exclusively for sinusoidal series
+	   \item Decomposition of periodic series
+	   \item Decomposition exclusively in terms of frequency, not time
+   \end{itemize}}
+
+
+\section{Wavelets}
+
+\textbf{Wavelets} (little waves) aim to tackle weaknesses of Sinusoids, namely the fact that they are defined only for periodic series, and that they decompose signals only in terms of frequency, not time.
+\ul{Signals are decomposed in \textit{mother wavelets} through scaling and shifting operations.}
+Wavelets are functions that can be used to analyze signals at different scales and resolutions. Unlike sinusoids, which are infinite in extent and have a fixed frequency, wavelets are \ul{localized in both time and frequency}, allowing for a more flexible representation of signals.
+
+A wavelet $\psi_{\kappa,\tau}: \mathbb{R} \rightarrow \mathbb{R}$ is a function such that:
+\begin{align*}
+   \int_{-\infty}^{\infty} \psi_{\kappa,\tau}(t) \,dt = 0 \quad \textit{zero mean}\\
+   \int_{-\infty}^{\infty} |\psi_{\kappa,\tau}(t)|^2 \,dt \neq \infty \quad \textit{finite energy}\text{ or }\textit{compact support}
+\end{align*} 
+Finite energy makes it so a wavelet, unlike a sinusoidal function, is bounded: thus, by construction, wavelets can be \textbf{localized in time}.
+
+
+\begin{paracol}{2}
+   
+   A mother wavelet $\psi_{K,T}(t)$ defines a family of \textit{daughter wavelets} through scaling ($K$) and shifting ($T$) operations:
+   \begin{itemize}
+      \item A frequency $\kappa$: shrink or stretch the daughter wavelet
+      \item A shift $\tau$: pushes or pulls the daughter wavelet along the time axis
+   \end{itemize}
+   Hence, a daughter wavelet is defined in function of $\psi$ and the two parameters $\kappa, \tau$ as:
+   \[
+      \psi_{\kappa,\tau}(t) = \frac{1}{\sqrt{\kappa}} \psi\left(\frac{t - \tau}{\kappa}\right)
+      \]
+
+
+      \switchcolumn
+
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics{images/16/wavelets.png}
+         \caption{Mexican Hat wavelet (left column), and Meyer wavelet (right)}
+         \label{fig:16/wavelets}
+      \end{figure}
+
+   \end{paracol}
+
+
+\framedt{Sinusoid to Wavelets}{
+   Moving from Sinusoids to Wavelets is pretty easy if we think in terms of basis functions.
+   \[
+   \underbrace{\sum_{\rho = 1}^{n}\alpha\psi_{\kappa}(t)}_{\text{Discrete Fourier}} \rightarrow \underbrace{\sum_{\rho = 1}^{n}\alpha\psi_{\kappa,\tau}(t)}_{\text{Wavelet Transform}}
+   \]
+   Wavelets are convoluted across the series, producing a list of coefficients. $\kappa$ and $\tau$ define the scale and position of each wavelet, and are \textit{dyadic}, i.e. they take values which are powers of 2, e.g. $\tau = 2^{-i}, \tau = k2^{-i}$.
+}
+
+\section{Motif}
+Motifs tie strongly with subseries extraction for discretization: if representation
+algorithms extracted to represent, and thus describe, motif extraction algorithms instead
+extract subseries to represent, and thus \textbf{discriminate}. In other words, a motif is a
+subseries characteristic of a set of series.
+
+A motif is defined as a \textbf{subseries} which is \textbf{frequent} across a set of time series.
+
+There are two approaches to motif discovery:
+\begin{itemize}
+   \item \textbf{Descriptive} - a motif is a reoccurring subseries in the set $S$
+   \item \textbf{Discriminative} - a motif is a subseries which is frequent in a class of series $S$, and infrequent (does not occur) in another class/set $S^{\neq}$.\\
+   \ul{This is also called a \textbf{shapelet}.}
+\end{itemize}
+\note{Discriminative \textit{power} and descriptive \textit{power}, respectively.}
+
+\section{Alignment}
+An \textbf{alignment} (or ``matching'') $A= [(i,j)]^{\max{n,m}}$ of two time series $l,u$ with components $[l_1, \dots, l_n]$ and $[u_1, \dots, u_m]$ is a set of pairs of indices $(i,j)$, assigning each component of $l$ to one or more components of $u$, and vice versa.\\
+An alignment $A$ induces an alignment cost $C_A$ quantifying how unaligned the two series are.
+
+
+% // TODO done up to slide 40

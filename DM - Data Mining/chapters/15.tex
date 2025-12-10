@@ -2,11 +2,26 @@
 
 \section{Initial notions - Computational graphs}
 
+\begin{definition}
+   [Computational graph]
+   A computational graph is a directed acyclic graph where:
+   \begin{itemize}
+      \item nodes represent operations or variables
+      \item edges represent the flow of data between them
+   \end{itemize}
+
+   In a computational graph there are
+   \begin{itemize}
+      \item Parameters $\Theta$ given by the weights on edges
+      \item Structure given by the graph's architecture and function.
+   \end{itemize}
+\end{definition}
+
 \begin{paracol}{2}
    
    \colfill
    We can generalize several gradient-based optimization to computational graphs,
-   objects which compute a generic function $f(x)$. Functional form: $h(\omega^T x)$. Note: $\omega^T x$ is
+   made up of objects which compute a generic function $f(x)$. Functional form: $h(\omega^T x)$. Note: $\omega^T x$ is
    simply a linear combination of $x$.
    \colfill
    
@@ -14,16 +29,23 @@
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/15/computationalGraph.png}
-      \caption{A computational graph: nodes indicate objects involved in the computation, and edges indicate their flow in the graph.}
+      \caption{A computational graph: nodes indicate objects involved in the computation, and edges indicate their flow in the graph.
+      \textbf{Structure} given b y the operations $(h, \cdot)$ while the parameters are the weights $\omega_{1\dots4}$.
+      }
       \label{fig:15/computationalGraph}
    \end{figure}
 
 \end{paracol}
 
-Forward pass: given input $x$, compute $f(x)$ by following the graph from input to output.
+\subsection{Forward and backward passes}
 
-Backward pass: given a loss function $l(f(x), y)$, compute the gradient of the loss wrt the parameters of the graph.
+\textbf{Forward pass}: given input $x$, compute $f(x)$ by following the graph from input to output, thus \textbf{bottom-up}.
+Recall that nodes are either functions or variables, so the forward pass consists in applying functions to variables as we traverse the graph, with the edges indicating the flow of data along with a \textbf{weight} (parameter) associated to each edge.
 
+\textbf{Backward pass}: given a ---differentiable--- loss function $l(f(x), y)$, compute the gradient of the loss wrt the parameters of the graph.
+
+
+\newpage
 \section{Scaling up - Layering graphs}
 
 \begin{paracol}{2}
@@ -91,17 +113,11 @@ do we estimate and leverage these directions?
 
 \begin{paracol}{2}
    
-   Estimating directions: Through stochastic
-   gradient, by computing gradient on a
-   batch of data, rather than the whole
-   dataset.
+   Estimating directions: Through stochastic gradient, by computing gradient on a batch of data, rather than the whole dataset.
    
-   Provides a good approximation and a
-   much faster computation.
+   Provides a good approximation and a much faster computation.
 
-   Batches can be aggregated, the directions
-they yield combined: a training-specific
-approach to combat overfit
+   Batches can be aggregated, the directions they yield combined: a training-specific approach to combat overfit.
    \switchcolumn
 
    \begin{figure}[htbp]
@@ -113,12 +129,13 @@ approach to combat overfit
 
 \end{paracol}
 
+
 \subsubsection{Momentum}
-Estimating weight update: Update
-directions are weighted by a possibly
-decaying learning rate $\eta$, and possibly
-weighted by past updates (Adam,
-RMSProp, Nesterov momentum).
+
+Backpropagation takes care of defining optimal directions for the parameters, but how
+do we estimate and leverage these directions?
+
+Estimating weight update: Update directions are weighted by a possibly decaying learning rate $\eta$, and possibly weighted by past updates (Adam, RMSProp, Nesterov momentum).
 
 \begin{figure}[htbp]
    \centering
@@ -127,8 +144,26 @@ RMSProp, Nesterov momentum).
    \label{fig:15/momentum}
 \end{figure}
 
-// TODO regularization
-// TODO Early stopping
+
+\subsubsection{Regularization}
+Regularization refers to techniques aimed at reducing overfitting during training.
+Regularization of neural networks can take many forms.
+\begin{itemize}
+   \item \textbf{Weight Regularization} - The loss includes a term $|| \Omega ||_2$ to penalize large weights in the netork, as higher weights tend to increase the network capacity.\\
+   Weight regularization constrains the capacity of the network by discouraging large weights.
+   \item \textbf{Dropout} - Random deletion of network connections, aims to create networks less reliant on a small number of neurons.\\
+   In other terms, dropout forces the network to be more robust, as it cannot rely on specific paths in the network.
+   \item \textbf{Early Stopping} - Stop training when the validation loss starts increasing, even if the training loss is still decreasing.
+   Early stopping prevents overfitting by halting training before the model starts to memorize the training data.\\
+   More specifically, there are two rolling metrics:
+   \begin{enumerate}
+      \item The gap between train and validation error
+      \item Train error itself
+   \end{enumerate}
+   Early stopping halts training when the gap starts increasing (indicating overfitting) or when the train error does not decrease significantly anymore (indicating convergence, i.e., the model has learned as much as it can from the training data, so no further training is beneficial).
+\end{itemize}
+
+\section{Structure}
 
 Activation functions impact the flow of data throughout the network, and their outputs
 are called \textbf{activations}. Different activations define different \textbf{representations} of the data,
@@ -136,23 +171,69 @@ which, unlike in PCA, are dependent on learned parameters.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{Formulation} & \textbf{Heads} \\
+\textbf{Formulation} & \textbf{Heads} & \textbf{Task} \\
 \hline
-Identity & $\omega^T x$ & 1 \\
+Identity & $\omega^T x$ & 1 & Regression\\
 \hline
-Logistic & $\displaystyle\frac{1}{1 + e^{-\omega^T x}}$ & 1 \\
+Logistic & $\displaystyle\frac{1}{1 + e^{-\omega^T x}}$ & 1 & Classification*\\
 \hline
-ReLU & $\max\{0, \omega^T x\}$ & 1 \\
+ReLU & $\max\{0, \omega^T x\}$ & 1 & Regression*\\
 \hline
-Softmax & $\displaystyle\frac{exp(\omega_i x_i)}{exp(\omega^T x)}$ & $\geq 1$ \\
+Softmax & $\displaystyle\frac{exp(\omega_i x_i)}{exp(\omega^T x)}$ & $\geq 1$ & Classification*\\
 \hline
 $\ldots$ & $\ldots$ & $\ldots$ \\
 \hline
 \end{tabular}
 \caption{Common activation functions in neural networks}
+\note{*\textit{Indirectly}: classification is often rendered as a continuous value (to turn into discrete), while regression may be bounded, e.g., to be positive by ReLU.}
+Remember, $\omega^T x$ is the sum of the incoming edges in the node.
 \label{tab:activation-functions}
 \end{table}
 
-Remember, $\omega^T x$ is the sum of the incoming edges in the node.
+\section{Architectures}
+Given their high capacity, and innate ability to encode data, networks are often not fit
+from scratch. Rather, a network is fit on a task, then adapted to other tasks.
+\begin{itemize}
+   \item \textbf{Fine tuning}: use a pre-trained network as initialization for a new specialized task, then continue training on the new task.
+   \item \textbf{Adapters}: insert small layers (adapters) between pre-trained layers, freeze the pre-trained layers, and only train the adapters on the new task.
+   Adapters are fit to ``steer'' the parameters of the larger pre-trained network towards the new task, while keeping the original knowledge intact.
+\end{itemize}
+
+
+\newpage
+\subsection{ResNet}
+Architectures have proven to be extremely important, and in several cases, the
+application dictates the network architecture. On tabular dataset, \textbf{residual networks}
+(ResNets) are a particularly strong baseline. They have a functional form
+\[f(x) = x + h(x)\]
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/15/resnet.png}
+   \caption{A residual block: a node is forwarded to the next layer, and to the one after it as well. Residual (also called skip) connections allow a more effective backpropagation. Weights on the skip connection are set to to preserve data.}
+   \label{fig:15/resnet}
+\end{figure}
+
+\subsection{Feature Transformer}
+\begin{paracol}{2}
+
+   \colfill
+   
+   Blocks constructs circuits of similarity, computing degrees of ``attention'' between features, and representations. Similarity then weighs on skip connections.
+   Functional form:
+   \[f(x^i) = f(x^i) + \sum_{i\neq j}\alpha_{i,j} x^j\]
+   where $\alpha_{i,j}$ is the attention weight between features $i$ and $j$.
+   \colfill
+   
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/15/transformer.png}
+      \caption{An attention block: similarities between representations are computed through a (scaled) multiplication. Addition through a residual connection allows representations to explicitly influence each other}
+      \label{fig:15/transformer}
+   \end{figure}
+
+\end{paracol}
