@@ -132,13 +132,14 @@ There are three main approaches to classification.
    \colfill
       
    \switchcolumn
-
+   \colfill
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/14/linear1.png}
       \caption{An architectural illustration of a linear model. Note: such models include a bias term, not included in the figure.}
       \label{fig:14/linear1}
    \end{figure}
+   \colfill
 \end{paracol}
 
 The interpretability of linear models comes from their additive nature: each component has a measurable and \textit{independent}\footnote{Indenpendency here refers to the model, there still may be actual dependency between data} contribution $\omega_i x_i$.
@@ -254,7 +255,7 @@ Hence, we can interpret operations on functions as operations on vectors:
 \begin{itemize}
    \item Function addition: $(f + g)(x) \equiv f(x) + g(x)$ corresponds to vector addition $\vec{f} + \vec{g}$
    \item Scalar multiplication: $(\eta f)(x) \equiv \eta f(x)$ corresponds to scalar multiplication $\eta \vec{f}$
-   \item Funciton multiplication: $(f \cdot g)(x) \equiv f(x) \cdot g(x)$ corresponds to element-wise vector multiplication $\vec{f} \circ \vec{g}$
+   \item Function multiplication: $(f \cdot g)(x) \equiv f(x) \cdot g(x)$ corresponds to element-wise vector multiplication $\vec{f} \circ \vec{g}$
 \end{itemize}
 
 \begin{paracol}{2}

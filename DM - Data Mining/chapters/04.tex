@@ -12,9 +12,8 @@ The aim of clustering is to ease data \textbf{understanding} and \textbf{summari
 	\begin{itemize}
 		\item Simple segmentation
 		\begin{itemize}
-			\item Dividing students into different registration groups
+			\item Dividing students into different registration groups alphabetically, by last name
 		\end{itemize}
-		alphabetically, by last name
 		\item Results of a query
 		      \begin{itemize}
 			      \item Groupings are a result of an external specification
@@ -36,7 +35,7 @@ The aim of clustering is to ease data \textbf{understanding} and \textbf{summari
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/04/clustering.png}
-   \caption{``Cluster'' may be an amibguous term. How to define a cluster? How big is a cluster? How many clusters are there?}
+   \caption{``Cluster'' may be an ambiguous term. How to define a cluster? How big is a cluster? How many clusters are there?}
    \label{fig:04/clustering}
 \end{figure}
 
@@ -90,9 +89,9 @@ There are other distinctions among clusterings:
 \section{Types of Clustering}
 % // TODO add pictures
 \begin{itemize}
-	\item Well-separated clusters
+	\item \textbf{Well-separated} clusters\\
 	      A cluster is a set of points such that any point in a cluster is closer (or more similar) to every other point in the cluster than to any point not in the cluster
-	\item Center-based clusters
+	\item \textbf{Center-based} clusters\\
 	      \begin{paracol}{2}
 		      \begin{figure}[htbp]
 			      \centering
@@ -111,8 +110,7 @@ There are other distinctions among clusterings:
 			            point of a cluster
 		      \end{itemize}
 	      \end{paracol}
-	\item Contiguous clusters (Nearest neighbor or
-	      Transitive)
+	\item \textbf{Contiguous} clusters (Nearest neighbor or Transitive)\\
 
 	      \begin{paracol}{2}
 		      \colfill
@@ -136,7 +134,7 @@ There are other distinctions among clusterings:
 
 	      \end{paracol}
 
-	\item Density-based clusters
+	\item \textbf{Density-based} clusters\\
 	      \begin{paracol}{2}
 		      \colfill
 		      \begin{itemize}
@@ -155,8 +153,8 @@ There are other distinctions among clusterings:
 			      \label{fig:04/densitybased}
 		      \end{figure}
 	      \end{paracol}
-	\item Property or Conceptual
-	\item Described by an Objective Function
+	\item \textbf{Property or Conceptual} clusters\\
+	\item \textbf{Described by an Objective Function} clusters\\
 	      \begin{itemize}
 		      \item Finds clusters that minimize or maximize an objective
 		            function.
@@ -306,6 +304,9 @@ If $d_1$ and $d_2$ are two document vectors, then
 \]
 where $\cdot$ indicates vector dot product and $||d||$ is the length of vector $d$.
 
+It's called cosine similarity because it measures the cosine of the angle between two vectors in a multi-dimensional space.
+If the angle is 0 degrees (i.e., the vectors point in the same direction), the cosine similarity is 1, indicating maximum similarity. If the angle is 90 degrees (i.e., the vectors are orthogonal), the cosine similarity is 0, indicating no similarity. If the angle is 180 degrees (i.e., the vectors point in opposite directions), the cosine similarity is -1, indicating maximum dissimilarity.
+
 Example:
 \begin{align*}
 	d_1 &= 3\ 2\ 0\ 5\ 0\ 0\ 0\ 2\ 0\ 0\\
@@ -317,9 +318,9 @@ Example:
 \end{align*}
 
 
+\begin{paracol}{2}
 \subsection{Correlation}
 
-\begin{paracol}{2}
 	
 	\begin{figure}[htbp]
 		\centering
@@ -400,6 +401,7 @@ SSE = \sum_{i=1}^{K} \sum_{x \in C_i} ||x - \mu_i||^2
 \end{itemize}
 }
 
+\newpage
 \subsection{Limitations of K-Means}
 
 \begin{paracol}{2}
@@ -488,21 +490,27 @@ Another option is to \textbf{incrementally} update centroids as points are assig
 This is more expensive and introduces order dependence.
 \nl
 
+\subsection{Convergence of K-Means}
 We can define a goodness measure of a cluster $c$ (hence of the set of Clusters $C$) as the SSE from the cluster centroid:
 \begin{align}
 	SSE_C(c,s) &= \sum_{i=1}^{n} (d_i, s_c)^2\\
 	G(C,s) &= \sum_{c \in C} SSE_C(c,s)
 \end{align}
 where $s_c$ is the centroid of cluster $c$, $d_i$ is a point in cluster $c$, and $C$ is the set of clusters.
+The objective of K-Means is to minimize $G(C,s)$, so actually it is more of a \textit{cost} rather than a \textit{goodness} measure. 
+
 
 Re-assignment of points to clusters and re-computation of centroids is guaranteed to \textit{not increase} (or \textit{monotonically decreases}) $G(C,s)$, hence K-Means converges to a local minimum.
 
-At any step we have some value for G(C,s),
+{At each iteration, given $G(C,s)$, K-Means performs the following two steps:\ns
 \begin{enumerate}
-	\item Fix $s$, optimize $C$ $\rightarrow$ Assignment step: assign $d_i$ to the closest centroid $\Rightarrow G(C',s) \leq G(C,s)$
-	\item Fix $C'$, optimize $s$ $\rightarrow$ Update step: recompute centroids $\Rightarrow G(C',s') \leq G(C',s) \leq G(C,s)$
-\end{enumerate}
+	\item Fix $s$, optimize $C$ $\rightarrow$ \textbf{Assignment step}: assign $d_i$ to the closest centroid $\Rightarrow G(C',s) \leq G(C,s)$
+	\item Fix $C'$, optimize $s$ $\rightarrow$ \textbf{Update step}: recompute centroids $\Rightarrow G(C',s') \leq G(C',s) \leq G(C,s)$
+\end{enumerate}}
 In this way the new cost results smaller than the original one, leading to convergence to a local minimum.
+
+Recall that K-Means stops when relatively few points change clusters (or after a fixed number of iterations),
+i.e. when the first (assignment) step involves only few points, because typically the major decrease (convergence) happens in the first few iterations.  
 
 \section{Hierarchical Clustering}
 
@@ -547,7 +555,10 @@ When two clusters $c_i$ and $c_j$ are merged into a new cluster $c_k$, we need t
 	The distance between two clusters is defined as the average distance between all pairs of points, one from each cluster.
 	\[d(c_i, c_j) = \frac{1}{|c_i| |c_j|} \sum_{x \in c_i} \sum_{y \in c_j} d(x, y)\]
 
-	\note{Note that \ul{\textbf{Single}, \textbf{Complete} and \textbf{Average} Linkage have all the same complexity}! $O(n^3)$, where $n$ is the number of data points.}
+	\note{Note that \ul{\textbf{Single}, \textbf{Complete} and \textbf{Average} Linkage have all the same complexity}! $O(n^3)$, where $n$ is the number of data points.\\
+	However, we could use partial updates and intermediate results to significantly reduce the time complexity, by storing for each cluster the average, and minimum/maximum distances to other clusters.
+	Especially for the first iterations when clusters are small, this can lead to significant space usage.
+	}
 	% \item \textbf{Mean/Median Linkage}
 	% The distance between two clusters is defined as the distance between their centroids (mean or median).
 	% \[d(c_i, c_j) = d(\mu_i, \mu_j)\]
@@ -560,6 +571,8 @@ When two clusters $c_i$ and $c_j$ are merged into a new cluster $c_k$, we need t
 	This method minimizes the total within-cluster variance. When two clusters are merged, the increase in the total within-cluster variance is calculated, and the pair of clusters that results in the smallest increase is merged.
 	\[d(c_i, c_j) = \frac{|c_i| |c_j|}{|c_i| + |c_j|} ||\mu_i - \mu_j||^2\]
 	where $|c_i|$ and $|c_j|$ are the sizes of clusters $c_i$ and $c_j$, and $\mu_i$ and $\mu_j$ are their centroids.
+
+	This may be used to initialize K-Means centroids, and it's the K-Means analogue of hierarchical clustering.
 \end{itemize}
 
 \subsection{Divisive Hierarchical Clustering}
@@ -590,7 +603,7 @@ Add $q$ to the tree and the edge $(p,q)$ to the MST. Repeat until all points are
 	\item Space Complexity - $O(n^2)$ for storing the proximity matrix
 \end{itemize}
 
-\subsubsection{Limitations}
+\subsection{Limitations}
 Once a decision is made to combine two clusters,
 it cannot be undone.\\
 No global objective function is directly minimized.\\
@@ -624,6 +637,9 @@ A point is a \textbf{noise point} (or outlier) if it is neither a core point nor
 \labelitemize{DBSCAN}{
 	\begin{enumerate}
 		\item Label points as core, border, or noise based on thresholds $R$ (radius of neighborhood) and \lstinline|min_pts| (min number of neighbors)
+		\begin{itemize}
+			\item Every point having at least \lstinline|min_pts| points within distance $R$ becomes a core point
+		\end{itemize}
 		\item Connect core points that are within $R$ of each other, hence are neighbors, putting them in the same cluster
 		\item Associate border points to the nearest core point, hence to the same cluster as the core point, and remove noise.
 	\end{enumerate}
@@ -663,4 +679,12 @@ A point is a \textbf{noise point} (or outlier) if it is neither a core point nor
 	Noise points have the $k^{th}$ nearest neighbor at distance.
 
 	So, plot sorted distance of every point to its $k^{th}$ nearest neighbor.
+
 }
+
+	\begin{figure}[htbp]
+		\centering
+		\includegraphics{images/04/dbscanMinPts.png}
+		\caption{We have 3000 points (instances), we can see that we have a few noise points ($\sim 300$) because their distance from the $4^{th}$ is way higher. Here $k=4$ looks optimal but also for $k \neq 4$ we could have almost the exact curve shape, as the $5^{th}$ or $6^{th}$ nearest neighbor could be way further than the $4^{th}$ as well as pretty close to it, we can't know judjing only from this graph.}
+		\label{fig:04/dbscanMinPts}
+	\end{figure}

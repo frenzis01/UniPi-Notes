@@ -62,7 +62,7 @@ Insight may lead to noticing that some data missing may be useful, and we may wa
 
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/01/knowledgeDiscoveryLoop.png}
+   \includegraphics[width=0.9\columnwidth]{images/01/knowledgeDiscoveryLoop.png}
    \caption{Knowledge Discovery Loop}
    This essentially summarizes the KDD process.
    
@@ -109,9 +109,9 @@ The KDD process consists of the following steps:
 % Main flow
 \node[textnode] (input) {Input\\Data};
 \node[box, right=1.5cm of input] (preproc) {Data \\ Preprocessing};
-\node[box, right=2cm of preproc] (mining) {Data \\ Mining};
-\node[box, right=2cm of mining] (postproc) {Postprocessing};
-\node[textnode, right=2cm of postproc] (info) {Information};
+\node[box, right=1.5cm of preproc] (mining) {Data \\ Mining};
+\node[box, right=1.5cm of mining] (postproc) {Postprocessing};
+\node[textnode, right=1.5cm of postproc] (info) {Information};
 
 % Arrows main flow
 \draw[-{Latex[length=3mm,width=2mm]}, thick] (input) -- (preproc);
@@ -217,11 +217,11 @@ Such data set can be represented by an $m\times n$ matrix, where there are m row
 
 {Attribute types:\ns
 \begin{itemize}
-   \item Nominal/Categorical: attribute values in a finite domain (\textit{distinctness})
-   \item Binary: special case of nominal with two values
-   \item Ordinal: attribute values have a total ordering (\textit{distinctness} and \textit{order})
-   \item Numeric: quantity (integer or real-valued) (\textit{distinctness}, \textit{order}, \textit{differences})
-   \item Ratio-Scaled: we can speak of values as being an order of magnitude larger than the unit of measurement (\textit{all 4 properties})
+   \item \textbf{Nominal/Categorical}: attribute values in a finite domain (\textit{distinctness})
+   \item \textbf{Binary}: special case of nominal with two values
+   \item \textbf{Ordinal}: attribute values have a total ordering (\textit{distinctness} and \textit{order})
+   \item \textbf{Numeric}: quantity (integer or real-valued) (\textit{distinctness}, \textit{order}, \textit{differences})
+   \item \textbf{Ratio-Scaled}: we can speak of values as being an order of magnitude larger than the unit of measurement (\textit{all 4 properties})
    \note{length, counts, elapsed time (A baseball game lasting 3 hours is 50\% longer than a game lasting 2 hours)}
    \item Discrete/Continuous: attribute values are discrete (finite or countably infinite) or continuous (real-valued).
 \end{itemize}}
@@ -396,12 +396,14 @@ Data is linked, either on records or features.
 Records are nodes in a graph, attributes can vary wildly across records.
 
 \newpage
-\subsubsection{Sequential}
 \begin{paracol}{2}
+   \subsubsection{Sequential}
+   \colfill
    Records are sequences (of variable length): attributes are indexed (order or time).
    
 
    \note{Image on the right lacks two images \smiley}
+   \colfill
    \switchcolumn
    
    \begin{figure}[htbp]
@@ -413,11 +415,13 @@ Records are nodes in a graph, attributes can vary wildly across records.
    \end{figure}
 \end{paracol}
 
-\subsubsection{Spatial}
 \begin{paracol}{2}
    
+   \colfill
+   \subsubsection{Spatial}
 
    Records are associated with locations in space: attributes can include coordinates, regions, etc.
+   \colfill
    \switchcolumn
    
    \begin{figure}[htbp]
@@ -448,25 +452,27 @@ Records are nodes in a graph, attributes can vary wildly across records.
 \subsubsection{Values types}
 Values can be either:
 \begin{itemize}
-   \item \textbf{Discrete}
+   \item \textbf{Discrete}\\
    Defined in a finite or countably finite domain, e.g., country, job, cup size. Note: ordinal values may be discrete too!
-   \item \textbf{Continuous}
+   \item \textbf{Continuous}\\
    Defined in a continuous and infinite domain, e.g., distance.
 \end{itemize}
 
-\subsection{Data Syntax and Semantics}
 
 \begin{paracol}{2}
+   \colfill
    
+   \subsection{Data Syntax and Semantics}
    Given the categorization of the records and attributes of your data, we can study its
    general behavior. We leverage some basic statistical tools, first of all by drawing the
    empirical distribution of the attributes.
+   \colfill
    
    \switchcolumn
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/01/semantics.png}
+      \includegraphics[width=0.95\columnwidth]{images/01/semantics.png}
       \caption{Data Syntax and Semantics}
       \label{fig:01/semantics}
    \end{figure}
@@ -530,7 +536,7 @@ Outlier values typically skew statistics. Variance is often replaced by absolute
 There are some concepts to be aware of when dealing with data quality, hence data cleaning.
 \nl
 
-\textbf{Data accuracy} is the degree to which data correctly describes the "real world" object or event being
+\textbf{Data accuracy} is the degree to which data correctly describes the ``real world" object or event being
 described.
 \begin{itemize}
 	\item Syntactic: values outside domain, e.g., Eataly in Country
@@ -613,6 +619,7 @@ Given two lists of values $x^{i^n},y^{i^n}$ we can compute two main correlation 
             \rho_S = \rho_P^{\text{rank}(X), \text{rank}(Y)}
          \]
          Measures monotonic correlation between two ordinal or numerical features.
+         \note{\textit{rank} is the position of the value in the sorted list of values.}
 \end{itemize}
 
 \subsection{Handling Missing Values}
@@ -653,7 +660,7 @@ We have to create a model to predict the missing value.
 
 \subsection{Outliers}
 
-Quantiles and distributions inform us on what values may be outlier. 
+Quantiles and distributions inform us on what values may be outliers. 
 They are typically dropped, and unlike missing values, almost never imputed.
 We'll tackle algorithms later in the course.
 
@@ -710,16 +717,16 @@ We will delve into the following techniques of data preparation:
 Aggregation is the process of combining two or more attributes (or objects) into a single attribute (or object).
 \labelitemize{\textbf{\textit{Purpose}}}{
 	\begin{itemize}
-		\item Data reduction\\
+		\item Data reduction
 		      \begin{itemize}
 			      \item Reduce the number of attributes or objects
 		      \end{itemize}
-		\item Change of scale\\
+		\item Change of scale
 		      \begin{itemize}
 			      \item Cities aggregated into regions, states, countries, etc.
 			      \item Days aggregated into weeks, months, or years
 		      \end{itemize}
-		\item More “stable” data\\
+		\item More ``stable'' data
 		      \begin{itemize}
 			      \item Aggregated data tends to have less variability
 		      \end{itemize}

@@ -7,7 +7,7 @@ We may refer to anomalies in data also as \textit{outliers.}
 	\item Inherently \textbf{fuzzy} - An instance has a degree of outlierness, which we can threshold to decide whether an instance is an outlier or not.
 	\item \textbf{Data-dependent} - Outlier are exceptions to the data. But outliers themselves define the data...?
 	\item \textbf{Not noise} - Noise is random, outliers are exceptional.
-	\item \textbf{Mono/multi-dimensional} - An outlier can be so on one just one dimension, or on multiple.
+	\item \textbf{Mono/multi-dimensional} - An outlier can be so on just one dimension, or on multiple.
 \end{itemize}
 
 Outliers are something that is either \textbf{unusual} or \textbf{extreme}, or both.\\
@@ -27,13 +27,16 @@ We can categorize outlier detection algorithms depending on the \textit{axis} on
    \item \textbf{Interpretability} - can we interpret/explain why an instance is considered an outlier (interpretable) or not (black-box)?
 \end{itemize}
 
-\begin{table}
-   \begin{tabular}{|c|c|}
-      \textbf{Locality} & \textbf{Global}/\textbf{Local} \\
+\begin{table}[htbp]
+   \centering
+   \begin{tabular}{|c||c|}
       \hline
-      \textbf{Sensitive} & \textbf{Robust}/\textbf{Sensitive} \\
+      \textbf{Locality} & \textit{Global}/\textit{Local} \\
       \hline
-      \textbf{Interpretable} & \textbf{Black-box}/\textbf{Interpretable} \\
+      \textbf{Sensitive} & \textit{Robust}/\textit{Sensitive} \\
+      \hline
+      \textbf{Interpretable} & \textit{Black-box}/\textit{Interpretable} \\
+      \hline
    \end{tabular}
 \end{table}
 
@@ -44,6 +47,7 @@ We can categorize outlier detection algorithms depending on the \textit{axis} on
    \label{fig:}
 \end{figure}
 
+\newpage
 \subsection{Distributions}
 \begin{paracol}{2}
    In case of a normal distribution $\mathcal{N}(\mu, \sigma)$, we can define outliers as instances that are more than $k$ standard deviations away from the mean $\mu$ (see Figure~\ref{fig:06/normaldistribution}).\\
@@ -68,7 +72,9 @@ We can categorize outlier detection algorithms depending on the \textit{axis} on
 $z-scores$ generate sample-dependent outlier degrees $\tilde{o}(x_1), \tilde{o}(x_2), \ldots, \tilde{o}(x_n)$, but does not tackle the \textbf{+1 problem}.
 
 The +1 problem is the problem of deciding whether the most extreme instance in a dataset is an outlier or not.\\
-Grubb's test iterates over detected outliers, removing one layer of outliers at a time, until no more outliers are found.
+Grubb's test iterates over detected outliers, \ul{removing \textit{one layer} of outliers at a time, until no more outliers are found}.
+The key point is that after removing outliers, the distribution parameters $\mu, \sigma$ are recomputed, thus changing the z-scores of the remaining instances.
+This is key to detect multiple outliers in a dataset.
 \begin{algorithm}
    \caption{Grubb's test for outliers}
    \begin{algorithmic}[1]
@@ -79,13 +85,15 @@ Grubb's test iterates over detected outliers, removing one layer of outliers at 
    \end{algorithmic}
 \end{algorithm}
 
-\begin{table}
-   \begin{tabular}{|c|c|}
+\begin{table}[htbp]
+   \begin{tabular}{|c||c|}
+      \hline
       \textbf{Locality} & \textbf{Global} \\
       \hline
       \textbf{Sensitive} & Outliers influence the distribution but may be removed by Grubb's test \\
       \hline
       \textbf{Interpretable} & \textbf{Black-box}, no clear explanation for outlierness, simply, there are not many similar instances.\\
+      \hline
    \end{tabular}
 \end{table}
 
@@ -104,12 +112,14 @@ One of $k$ models $M_{\theta_{0}}, M_{\theta_{1}}, \ldots, M_{\theta_{k-1}}$ is 
 \end{figure}
 
 \begin{table}
-   \begin{tabular}{|c|c|}
+   \begin{tabular}{|c||c|}
+      \hline
       \textbf{Locality} & \textbf{Local} \\
       \hline
       \textbf{Sensitive} & Outliers influence the distribution, may be unstable, but may be removed by Grubb's test (?) \\
       \hline
       \textbf{Interpretable} & \textbf{Black-box}, no clear explanation for outlierness, simply, there are not many similar instances.\\
+      \hline
    \end{tabular}
 \end{table}
 
@@ -124,15 +134,15 @@ One of $k$ models $M_{\theta_{0}}, M_{\theta_{1}}, \ldots, M_{\theta_{k-1}}$ is 
 }
 
 \textit{z-scores} assume a Normal distribution, but often this is not the case. Yet, we can still
-identify tails of a distribution, and in turn, anomalies.
+identify tails of a distribution, and in turn, anomalies, by exploiting \textit{Markov} and \textit{Chebyshev} \textbf{inequalities}, that hold for any distribution.
 
 \begin{itemize}
-   \item Markov inequality - for a variable (distribution )$X$ with positive values and threshold $\beta$, it holds
+   \item \textit{Markov} inequality - for a variable (distribution )$X$ with positive values and threshold $\beta$, it holds
    \[
       P(X \geq \beta) \leq \frac{\mathbb{E}(X)}{\beta}
    \]
    Thus, given an estimate of the variable's expected value, we can retrieve the inverse of an image of its cumulative distribution
-   \item Chebyshev inequality - for a variable (distribution) $X$ with mean $\mu$ ($=\mathbb{E}(X)$) and standard deviation $\sigma$, and threshold $\beta$, it holds
+   \item \textit{Chebyshev} inequality - for a variable (distribution) $X$ with mean $\mu$ ($=\mathbb{E}(X)$) and standard deviation $\sigma$, and threshold $\beta$, it holds
    \[
    P(|X - \mathbb{E}(X)| > \beta) \leq \frac{\sigma^2}{\beta^2}
    \]
@@ -150,7 +160,7 @@ We can use PCA to find the linear manifold that best fits the data.\\
 PCA finds the directions of maximum variance in the data, and uses them as a new basis for the data.
 
 A matrix $A$ spans a linear space, thus every vector $b$ in its spanned space is defined as a
-linear combination of $A: b = Ax$. For non fullrank matrices $A$, such a solution $x$ may not exist. Thus, we need to project on the data manifold.
+linear combination of $A: b = Ax$. For non fullrank matrices $A$, such a solution $x$ may not exist. Thus, we need to project on the data manifold, to look for the closest point $\hat{b}$ to $b$ that lies in the space spanned by $A$.
 
 \framedt{Least Squares}{
    Least Squares is a method to find the best fitting solution to an overdetermined system of equations $Ax = b$ (more equations than unknowns).\\
@@ -169,13 +179,14 @@ linear combination of $A: b = Ax$. For non fullrank matrices $A$, such a solutio
 
 \begin{table}[htbp]
    \centering
-   \begin{tabular}{|c|c|}
+   \begin{tabular}{|c||c|}
+      \hline
       \textbf{Locality} & \textbf{Global} \\
       \hline
       \textbf{Sensitive} & Strongly influenced by outliers \\
       \hline
       \textbf{Interpretable} & Partial: which instances have lower degrees? What even is a ``low'' degree?\\
-      
+      \hline
    \end{tabular}
    \caption{Least squares}
    \label{tab:least_squares}
@@ -187,6 +198,20 @@ Manifold-based algorithms are as flexible as the defined manifold. Like with mix
 	\item \textbf{Concentration} - An outlier is defined in terms of its neighbor concentration
 \end{itemize}
 
+\[
+\begin{bmatrix}
+5   & 11  & \cdots & 0 \\
+\cdots & \cdots & \cdots & \cdots \\
+54  & 27  & \cdots & 3 \\
+\cdots & \cdots & \cdots & \cdots
+\end{bmatrix}
+\]
+
+In the above matrix we display connectivity as \textbf{postings}, rather than distances.\\
+$A_{i,j}$ is the ---row ID?--- $j^{th}$ neighbor of instance $i$, making each row ordered by increasing distance from $i$.
+
+
+The underlying assumption is that an in instance is an inlier if it is well connected to its neighbors, and lies in a dense area of the space.\\
 Each instance has a posting list of neighbors, from
 the closest to the farthest: the lower the aggregated
 position in other lists, the higher the connectivity
@@ -209,6 +234,8 @@ to measure different indices of connectivity, e.g.,
          0 \quad\textit{otherwise}
       \end{cases}
    \]
+   That is, if $x_i$ appears less than $k$ times in the first $t$ columns of $A$, it is an outlier.
+   \note{You must be at most the $t^{th}$ neighbor of at least $k$ instances to be considered a hub, hence, not an outlier.}
    \item \textbf{popularity} - instance $x_i$ is on average the $t^{th}$ neighbor of at least $k$ instances
    
    Given a posting matrix $A$, $x_i$ is an outlier if, on average, is not less than the $t-th$ neighbor of other instances:
@@ -220,6 +247,7 @@ to measure different indices of connectivity, e.g.,
    \item \textbf{ostracism} - instance $x_i$ is at worst $t^{th}$ neighbor of other $k$ instances
 \end{itemize}
 
+\newpage
 \begin{paracol}{2}
    
    \colfill
@@ -233,6 +261,7 @@ to measure different indices of connectivity, e.g.,
    \colfill
 
    \switchcolumn
+   \colfill
 
    \[
    A = \begin{bmatrix}
@@ -252,7 +281,9 @@ to measure different indices of connectivity, e.g.,
    \end{bmatrix}
    \]
    
-   A distance matrix $A$ (top), and its row-sorted version $A_{\gamma}$ (bottom). First column of 0s trimmed from $A_{\gamma}$.
+   A distance matrix $A$ (top), and its row-sorted version $A_{\gamma}$ (bottom). First column of 0s trimmed from $A_{\gamma}$.\\
+   $A_{\gamma}$ is also called the \textbf{reach matrix}, which will be discussed below.
+   \colfill
 \end{paracol}
 
 
@@ -289,6 +320,12 @@ A_{\gamma} \begin{bmatrix}
 \]
 
 $A_{\gamma}$ explicitly encodes reach ($A_{\gamma}$ itself) and average reach.
+\ul{Note that the left part of the equation above is a matrix multiplication!} 
+The matrix with the fractions is a \textbf{transformation matrix} that transforms reach into average reach, by assigning weights to each neighbor distance.
+
+\framedt{Average Reach as concentration}{
+   \ul{The key point is that the average reach defines an empirical approximate \textbf{concentration}}, since it measures what's the average distance of the $k$ nearest neighbors.
+}
 
 \subsubsection{Reach ratio factor}
 Assumption: Inliers have lower reach than their neighbors. We formalize this in a reach
@@ -298,16 +335,22 @@ Assumption: Inliers have lower reach than their neighbors. We formalize this in 
 \]
 which 1 is for pairs $x_i,x_j$ with equal k-neighbors concentration, and $>1$  for instances
 with different concentrations, $x_i$ laying in a sparser area of the space.
-\nl
+It can be also $<1$ if $x_i$ is in a denser area than $x_j$.
+\newpage
 
 \begin{paracol}{2}
 
    \colfill
-	\textbf{Local outlier factor} generalizes outlier factor by averaging the outlier factor over the
+	\textbf{Local outlier factor} generalizes outlier (\textit{reach ratio}) factor by averaging the outlier factor over the
 	neighbors of an instance:
 	\[
 		\tilde{o}(x_i) = \sum_{x_j \in neigh(x_i)} \tilde{o}^k_{i,j}
-	\]
+   \]
+   \coolquote{
+      But\dots how many neighbors should we consider?
+   }{}
+   It matches the number of columns in the reach matrix $A_{\gamma}$, which is a parameter to be set by the user, which should be $k$ (if I'm not mistaken).
+
    \colfill
 
 	\switchcolumn
@@ -324,10 +367,11 @@ with different concentrations, $x_i$ laying in a sparser area of the space.
 
 \begin{paracol}{2}
    \colfill
-   \textbf{Connectivity outlier factor} is based on the idea that outliers are poorly connected to their neighbors. It is defined as:
+   \textbf{Connectivity outlier factor} (COF) is based on the idea that outliers are poorly connected to their neighbors. It is defined as:
    \[
 		\tilde{o}(x_i) = \sum_{x_j \in \textit{connect\_neigh}(x_i)} \tilde{o}^k_{i,j}
       \]
+      The connected neighbors of an instance $x_i$ is recursively defined as the 1-nearest neighbor to the last element in the chain.
       \colfill
    \switchcolumn
 
@@ -357,15 +401,20 @@ with different concentrations, $x_i$ laying in a sparser area of the space.
    \end{figure}
 \end{paracol}
 
-\newpage
 \subsection{Concentration}
+ Reach degrees approximate space concentration with (inverse) reach. Rather than picking a $k$, we can swap in a more natural definition of concentration: instances found per unit of space.
+ Even better, instances found within an hypersphere $B(\cdot,\varepsilon)$ of radius $\varepsilon$ centered in the instance.
+
+ Clearly, the assumption is, again, that outliers are found in low-concentration areas of the space.
 
 \begin{paracol}{2}
+   \colfill
    We compute concentration on a two-radii approach:
    \begin{itemize}
       \item \textbf{concentration radius} $\varepsilon$: determines the hyperspheres $B(x_i, \varepsilon)$ estimating concentration $c^{\varepsilon}(x_i)$ of $x_i$ within a radius $\varepsilon$
       \item \textbf{neighborhood radius} $\delta$: proportional to $\varepsilon$, determines the neighborhood $B_i$ of $x_i$ as the instances laying within $B(x_i, \delta)$
    \end{itemize}
+   \colfill
 
    \switchcolumn
 
@@ -376,6 +425,21 @@ with different concentrations, $x_i$ laying in a sparser area of the space.
       \label{fig:06/tworadii}
    \end{figure}
 \end{paracol}
+
+Like reach-based concentration, degrees are defined on a basis of comparisons between
+some degree of an instance, and its neighbors:
+\[
+\tilde{o}(x_i) = \bar{c}^\varepsilon(B_i) - c^\varepsilon(x_i),
+\quad \text{with} \quad
+\bar{c}^\varepsilon(B_i) = \frac{\sum_{x_j \in B_i} c^\varepsilon(x_j)}{|B_i|}
+\]
+{that is, two-radii concentration compares the concentration of an instance, with the
+concentration of its neighbors. For\ns
+\begin{itemize}
+   \item $\tilde{o}(x_i) \gg 1$ neighbors have a much higher concentration 
+   \item $\tilde{o}(x_i) \rightarrow 0^+$ neighbors have a much higher concentration 
+\end{itemize}
+}
 
 \begin{table}[htbp]
    \centering
@@ -403,14 +467,20 @@ with different concentrations, $x_i$ laying in a sparser area of the space.
 
 \begin{paracol}{2}
    
+   \colfill
    An \textbf{isolation tree} $t$ is a random tree which randomly
-   partitions the space into a set of blocks.
+   partitions the space into a set of blocks (attributes, typically two at a time to get a binary tree).
    \begin{itemize}
       \item Splits are sampled randomly
       \item Tree grows up to a predefined height, or until all
       leaves contain one instance
    \end{itemize}
-   Outlier degree \(\tilde{o}^t(x_i) = \frac{path(x_i,t)}{c} \), where $c$ defines the average path length in the tree.
+   Outlier degree 
+   \[\tilde{o}^t(x_i) = \frac{path(x_i,t)}{c} \]
+   where $c$ defines the average path length in the tree, which in case of a binary tree, for instance, is $\log_2(n)$, with $n$ number of instances.
+   $path(x_i,t)$ is the length of the path from the root to the leaf containing $x_i$.\\
+   That is, the instance is an outlier it the distance from the root is higher than average.
+   \colfill
    
    \switchcolumn
 
@@ -424,11 +494,13 @@ with different concentrations, $x_i$ laying in a sparser area of the space.
 
 An isolation forest $T$ is comprised of several isolation trees,
 further sampling the hyperplane space.
-Outlier degree \(\tilde{o}(x_i) = 2 - \frac{\sum_{t \in T} path(x_i,t)}{|T|c}\), where $|T|$ is the number of trees in the forest.
+Outlier degree 
+$$\tilde{o}(x_i) = 2 - \frac{\sum_{t \in T} path(x_i,t)}{|T|c}$$
+where $|T|$ is the number of trees in the forest.
 
 \begin{table}[htbp]
    \centering
-   \begin{tabular}{|c|c|}
+   \begin{tabular}{|c||c|}
       \hline
       \textbf{Locality} & \textbf{Global} and \textbf{local} \\
       \hline

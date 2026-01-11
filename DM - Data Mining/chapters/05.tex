@@ -46,12 +46,18 @@ Two matrices:
    \end{itemize}
 \end{itemize}
 
-Compute the correlation between the two matrices; note that since the matrices are symmetric, only the correlation between $n(n-1) / 2$ entries needs to be calculated.
+Then we compute the correlation between the two matrices. Note that the correlation will be between $-1$ and $0$. This happens because the proximity matrix contains distances (the smaller the distance, the more similar the points are), while the ideal similarity matrix contains similarities (the larger the similarity, the more similar the points are). Therefore, we expect a negative correlation between the two matrices.\\
+The closer the correlation is to $-1$, the better the clustering, because, points which are far apart and are in different clusters have inversely correlated values (high distance, low ---0 actually--- similarity), while points which are close together and are in the same cluster have also inversely correlated values (low distance, high similarity).
+
+\note{
+  note that since the matrices are symmetric only the correlation between $n(n-1) / 2$ entries needs to be calculated.}
 
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/05/correlation.png}
-   \caption{Correlation of two sets. Actually, in real world data it's very rare to observe a $-0.9235$ correlation score}
+   \caption{Correlation of two sets. The first set has an almost perfect clustering, and in fact enjoys high ``inverse'' correlation of $-0.9235$, while the second, performed on random data, has a correlation of $0.5810$, indicating poor clustering, even though probably there ain't any real clusters in the data, so no real improvement is possible.
+   }
+   \note{Actually, in real world data it's very rare to observe a $-0.9235$ correlation score.}
    \label{fig:correlation}
 \end{figure}
 
@@ -101,6 +107,8 @@ cohesion and separation.
    \]
 
    Note that $BSS + WSS = TSS$ where $TSS$ is the total sum of squares, and is constant and independent of the clustering.
+
+   Here $m_i$ is the centroid of cluster $C_i$ and $m$ is the overall mean of the data points.
 \end{itemize}
 
 \subsubsection{Silhouette coefficient}
@@ -111,7 +119,12 @@ but for individual points, as well as clusters and clusterings.
 	Consider a point $i$ in cluster $A$:
 	\begin{itemize}
 		\item Calculate $a$ = average distance of $i$ to the points in its cluster
-		\item Calculate $b$ = min (average distance of $i$ to points in another cluster)
+		\item Calculate $b$ = min (average distance of $i$ to points in another cluster)\note{\ns
+		\begin{enumerate}
+         \item[$\circ$] Suppose there are clusters $A, B, C, D$ and $i$ is in cluster $A$
+         \item Calculate average distance of $i$ to points in $B$, call it $d_B$, do the same for $C$ and $D$, obtaining $d_C$ and $d_D$
+         \item Then $b = \min(d_B, d_C, d_D)$ 
+      \end{enumerate}}
 		\item The silhouette coefficient for a point is then given by
 		      \[
 			      s = \frac{b - a}{\max(a,b)}
@@ -183,8 +196,26 @@ purity_j = \max_i p_{ij}
 \]
 and the overall purity of a clustering by:
 \[
-purity = \sum_{i=1}^{K} \frac{m_i}{m} purity_j
+purity = \sum_{j=1}^{K} \frac{m_j}{m} purity_j
 \]
 
 
 
+\subsection{Statistics to evaluate metrics}
+\coolquote{
+   Suppose you get a 0.6 silhouette score for a clustering. Is that good or bad?
+}{Data miner}
+
+To answer this question, we can use \textbf{statistical} hypothesis testing. The idea is to compare the observed silhouette score to a distribution of silhouette scores obtained on random data with no inherent cluster structure.\\
+If the observed silhouette score is significantly higher than the scores from random data, we can conclude that the clustering is meaningful.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/05/statisticsSSE.png}
+   \caption{Histogram shows SSE of three clusters in 500 sets of random data points of size 100 distributed over the range $[0.2, 0.8]$ for $x$ and $y$ values.
+   The clustering on the left has SSE of 0.005, which is significantly lower than the random data ---in fact it is out of scale---, indicating a good clustering.}
+   \label{fig:05/statisticsSSE}
+\end{figure}
+
+Instead if we have two clustering results, one yielding 0.6 silhouette score and another yielding 0.8 silhouette score, we can easily conclude that the second clustering is better, since it has a higher silhouette score.
+We do not want to assert whether the value is \textit{good} in an ``absolute'' way, but rather whether it is \textit{better} than another clustering result.

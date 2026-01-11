@@ -10,9 +10,9 @@
 
 \section{Anomalous Values}
 \begin{itemize}
-	\item \textbf{Missing} values - NULL, ?
-	\item \textbf{Unknown} Values - Values without a real meaning
-	\item \textbf{Not Valid} Values - Values not significant
+	\item \textbf{Missing} values - \verb|NULL|, \verb|?|, \verb|<NA>|, \verb|""| 
+	\item \textbf{Unknown} Values - Values without a real meaning (e.g. \verb|gH43cz| as ``age'')
+	\item \textbf{Not Valid} Values - Values not significant (e.g. \verb|-24| as ``age'')
 \end{itemize}
 
 We can handle anomalous values with various techniques.
@@ -82,7 +82,7 @@ The optimal width of the classes depends on the variance and the number of data 
 % // TODO
 
 \subsection{Entropy-based Discretization}
-Minimizes the entropy wrt a label, with the goal of maximizing the purity of intervals (information gain).
+Minimizes the entropy wrt\footnote{``with respect to''} a label, with the goal of maximizing the purity of intervals (information gain).
 
 \section{Binarization}
 Binarization is the process of converting a continuous attribute into a binary attribute.\\
@@ -204,7 +204,7 @@ identified with one of the new values.
    	\item Makes homogenous the variance in log-normal distributions
    	      \note{E.g.: normalize seasonal peaks}
 \end{itemize}
-\item ??? - Stabilizing Variance
+\item ??? - Stabilizing Variance //TODO
 \[T(x) = ax^p + b\]
 \begin{itemize}
 	\item Square-root Transformation

@@ -106,6 +106,7 @@ directions of loss minimization, which are then used to fit the model.}
    \label{fig:15/NN}
 \end{figure}
 
+\newpage
 \subsection{Learning - Stochastic learning}
 
 Backpropagation takes care of defining optimal directions for the parameters, but how
@@ -113,11 +114,13 @@ do we estimate and leverage these directions?
 
 \begin{paracol}{2}
    
+   \colfill
    Estimating directions: Through stochastic gradient, by computing gradient on a batch of data, rather than the whole dataset.
    
    Provides a good approximation and a much faster computation.
 
    Batches can be aggregated, the directions they yield combined: a training-specific approach to combat overfit.
+   \colfill
    \switchcolumn
 
    \begin{figure}[htbp]

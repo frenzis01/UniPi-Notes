@@ -7,8 +7,13 @@
 \subsection{Frequent Itemset}
 An \textbf{itemset} is a collection of one or more items. An itemset with $k$ items is called a $k$-itemset.
 
-An itemset is \textbf{frequent} if its \textbf{support} (the fraction of transactions that contain the itemset) is greater than or equal to a user-specified minimum support threshold.
+\note{TODO does this apply only to transactional data?}
 
+\begin{definition}
+   [Frequent Itemset]
+   An itemset is \textbf{frequent} if its \textbf{support} (the fraction of transactions that contain the itemset) is greater than or equal to a user-specified minimum support threshold \textit{minsup}.
+\end{definition}
+   
 \begin{table}[htbp]
    \centering
    \begin{tabular}{|c|c|}
@@ -193,7 +198,7 @@ Closed itemsets are important because they provide a compact representation of a
 
 \begin{definition}
    [Maximal Itemset]
-   An itemset X is \textbf{maximal} if none of its immediate supersets
+   An itemset X is \textbf{maximal} if none of its immediate\footnote{immediate means? \dots TODO} supersets
    is frequent.\\
    X is not maximal if at least one of its immediate supersets
    is frequent.
@@ -295,7 +300,10 @@ where:
 \begin{itemize}
    \item $s(X)$ is the support of the itemset $X$.
    \item $\prod_{i \in X} s(\{i\})$ is the product of the supports of the individual items in $X$.
+   \item 
+   \note{Written like this it should always be negative\dots that's weird. Damn copilot //TODO}
 \end{itemize}
+
 
 In the slides it is defined as:
 \[\text{interest}(X) = \frac{P(X,Y)}{P(X),P(Y)}\]
@@ -324,7 +332,7 @@ Categorical attributes are variables that can take on a limited, fixed number of
 
 We have to apply association analysis to non-asymmetric binary attributes, so we have to formulate rules like:
 \[
-   {Gender=Male, Age \in [21,30)} \Rightarrow {No of hours online \geq 10}
+   {Gender=Male, Age \in [21,30)} \Rightarrow {\textit{No of hours online} \geq 10}
 \]
 
 Some attributes can have many possible values, with many of these values having very low support. To deal with this, we can use \textbf{attribute

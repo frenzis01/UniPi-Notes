@@ -75,13 +75,31 @@ Fun fact \#1: for a mean-centered $\bar{X}$, the slope is directly proportional 
 
 % TODO various notes fino a slide 25
 
-There is some pretty complicated linear algebra behind PCA, but the main steps are the following:
-\begin{enumerate}
-   \item Mean-center your data $X$ to get $\bar{X}$
-   \item Compute its eigenvectors matrix $\bar{V}$
-   \item Transpose $V$ to obtain the transformation $V^T$
-   \item Project the data: $\bar{X}$ through $V^T\bar{X}$, obtaining the PCA-transformed data $\hat{X}$ 
-\end{enumerate}
+\framedt{PCA in a nutshell}{
+   There is some pretty complicated linear algebra behind PCA, but the main steps are the following:
+   \begin{enumerate}
+      \item \ul{Mean-center your data} $X$ to get $\bar{X}$
+      
+      This means subtracting the mean of each column from the respective column entries, obtaining relative values with respect to the mean.
+      \item \ul{Compute its eigenvectors matrix} $\bar{V}$
+      
+      We build the covariance matrix $\bar{\Sigma}$ of $\bar{X}$, and compute its eigenvectors and eigenvalues.
+      The eigenvectors represent the directions of maximum variance (the principal components), and the eigenvalues indicate the magnitude of variance in those directions.
+      Eigenvectors are sorted in decreasing order of their eigenvalues and stored in the columns of matrix $V$.
+      \note{
+         A \textit{correlation matrix} is the same as a covariance matrix, but with normalized values between -1 and 1, obtained by dividing each covariance by the product of the standard deviations of the respective variables.
+      }
+   
+      \item \ul{Transpose} $V$ \ul{to obtain the transformation} $V^T$
+      
+      We transpose $V$ to prepare for the projection step, as we want to project our data onto the new basis defined by the principal components, allowing for easy computation of dot products.
+      \item \ul{Project the data}: $\bar{X}$ through $V^T\bar{X}$, obtaining the PCA-transformed data $\hat{X}$
+      
+      Here we perform the actual projection of our mean-centered data onto the new basis defined by the principal components, essentially rotating our data to align with the directions of maximum variance.
+      Each axis in $\hat{X}$ corresponds to a principal component (PC1,PC2,\dots), ordered by the amount of variance they capture from the original data.
+      \vspace*{1em}
+   \end{enumerate}
+}
 
 \textbf{In simple terms:} PCA looks at your data and finds the ``most important directions" - imagine you have a cloud of points and you want to find the best line that captures the main trend. PCA finds not just one line, but multiple directions ordered by importance. It then rotates your data so that the first dimension captures the most variation, the second dimension captures the second most variation. This allows you to keep only the first two dimensions while retaining most of the information, effectively reducing the complexity of your data while preserving its essential structure.
 
@@ -184,6 +202,52 @@ The algorithm uses gradient descent to find the low-dimensional representation $
 	\item Not suitable for embedding new data points (no explicit mapping function)
 \end{itemize}
 
+\subsection{t-SNE — Practical summary}
+
+t-SNE (t-distributed Stochastic Neighbor Embedding) is a nonlinear method to embed high-dimensional data into 2–3 dimensions for visualization. It prioritizes preserving local neighborhoods rather than global linear structure.
+
+\subsubsection{Workflow (practical)}
+\begin{itemize}
+  \item \textbf{Similarity in high-dim:} for each point $x_i$ compute conditional probabilities
+  \[
+    p_{j|i}=\frac{\exp(-\|x_i-x_j\|^2 / 2\sigma_i^2)}{\sum_{k\neq i}\exp(-\|x_i-x_k\|^2 / 2\sigma_i^2)}
+  \]
+  where $\sigma_i$ is chosen (by binary search) to match a user-specified \emph{perplexity} (effective neighbor count).
+  \item \textbf{Symmetrize:} form
+  \[
+    p_{ij}=\frac{p_{j|i}+p_{i|j}}{2n},
+  \]
+  producing a joint probability matrix $P$.
+  \item \textbf{Low-d similarity:} place points $y_i$ in low-d and define heavy-tailed affinities
+  \[
+    q_{ij}=\frac{(1+\|y_i-y_j\|^2)^{-1}}{\sum_{k\neq l}(1+\|y_k-y_l\|^2)^{-1}}.
+  \]
+  \item \textbf{Cost and optimization:} minimize KL divergence
+  \[
+    C=\sum_{i}\sum_{j} p_{ij}\log\frac{p_{ij}}{q_{ij}}
+  \]
+  via gradient descent with momentum; common practical boosts include \emph{early exaggeration} (multiply $P$ by a factor early on), learning-rate scheduling, and momentum.
+  \item \textbf{Scaling tricks:} for large $n$ use approximations (Barnes–Hut or FFT-based) to reduce complexity from $O(n^2)$.
+\end{itemize}
+
+\subsubsection{Practical notes}
+\begin{itemize}
+  \item Good for revealing clusters and local structure, but distances between far clusters are not reliable.
+  \item Sensitive to hyperparameters (perplexity, learning rate, iterations, early-exaggeration).
+  \item No explicit mapping function: embedding new points requires recomputing or using approximations.
+\end{itemize}
+
+\subsubsection{Why t-SNE is non-deterministic}
+Non-determinism arises from several sources commonly used in implementations:
+\begin{itemize}
+  \item random initialization of low-dimensional points $Y$;
+  \item stochasticity in the optimization (random tie-breaks, minibatching or noisy gradients in some variants);
+  \item randomized approximations (e.g. tree construction in Barnes–Hut, random projection steps);
+  \item sensitivity to optimizer hyperparameters and early-exaggeration phase which amplify small random differences.
+\end{itemize}
+These factors make different runs (or different implementations/settings) produce different embeddings even on the same data.
+
+
 \section{UMAP}
 
 UMAP (Uniform Manifold Approximation and Projection) is a nonlinear dimensionality reduction technique that is particularly effective for visualizing high-dimensional data in a low-dimensional space. It is based on manifold learning and topological data analysis, aiming to preserve both local and global structure of the data.
@@ -200,3 +264,45 @@ For the set of edges $E$, UMAP minimizes
 \]
 
 where $\Pr(e; X), \Pr(e; Z)$ indicate the probability of edge $e$ in the original and transformed representation, respectively.
+
+Note that since the probability is $\in [0,1]$, its logarithm is negative and spans $(-\infty, 0]$, that's the reason behind the minus ``$-$'' before the $\sum$ and the overall functioning of the formula.\\
+In this way, when two points in the original space are close ($\Pr(e; X) \approx 1$), the first term dominates and the cost is minimized by making them close in the transformed space as well ($\Pr(e; Z) \approx 1 \Rightarrow \log(\Pr(e; Z)) \approx 0$), because if instead they are far apart in the transformed space $Z$ ($\Pr(e; Z) \approx 0$), then $\log(\Pr(e; Z)) \approx -\infty$ and the cost becomes very large.\\
+Conversely, when two points in the original space are far apart ($\Pr(e; X) \approx 0$), the second term dominates and the cost is minimized by making them far apart in the transformed space as well ($\Pr(e; Z) \approx 0 \Rightarrow \log(1 - \Pr(e; Z)) \approx 0$), because if instead they are close in the transformed space ($\Pr(e; Z) \approx 1$), then $\log(1 - \Pr(e; Z)) \approx -\infty$ and the cost becomes very large.
+
+
+\section{Brief conclusions}
+In PCA the process is deterministic and the transformations are all linear, making the results interpretable.\\
+UMAP and t-SNE instead are non interpretable methods: the transformations are nonlinear and non-deterministic, since they rely on random initialization and stochastic (probability-related) optimization. Thus, the results may vary between different runs even on the same data, and the axes in the transformed space do not have a clear meaning.
+
+
+% \subsection{UMAP — Practical summary}
+
+% UMAP (Uniform Manifold Approximation and Projection) is a manifold-based nonlinear method to embed high-dimensional data into 2–3 dimensions for visualization. It builds a fuzzy topological representation of the data and optimizes a low-dimensional layout that preserves local and some global structure.
+
+% \subsubsection{Workflow (practical)}
+% \begin{itemize}
+%   \item \textbf{Local fuzzy simplicial set:} compute nearest neighbors for each point (parameter \texttt{n\_neighbors}) and convert distances to local connectivity probabilities using a smooth, adaptive kernel; this yields a weighted graph representing the fuzzy topological structure of the data.
+%   \item \textbf{Global graph:} combine local fuzzy simplicial sets into a single symmetric fuzzy graph (adjacency matrix) that encodes pairwise connection strengths.
+%   \item \textbf{Low-d representation:} initialize low-dimensional embeddings (spectral initialization or random) and define a differentiable similarity function (typically a normalized Student-like kernel).
+%   \item \textbf{Optimization:} minimize a cross-entropy–like loss between the high-d fuzzy graph and the low-d graph via stochastic gradient descent; key hyperparameters include \texttt{min\_dist} (controls tightness of clusters) and the chosen \texttt{metric}.
+%   \item \textbf{Scaling:} use approximate nearest-neighbor search (ANN) and sparse graph representations for scalability; optimizations are minibatch-based and can be parallelized.
+% \end{itemize}
+
+% \subsubsection{Practical notes}
+% \begin{itemize}
+%   \item Main hyperparameters: \texttt{n\_neighbors} (local vs global balance), \texttt{min\_dist} (cluster compactness), and \texttt{metric} (distance measure in input space).
+%   \item Compared to t-SNE, UMAP often preserves more global structure and is faster on large datasets thanks to sparse graphs and ANN.
+%   \item UMAP supports a transform method to embed new points using the learned graph (approximate, not exact inverse mapping).
+%   \item Good for visualization and downstream tasks (clustering, initialization), but absolute inter-cluster distances remain partially unreliable.
+% \end{itemize}
+
+% \subsubsection{Why UMAP can be non-deterministic}
+% Non-determinism arises from:
+% \begin{itemize}
+%   \item approximate nearest-neighbor algorithms (randomized tree/hash structures) used to build the graph;
+%   \item random seeds in spectral initialization or random initialization of embeddings;
+%   \item stochastic optimization (random sampling/minibatching) during layout optimization;
+%   \item implementation-dependent parallelism and float-level nondeterminism.
+% \end{itemize}
+% Setting explicit random seeds and using deterministic ANN/backends reduces variability but may not eliminate all sources of nondeterminism.
+  

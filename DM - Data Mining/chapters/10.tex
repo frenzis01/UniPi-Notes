@@ -181,12 +181,12 @@ Pandemic diffusion & Black plague & Ebola & Covid \\ \hline
 
 How to partition the dataset properly?
 \begin{itemize}
-	\item Size. Test and validation set of
+	\item \textbf{Size} - Test and validation set of
 similar size, training set of much
 larger size, e.g., a ratio of 4:1. Some
 learning algorithms are more data-
 hungry, so this is a starting baseline.
-	\item Distribution. Ideally, same
+	\item \textbf{Distribution} - Ideally, same
 distribution for all three datasets.
 Random stratified sampling is used
 \end{itemize}
@@ -199,17 +199,18 @@ Random stratified sampling is used
 \end{figure}
 
 
-Hold-out leverages the three-blocks partition train-validation test.
+{Hold-out leverages the three-blocks partition train-validation test.\ns
 \begin{itemize}
 	\item Learn candidate models $f_1,\dots f_k$ on the training set
 	\item Evaluate them on the validation set
 	\item Estimate the generalization error on the test set
-\end{itemize}
+\end{itemize}}
 
 \newpage
 
 \begin{paracol}{2}
    
+   \colfill
    Stretching hold-out, we aim to further increase the size of the validation set.
    We partition a given set of data, e.g., the training dataset, in two folds:
    \begin{itemize}
@@ -218,6 +219,7 @@ Hold-out leverages the three-blocks partition train-validation test.
    \end{itemize}
    Now I can learn and guesstimate a model
    $f_i$ on both folds!
+   \colfill
    
    \switchcolumn
 
@@ -242,8 +244,8 @@ Hold-out leverages the three-blocks partition train-validation test.
 With proper partitioning, we are now able to feed experiences (data) to the candidate
 models $f_1, \dots, f_k$ we wish to select. How do we evaluate them?
 
-Classification. Classification tasks generally aim to measure a Hamming distance ($\ominus$)
-between the gold labels, and the labels given by the model. Either measured as error or performance.
+\textbf{Classification} - Classification tasks generally aim to measure a Hamming distance ($\ominus$)
+between the gold labels, and the labels given by the model. \ul{Either measured as error or performance.}
 
 Reminder: we indicate the vector of n gold labels with $Y \in y$, the model of interest $f$ with $f$, its prediction on an instance $x^i$ with $f(x^i)$, and the indicator function with $\mathbb{1}$.
 
@@ -308,7 +310,7 @@ Binary & Accuracy & $\displaystyle\frac{tp + tn}{tp + tn + fp + fn}$ & Accuracy 
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/10/confusion2.png}
-      \caption{Confusion 2}
+      \caption{Confusion Matrix having weights for each entry, forming a cost matrix.}
       \label{fig:10/confusion2}
    \end{figure}
 \end{paracol}
