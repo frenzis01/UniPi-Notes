@@ -472,8 +472,7 @@ concentration of its neighbors. For\ns
    partitions the space into a set of blocks (attributes, typically two at a time to get a binary tree).
    \begin{itemize}
       \item Splits are sampled randomly
-      \item Tree grows up to a predefined height, or until all
-      leaves contain one instance
+      \item Tree grows up to a predefined height, or until all leaves contain one instance
    \end{itemize}
    Outlier degree 
    \[\tilde{o}^t(x_i) = \frac{path(x_i,t)}{c} \]
@@ -492,8 +491,24 @@ concentration of its neighbors. For\ns
    \end{figure}
 \end{paracol}
 
-An isolation forest $T$ is comprised of several isolation trees,
-further sampling the hyperplane space.
+Consider \autoref{fig:06/isoltree}: \ul{every line (split) is a node in the isolation tree}, which in fact splits the previous node in two.
+That is each split partitions the space in two half-spaces, and the tree grows downwards until each leaf contains exactly one instance ---probably but not necessarily an outlier, depends on the length of the path---, or until a predefined height is reached.
+The path of the colored instance in \autoref{fig:06/isoltree} is 5, as it is isolated by 5 splits (actually 2 well placed splits would be enough, but they are chosen randomly, so\dots); this means that in the tree, the path from the root to the leaf containing the instance is 5 edges long.
+
+Suppose there are 1000 instances in a very small portion of the plane, representing the main distribution, and one instance very far away from them. The far away instance will likely be isolated in just a few splits, as the random splits will likely isolate it quickly.\\
+Isolating one of the 1000 instances will likely take \textit{a lot} of splits, as the splits are random, and the instance is surrounded by many other instances, making it hard to isolate it quickly.
+That's the reason why we set a maximum height for the tree. \ul{Dense data won't end up in a super deep leaf, avoiding making normal instances look like outliers}.
+
+// TODO l'outlier degree è inverso!!! Più è basso, più si è outlier!!!
+Aggiungere fix explanation di chat
+
+% \note{Probably, given the span of the instances, we could also estimate the average depth of the tree as some whatever-random-distribution}
+
+
+
+An isolation forest $T$ is comprised of several isolation trees, further sampling the hyperplane space.\\
+The key point is that we can combine multiple trees to get a more comprehensive outlier degree:
+
 Outlier degree 
 $$\tilde{o}(x_i) = 2 - \frac{\sum_{t \in T} path(x_i,t)}{|T|c}$$
 where $|T|$ is the number of trees in the forest.

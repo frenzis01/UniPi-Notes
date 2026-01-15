@@ -1,6 +1,4 @@
 \chapter{Time series}
-% // TODO first 23 slides
-
 \section{Definitions}
 \begin{definition}
    [Univariate series]
@@ -339,4 +337,127 @@ An \textbf{alignment} (or ``matching'') $A= [(i,j)]^{\max{n,m}}$ of two time ser
 An alignment $A$ induces an alignment cost $C_A$ quantifying how unaligned the two series are.
 
 
-% // TODO done up to slide 40
+
+We have two costs to consider:
+\begin{itemize}
+   \item \textbf{Local cost} - cost of aligning two components $l_i$ and $u_j$
+   \[c^a_{i,i} = ||l_i - u_j||_p\]
+   \item \textbf{Match cost} - cost of foregoing matching $i$ with $j$ in favor of a lower cost $ i' \neq i$ (i.e. ``How much would I pay for another alignment'')
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/16/alignment.png}
+   \figcaption{}
+   \label{fig:16/alignment}
+\end{figure}
+
+
+\subsection{Warping}
+Note that a simple \textbf{straight match} alignment is not always possible, time series must not be shifted or stretched, and series must have the same length.
+
+% \begin{definition}
+%    [Warping]
+%    A \textbf{warping} of a time series $s = [s_1, \dots, s_n]$ is a transformation producing a new series $s' = [s'_1, \dots, s'_m]$ such that $m \neq n$, through the repetition or omission of some components of $s$.
+% \end{definition}
+
+\begin{definition}
+   [Shifted alignment]
+   Assuming some subseries of either $l$ or $u$ are shifted, under a shifted alignment we must ensure:
+   \begin{itemize}
+      \item \textbf{Warp, Replication} - Each component $l_i$ can be assigned to any $u_j$
+      \item \textbf{Planarity} - If $l_i$ is assigned to $u_j$, then $l_{i+1}$ can only be assigned to $u_{j'}$ with $j' \geq j$
+      \[\forall i,j. (i,j) \in A \Rightarrow (l_{i+1},u_{j-1} \notin A)\]
+   \end{itemize}
+\end{definition}
+
+By warping, we replicate a component, warping it also further in the series. This allows
+us to replicate components, and emulate a straight match alignment.\\
+\textit{Replication} refers to assigning the same component multiple times in the alignment.
+\begin{itemize}
+   \item \textbf{No Warp} - component $l_i$ is assigned to exactly one component $u_j$
+   \item \textbf{Upper Warp} - $(l_i, u_j)$ and $(l_i, u_{j+1})$ can be in $A$, replicating the component on the upper series $l$
+   \note{That is, $l_i$ is aligned to both $u_j$ and $u_{j+1}$.}
+   \item \textbf{Lower Warp} - $(l_i, u_j)$ and $(l_{i+1}, u_j)$ can be in $A$, replicating the component on the lower series $u$
+\end{itemize}
+
+
+\subsection{DTW - Dynamic Time Warping}
+\begin{paracol}{2}
+   
+   \textbf{Dynamic Time Warping} (DTW) is an algorithm to compute the optimal shifted alignment between two time series $l$ and $u$.
+   It uses dynamic programming to compute the optimal alignment cost $C_A$.
+   The algorithm builds a cost matrix $C^\Sigma \in \mathbb{R}^{n \times m}$, where each entry $C^\Sigma(i,j)$ represents the minimum cost of aligning the first $i$ components of $l$ with the first $j$ components of $u$.
+   The cost matrix is filled using the following recurrence relation:
+   \[
+      C^\Sigma(i,j) = c^a_{i,j} + \min \begin{cases}
+         C^\Sigma(i-1,j) & \text{(insertion)}\\
+         C^\Sigma(i,j-1) & \text{(deletion)}\\
+         C^\Sigma(i-1,j-1) & \text{(match)}
+      \end{cases}
+      \]
+      Where $c^a_{i,j}$ is the local cost of aligning components $l_i$ and $u_j$.
+      The final alignment cost $C_A$ is found in the bottom-right cell of the matrix, i.e., $C^\Sigma(n,m)$.
+      \note{This is Copilot generated}
+
+      \switchcolumn
+
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics[width=0.9\columnwidth]{images/16/dtwCost.png}
+         \figcaption{}
+         \label{fig:16/dtwCost}
+      \end{figure}
+   \end{paracol}
+
+\note{In the slides, the algorithm is presented as follows:}
+$C_\Sigma$ computes a minimal and cumulative cost of aligning the two series up to components $i$ and $j$ respectively.
+Each entry in the matrix is computed using a cumulative cost and the local cost of aligning $l_i$ and $u_j$.
+
+\begin{align*}
+   C^\Sigma(i,j) &= c^a_{i,j} + c^\Sigma_{i,j} =\\
+   &\underbrace{||l_i + u_j||_p}_{alignment cost} + \min{\underbrace{C^\Sigma(i-1,j-1)}_{No Warp},\underbrace{C^\Sigma(i-1,j)}_{Lower Warp}, \underbrace{C^\Sigma(i,j-1)}_{Upper Warp}}
+\end{align*}
+
+\begin{itemize}
+   \item Base case - the alignment $(l_1, u_1)$ has minimal cost. This is trivially always true. $C^\sigma(1,1) = ||l_1 - u_1||_p$
+   \item Inductive case - $i,j$ end up in three warping cases:
+   \begin{itemize}
+      \item \textbf{No Warp} - both $l_i$ and $u_j$ are matched together, the accumulated cost is $c^\Sigma(i,j) = C^\Sigma(i-1,j-1)$
+      \note{Note that is only the cumulative cost! To get the actual cost, the one in the matrix $C^\Sigma$ we must add the local cost $c^a_{i,j}$ to it to get the total cost.}
+      \item \textbf{Upper Warp} - $l_i$ is matched to both $u_j$ and $u_{j-1}$, the accumulated cost is $c^\Sigma(i,j) = C^\Sigma(i,j-1)$
+      \item \textbf{Lower Warp} - $u_j$ is matched to both $l_i$ and $l_{i-1}$, the accumulated cost is $c^Sigma(i,j) = C^\Sigma(i-1,j)$
+   \end{itemize}
+\end{itemize}
+
+\begin{paracol}{2}
+As a matrix of minimal accumulated alignment cost, we know that for each component
+\( i, j \) in \( C^{\Sigma} \), we have, by construction, the minimal cost to align up to \( i, j \).
+Thus, we can simply start from the last alignment, and follow \( C^{\leftarrow} \) backwards for the warps of minimal cost!
+
+\[
+C^{\leftarrow} =
+\begin{bmatrix}
+\textcolor{red}{\leftarrow} & \leftarrow & \leftarrow & \leftarrow \\
+\uparrow & \textcolor{red}{\nwarrow} & \leftarrow & \leftarrow \\
+\uparrow & \uparrow & \textcolor{red}{\leftarrow} & \textcolor{red}{\leftarrow}
+\end{bmatrix},
+\quad
+A = [(1,1), (2,2), (3,2), (3,3), (3,4)]
+\]
+
+\note{Directions of minimal accumulated cost \( C^{\leftarrow} \) over \( C^{\Sigma} \): the \textcolor{red}{red path} from the last entry indicates the alignment of minimal cost. The alignment \( A \) is given by the indices of the path.}
+   \switchcolumn
+   
+   \colfill
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.95\columnwidth]{images/16/csigma.png}
+      \figcaption{}
+      \label{fig:16/csigma}
+   \end{figure}
+   \colfill
+
+\end{paracol}
+
+Sakoe-Chiba band and Itakura Parallelogram are two techniques to limit the warping path in DTW, constraining the alignment to a band around the diagonal of the cost matrix, reducing computational complexity and preventing pathological alignments.

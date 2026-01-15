@@ -74,10 +74,15 @@ There are three main approaches to classification.
    Instances are routed to all leaves in the tree, accumulating probability density at each node. The prediction can then be given by the leaf with higher probability mass, or average class probabilities across leaves.
 
       \[
-      f_i(x) \equiv p_i(x;\Theta_i)
+      f_i(x) \equiv p_i(x;\theta_i)
       \]
 
+   $p_i$ is the probability function parametrized by $\theta_i$ at node $i$ which we apply on the input $x$.
+   The output represents the probability of routing $x$ to one of the two subtrees.
+   Parameters $\theta_i$ are learned during training.
+
    These work best on non-relational data, such as images. However, they suffer from interpretability issues, and are more complex to train.
+
    \colfill
       
    \switchcolumn
@@ -91,6 +96,23 @@ There are three main approaches to classification.
    \end{figure}
    \colfill
 \end{paracol}
+
+In probabilistic trees (\textit{soft} trees) every node is, for instance, the probability that $x$ matches a Normal,Gaussian, Binomial, etc. distribution.\\
+Every edge has a probability of being traversed by instance $x$, i.e. probability for each edge, hence \ul{probability masses for each leaf change for each instance}!\\
+Every leaf represents a probability distribution over classes, that is ``if you're here, you have $p(A)$ of being in class A, and $p(B)$ of being in class B'', because each leaf ---i suppose--- represents a set of examples belonging to different classes.\\
+There are two ways to predict the class of an instance:
+\begin{itemize}
+   \item Pick the leaf with the highest probability mass, and use its class distribution to predict.
+   In other words, follow the most probable path, and then check $max(p_l(A), p_l(B))$ in that leaf.
+   \item Instead of picking a path, consider all possible endings. Average the class distributions of all leaves, weighted by their probability mass for the instance.
+   \begin{align*}
+      P(A) & = \sum_{l \in leaves} p_l(A) \cdot mass_l(x)\\
+      P(B) & = \sum_{l \in leaves} p_l(B) \cdot mass_l(x)
+   \end{align*}
+   And then pick the class with maximum probability $max(P(A), P(B))$.
+   
+\end{itemize}
+
 
 \section{Linear Models}
 

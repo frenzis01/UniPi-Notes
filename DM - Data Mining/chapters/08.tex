@@ -34,13 +34,17 @@ An \textbf{itemset} is a collection of one or more items. An itemset with $k$ it
 \begin{itemize}
    \item Itemset - ${Milk,Bread,Diaper}$
    \item Suppport count ($\sigma$) - Frequency of occurrence of an itemset - $\sigma({Milk,Bread,Diaper}) = 2$
-   \item Support - Fraction of transactions that contain an itemset - $s({Milk,Bread,Diaper})=\frac{2}{5}$
+   \item Support $\in [0,1]$ - Fraction of transactions that contain an itemset - $s({Milk,Bread,Diaper})=\frac{2}{5}$
    \item An itemset whose support is greater than or equal to a \textit{minsup} threshold is called a frequent itemset.
    \item Association Rule - An implication expression of the form $X \Rightarrow Y$, where $X$ and $Y$ are itemsets - ${Milk,Diaper} \Rightarrow {Beer}$
    \item Rule Evaluation Metrics - 
    \begin{itemize}
-      \item Support ($s$) - The proportion of transactions that contain the itemset .
-      \item Confidence ($c$) - The proportion of the transactions that contain $X$ which also contain $Y$.
+      \item Support ($s$ $\in [0,1]$)- The proportion of transactions that contain the itemset .
+      \[
+      s = \frac{\sigma(X \cup Y)}{|T|}
+      \]
+      \item Confidence ($c$ $\in [0,1]$)- The proportion of the transactions that contain $X$ which also contain $Y$. 
+      \[c = \frac{\sigma(X \cup Y)}{\sigma(X)}\]
    \end{itemize}
 \end{itemize}
 
@@ -67,7 +71,16 @@ Two-step approach:
 	\item Rule Generation - Generate high confidence rules from each frequent itemset, where each rule is a binary partitioning of a frequent itemset
 \end{itemize}
 
-% // TODO get done with 17_association_analysis_2023 
+
+The problem is finding the frequent itemsets efficiently.
+\begin{definition}
+   [Apriori principle]
+   A subset of a frequent itemset is also a frequent itemset.
+   Conversely, \ul{if an itemset is not frequent, none of its supersets can be frequent}.
+   We can exploit this property to prune the search space.
+
+   The support of an itemset never exceeds the support of its subsets. This is also known as the anti-monotone property of support.
+\end{definition}
 
 \section{Apriori Algorithm}
 The purpose of the Apriori algorithm is to find all frequent itemsets in a transaction database, which means \ul{identifying itemsets that satisfy the support constraint} (threshold), i.e. finding all itemsets whose support is greater than or equal to a user-specified minimum support threshold.
@@ -114,6 +127,59 @@ The Apriori principle holds due to the following property of support of the supp
 %       \end{enumerate}
 %    \end{enumerate}
 % \end{algorithm}
+
+\subsection{Candidate Generation}
+
+We can generate candidates using the $F_{k-1} \times F_{k-1}$ prefix method:
+\ul{merge two frequent $(k-1)$-itemsets} if their first $k-2$ items are the same. For example, $\{A, B, C\}$ and $\{A, B, D\}$ can be merged to form the candidate $\{A, B, C, D\}$.
+Instead, $\{A, B, C\}$ and $\{A, C, D\}$ cannot be merged because their first $k-2$ items are not the same.
+
+There is also an alternative $F_{k-1} \times F_1$ method: \ul{
+   Merge two frequent $(k-1)$-itemsets if the last $(k-2)$ items of
+the first one is identical to the first $(k-2)$ items of the
+second.}
+For instance, $Merge(ABC,BCD) = ABCD$, but $Merge(ABC,ABE)$ is not possible.
+
+\subsection{Candidate Pruning}
+Suppose we have have this set of \textit{frequent} 3-itemset and the generated $L_4$ candidates with alternative $F_{k-1} \times F_1$ method:
+\begin{align*}
+   F_3 = {ABC, ABD, ABE,ACD,BCD,BDE,CDE} \\
+   L_4 = {ABCD, ACDE, ABDE, BCDE}
+\end{align*}
+{To prune the candidates in $L_4$ we must check if all their possible 3-item subsets are in $F_3$:\ns
+\begin{itemize}
+   \item $ABCD$ - all subsets are frequent - keep
+   \item $ACDE$ - $ADE$ and $ACE$ are not frequent - prune
+   \item $ABDE$ - $ADE$ is not frequent - prune
+   \item $BCDE$ - $BCE$ is not frequent - prune
+\end{itemize}}
+
+At this point, the only candidate left is $ABCD$ which \textit{might} be frequent, while the others could not possibly be, thus they were pruned. We need to scan the database to count its support.
+
+This can be done with the aid of a hash tree structure to store the candidates and facilitate efficient support counting, to avoid checking each candidate against every transaction (computationally expensive).
+
+\subsection{Rule Generation}
+Once we have found all frequent itemsets, we can generate high-confidence association rules from each frequent itemset. \\
+Given a frequent itemset $L$, find all non-empty subsets $f \subset L$ such that $f \rightarrow (L - f)$ has confidence $\geq$ \textit{minconf}.
+If $|L| = k$, there are $2^k - 2$ possible rules that can be generated from $L$ (excluding the empty set $L\rightarrow\emptyset$ and the set itself $\emptyset \rightarrow L$).
+
+In general, confidence does not have an antimonotone
+property, so $c(ABC \rightarrow D)$ can be larger or smaller than $c(AB \rightarrow D)$.
+However, confidence of rules generated from the same itemset has an anti-monotone property. 
+E.g., Suppose ${A,B,C,D}$ is a frequent 4-itemset:
+\[c(ABC \rightarrow D) \geq c(AB \rightarrow CD) \geq c(A \rightarrow BCD)\]
+Confidence is anti-monotone w.r.t. number of items on the right-hand-side (RHS) of the rule. This happens because, recalling the confidence formula 
+\[c(X \Rightarrow Y) = \frac{s(X \cup Y)}{s(X)}\]
+the numerator $s(X \cup Y)$ remains the same while the denominator $s(X)$ decreases as we move items from the RHS to the left-hand-side (LHS) of the rule, because $\sigma(A) \geq \sigma(AB) \geq \sigma(ABC)$ according to the Apriori principle, yielding an increase in confidence.
+
+This allows to prune rules during generation during the process, as in the figure below.
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/08/confidenceLattice.png}
+   \caption{Confidence Lattice}
+   \label{fig:08/confidenceLattice}
+\end{figure}
 
 \begin{definition}
    [Closed Itemset]
@@ -240,6 +306,73 @@ where:
 
 The confidence value ranges from 0 to 1, where a higher confidence indicates a stronger association between the itemsets $X$ and $Y$. For example, a confidence of 0.8 means that 80\% of the transactions that contain $X$ also contain $Y$.
 
+\subsection{Contingency tables}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|}
+\hline
+ & \textit{X} & $\overline{\textit{X}}$ &  \\ \hline
+\textit{Y} & $f_{11}$ & $f_{10}$ & $f_{1+} = f_{11} + f_{10}$ \\ \hline
+$\overline{\textit{Y}}$ & $f_{01}$ & $f_{00}$ & $f_{0+} = f_{01} + f_{00}$ \\ \hline
+\hline
+ & $f_{+1} = f_{11} + f_{01}$ & $f_{+0} = f_{10} + f_{00}$ & $N$ \\ \hline
+\end{tabular}
+\caption{Contingency table for itemsets X and Y}
+\end{table}
+
+
+Given a dataset with $N$ transactions, we can represent the occurrences of itemsets $X$ and $Y$ using a contingency table, where the entries are the support counts of the combinations of presence and absence of $X$ and $Y$:
+
+\begin{paracol}{2}
+   
+   \begin{table}[h]
+      \centering
+      \begin{tabular}{|c|c|c|c|}
+         \hline
+         \textbf{Customers} & \textbf{Tea} & \textbf{Coffee} & $\cdots$ \\ \hline
+         C1 & 0 & 1 & $\cdots$ \\ \hline
+         C2 & 1 & 0 & $\cdots$ \\ \hline
+         C3 & 1 & 1 & $\cdots$ \\ \hline
+         C4 & 1 & 0 & $\cdots$ \\ \hline
+         $\cdots$ &  &  &  \\ \hline
+      \end{tabular}
+      \caption{Transaction data for Tea and Coffee}
+   \end{table}
+   
+   \switchcolumn
+
+   \begin{table}[h]
+   \centering
+   \begin{tabular}{|c|c|c|c|}
+   \hline
+    & \textit{Coffee} & $\overline{\textit{Coffee}}$ &  \\ \hline
+   \textit{Tea} & 150 & 50 & 200 \\ \hline
+   $\overline{\textit{Tea}}$ & 650 & 150 & 800 \\ \hline
+   \hline
+    & 800 & 200 & 1000 \\ \hline
+   \end{tabular}
+
+      \begin{tabular}{|c|c|c|c|}
+   \hline
+    & \textit{Honey} & $\overline{\textit{Honey}}$ &  \\ \hline
+   \textit{Tea} & 100 & 100 & 200 \\ \hline
+   $\overline{\textit{Tea}}$ & 20 & 780 & 800 \\ \hline
+   \hline
+    & 120 & 880 & 1000 \\ \hline
+   \end{tabular}
+   \caption{Contingency table for Tea and Coffee, and another one for Tea and Honey}
+   \end{table}
+
+
+
+\end{paracol}
+$Confidence \approx P(Coffee|Tea) = \frac{150}{200} = 0.75$, suggesting that people who drink tea are more likely to drink coffee than not drink coffee, given that the confidence is greater than $0.5$.\\
+But, in fact, $P(Coffee) = \frac{800}{1000} = 0.8$, meaning that people who drink tea are actually less likely to drink coffee than the general population.
+
+$Confidence \approx P(Honey|Tea) = \frac{100}{200} = 0.5$, suggesting that people who drink tea are equally likely to drink honey or not drink honey.\\
+But, actually, $P(Honey) = \frac{120}{1000} = 0.12$, meaning that people who drink tea are much more likely to drink honey than the general population.
+
 \subsection{Drawbacks}
 
 Confidence has some drawbacks:
@@ -292,6 +425,9 @@ In the slides it is defined as:
 
 A lift value greater than 1 indicates a positive association between $X$ and $Y$, meaning that the presence of $X$ increases the likelihood of $Y$. A lift value less than 1 indicates a negative association, while a lift value equal to 1 suggests that $X$ and $Y$ are independent.
 \note{Lift is particularly useful for identifying interesting rules that may not be apparent from confidence alone, as it accounts for the overall frequency of the consequent itemset $Y$ in the dataset.}
+
+Lift would fix the coffee problem, because, 0.75 / 0.8 = 0.9375 < 1, indicating a negative correlation between tea and coffee.
+Also the honey problem would be fixed, because 0.5 / 0.12 = 4.1667 > 1, indicating a positive correlation between tea and honey.
 
 \subsection{Interest}
 The \textbf{interest} of an itemset $X$ is a measure of how much the actual support of $X$ deviates from what would be expected if the items in $X$ were independent. It is defined as:
@@ -356,11 +492,17 @@ To handle such values we have various methods:
 }
 
 
-\section{Association Rule Mining}
-Association Rule Mining refers to, given a set of transactions, finding rules that will predict the occurrence of an item based on the occurrences of other items in the transaction. Formally, an association rule is an implication of the form $X \Rightarrow Y$, where $X$ and $Y$ are disjoint itemsets. The goal is to discover interesting relationships between items in large datasets.
+\section{Rule Extraction}
+\subsection{Association Rule Mining}
+Association Rule Mining refers to (everything in the previous sections \smiley), given a set of transactions, finding rules that will predict the occurrence of an item based on the occurrences of other items in the transaction. Formally, an association rule is an implication of the form $X \Rightarrow Y$, where $X$ and $Y$ are disjoint itemsets. The goal is to discover interesting relationships between items in large datasets.
+
+Rules obtained in this way are unordered, so no priority is given to any of them. When applying the rules to a new instance, we may have multiple rules that apply, and we need a way to resolve conflicts.
+
+They induce a form of local optimization (?) since each rule is evaluated independently of the others.
 
 \subsection{Rule lists}
  A rule list is a sorted set of rules: starting from rule $1$, if rule $i$ does not support the given instance, move to rule $i+1$.
+Here, we do have priority: the first rule that supports the instance is the one predicting.
 
  \lstset{language=python}
  \begin{lstlisting}
@@ -385,13 +527,13 @@ supp_A(r,x) = \begin{cases}
 
 \begin{table}[htbp]
    \centering
-   \begin{tabular}{|c|c|c|c|c|c|c|}
+   \begin{tabular}{|c|c|c|c|c|c|c|c|}
       \hline
-      age & priors & sex & $r_1$ & $r_2$ & $r_3$ & $r_4$ \\
+      age & priors & sex & $r_1$ & $r_2$ & $r_3$ & $r_4$ & $r_5$\\
       \hline
-      24 & 4 & m & 0 & 0 & 0 & 1 \\
-      20 & 1 & f & 0 & 1 & 0 & 0 \\
-      20 & 5 & m & 0 & 1 & 0 & 0 \\
+      24 & 4 & m & 0 & 0 & 0 & 1 & 0\\
+      20 & 1 & f & 0 & 1 & 0 & 0 & 0\\
+      20 & 5 & m & 0 & 1 & 0 & 0 & 0\\
       \hline
    \end{tabular}
    \caption{Support indicator variable for a rule list}
@@ -418,6 +560,89 @@ Exploration populates a queue of states to consider: the larger the queue, the l
 	\item Inserts states in the queue
 	\item Pops states from the queue
 \end{itemize}
+
+\subsection{CORELS - Certifiably Optimal Rule Lists}
+CORELS is a branch-and-bound algorithm to learn optimal rule lists for categorical data. It uses a variety of techniques to prune the search space and efficiently find the optimal rule list.
+
+We model our rule list using a tuple $R = \langle P_R, Y_R, y_r\rangle$, where:
+\begin{itemize}
+   \item $P_R$ is the ordered list of antecedents (if-clauses)
+   \item $Y_R$ is the list of consequent predictions (then-clauses)
+   \item $y_r^0$ is the default prediction (else-clause)
+   \item[\circ] $k^R$ is the number of rules in the list (length of $P_R$ and $Y_R$)
+\end{itemize}
+
+Rules are ordered, and a Rule list $R$ may be prefix of another Rule list $R'$, having $R \preceq R^+$.
+In the search tree, child nodes extend parent nodes by adding a new rule at the end of the list. 
+
+\begin{align*}
+(1)\;& \textbf{if } \text{age} \in (23,26) \textbf{ and } \text{priors} \in (2,3)
+      \textbf{ then recidivous} \\
+(2)\;& \textbf{if } \text{age} \in (18,20)
+      \textbf{ then recidivous} \\
+(3)\;& \textbf{else not\_recidivous}
+\end{align*}
+
+\vspace{1em}
+
+\begin{itemize}
+  \item $k^R = 2$
+  \item $P_R : (p^1,\ldots,p^{k^R}) 
+    = (\text{age} \in (23,26) \text{ and priors} \in (2,3),\ 
+       \text{age} \in (18,20))$
+  \item $Y_R : (y_R^1,\ldots,y_R^{k^R})
+    = (\text{recidivous},\ \text{not\_recidivous})$
+  \item $y_R^0 = \text{not\_recidivous}$
+\end{itemize}
+
+\subsubsection{CORELS empirical Error}
+\[
+l(R,X,Y)=l_R(R,X,Y)+l_0(R,X,Y),
+\]
+dove
+\[
+l_R(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\sum_{j=1}^{k^R}
+\operatorname{supp}_{P_R}(p_R^j,x)\;\mathbf{1}[y\neq y_R^j],
+\]
+% \[
+% l_0(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\Big(1-
+% \sum_{j=1}^{k^R}\operatorname{supp}_{P_R}(p_R^j,x)\Big)\;
+% \mathbf{1}[y\neq y_R^{k^R}].
+% \]
+\[
+l_0(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\Big(1-
+\operatorname{supp}(P_R,x)\Big)\;
+\mathbf{1}[y\neq y_R^{0}]
+\]
+
+
+To read the formula, the fract and the sum over $X \times Y$ is just the average over all instances, which will yield a ratio.
+Recall that $\operatorname{supp}_{P_R}(p_R^j,x)$ is $1$ if rule $j$ is the first rule to satisfy instance $x$, and $0$ otherwise, and that \ul{\textit{exactly one} rule will satisfy} $x$.
+The rightmost indicator function is $1$ if the prediction of rule $j$ ($y_R^j$) does not match the actual label $y$ of instance $x$, and $0$ otherwise.\\
+In other words, $l_R(R,X,Y)$ counts the fraction of misclassified instances by the rules in the list.
+The second term, $l_0(R,X,Y)$, handles the default rule (else-clause). It counts the fraction of misclassified instances that are not covered by any of the rules in the list.
+\nl
+
+We may compute bounds on \textbf{length} and \textbf{accuracy}. The explanation related to length is rather confused, I couldn't get it all, the idea is that we have an an upper bound on the maximum number of rules ($k^R$) we want in the list, and if we reach that number, we can prune that branch of the search tree.\\
+For the accuracy, the idea is that the number of instances correctly classified by a rule $p$ to be added to the rule list should be higher than some threshold, in order to allow the addition of that rule to the list. If not, we can prune that branch of the search tree.
+
+\subsubsection{Trimming the search space}
+Trimming is related to \textbf{Loss} $L_R$ and \textbf{Lower bound} $b(R)$.
+Here we see appearing a \textbf{regularization} term $\lambda k^R$, where $\lambda$ is a hyperparameter that controls the trade-off between \textit{accuracy} and \textit{complexity} of the rule list, and $k^R$ is the number of rules in the list.\\
+In general less rules mean more generalization and interpretability, so we want to penalize longer rule lists, trading with the potential increase in accuracy they might yield.
+
+\begin{align*}
+   L(R,X,Y) &= l(R,X,Y) + \lambda k^R \\
+   b(R,X,Y) &= l_R(R,X,Y) + \lambda k^R \leq L(R,X,Y)
+\end{align*}
+
+
+\note{In formulas this  is a mess, and I couldn't get it.}
+
+The overall idea, if I understood correctly is that extensions $R^+$ of a rule list $R$ will always have a loss $L_R(R^+)$ greater than or equal to the loss of the parent rule list $L_R(R)$, because adding more rules can only increase the number of misclassifications (or leave it unchanged, because the rules in $R$ have priority, and if they were picked before, they will still be picked even if there are more rules ``at the bottom''). Thus, if we have already found a rule list $R_{best}$ with a certain loss lower than $R$'s, we can prune any extensions of $R$ that cannot improve upon this loss. 
+
+
+
 
 \section{FP Tree Growth}
 

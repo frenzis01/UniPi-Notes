@@ -51,6 +51,7 @@ models learned end up erring in terms of:
 \end{itemize}
 Ideally, we want to have learning algorithms with low enough bias and variance.
 
+\newpage
 \section{Improper models}
 \begin{paracol}{2}
    
@@ -198,8 +199,11 @@ Random stratified sampling is used
    \label{fig:10/partition}
 \end{figure}
 
+\subsection{Model selection}
 
-{Hold-out leverages the three-blocks partition train-validation test.\ns
+There are two key model selection strategies: \textbf{hold-out} and \textbf{cross-validation}.
+
+{\textbf{Hold-out} leverages the three-blocks partition train-validation test.\ns
 \begin{itemize}
 	\item Learn candidate models $f_1,\dots f_k$ on the training set
 	\item Evaluate them on the validation set
@@ -207,6 +211,7 @@ Random stratified sampling is used
 \end{itemize}}
 
 \newpage
+\textbf{K-fold Cross-validation} aims at run multiple times the hold-out strategy, to increase the size of the validation set. We partition a given set of data, e.g., the training dataset, in $k$ blocks (folds). In each fold, one block acts as validation set, while the other $k-1$ blocks act as training set. We repeat this $k$ times, each time changing the validation block.
 
 \begin{paracol}{2}
    
@@ -219,6 +224,8 @@ Random stratified sampling is used
    \end{itemize}
    Now I can learn and guesstimate a model
    $f_i$ on both folds!
+
+   This is called \textbf{2-fold cross-validation}, but we can generalize it to $k$ folds.
    \colfill
    
    \switchcolumn
@@ -314,3 +321,53 @@ Binary & Accuracy & $\displaystyle\frac{tp + tn}{tp + tn + fp + fn}$ & Accuracy 
       \label{fig:10/confusion2}
    \end{figure}
 \end{paracol}
+
+For non-binary classification tasks, we can set one label as positive, and all others as negative, and build multiple confusion matrices, one per label, and then aggregate the results.
+
+\subsection{ROC Curve}
+
+\begin{paracol}{2}
+   
+   Among all possible model solving binary
+   classification tasks, some do not compute
+   a binary label per se, rather a score or
+   probability $\alpha$ of a label.
+   We need to to try multiple thresholds $\tau$, each yielding different labellings.
+   We may plot these results in a \textbf{ROC curve}.
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/10/roc.png}
+      \caption{Points are just threshold IDs}
+      \label{fig:10/roc}
+   \end{figure}
+\end{paracol}
+
+There are some points of interest in the ROC curve:
+\begin{itemize}
+   \item $(0,1)$ - \textbf{Perfect classifier} - no false positives, all true positives
+   \item $(1,0)$ - \textbf{Worst classifier} - all false instances are classified as positive, none of the positive instances is classified as positive
+   \item $(1,1)$ - \textbf{All positive classifier} - classifies all instances as positive, yielding all true positives, but also all false positives
+   \item $(x,x)$ - \textbf{Random classifier} - the diagonal line from $(0,0)$ to $(1,1)$
+   \item $(x,x-\sigma)$ - \textbf{Worse than random classifier} - any point below the random classifier, this yields more errors than correct predictions
+   \item \textbf{Area under the curve (AUC)} - the area under the ROC curve, a measure of performance. $0.5$ is random, $1$ is perfect.
+\end{itemize}
+
+\framedt{Multiple Labels}{
+   What happens in case of multiple labels? We can build one ROC curve per label, setting it as positive, and all others as negative. Then, we can average the AUCs of each label to get a final performance measure.
+}
+
+\section{Regression}
+
+Unlike classification tasks, regression tasks aim to predict continuous labels. Thus, we need different performance measures, we cannot count ``positive'' vs ``negative'' predictions.
+
+Typical regression performance measures are:
+\begin{itemize}
+   \item Mean Squared Error (MSE) - Mean error per instance, squared
+   \item Max Squared Error (MaxSE) - Maximum error among all instances, squared
+   \item R Squared ($R^2$) - Error over default model, where for default model we mean the average of all labels, so the error is the variance of the labels
+   // TODO add formula
+   % Proportion of variance explained by the model
+\end{itemize}
