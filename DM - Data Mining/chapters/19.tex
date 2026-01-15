@@ -1,0 +1,109 @@
+\chapter{XAI}
+
+Explainable-AI explores and investigates methods to produce or complement AI models to make accessible and interpretable the internal logic and the outcome of the algorithms, making such process understandable by humans.
+
+Explicability, understood as incorporating both intelligibility(``how does it work?'') for non-experts, e.g., patients or business customers, and for experts, e.g., product designers or engineers) and accountability(``who is responsible for'').
+
+To interpretmeans to give or provide the meaning or to explain and present in understandable terms some concepts.\\
+In data mining and machine learning, interpretability is the ability to explain or to provide the meaning in understandable terms to a human.
+
+\section{Interpretability and Black box}
+A black box is a model, whose internals are either unknown to the observer or they are known but uninterpretableby humans.
+A model is interpretable when there is a direct and understandable mapping between the internal mechanism of the model and the human understanding of the same mechanism.
+
+XAI is a set of techniques and methods to make the behaviour and the outcome of black box AI systems understandable by humans.
+
+{
+   \begin{itemize}
+	   \item Global and Local Interpretability:\ns
+   \begin{itemize}
+	   \item Global: understanding the whole logic of a model
+	   \item Local: understanding only the reasons for a specific decision
+   \end{itemize}
+	\item \textbf{Time Limitation}: the time that the user can spend for understanding an explanation.
+	\item \textbf{Nature of User Expertise}: users of a predictive model may have different background knowledge and experience in the task. The nature of the user expertise is a key aspect for interpretability of a model.
+   \item \textbf{Interpretability} (or comprehensibility): to which extent the model and/or its predictions are human understandable. Is measured with the complexity of the model.
+   \item \textbf{Fidelity}: to which extent the model imitatea black-box predictor.
+   \item \textbf{Accuracy}: to which extent the model predicts unseen instances.
+   
+   \textbf{Fairness}: the model guarantees the protection of groups against discrimination.
+   \item \textbf{Privacy}: the model does not reveal sensitive information about people.
+   \item \textbf{Respect Monotonicity}: the increase of the values of an attribute either increase or decrease in a monotonic way the probability of a record of being member of a class.
+   \item \textbf{Usability}: an interactive and queryable explanation is more usable than a textual and fixed explanation.
+\end{itemize}
+}
+
+\textbf{Complexity} is a measure of how difficult is to understand a model, it is inversely proportional to interpretability.
+Typically it is related to the \textbf{size} of the interpretable model, e.g., number of nodes in a decision tree, number of rules in a rule-based model, number of features used in a linear model.
+
+
+\section{XAI techniques}
+We may have a \textit{transparent model} that is interpretable by design, or we may have a \textit{post-hoc explanation} that is an explanation generated after a black box model has been built.
+
+{We have some categorization depending on:
+\begin{itemize}
+   \item \textbf{Problem} to be solved
+   \item Type of \textbf{black-box} model (NN, SVM, Ensemble, \dots)
+   \item \textbf{Data} type used for building the model (Image, Text, Tabular data, \dots)
+   \item Type of \textbf{explanator} used (DT,Decision Rules,Feature importance, \dots)
+\end{itemize}}
+
+In case of black-box models, an explainer may feed the black-box model with controlled instances and get the output to better understand its behaviour. The explainer may be \textbf{model-agnostic} or \textbf{model-specific}.
+
+\section{Explainers}
+\subsection{SHAP}
+SHAP (SHapley Additive exPlanations) is a unified approach to explain the output of any machine learning model. It connects game theory with local explanations, uniting several previous methods.
+SHAP assigns each feature an importance value for a particular prediction. The SHAP values represent the average contribution of a feature value to the prediction across all possible combinations of features.\\
+SHAP is based on the concept of Shapley values from cooperative game theory. The Shapley value is a way to fairly distribute the total gain (or ``payout'') among the players (features) based on their contributions to the total gain.\\
+The Shapley value is the average marginal contribution of a feature value across all possible coalitions.
+A feature coalition is a subset of features used to make a prediction. The marginal contribution of a feature is the difference between the prediction made with and without that feature in the coalition.
+
+
+\framedt{Computing a Shapley Value}{
+   Let's address an example.
+   For each coalition, we compute the predicted apartment price with and without the feature value cat-banned and take the difference to get the marginal contribution.
+
+   The Shapley value is the average of all marginal contributions.
+
+   We replace the feature values of features that are not in a coalition with random feature values from the apartment dataset to get a prediction from the machine learning model.
+}
+
+SHAP assigns each feature an importance value for a particular prediction by means of an additive feature attribution method.\\
+It assigns an importance value to each feature that represents the effect on the model prediction of including that feature.
+
+\subsection{LIME}
+\begin{itemize}
+	\item LIME \textbf{turns} an image $x$ to a vector $x'$ of interpretable superpixels expressing presence/absence.
+	\item It \textbf{generates} a synthetic neighborhood $Z$ by randomly perturbing $x'$ and labels them with the black box.
+	\item It \textbf{trains} a linear regression model (interpretable and locally faithful) and assigns a weight to each superpixel.
+\end{itemize}
+
+LIME does not really generate images with different information: it randomly removes some superpixels, i.e. it suppresses the presence of an information rather than modifying it.
+
+On tabular data LIME generates the neighborhood by changing the feature values with other values of the domain:
+\begin{align*}
+x’ &= {age=24, sex=male, income=1000} \\
+z’ &= {age=30 , sex=male, income=800}
+\end{align*}
+
+Given the perturbated instances, LIME queries the black-box model to get the predictions and then it trains a weighted linear regression model to approximate the black-box behaviour in the neighborhood of the instance to be explained.
+
+\subsection{Other models}
+Other models include:
+\begin{itemize}
+   \item LORE
+   \item Adversarial Black Box explainer
+   \item Adversarial autoencoder
+   \item Local classifier rule Extraction
+   \item Saliency Maps
+\end{itemize}
+
+\subsection{Time Series}
+For time series data, an explainability method is LASTS (Local Agnostic Subsequence-based Time Series explainer).
+It generates a synthetic neighborhood by randomly removing subsequences from the time series to be explained.
+Then it trains an interpretable model (e.g., decision tree) on the neighborhood to explain the black-box prediction.
+The interpretable model provides insights into which subsequences of the time series are most influential in the black-box model's prediction.
+
+% More specifically, given a time series $x$ of length $L$, LASTS generates a neighborhood $Z$ by randomly removing subsequences from $x$. Each subsequence is defined by a starting point and a length. The removed subsequences are replaced with random values from the time series dataset to get a prediction from the black-box model. 
+% Then, LASTS trains an interpretable model (e.g., decision tree) on the neighborhood $Z$ to explain the black-box prediction for the time series $x$. 
+

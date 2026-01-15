@@ -79,10 +79,19 @@ The optimal width of the classes depends on the variance and the number of data 
 
 \section{Supervised discretization}
 
-// TODO perhaps something is missing here
+The discretization has a quantifiable goal
+and the number of classes is known.
+
+There are two main approaches: \textbf{entropy} and \textbf{percentiles} based discretization.
 
 \subsection{Entropy-based Discretization}
 Minimizes the entropy wrt\footnote{``with respect to''} a label, with the goal of maximizing the purity of intervals (information gain).
+
+We start with each attribute value as a separate interval and then create larger intervals by merging adjacent intervals that are similar according to a statistical test.
+
+Starts by bisecting the initial values so that the resulting two intervals give minimum entropy.\\
+The splitting process goes on with another interval, typically choosing the interval with the worst (highest) entropy.
+Stop when a user-specified number of intervals is reached, or a stopping criterion is satisfied.
 
 \section{Binarization}
 Binarization is the process of converting a continuous attribute into a binary attribute.\\
@@ -204,7 +213,7 @@ identified with one of the new values.
    	\item Makes homogenous the variance in log-normal distributions
    	      \note{E.g.: normalize seasonal peaks}
 \end{itemize}
-\item ??? - Stabilizing Variance //TODO anything missing here?
+\item ??? - Stabilizing Variance 
 \[T(x) = ax^p + b\]
 \begin{itemize}
 	\item Square-root Transformation
@@ -223,3 +232,21 @@ identified with one of the new values.
 \end{itemize}
 
 
+To detect outliers on one dimension we can use also the \textbf{IQR} (Interquartile Range) method or the \textbf{Z-Score} method.
+
+\begin{itemize}
+	\item \textbf{IQR} method:
+	      \begin{itemize}
+		      \item Calculate Q1 (25th percentile) and Q3 (75th percentile)
+		      \item Compute IQR = Q3 - Q1
+		      \item Define lower bound = Q1 - 1.5 * IQR
+		      \item Define upper bound = Q3 + 1.5 * IQR
+		      \item Any data point outside these bounds is considered an outlier
+	      \end{itemize}
+	\item \textbf{Z-Score} method:
+	      \begin{itemize}
+		      \item Calculate the mean ($\mu$) and standard deviation ($\sigma$) of the dataset
+		      \item For each data point $x$, compute the Z-score: $Z = \frac{(x - \mu)}{\sigma}$
+		      \item A common threshold is $|Z| > 3.29$; data points with Z-scores beyond this threshold are considered outliers
+	      \end{itemize}
+\end{itemize}

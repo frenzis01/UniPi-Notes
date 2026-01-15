@@ -433,11 +433,20 @@ some degree of an instance, and its neighbors:
 \quad \text{with} \quad
 \bar{c}^\varepsilon(B_i) = \frac{\sum_{x_j \in B_i} c^\varepsilon(x_j)}{|B_i|}
 \]
+
+Typically we define concentration as a ratio with $n$ the number of instances in the dataset but I guess we could also use $\max_i(|B_i|)$
+\[
+c^\varepsilon(x_i) = \frac{{x_j \in \mathcal{X} : d(x_i,x_j) \leq \varepsilon} - 1}{n-1}
+\]
+
+Note that this is different from picking ${x_j \in B_i}$, as $B_i$ considers $\delta$ rather than $\varepsilon$: ${x_j \in \mathcal{X} : d(x_i,x_j) \leq \delta}$.
+
 {that is, two-radii concentration compares the concentration of an instance, with the
 concentration of its neighbors. For\ns
 \begin{itemize}
-   \item $\tilde{o}(x_i) \gg 1$ neighbors have a much higher concentration 
-   \item $\tilde{o}(x_i) \rightarrow 0^+$ neighbors have a much higher concentration 
+   \item $\tilde{o}(x_i) > 0$ neighbors have a higher concentration. $x_i$ is in a sparse area, it could be an outlier!
+   \item $\tilde{o}(x_i) \approx 0$ neighbors have a the same concentration 
+   \item $\tilde{o}(x_i) < 0$ neighbors have a lower concentration. $x_i$ is in a dense area, likely not an outlier!
 \end{itemize}
 }
 
@@ -470,6 +479,8 @@ concentration of its neighbors. For\ns
    \colfill
    An \textbf{isolation tree} $t$ is a random tree which randomly
    partitions the space into a set of blocks (attributes, typically two at a time to get a binary tree).
+   In the typical isolation trees the splits are univariate, that is, they split the space along one attribute at a time, so it follows a hyperplane orthogonal to the axis of the chosen attribute (see \autoref{fig:06/hyperplanes}).
+   However in EIF (Extended Isolation Forests) splits can be multivariate, that is, they can split the space along hyperplanes not orthogonal to any axis, as they are displayed here
    \begin{itemize}
       \item Splits are sampled randomly
       \item Tree grows up to a predefined height, or until all leaves contain one instance
@@ -485,7 +496,7 @@ concentration of its neighbors. For\ns
 
    \begin{figure}[htbp]
       \centering
-      \includegraphics{images/06/isoltree.png}
+      \includegraphics[width=0.98\columnwidth]{images/06/isoltree.png}
       \caption{Isolation tree}
       \label{fig:06/isoltree}
    \end{figure}
@@ -499,8 +510,10 @@ Suppose there are 1000 instances in a very small portion of the plane, represent
 Isolating one of the 1000 instances will likely take \textit{a lot} of splits, as the splits are random, and the instance is surrounded by many other instances, making it hard to isolate it quickly.
 That's the reason why we set a maximum height for the tree. \ul{Dense data won't end up in a super deep leaf, avoiding making normal instances look like outliers}.
 
-// TODO l'outlier degree è inverso!!! Più è basso, più si è outlier!!!
-Aggiungere fix explanation di chat
+
+Please note that the outlier degree defined above is ``inversed'': the lower it is, the more likely the instance is an outlier.\\
+The higher the path length, the higher the outlier degree, as the instance is likely not an outlier.
+
 
 % \note{Probably, given the span of the instances, we could also estimate the average depth of the tree as some whatever-random-distribution}
 
@@ -523,7 +536,6 @@ where $|T|$ is the number of trees in the forest.
       \hline
       \textbf{Interpretable} & One of the most interpretable. Splits are induced by the tree, if the tree is univariate. \\
       \hline
-      
    \end{tabular}
    \caption{Grading Isolation Forests}
    \label{tab:06/isolation_forests}

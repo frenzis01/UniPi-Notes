@@ -431,20 +431,22 @@ Also the honey problem would be fixed, because 0.5 / 0.12 = 4.1667 > 1, indicati
 
 \subsection{Interest}
 The \textbf{interest} of an itemset $X$ is a measure of how much the actual support of $X$ deviates from what would be expected if the items in $X$ were independent. It is defined as:
-\[\text{interest}(X) = s(X) - \prod_{i \in X} s(\{i\})\]
+
+\[\text{interest}(X) = \frac{P(X,Y)}{P(X),P(Y)}\]
+
+A positive interest value indicates that the items in $X$ co-occur more frequently than would be expected under independence, suggesting a positive association. A negative interest value indicates that the items co-occur less frequently than expected, suggesting a negative association. An interest value of zero suggests that the items are independent.
+
+\note{
+   Alternative copilot definition
+   \[\text{interest}(X) = s(X) - \prod_{i \in X} s(\{i\})\]
 where:
 \begin{itemize}
    \item $s(X)$ is the support of the itemset $X$.
    \item $\prod_{i \in X} s(\{i\})$ is the product of the supports of the individual items in $X$.
-   \item 
-   \note{Written like this it should always be negative\dots that's weird. Damn copilot //TODO}
+   \item[$\circ$] 
+   Written like this it should always be negative\dots that's weird
 \end{itemize}
-
-
-In the slides it is defined as:
-\[\text{interest}(X) = \frac{P(X,Y)}{P(X),P(Y)}\]
-
-A positive interest value indicates that the items in $X$ co-occur more frequently than would be expected under independence, suggesting a positive association. A negative interest value indicates that the items co-occur less frequently than expected, suggesting a negative association. An interest value of zero suggests that the items are independent.
+}
 
 \subsection{Other measures}
 In the slide two other measures are defined:
