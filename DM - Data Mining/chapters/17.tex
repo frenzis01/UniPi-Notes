@@ -1,6 +1,5 @@
 \chapter{Time Series}
 
-// TODO intro to time series is missing
 
 \section{Classification}
 
@@ -86,6 +85,8 @@ Furthermore, shapelets can be significantly more accurate/robust because they ar
 \label{alg:findingshapeletbf}
 \end{algorithm}
 
+
+\subsection{Information Gain issues}
 \begin{algorithm}
 \caption{CalculateInformationGain(\textbf{distance histogram} $obj\_hist$)}
 \begin{algorithmic}[1]
@@ -113,22 +114,76 @@ negative value d, which is the distance from T to S.
 % Algorithms from slides: CheckCandidate, GenerateCandidates
 
 
-\begin{algorithm}
-\caption{CheckCandidateDetailed(\textbf{dataset} $D$, \textbf{shapelet candidate} $S$)}
-\begin{algorithmic}[1]
-   \State $objects\_histogram \gets \varnothing$
-   \For{each $T$ in $D$}
-      \State $dist \gets \text{SubsequenceDist}(T, S)$
-      \State // group objects by the distance value
-      \State insert $T$ into $objects\_histogram$ by the key $dist$
-   \EndFor
-   \State \Return $\text{CalculateInformationGain}(objects\_histogram)$
-\end{algorithmic}
-\label{alg:checkcandidate-detailed}
-\end{algorithm}
+% \begin{algorithm}
+% \caption{CheckCandidateDetailed(\textbf{dataset} $D$, \textbf{shapelet candidate} $S$)}
+% \begin{algorithmic}[1]
+%    \State $objects\_histogram \gets \varnothing$
+%    \For{each $T$ in $D$}
+%       \State $dist \gets \text{SubsequenceDist}(T, S)$
+%       \State // group objects by the distance value
+%       \State insert $T$ into $objects\_histogram$ by the key $dist$
+%    \EndFor
+%    \State \Return $\text{CalculateInformationGain}(objects\_histogram)$
+% \end{algorithmic}
+% \label{alg:checkcandidate-detailed}
+% \end{algorithm}
+
+The idea behind information gain is: given a splitting rule $sp$ dividing the dataset in two parts $D_1$ and $D_2$, we want to measure how much uncertainty in the class labels is reduced by the split, i.e., how much more ``pure'' the two resulting datasets are compared to the original one.
+We use entropy $I(D)$ to measure uncertainty in the class labels of dataset $D$.
+The information gain is then computed as the difference between the entropy of the original dataset and the weighted average entropy of the two resulting datasets:
+\[\text{InformationGain}(D, D_1, D_2) = I(D) - \hat{I}(D)\]
+where
+\[\hat{I}(D) = \frac{|D_1|}{|D|} I(D_1) + \frac{|D_2|}{|D|} I(D_2)\]
+We may use the distance from T to S as a splitting rule: all time series with distance less than or equal to a threshold $d_{th}$ go to $D_1$, and the rest go to $D_2$.
+
+The problem is that we have many candidates, and for each candidate we need to compute the distance from each time series sample to the candidate, which is expensive.
+\[
+\#{\textit{candidates}} = \sum_{l=MINLEN}^{MAXLEN}\sum_{T_i \in D} (|T_i| - l + 1) 
+\]
+That is, having $200$ instances of length $275$ each, we have about $7.480.200$ candidates for some $MINLEN = \dots$ and $MAXLEN = 200$.
+This results in a very high computational cost.
+
+{There are two main optimizations:\ns
+\begin{enumerate}
+   \begin{paracol}{2}
+      
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics[width=0.98\columnwidth]{images/17/earlyabandon.png}
+         \caption{Early abandoning}
+         \label{fig:17/earlyabandon}
+      \end{figure}
+      \switchcolumn
+      \colfill
+      \item Early abandoning distance calculations\\
+      If we know that the current best minimum distance found so far is $d_{best}$, and while computing the distance between a time series $T$ and a candidate shapelet $S$ we find that the partial distance already exceeds $d_{best}$, we can abandon the computation early.
+      This can save a lot of computation time, especially when the shapelet is not similar to
+      the time series.
+      \colfill
+   \end{paracol}
+   % \newpage
+   \begin{paracol}{2}
+      \begin{figure}[htbp]
+         \centering
+         \includegraphics[width=0.98\columnwidth]{images/17/entropybound.png}
+         \caption{Admissible Entropy pruning}
+         \label{fig:17/entropybound}
+      \end{figure}
+      \switchcolumn
+      \colfill
+      \item Pruning candidates based on an upper bound on information gain\\
+      Given a candidate shapelet $S$, we can compute an upper bound on the information gain that can be achieved by splitting the dataset based on distances to $S$.\\
+      If this upper bound is less than the best information gain found so far, we can prune $S$ without computing the actual information gain.
+      
+      So, in other words, for a candidate shapelet $S$, we do not necessarily need to calculate the distance for each training sample.
+      After calculating some training samples, if the upper bound of information gain (corresponding to the optimistic scenario) \textit{is less} than the best candidate shapelet, we stop calculation for that candidate and try the next one, since there is no way it can be a better fit than the current best.
+      \colfill
+   \end{paracol}
+      
+   \end{enumerate}
+}
 
 
-// TODO up to slide 23
 
 \section{Motif}
 
