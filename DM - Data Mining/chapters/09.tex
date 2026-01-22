@@ -3,7 +3,7 @@
 Sequential pattern mining is the
 task of discovering statistically relevant patterns between data examples
 where the values are delivered in a sequence. A sequence is an ordered list
-of events. Each event is a set of items that occur together. A sequential
+of elements (transactions). Each element is a set of events (items) that occur together. A sequential
 pattern is a sequence that occurs frequently in a sequence database.
 
 
@@ -86,7 +86,7 @@ Find instances/occurences of the following subsequences in the sequence database
 
 The most trivial, yet inefficient, way to find all sequential patterns is to generate all possible $k-subsequences$ for $k=1,2,\ldots$ and count their support in the sequence database. This approach is computationally expensive due to the exponential number of possible subsequences.
 
-Note that a $k$-sequence \ul{contains} $k$ \textbf{events}, \ul{not necessarily }$k$ \ul{\textbf{items}}!
+Note that a $k$-sequence \ul{contains} $k$ \textbf{events}, \ul{not necessarily }$k$ \ul{\textbf{elements}}!
 
 \subsection{GSP - Generalized Sequential Pattern}
 
@@ -268,20 +268,20 @@ An approach to enforce timing constraints is to mine sequential patterns without
 It would be better to modify GSP to take timing constraints into account during candidate generation and support counting. This would reduce the number of candidates generated and the number of instances counted that do not satisfy the timing constraints.\\
 However we must ensure that the Apriori principle still holds when timing constraints are applied.
 
-// TODO demonstrated in the slides
 
 \begin{itemize}
     \item 
-    span\\
+    \textsc{Span}\\
     If we remove instances in the middle, the span remains the same. If we remove from the edges, the span can only decrease. 
 % Therefore, if a sequence does not satisfy the max span constraint, none of its super-sequences will satisfy it.
 
     \item 
-    min-gap\\
+    \textsc{min-gap}\\
     If we remove instances, the gaps between remaining instances can only increase.
     \item 
-    max-gap\\
-    If we remove instances, the gaps between remaining instances may increase.
+    \textsc{max-gap}\\
+    If we remove instances inbetween, the gaps between remaining instances may increase, potentially violating the max-gap constraint. Therefore, the Apriori principle does not hold for max-gap constraints.\\
+    We need to use \textbf{contiguous subsequences} to ensure that the max-gap constraint is preserved when generating candidates and counting support.
 
 \end{itemize}
 
@@ -293,6 +293,7 @@ $s$ is a \textbf{contiguous subsequence} of $w = \langle e_1 \rangle \langle e_2
 \begin{enumerate}
     \item $s$ is obtained from $w$ by deleting an item from either $e_1$ or $e_k$ \hfill \textit{(avoids internal ``jumps'')}
     \item $s$ is obtained from $w$ by deleting an item from any element $e_i$ that contains \textbf{at least 2 items} \hfill \textit{(not interesting for our usage)}
+    \note{This is a key point!}
     \item $s$ is a contiguous subsequence of $s'$ and $s'$ is a contiguous subsequence of $w$ \hfill \textit{(recursive definition)}
 \end{enumerate}
 \end{definition}
@@ -306,6 +307,9 @@ $s$ is a \textbf{contiguous subsequence} of $w = \langle e_1 \rangle \langle e_2
     \item $s$ is \textbf{not} a contiguous subsequence of:
     \[\langle \{1\} \{3\} \{2\} \rangle \quad \text{and} \quad \langle \{2\} \{1\} \{3\} \{2\} \rangle\]
 \end{itemize}
+
+So, when generating candidates with max-gap constraints, we only merge sequences that produce candidates where the ``mother'' sequences are contiguous subsequences of the candidate.
+
 
 In some domains, we may have only one very long time series, for example:
 \begin{itemize}

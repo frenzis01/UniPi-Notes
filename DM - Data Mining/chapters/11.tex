@@ -396,14 +396,42 @@ where:
 \note{Gini index is used in decision tree algorithms such as CART, SLIQ, SPRINT}
 
 \note{There are some slides concerning optimizations on how the Gini index is computed when dealing with continuous attributes. These optimizations are not included here for brevity. By the way, they probably are already included in some Python library implementing decision trees \smiley .}
-// TODO implement explanations. The section concerning the split positions and count matrix is rather obscure.
 
-\paragraph{Entropy}
+\begin{paracol}{2}
+      
+      We may build a \textit{count matrix} counting the occurences of each class for each possible split position, allowing efficient computation and comparison of Gini for all possible splits.
+      The key idea for building the matrix is to sort the attribute values, get split positions which are inbetween consecutive values and then iterate through them to update class counts incrementally.
+      
+      \switchcolumn
+
+      \begin{figure}[htbp]
+            \centering
+            \includegraphics{images/11/countMatrix.png}
+            \caption{Count Matrix with split positions}
+            \label{fig:11/countMatrix}
+      \end{figure}
+
+\end{paracol}
+
+\subsubsection{Entropy}
+\[
+Entropy(t) = -\sum_j p(j|t) \log_2 p(j|t)
+\]
 Entropy is another impurity measure used in decision trees, particularly in the ID3 and C4.5 algorithms. It quantifies the uncertainty or randomness in the class distribution of a node.\\
 It is pretty similar to Gini index, but it tends to be more sensitive to changes in the class distribution.
 For both of them, the lower the value, the purer the node.
 
-// TODO information gain
+\subsubsection{Information Gain}
+\[
+      GAIN_{split} = Entropy(parent) - \sum_{i=1}^{k} \frac{n_i}{n} Entropy(i)
+\]
+with $n_i$ number of records in partition $i$, $n$ total number of records before the split, and $k$ number of partitions after the split.
+
+This clearly tends to prefer splits that result in large number of partitions, each being small but pure
+
+\note{Used by ID3 and C4.5 algorithms}
+
+\subsubsection{Overcoming impurity limitations}
 
 \framedt{Note impurity limitations}{
       Node impurity measures tend to prefer splits that result in large number of partitions, each being small but pure.
@@ -412,7 +440,20 @@ For both of them, the lower the value, the purer the node.
       To mitigate this, we may consider also the number of child nodes created by a split when choosing the best attribute to split on. Or, as it happens in CART, we may use binary splits only, leading to have at most two child nodes per split.
 }
 
-// TODO mention gain ratio
+To overcome this limitation, we may use \textbf{Gain Ratio}, which normalizes the information gain by the intrinsic information of a split.
+\begin{align*}
+      GainRatio_{split} &= \frac{GAIN_{split}}{SplitInfo_{split}} \\
+      SplitInfo_{split} &= - \sum_{i=1}^{k} \frac{n_i}{n} \log_2 \frac{n_i}{n}
+\end{align*}
+Adjusts Information Gain by the entropy of the partitioning itself, penalizing splits that create many small partitions.
+\note{This is used by C4.5 algorithm.}
+
+\begin{figure}[htbp]
+      \centering
+      \includegraphics{images/11/gainRatio.png}
+      \caption{Gain Ratio example}
+      \label{fig:11/gainRatio}
+\end{figure}
 
 \subsubsection{Comparing measures}
 \begin{figure}[htbp]
@@ -676,7 +717,6 @@ Another metric is $C(i|j)$, the \textbf{cost of erroneously classifying} an inst
 \centering
 \includegraphics{images/11/costMatrix.png}
 \caption{Cost Matrix: $C(i|j)$ represents the cost of misclassifying class $j$ as class $i$}
- TODO fix this image
 \label{fig:cost-matrix}
 \end{figure}
 

@@ -367,7 +367,9 @@ Typical regression performance measures are:
 \begin{itemize}
    \item Mean Squared Error (MSE) - Mean error per instance, squared
    \item Max Squared Error (MaxSE) - Maximum error among all instances, squared
-   \item R Squared ($R^2$) - Error over default model, where for default model we mean the average of all labels, so the error is the variance of the labels
-   // TODO add formula
-   % Proportion of variance explained by the model
+   \item R Squared ($R^2$) - Error over default model, where for default model we mean the average of all labels, so the error is the variance of the labels.
+   Proportion of variance explained by the model
+   \[
+   R^2 = 1 - \frac{e^2}{\sigma^2} = = 1 - \frac{\sum_{i=1}^{n} (Y_i - f(x^i))^2}{\sum_{i=1}^{n} (Y_i - \bar{Y})^2}
+   \]
 \end{itemize}

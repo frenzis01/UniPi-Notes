@@ -489,7 +489,9 @@ concentration of its neighbors. For\ns
    \[\tilde{o}^t(x_i) = \frac{path(x_i,t)}{c} \]
    where $c$ defines the average path length in the tree, which in case of a binary tree, for instance, is $\log_2(n)$, with $n$ number of instances.
    $path(x_i,t)$ is the length of the path from the root to the leaf containing $x_i$.\\
-   That is, the instance is an outlier it the distance from the root is higher than average.
+   That is, the instance is an outlier it the distance from the root is \textbf{lower} than average.
+   
+   Note that, differently from other approaches, here \ul{\textit{lower} outlier degree means \textit{higher} outlierness}.
    \colfill
    
    \switchcolumn
@@ -508,10 +510,11 @@ The path of the colored instance in \autoref{fig:06/isoltree} is 5, as it is iso
 
 Suppose there are 1000 instances in a very small portion of the plane, representing the main distribution, and one instance very far away from them. The far away instance will likely be isolated in just a few splits, as the random splits will likely isolate it quickly.\\
 Isolating one of the 1000 instances will likely take \textit{a lot} of splits, as the splits are random, and the instance is surrounded by many other instances, making it hard to isolate it quickly.
-That's the reason why we set a maximum height for the tree. \ul{Dense data won't end up in a super deep leaf, avoiding making normal instances look like outliers}.
+\ul{Dense data would end up in a super deep leaf}, potentially making less dense but still normal instances to be isolated \textit{``relatively''} quickly, and thus misclassified as outliers.
+That's the reason why we set a maximum height for the tree, to have a cutoff point after which we stop splitting the space and we consider the instances in the leaf as normal.
 
 
-Please note that the outlier degree defined above is ``inversed'': the lower it is, the more likely the instance is an outlier.\\
+Please note again that the outlier degree defined above is ``inversed'': the lower it is, the more likely the instance is an outlier.\\
 The higher the path length, the higher the outlier degree, as the instance is likely not an outlier.
 
 
