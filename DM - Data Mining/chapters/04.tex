@@ -302,6 +302,10 @@ If $d_1$ and $d_2$ are two document vectors, then
 	\cos( d_1, d_2 ) = (d_1 \cdot d_2) / ||d_1|| ||d_2||
 \]
 where $\cdot$ indicates vector dot product and $||d||$ is the length of vector $d$.
+\note{A ``document vector'' is a representation of a document as a vector in a multi-dimensional space, where each dimension corresponds to a unique term (word) from the document corpus. The value of each dimension is typically the frequency of the term in the document, or it can be weighted using techniques like TF-IDF (Term Frequency-Inverse Document Frequency).
+
+In BERT embeddings, cosine similarity is often used to measure the similarity between two text embeddings, which are high-dimensional vectors representing the semantic content of the texts.
+}
 
 It's called cosine similarity because it measures the cosine of the angle between two vectors in a multi-dimensional space.
 If the angle is 0 degrees (i.e., the vectors point in the same direction), the cosine similarity is 1, indicating maximum similarity. If the angle is 90 degrees (i.e., the vectors are orthogonal), the cosine similarity is 0, indicating no similarity. If the angle is 180 degrees (i.e., the vectors point in opposite directions), the cosine similarity is -1, indicating maximum dissimilarity.
@@ -492,10 +496,14 @@ This is more expensive and introduces order dependence.
 \subsection{Convergence of K-Means}
 We can define a goodness measure of a cluster $c$ (hence of the set of Clusters $C$) as the SSE from the cluster centroid:
 \begin{align}
-	SSE_C(c,s) &= \sum_{i=1}^{n} (d_i, s_c)^2\\
-	G(C,s) &= \sum_{c \in C} SSE_C(c,s)
+	% SSE_C(c,s) &= \sum_{i=1}^{n} (d_i, s_c)^2\\
+	% G(C,s) &= \sum_{c \in C} SSE_C(c,s)
+	SSE(c,s_c) &= \sum_{i=1}^{n} (d_i, s_c)^2\\
+	G(C,s) &= \sum_{c \in C} SSE(c,s_c)
 \end{align}
-where $s_c$ is the centroid of cluster $c$, $d_i$ is a point in cluster $c$, and $C$ is the set of clusters.
+
+% where $s_c$ is the centroid of cluster $c$, $d_i$ is a point in cluster $c$, and $C$ is the set of clusters.
+where $s$ is the set of centroids, $s_c$ is the centroid of cluster $c$, $d_i$ is a point in cluster $c$, and $C$ is the set of clusters.
 The objective of K-Means is to minimize $G(C,s)$, so actually it is more of a \textit{cost} rather than a \textit{goodness} measure. 
 
 
@@ -556,7 +564,7 @@ When two clusters $c_i$ and $c_j$ are merged into a new cluster $c_k$, we need t
 
 	\note{Note that \ul{\textbf{Single}, \textbf{Complete} and \textbf{Average} Linkage have all the same complexity}! $O(n^3)$, where $n$ is the number of data points.\\
 	However, we could use partial updates and intermediate results to significantly reduce the time complexity, by storing for each cluster the average, and minimum/maximum distances to other clusters.
-	Especially for the first iterations when clusters are small, this can lead to significant space usage.
+	Especially for the first iterations when clusters are small, \ul{this can lead to significant space usage}.
 	}
 	% \item \textbf{Mean/Median Linkage}
 	% The distance between two clusters is defined as the distance between their centroids (mean or median).
