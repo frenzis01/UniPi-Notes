@@ -584,7 +584,8 @@ When two clusters $c_i$ and $c_j$ are merged into a new cluster $c_k$, we need t
 
 \subsection{Divisive Hierarchical Clustering}
 First of all, build MST (Minimum Spanning Tree) of the data points, then iteratively remove the longest edge in the MST to split the data into clusters.\\
-Start with a single cluster which consists of any point, and at each step, look for the closest pair of points $p,q$ such that $p$ is in the current tree while $q$ is not.
+In order to build the MST we follow this procedure:\\
+start with a single cluster which consists of any point, and at each step, look for the closest pair of points $p,q$ such that $p$ is in the current tree while $q$ is not.
 Add $q$ to the tree and the edge $(p,q)$ to the MST. Repeat until all points are in the tree.
 
 \begin{algorithm}[H]
@@ -643,11 +644,11 @@ A point is a \textbf{noise point} (or outlier) if it is neither a core point nor
 
 \labelitemize{DBSCAN}{
 	\begin{enumerate}
-		\item Label points as core, border, or noise based on thresholds $R$ (radius of neighborhood) and \lstinline|min_pts| (min number of neighbors)
+		\item Label points as core, border, or noise based on thresholds $\epsilon$ (radius of neighborhood) and \lstinline|min_pts| (min number of neighbors)
 		\begin{itemize}
-			\item Every point having at least \lstinline|min_pts| points within distance $R$ becomes a core point
+			\item Every point having at least \lstinline|min_pts| points within distance $\epsilon$ becomes a core point
 		\end{itemize}
-		\item Connect core points that are within $R$ of each other, hence are neighbors, putting them in the same cluster
+		\item Connect core points that are within $\epsilon$ of each other, hence are neighbors, putting them in the same cluster
 		\item Associate border points to the nearest core point, hence to the same cluster as the core point, and remove noise.
 	\end{enumerate}
 }
@@ -682,7 +683,7 @@ A point is a \textbf{noise point} (or outlier) if it is neither a core point nor
 	To determine \textsc{Eps} and \textsc{MinPts}, we can use the k-distance graph.
 
 	The idea is that for points in a cluster, their $k^{th}$ nearest
-	neighbors are at roughly the same distance
+	neighbors are at roughly the same distance.
 	Noise points have the $k^{th}$ nearest neighbor at distance.
 
 	So, plot sorted distance of every point to its $k^{th}$ nearest neighbor.

@@ -67,13 +67,14 @@ The closer the correlation is to $-1$, the better the clustering, because, point
 \subsubsection{SSE - Sum of Squared Error}
 \begin{paracol}{2}
    
-   
+   \colfill
    \begin{figure}[htbp]
       \centering
       \includegraphics{images/05/sse.png}
       \caption{SSE of cluster found using K-means with various values of $k$}
       \label{fig:05/sse}
    \end{figure}
+   \colfill
    
    \switchcolumn
    
@@ -185,7 +186,7 @@ where $L$ is the number of classes.
 
 The total entropy for a set of clusters is calculated as the sum of the entropies of each cluster weighted by the size of each cluster, i.e.:
 \[
-e = \sum_{i=1}^{K} \frac{m_i}{m} e_j
+e = \sum_{j=1}^{K} \frac{m_j}{m} e_j
 \]
 where $m_j$ is the size of cluster $j$, $K$ is the number of clusters, and $m$ is the total number of data points.
 

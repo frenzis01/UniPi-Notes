@@ -74,9 +74,9 @@ Forward search for the appropriate value of $k$ in a given
 range $[r_1,r_{max}]$; we recursively split each cluster and use BIC score to
 decide if we should keep each split.
 \begin{enumerate}
-	\item Run K-means with k=r1
+	\item Run K-means with $k=r_1$
 	\item Improve structure
-	\item If k > rmax Stop and return the best-scoring model
+	\item If $k > r_{max}$ Stop and return the best-scoring model
 \end{enumerate}
 \begin{itemize}
 	\item Use local BIC score to decide on keeping a split

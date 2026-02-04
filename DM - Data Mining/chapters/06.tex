@@ -192,7 +192,8 @@ linear combination of $A: b = Ax$. For non fullrank matrices $A$, such a solutio
    \label{tab:least_squares}
 \end{table}
 
-Manifold-based algorithms are as flexible as the defined manifold. Like with mixture models, neighbor-based approaches reintroduce locality: outliers are defined in function of their neighbors:
+\subsection{Neighborhoods}
+Manifold-based algorithms are as flexible as the defined manifold. Like with mixture models, neighbor-based approaches reintroduce locality, so outliers are defined in function of their neighbors:
 \begin{itemize}
 	\item \textbf{Connectivity} - An outlier is defined in terms of the connectivity to its neighbors
 	\item \textbf{Concentration} - An outlier is defined in terms of its neighbor concentration
@@ -238,7 +239,7 @@ to measure different indices of connectivity, e.g.,
    \note{You must be at most the $t^{th}$ neighbor of at least $k$ instances to be considered a hub, hence, not an outlier.}
    \item \textbf{popularity} - instance $x_i$ is on average the $t^{th}$ neighbor of at least $k$ instances
    
-   Given a posting matrix $A$, $x_i$ is an outlier if, on average, is not less than the $t-th$ neighbor of other instances:
+   Given a posting matrix $A$, $x_i$ is an outlier if, on average, is not less than the $t^{th}$ neighbor of other instances:
    \[
       \hat{o}(x_i) = \frac{\sum_{l=0, l \neq i}^{n-1} \sum_{j=0}^{n-1} \mathbb{1}\{a_{l,j} = x_i\}l}{n-1} > t.
    \]
@@ -251,13 +252,8 @@ to measure different indices of connectivity, e.g.,
 \begin{paracol}{2}
    
    \colfill
-   Connectivity and concentration can be
-   approximated through similar
-   structures: we go from \textit{postings} matrix to
-   distance matrix!
-   To ease notation, we use a row-sorted
-   distance matrix $A_{\gamma}$, so that row $i$ holds
-   increasing distances from instance $x_i$.
+   Connectivity and concentration can be approximated\\ through similar structures: we go from \textit{postings} matrix to distance matrix!
+   To ease notation, we use a row-sorted distance matrix $A_{\gamma}$, so that row $i$ holds increasing distances from instance $x_i$.
    \colfill
 
    \switchcolumn
@@ -288,7 +284,7 @@ to measure different indices of connectivity, e.g.,
 
 
 \subsection{Reach}
-An instance $x$ has reach $\gamma^k(x)$ if the $k-th$ nearest neighbor is at distance $\gamma^k$, and average reach $\bar{\gamma}^k(x)$ if the average of $\{\gamma^1, \ldots, \gamma^k\}$ is $\bar{\gamma}^k(x)$.
+An instance $x$ has reach $\gamma^k(x)$ if the $k^{th}$ nearest neighbor is at distance $\gamma^k$, and average reach $\bar{\gamma}^k(x)$ if the average of $\{\gamma^1, \ldots, \gamma^k\}$ is $\bar{\gamma}^k(x)$.
 
 Our row-sorted distance matrix $A_{\gamma}$ is the \textit{reach} matrix of the data! Indeed, $A_{\gamma}$ defines both reach and average reach.
 \nl
@@ -317,6 +313,11 @@ A_{\gamma} \begin{bmatrix}
 \bar{\gamma}^1(x_2) & \bar{\gamma}^2(x_2) & \bar{\gamma}^3(x_2) \\
 \bar{\gamma}^1(x_3) & \bar{\gamma}^2(x_3) & \bar{\gamma}^3(x_3)
 \end{bmatrix}
+= \begin{bmatrix}
+\gamma^1(x_1) & \frac{1}{2}(\gamma^1(x_1) + \gamma^2(x_1)) & \frac{1}{3}(\gamma^1(x_1) + \gamma^2(x_1) + \gamma^3(x_1)) \\
+\gamma^1(x_2) & ... & ... \\
+... & ... & ... 
+\end{bmatrix}
 \]
 
 $A_{\gamma}$ explicitly encodes reach ($A_{\gamma}$ itself) and average reach.
@@ -328,8 +329,7 @@ The matrix with the fractions is a \textbf{transformation matrix} that transform
 }
 
 \subsubsection{Reach ratio factor}
-Assumption: Inliers have lower reach than their neighbors. We formalize this in a reach
-(ratio factor:
+Assumption: Inliers have lower reach than their neighbors. We formalize this in a reach ratio factor:
 \[
    \tilde{o}^k_{i,j} = \frac{\bar{\gamma}^k(x_i)}{\bar{\gamma}^k(x_j)}
 \]
@@ -512,6 +512,7 @@ Suppose there are 1000 instances in a very small portion of the plane, represent
 Isolating one of the 1000 instances will likely take \textit{a lot} of splits, as the splits are random, and the instance is surrounded by many other instances, making it hard to isolate it quickly.
 \ul{Dense data would end up in a super deep leaf}, potentially making less dense but still normal instances to be isolated \textit{``relatively''} quickly, and thus misclassified as outliers.
 That's the reason why we set a maximum height for the tree, to have a cutoff point after which we stop splitting the space and we consider the instances in the leaf as normal.
+Furthermore, we avoid unnecessary computations, as instances that are very deep in the tree are very likely not outliers.
 
 
 Please note again that the outlier degree defined above is ``inversed'': the lower it is, the more likely the instance is an outlier.\\

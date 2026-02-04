@@ -107,7 +107,7 @@ The Apriori principle holds due to the following property of support of the supp
 \State Scan transaction database to count support of each candidate in $L_{k+1}$
 \State $F_{k+1} \gets$ candidates in $L_{k+1}$ with support $\geq$ minsup
 \State $k \gets k + 1$
-\Until{$F_k = \emptyset$}
+\Until{$F_k = \emptyset$ or $|F_k| = 1$}
 \State \Return $\bigcup_k F_k$ \Comment{Return all frequent itemsets}
 \end{algorithmic}
 \end{algorithm}
@@ -169,8 +169,8 @@ However, confidence of rules generated from the same itemset has an anti-monoton
 E.g., Suppose ${A,B,C,D}$ is a frequent 4-itemset:
 \[c(ABC \rightarrow D) \geq c(AB \rightarrow CD) \geq c(A \rightarrow BCD)\]
 Confidence is anti-monotone w.r.t. number of items on the right-hand-side (RHS) of the rule. This happens because, recalling the confidence formula 
-\[c(X \Rightarrow Y) = \frac{s(X \cup Y)}{s(X)}\]
-the numerator $s(X \cup Y)$ remains the same while the denominator $s(X)$ decreases as we move items from the RHS to the left-hand-side (LHS) of the rule, because $\sigma(A) \geq \sigma(AB) \geq \sigma(ABC)$ according to the Apriori principle, yielding an increase in confidence.
+\[c(X \Rightarrow Y) = \frac{\sigma(X \cup Y)}{\sigma(X)}\]
+the numerator $\sigma(X \cup Y)$ remains the same while the denominator $\sigma(X)$ decreases as we move items from the RHS to the left-hand-side (LHS) of the rule, because $\sigma(A) \geq \sigma(AB) \geq \sigma(ABC)$ according to the Apriori principle, yielding an increase in confidence.
 
 This allows to prune rules during generation during the process, as in the figure below.
 
@@ -270,7 +270,7 @@ Closed itemsets are important because they provide a compact representation of a
    is frequent.
 \end{definition}
 
-Assuming a minimum support threshold of 2, the \textbf{maximal frequent itemsets} from the example are:
+Assuming a minimum support threshold of 2, let's consider which are the \textbf{maximal frequent itemsets} from the example:
 \begin{itemize}
    \item \{B\} with support 5 - maximal if we consider only singleton itemsets, but \textbf{not maximal} overall because its supersets \{A,B\}, \{B,C\}, \{B,D\} are frequent
    \item \{A,B,D\} with support 3 - maximal because its only superset \{A,B,C,D\} has support 2, which is still frequent, so \textbf{not maximal}
@@ -297,15 +297,16 @@ Therefore, with minsup = 2, the only \textbf{maximal frequent itemset} is:
 
 \section{Confidence}
 The \textbf{confidence} of an association rule $X \Rightarrow Y$ is a measure of the reliability of the rule. It is defined as the conditional probability that a transaction contains the itemset $Y$ given that it contains the itemset $X$. Mathematically, confidence is expressed as:
-\[c(X \Rightarrow Y) = \frac{s(X \cup Y)}{s(X)}\]
+\[c(X \Rightarrow Y) = \frac{\sigma(X \cup Y)}{\sigma(X)}\]
 where:
 \begin{itemize}
-   \item $s(X \cup Y)$ is the support of the itemset that contains both $X$ and $Y$.
-   \item $s(X)$ is the support of the itemset $X$.
+   \item $\sigma(X \cup Y)$ is the support of the itemset that contains both $X$ and $Y$.
+   \item $\sigma(X)$ is the support of the itemset $X$.
 \end{itemize}
 
 The confidence value ranges from 0 to 1, where a higher confidence indicates a stronger association between the itemsets $X$ and $Y$. For example, a confidence of 0.8 means that 80\% of the transactions that contain $X$ also contain $Y$.
 
+\newpage
 \subsection{Contingency tables}
 
 \begin{table}[h]
@@ -413,7 +414,7 @@ $ \textit{confidence}(X \Rightarrow Y) = support(Y)$ is equivalent to:
 
 \subsection{Lift}
 The \textbf{lift} of an association rule $X \Rightarrow Y$ is a measure of how much more likely the occurrence of itemset $Y$ is when itemset $X$ is present, compared to when $Y$ occurs independently of $X$. It is defined as:
-\[\text{lift}(X \Rightarrow Y) = \frac{c(X \Rightarrow Y)}{s(Y)} = \frac{s(X \cup Y)}{s(X) \times s(Y)}\]
+\[\text{lift}(X \Rightarrow Y) = \frac{c(X \Rightarrow Y)}{s(Y)} = \frac{s(X \cup Y)}{s(X) \cdot s(Y)}\]
 where:
 \begin{itemize}
    \item $c(X \Rightarrow Y)$ is the confidence of the rule.
@@ -421,7 +422,8 @@ where:
 \end{itemize}
 
 In the slides it is defined as:
-\[\text{lift}(X \Rightarrow Y) = \frac{P(X,Y)}{P(X) \times P(Y)}\]
+% \[\text{lift}(X \Rightarrow Y) = \frac{P(X,Y)}{P(X) \cdot P(Y)}\]
+\[\text{lift}(X \Rightarrow Y) = \frac{P(Y|X)}{P(Y)} = \frac{P(X,Y)}{P(X)\cdot P(Y)}\]
 
 A lift value greater than 1 indicates a positive association between $X$ and $Y$, meaning that the presence of $X$ increases the likelihood of $Y$. A lift value less than 1 indicates a negative association, while a lift value equal to 1 suggests that $X$ and $Y$ are independent.
 \note{Lift is particularly useful for identifying interesting rules that may not be apparent from confidence alone, as it accounts for the overall frequency of the consequent itemset $Y$ in the dataset.}
@@ -430,9 +432,11 @@ Lift would fix the coffee problem, because, 0.75 / 0.8 = 0.9375 < 1, indicating 
 Also the honey problem would be fixed, because 0.5 / 0.12 = 4.1667 > 1, indicating a positive correlation between tea and honey.
 
 \subsection{Interest}
-The \textbf{interest} of an itemset $X$ is a measure of how much the actual support of $X$ deviates from what would be expected if the items in $X$ were independent. It is defined as:
+The \textbf{interest} of an itemset $X$ is a measure of how much the actual support of $X$ deviates from what would be expected if the items in $X$ were independent. 
+\ul{It is essentially the same as lift, but defined for itemsets rather than rules.}
+It is defined as:
 
-\[\text{interest}(X) = \frac{P(X,Y)}{P(X),P(Y)}\]
+\[\text{interest}(X) = \frac{P(X,Y)}{P(X) \cdot P(Y)}\]
 
 A positive interest value indicates that the items in $X$ co-occur more frequently than would be expected under independence, suggesting a positive association. A negative interest value indicates that the items co-occur less frequently than expected, suggesting a negative association. An interest value of zero suggests that the items are independent.
 
@@ -456,7 +460,12 @@ In the slide two other measures are defined:
 \end{align*}
 These measures also aim to capture the degree of association between itemsets, taking into account their individual supports and the expected co-occurrence under independence.
 
+\note{The first, \textit{PS} may stand for \textit{``probability surplus''} (name in probabilistic/statistical context), which in the Association Rule Mining context corresponds to \textit{``Leverage''}, but I'm not sure.}
+
 \section{Non-binary Attributes}
+
+The measures we just saw are defined for binary attributes (itemsets), but in real-world datasets we often encounter non-binary attributes, which can be categorical or continuous.\\
+Hence, how can we apply association rule mining to non-binary attributes?
 
 \begin{figure}[htbp]
    \centering
@@ -601,7 +610,7 @@ In the search tree, child nodes extend parent nodes by adding a new rule at the 
 \[
 l(R,X,Y)=l_R(R,X,Y)+l_0(R,X,Y),
 \]
-dove
+where, aside from $X$ and $Y$ being the set of instances and labels respectively, we have:
 \[
 l_R(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\sum_{j=1}^{k^R}
 \operatorname{supp}_{P_R}(p_R^j,x)\;\mathbf{1}[y\neq y_R^j],
@@ -618,7 +627,7 @@ l_0(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\Big(1-
 \]
 
 
-To read the formula, the fract and the sum over $X \times Y$ is just the average over all instances, which will yield a ratio.
+To read the formula, the fraction and the sum over $X \times Y$ is just the average over all instances, which will yield a ratio.
 Recall that $\operatorname{supp}_{P_R}(p_R^j,x)$ is $1$ if rule $j$ is the first rule to satisfy instance $x$, and $0$ otherwise, and that \ul{\textit{exactly one} rule will satisfy} $x$.
 The rightmost indicator function is $1$ if the prediction of rule $j$ ($y_R^j$) does not match the actual label $y$ of instance $x$, and $0$ otherwise.\\
 In other words, $l_R(R,X,Y)$ counts the fraction of misclassified instances by the rules in the list.
@@ -641,7 +650,9 @@ In general less rules mean more generalization and interpretability, so we want 
 
 \note{In formulas this  is a mess, and I couldn't get it.}
 
-The overall idea, if I understood correctly is that extensions $R^+$ of a rule list $R$ will always have a loss $L_R(R^+)$ greater than or equal to the loss of the parent rule list $L_R(R)$, because adding more rules can only increase the number of misclassifications (or leave it unchanged, because the rules in $R$ have priority, and if they were picked before, they will still be picked even if there are more rules ``at the bottom''). Thus, if we have already found a rule list $R_{best}$ with a certain loss lower than $R$'s, we can prune any extensions of $R$ that cannot improve upon this loss. 
+The overall idea, if I understood correctly is that extensions $R^+$ of a rule list $R$ will always have a loss $L_R(R^+)$ greater than or equal to the loss of the parent rule list $L_R(R)$, because adding more rules can only increase the number of misclassifications (or leave it unchanged, because the rules in $R$ have priority, and if they were picked before, they will still be picked even if there are more rules ``at the bottom'').
+We can only decrease $L_0(R)$, the loss due to the default rule.
+Thus, if we have already found a rule list $R_{best}$ with a certain loss lower than $R$'s, we can prune any extensions of $R$ that cannot improve upon this loss. 
 
 
 
@@ -664,28 +675,49 @@ prefixes
 % between sets {A,B} and {B,C,A}
 We need to impose an order to the items.Initially, we assume a lexicographic order.
 
-\newpage
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/08/trie1.png}
-   \caption{Each transaction is a path in the trie. There is a header table to point to the first occurrence of each item in the tree.}
+   \caption{Each transaction is a path in the trie. There is a header table to point to the first occurrence (left-tree-traversal) of each item in the tree.
+   Each item has pointers towards the same item.}
    \label{fig:08/trie1}
 \end{figure}
 
 
 The size of the tree depends on the compressibility
 of the data
-\begin{itemize}
-	\item \textit{Extreme case}: All transactions are the same, the FP-tree is a single branch
-	\item \textit{Extreme case}: All transactions are different the size of the tree is the same as that of the database (bigger actually since we need additional pointers)
-\end{itemize}
+\begin{enumerate}
+	\item \textit{Extreme case A}: All transactions are the same, the FP-tree is a single branch
+	\item \textit{Extreme case B}: All transactions are different the size of the tree is the same as that of the database (bigger actually since we need additional pointers)
+\end{enumerate}
 
 The size of the tree also depends on the ordering of the items.
 We could order the items according to their frequency from larger to smaller, but we need to do an extra pass over the dataset to count frequencies.
 
+\newpage
+\subsection{Finding Frequent Itemsets}
+We want, given an FP-tree, to find all frequent itemsets and their support.
+The method we can exploit follows the divide-and-conquer paradigm, and it is called \textbf{FP-Growth}.
+The intuition is the following: consider all itemsets that end with a given suffix $X$, for instance $EDCBA$.
+\begin{itemize}
+   \item For each possible ending item, consider the itemsets with the last item equal to one of items preceding it in the ordering
+   \item e.g. for E, consider all itemsets with last item $DCBA$. In this way we get all the itemsets ending at $DE, CE, BE, AE$.
+   \item Proceed recursively in this way.
+   \item Iterate for all the items.
+\end{itemize}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/08/frequentItemsets.png}
+   \caption{Searching for frequent itemsets}
+   \label{fig:08/frequentItemsets}
+\end{figure}
+
+
 \begin{algorithm}
 \caption{FP-Growth Algorithm}
 \begin{algorithmic}[1]
+\State $\bar{X}$ = set of possible suffixes in the FP-tree \footnote{Get these following pointers starting from header table}
 \For{each suffix $X$}
     \State \textbf{Phase 1:} Construct the prefix tree for $X$ and compute the support using the header table and the pointers
     \If{$X$ is frequent}
@@ -697,3 +729,106 @@ We could order the items according to their frequency from larger to smaller, bu
 \EndFor
 \end{algorithmic}
 \end{algorithm}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics{images/08/trie2.png}
+   \caption{Final trie with all transactions and pointers. Pointers are used to assist frequent itemset generation}
+   \label{fig:08/trie2}
+\end{figure}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/08/trie3.png}
+   \includegraphics[width=0.3\columnwidth]{images/08/trie4.png}
+   \caption{We may get all the possible suffixes by following the pointers from the header table and then traversing the tree bottom-up from each pointed node}
+   \label{fig:08/trie3}
+\end{figure}
+
+\newpage
+\begin{paracol}{2}
+   \colfill
+   \paragraph*{Recomputing support}:
+   The support of a node becomes the sum of the support of the leaves with label E in its subtree.
+   \colfill
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.7\columnwidth]{images/08/trie5.png}
+      \caption{Recomputed the support of the nodes, we remove the nodes with $E$}
+      \label{fig:08/trie5}
+   \end{figure}
+\end{paracol}
+
+\begin{paracol}{2}
+   
+   \colfill
+
+   \paragraph*{Pruning infrequent items}:
+   We remove all nodes with support less than minsup.
+   \colfill
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics[width=0.7\columnwidth]{images/08/trie6.png}
+      \caption{Pruned $B$ (minsupp = 2)}
+      \label{fig:08/trie6}
+   \end{figure}
+\end{paracol}
+
+\newpage
+\begin{paracol}{2}
+   \colfill
+   \paragraph*{Repeat recuversively}:
+   At this point we have to repeat the process for ${DE},{CE},{AE}$.
+   We start off with ${DE}$, removing nodes without $D$ as suffix.
+   \colfill
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/08/trie7.png}
+      \caption{Removing $C$, as there is no $D$ in its subtree}
+      \label{fig:08/trie7}
+   \end{figure}
+
+\end{paracol}
+
+\begin{paracol}{2}
+   \colfill
+   \paragraph*{Recomputing support and Pruning}:
+   Support count does not vary here, but we do have to prune infrequent items.
+
+   Being left with only $A$, which has support 2, we know that ${ADE}$ is frequent with support 2, and since there are no more nodes, we move onto the next subproblem, i.e., ${CE}$.
+   \colfill
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/08/trie8.png}
+      \caption{Pruning nodes $D$ at the bottom, and then $C$.}
+      \label{fig:08/trie8}
+   \end{figure}
+   
+\end{paracol}
+
+\begin{figure}[htbp]
+   \centering
+   \includegraphics[width=0.45\columnwidth]{images/08/trie9.png}
+   \includegraphics[width=0.45\columnwidth]{images/08/trie10.png}
+   \caption{Get paths ending with $C$, then recompute support and prune nodes. All nodes are pruned, so no itemset with $CE$ as suffix is frequent}
+   \label{fig:08/trie9}
+\end{figure}
+
+Doing the same for $A$ yields that ${AE}$ is frequent with support 2.
+In the end, we have the following frequent itemsets ending with $E$:
+\[E, DE, CE, AE, ADE\]
+
+At this point we must proceed iterating the whole process with D, then C, B, and A.
+
+Note that all the subproblems solved at each iteration are \textbf{disjoint} so we never consider the same itemset twice.
