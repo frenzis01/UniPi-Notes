@@ -17,7 +17,9 @@ The \textbf{goal} of classification is to accurately predict the class labels of
 A test set is used to determine the accuracy of the model.
 Usually, the given data set is divided into training and test sets,
 with training set used to build the model and test set used to
-validate it.
+evaluate its performance on unseen data.
+A validation set is often used after the training phase to further tune model parameters and avoid overfitting.
+The test set instead, must not be used during training or validation, to ensure an unbiased evaluation of the model's performance.
 
 \begin{itemize}
 	\item \textbf{Base classifier}: a classifier built from the training set
@@ -44,13 +46,24 @@ A decision tree is a flowchart-like tree structure, where each internal node den
 There are various algorithms to build decision trees, such as Hunt's algorithm (among the earliest ones), ID3, C4.5, CART, etc.
 
 \subsection{Hunt's Algorithm}
-Let $D_t$ be the set of training records at node $t$.
-The general procedure of Hunt's algorithm is as follows:
-\begin{itemize}
-	\item If $D_t$ contains records that belong the same class $y_t$, then $t$ is a leaf node labeled as $y_t$
-	\item If $D_t$ contains records that belong to more than one class, use an attribute test to split the data into smaller subsets. Recursively apply the procedure to each subset.
-\end{itemize}
-
+Let $D_t$ be the set of training records at node $t$, i.e. the records which have been classified to reach node $t$ during the tree construction process, so $D_t$ is a subset of the original training set $D$ made up of records satisfying the conditions of the path from the root to node $t$.
+\begin{paracol}{2}
+      \colfill
+      The general procedure of Hunt's algorithm is as follows:
+      \begin{itemize}
+            \item If $D_t$ contains records that belong the same class $y_t$, then $t$ is a leaf node labeled as $y_t$
+            \item If $D_t$ contains records that belong to more than one class, use an attribute test to split the data into smaller subsets. Recursively apply the procedure to each subset.
+      \end{itemize}
+      Clearly, there are multiple ways to perform the splits (define the conditions in the nodes), but this will be dealt with later on.
+      \colfill
+      \switchcolumn
+      \begin{figure}[htbp]
+            \centering
+            \includegraphics[width=0.98\columnwidth]{images/11/huntExample.png}
+            \caption{Hunt example}
+            \label{fig:11/huntExample}
+      \end{figure}
+\end{paracol}
 \subsubsection{Splitting data}
 The \textbf{split} consists in selecting an attribute $A$ and partitioning the set of records $D_t$ into subsets based on the values of $A$.\\
 The idea is that if the value of an attribute is strongly correlated with the class label, then splitting on that attribute will create child nodes that are more homogeneous in terms of class distribution.
@@ -406,7 +419,7 @@ where:
 
       \begin{figure}[htbp]
             \centering
-            \includegraphics{images/11/countMatrix.png}
+            \includegraphics[width=0.98\columnwidth]{images/11/countMatrix.png}
             \caption{Count Matrix with split positions}
             \label{fig:11/countMatrix}
       \end{figure}
@@ -628,9 +641,11 @@ In the slides there are some examples of test conditions for different attribute
 They are not reported here for brevity.
 
 
+\newpage
 \section{Classification Model Evaluation}
 
 Model selection is performed during model building to ensure not to choose an overly complex model that would most likely overfit data.
+
 
 \subsection{Metrics for Performance evaluation}
 
@@ -749,7 +764,7 @@ We have also:
 
 \section{Methods for Performance evaluated}
 
-It is key that test data is \textbf{not} used in any way to create the classifier.
+It is key that \ul{test data is \textbf{not} used in any way to create the classifier}.
 
 Having \textbf{training}, \textbf{validation} and \textbf{test} sets is a good practice to avoid overfitting and get an unbiased estimate of the model's performance.
 
@@ -801,7 +816,13 @@ Note that lowering the threshold increases FPR, they are essentially inversely r
 
 \ul{The area under the ROC curve (\textbf{AUC}) provides a single measure of overall model performance; the bigger, the better.}\\
 Every point on the ROC curve represents the performance of each classifier, each having different trade-off between sensitivity and specificity.
+\nl
 
+In case of non-binary classification, we can compute the ROC curve for each class using a one-vs-rest approach, and then average the AUC values across all classes to get an overall performance measure.
+That is, consider the class $i$ as \textit{positive} and all others as \textit{negative}, and compute the ROC curve and AUC for class $i$;
+do the same for all classes, and then average the AUC values.
+
+\newpage
 
 \begin{figure}[htbp]
       \centering

@@ -23,7 +23,7 @@ Regression & a continuous label & The student's grade is going to be...? \\ \hli
 \end{table}
 
 \section{Experience or not}
-Models are not developed to aid on known experiences, rather on \textbf{unknown} ones.
+\ul{Models are not developed to aid on known experiences, rather on \textbf{unknown} ones.}
 The performance of a model can't be uniquely measured on its performance on the given experience, but rather on novel experiences which the model was not preview to. We want to achieve a low generalization error.
 
 \begin{itemize}
@@ -57,13 +57,13 @@ Ideally, we want to have learning algorithms with low enough bias and variance.
    
    There are two categories of improper models:
    \begin{itemize}
-      \item Underfit. High bias, high variance.
+      \item \textbf{Underfit} - High bias, high variance.
       Models which have poor
       performance, regardless of samples.
       They have not learnt enough!
 
       High variance, low bias. Models which ought to improve their performance on the given experience $E$
-      \item Overfit. Low bias, high variance.
+      \item \textbf{Overfit} - Low bias, high variance.
       Models which have overfit on the
       given experience, and ought to
       improve their generalization
@@ -299,7 +299,7 @@ Multilabel & Hamming error & $\displaystyle\frac{1}{n}\sum_{i=1}^{n} 1 - (Y_i \o
 \textbf{Task} & \textbf{Measure} & \textbf{Formulation} & \textbf{Description} \\ \hline
 Binary & Precision & $\displaystyle\frac{tp}{tp + fp}$ & Of all the positive predictions, how many, in proportion, are correct? \\ \hline
 Binary & Recall & $\displaystyle\frac{tp}{tp + fn}$ & Of all the positive instances, how many, in proportion, have been correctly predicted? \\ \hline
-Binary & $f1$-score & $h(\text{precision}, \text{recall})$ & Harmonic mean of precision and recall \\ \hline
+Binary & $f1$-score & $\displaystyle\frac{2\cdot \textit{precision} \cdot \textit{recall}}{\textit{precision} + \textit{recall}}$ & Harmonic mean of precision and recall \\ \hline
 Binary & Accuracy & $\displaystyle\frac{tp + tn}{tp + tn + fp + fn}$ & Accuracy \\ \hline
 \end{tabular}
 \caption{Binary classification performance measures from confusion matrix}
@@ -324,16 +324,18 @@ Binary & Accuracy & $\displaystyle\frac{tp + tn}{tp + tn + fp + fn}$ & Accuracy 
 
 For non-binary classification tasks, we can set one label as positive, and all others as negative, and build multiple confusion matrices, one per label, and then aggregate the results.
 
+\newpage
 \subsection{ROC Curve}
 
 \begin{paracol}{2}
-   
+   \colfill
    Among all possible model solving binary
    classification tasks, some do not compute
    a binary label per se, rather a score or
    probability $\alpha$ of a label.
    We need to to try multiple thresholds $\tau$, each yielding different labellings.
    We may plot these results in a \textbf{ROC curve}.
+   \colfill
 
    \switchcolumn
 

@@ -30,7 +30,7 @@
       \centering
       \includegraphics{images/15/computationalGraph.png}
       \caption{A computational graph: nodes indicate objects involved in the computation, and edges indicate their flow in the graph.
-      \textbf{Structure} given b y the operations $(h, \cdot)$ while the parameters are the weights $\omega_{1\dots4}$.
+      \textbf{Structure} given by the operations $(h, \cdot)$ while the parameters are the weights $\omega_{1\dots4}$.
       }
       \label{fig:15/computationalGraph}
    \end{figure}
@@ -100,7 +100,7 @@ Fitting a neural network consists in, at a very high level, repeatedly computing
 
 \begin{figure}[htbp]
    \centering
-   \includegraphics{images/15/NN.png}
+   \includegraphics[width=0.98\columnwidth]{images/15/NN.png}
    \caption{Consecutive foreward and backward passes on a network, each backward pass leverages gradients of the loss to find local
 directions of loss minimization, which are then used to fit the model.}
    \label{fig:15/NN}
@@ -135,20 +135,26 @@ do we estimate and leverage these directions?
 
 \subsubsection{Momentum}
 
-Backpropagation takes care of defining optimal directions for the parameters, but how
-do we estimate and leverage these directions?
+\begin{paracol}{2}
+   \colfill
+   Backpropagation takes care of defining optimal directions for the parameters, but how
+   do we estimate and leverage these directions?
+   
+   Estimating weight update: Update directions are weighted by a possibly decaying learning rate $\eta$, and possibly weighted by past updates (Adam, RMSProp, Nesterov momentum).
+   \colfill
 
-Estimating weight update: Update directions are weighted by a possibly decaying learning rate $\eta$, and possibly weighted by past updates (Adam, RMSProp, Nesterov momentum).
+   \switchcolumn
 
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/15/momentum.png}
-   \caption{Momentum}
-   \label{fig:15/momentum}
-\end{figure}
-
-
-\subsubsection{Regularization}
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/15/momentum.png}
+      \caption{Momentum}
+      \label{fig:15/momentum}
+   \end{figure}
+\end{paracol}
+   
+   
+   \subsubsection{Regularization}
 Regularization refers to techniques aimed at reducing overfitting during training.
 Regularization of neural networks can take many forms.
 \begin{itemize}
@@ -205,7 +211,6 @@ from scratch. Rather, a network is fit on a task, then adapted to other tasks.
 \end{itemize}
 
 
-\newpage
 \subsection{ResNet}
 Architectures have proven to be extremely important, and in several cases, the
 application dictates the network architecture. On tabular dataset, \textbf{residual networks}
@@ -219,6 +224,7 @@ application dictates the network architecture. On tabular dataset, \textbf{resid
    \label{fig:15/resnet}
 \end{figure}
 
+\newpage
 \subsection{Feature Transformer}
 \begin{paracol}{2}
 

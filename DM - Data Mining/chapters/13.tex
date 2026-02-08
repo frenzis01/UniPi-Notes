@@ -16,19 +16,19 @@
 \hline
 5 & ge & T & F & >10 & N \\
 \hline
-2 & ge & C & M & >10 & Y \\
+6 & ge & C & M & >10 & Y \\
 \hline
-2 & ge & C & M & <=10 & Y \\
+7 & ge & C & M & <=10 & Y \\
 \hline
-2 & ge & Y & F & <=10 & Y \\
+8 & ge & Y & F & <=10 & Y \\
 \hline
-2 & ge & Y & M & >10 & N \\
+9 & ge & Y & M & >10 & N \\
 \hline
-2 & ge & T & F & <=10 & N \\
+10 & ge & T & F & <=10 & N \\
 \hline
-2 & ge & Y & F & >10 & Y \\
+11 & ge & Y & F & >10 & Y \\
 \hline
-2 & it & C & F & >10 & N \\
+12 & it & C & F & >10 & N \\
 \hline
 \end{tabular}
 \caption{Customer churn dataset}
@@ -148,7 +148,7 @@ E &= \frac{4}{8} \cdot \frac{8}{12} + \frac{2}{4} \cdot \frac{4}{12} = \frac{6}{
 
 \subsubsection{2-way split: C, TY}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
@@ -173,7 +173,7 @@ E &= \frac{1}{4} \cdot \frac{4}{12} + \frac{3}{8} \cdot \frac{8}{12} = \frac{4}{
 
 \subsubsection{2-way split: CY, T}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
@@ -198,7 +198,7 @@ E &= \frac{3}{8} \cdot \frac{8}{12} + \frac{1}{4} \cdot \frac{4}{12} = \frac{4}{
 
 \subsection{Splitting by SEX}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
@@ -223,7 +223,7 @@ E &= \frac{3}{7} \cdot \frac{7}{12} + \frac{2}{5} \cdot \frac{5}{12} = \frac{5}{
 
 \subsection{Splitting by CALLS}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
@@ -245,7 +245,6 @@ ME(<=10) &= 3/7 \\
 E &= \frac{2}{5} \cdot \frac{5}{12} + \frac{3}{7} \cdot \frac{7}{12} = \frac{5}{12}
 \end{aligned}
 \]
-
 
 \section{Sequential Pattern Mining}
 

@@ -65,7 +65,7 @@ In general \textbf{rolling} indicates the act of extracting a series of consecut
 
 \subsubsection{Sliding statistics}
 Unlike rolling statistics, which compute metrics over non-overlapping windows, hence a subseries of given series $s$, \textbf{sliding statistics} slide a series $t$ over $s$ computing statistics between the two.
-The act of sliding a windows through a function is called \textbf{convolution}.
+The act of sliding a window through a function is called \textbf{convolution}.
 
 \begin{itemize}
    \item \textbf{Autocovariance} - covariance of a series with itself at different lags. High autocovariances may indicate seasonality in the series.\\
@@ -74,6 +74,7 @@ The act of sliding a windows through a function is called \textbf{convolution}.
       \gamma(k) = Cov(s_i, s_{i+k}) = \mathbb{E}[(s_i - \mu)(s_{i+k} - \mu)] \qquad \textit{Copilot}\\
       cov(s_{t:},s_{:t+\Delta:}) = \frac{1}{n - \Delta} \sum_{i=1}^{n-\Delta} s_i \cdot s_{i+\Delta} \qquad \textit{Slides}
    \end{align*}
+   \note{$s_{t:} $ indicates the series from time $t$ to the end, while $s_{:t+\Delta:}$ indicates the series from the start to time $t+\Delta$.}
    \note{The $-\Delta$ in the summation upper bound is to avoid exceeding the bounds of the series.}
    \item \textbf{Cross-correlation} - Shifted pointwise correlation of the two series $s,t$ , measured as a sliding inner product.\\
    For univariate time series, the inner product is simply a multiplication.
@@ -330,7 +331,7 @@ There are two approaches to motif discovery:
    \item \textbf{Discriminative} - a motif is a subseries which is frequent in a class of series $S$, and infrequent (does not occur) in another class/set $S^{\neq}$.\\
    \ul{This is also called a \textbf{shapelet}.}
 \end{itemize}
-\note{Discriminative \textit{power} and descriptive \textit{power}, respectively.}
+\note{Descriptive \textit{power} and discriminative \textit{power}, respectively.}
 
 \section{Alignment}
 An \textbf{alignment} (or ``matching'') $A= [(i,j)]^{\max{n,m}}$ of two time series $l,u$ with components $[l_1, \dots, l_n]$ and $[u_1, \dots, u_m]$ is a set of pairs of indices $(i,j)$, assigning each component of $l$ to one or more components of $u$, and vice versa.\\
@@ -342,8 +343,9 @@ We have two costs to consider:
 \begin{itemize}
    \item \textbf{Local cost} - cost of aligning two components $l_i$ and $u_j$
    \[c^a_{i,i} = ||l_i - u_j||_p\]
-   \item \textbf{Match cost} - cost of foregoing matching $i$ with $j$ in favor of a lower cost $ i' \neq i$ (i.e. ``How much would I pay for another alignment'')
+   \item \textbf{Match cost} - cost of foregoing matching $i$ with $j$ in favor of a lower cost $ i' \neq i$ (i.e. ``How much would I pay for another alignment having a smaller cost?'')
 \end{itemize}
+\note{The latter is useful when considering warping, because it allows us to skip components in favor of a lower cost alignment.}
 
 \begin{figure}[htbp]
    \centering
@@ -426,7 +428,7 @@ Each entry in the matrix is computed using a cumulative cost and the local cost 
       \item \textbf{No Warp} - both $l_i$ and $u_j$ are matched together, the accumulated cost is $c^\Sigma(i,j) = C^\Sigma(i-1,j-1)$
       \note{Note that is only the cumulative cost! To get the actual cost, the one in the matrix $C^\Sigma$ we must add the local cost $c^a_{i,j}$ to it to get the total cost.}
       \item \textbf{Upper Warp} - $l_i$ is matched to both $u_j$ and $u_{j-1}$, the accumulated cost is $c^\Sigma(i,j) = C^\Sigma(i,j-1)$
-      \item \textbf{Lower Warp} - $u_j$ is matched to both $l_i$ and $l_{i-1}$, the accumulated cost is $c^Sigma(i,j) = C^\Sigma(i-1,j)$
+      \item \textbf{Lower Warp} - $u_j$ is matched to both $l_i$ and $l_{i-1}$, the accumulated cost is $c^\Sigma(i,j) = C^\Sigma(i-1,j)$
    \end{itemize}
 \end{itemize}
 
@@ -435,16 +437,15 @@ As a matrix of minimal accumulated alignment cost, we know that for each compone
 \( i, j \) in \( C^{\Sigma} \), we have, by construction, the minimal cost to align up to \( i, j \).
 Thus, we can simply start from the last alignment, and follow \( C^{\leftarrow} \) backwards for the warps of minimal cost!
 
-\[
-C^{\leftarrow} =
-\begin{bmatrix}
-\textcolor{red}{\leftarrow} & \leftarrow & \leftarrow & \leftarrow \\
-\uparrow & \textcolor{red}{\nwarrow} & \leftarrow & \leftarrow \\
-\uparrow & \uparrow & \textcolor{red}{\leftarrow} & \textcolor{red}{\leftarrow}
-\end{bmatrix},
-\quad
-A = [(1,1), (2,2), (3,2), (3,3), (3,4)]
-\]
+\begin{align*}
+   C^{\leftarrow} =
+   \begin{bmatrix}
+      \textcolor{red}{\leftarrow} & \leftarrow & \leftarrow & \leftarrow \\
+      \uparrow & \textcolor{red}{\nwarrow} & \leftarrow & \leftarrow \\
+      \uparrow & \uparrow & \textcolor{red}{\leftarrow} & \textcolor{red}{\leftarrow}
+   \end{bmatrix},\\
+   A = [(1,1), (2,2), (3,2), (3,3), (3,4)]
+\end{align*}
 
 \note{Directions of minimal accumulated cost \( C^{\leftarrow} \) over \( C^{\Sigma} \): the \textcolor{red}{red path} from the last entry indicates the alignment of minimal cost. The alignment \( A \) is given by the indices of the path.}
    \switchcolumn

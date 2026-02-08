@@ -172,7 +172,7 @@ In the embedding phase, t-SNE defines a similar probability distribution over th
 
 The probability in the low-dimensional space is:
 \[
-q_{ij} = \frac{(1 + ||y_i - y_j||^2)^{-1}}{\sum_{k \neq l} (1 + ||y_k - y_l||^2)^{-1}}
+q_{j|i} = \frac{(1 + ||y_i - y_j||^2)^{-1}}{\sum_{k \neq l} (1 + ||y_k - y_l||^2)^{-1}}
 \]
 
 where $y_i$ and $y_j$ are the low-dimensional counterparts of $x_i$ and $x_j$.

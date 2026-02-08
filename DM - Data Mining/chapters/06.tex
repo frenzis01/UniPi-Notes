@@ -68,15 +68,15 @@ We can categorize outlier detection algorithms depending on the \textit{axis} on
    \end{figure}
 \end{paracol}
 
-\subsubsection{Grubbs test}
+\subsubsection{Grubbs' test}
 $z-scores$ generate sample-dependent outlier degrees $\tilde{o}(x_1), \tilde{o}(x_2), \ldots, \tilde{o}(x_n)$, but does not tackle the \textbf{+1 problem}.
 
 The +1 problem is the problem of deciding whether the most extreme instance in a dataset is an outlier or not.\\
-Grubb's test iterates over detected outliers, \ul{removing \textit{one layer} of outliers at a time, until no more outliers are found}.
+Grubbs' test iterates over detected outliers, \ul{removing \textit{one layer} of outliers at a time, until no more outliers are found}.
 The key point is that after removing outliers, the distribution parameters $\mu, \sigma$ are recomputed, thus changing the z-scores of the remaining instances.
 This is key to detect multiple outliers in a dataset.
 \begin{algorithm}
-   \caption{Grubb's test for outliers}
+   \caption{Grubbs' test for outliers}
    \begin{algorithmic}[1]
       \State Find current outlier set $\hat{X}$
       \State If $\hat{X} = \emptyset$, stop
@@ -90,7 +90,7 @@ This is key to detect multiple outliers in a dataset.
       \hline
       \textbf{Locality} & \textbf{Global} \\
       \hline
-      \textbf{Sensitive} & Outliers influence the distribution but may be removed by Grubb's test \\
+      \textbf{Sensitive} & Outliers influence the distribution but may be removed by Grubbs' test \\
       \hline
       \textbf{Interpretable} & \textbf{Black-box}, no clear explanation for outlierness, simply, there are not many similar instances.\\
       \hline
@@ -116,7 +116,7 @@ One of $k$ models $M_{\theta_{0}}, M_{\theta_{1}}, \ldots, M_{\theta_{k-1}}$ is 
       \hline
       \textbf{Locality} & \textbf{Local} \\
       \hline
-      \textbf{Sensitive} & Outliers influence the distribution, may be unstable, but may be removed by Grubb's test (?) \\
+      \textbf{Sensitive} & Outliers influence the distribution, may be unstable, but may be removed by Grubbs' test (?) \\
       \hline
       \textbf{Interpretable} & \textbf{Black-box}, no clear explanation for outlierness, simply, there are not many similar instances.\\
       \hline
@@ -125,9 +125,9 @@ One of $k$ models $M_{\theta_{0}}, M_{\theta_{1}}, \ldots, M_{\theta_{k-1}}$ is 
 
 
 \subsection{Thresholding}
-\framedt{Grubb's test}{
-   Choosing a threshold $\hat{o}$ is arbitrary, but there are algorithms such as Grubb's test which define their own thresholding mechanism.
-   In Grubb's test, the threshold is defined as:
+\framedt{Grubbs' test}{
+   Choosing a threshold $\hat{o}$ is arbitrary, but there are algorithms such as Grubbs' test which define their own thresholding mechanism.
+   In Grubbs' test, the threshold is defined as:
    \[
       \hat{o} = n \frac{\sum(x_i - \bar{X})^4}{(\sum(x_i - \bar{X})^2)^2}
    \]

@@ -42,7 +42,7 @@ Generally, it is assumed that all the TS have the same length m.
 
 When it comes to time series, \ul{\textbf{shapelets} are \textit{TS subsequences} which are
 maximally representative} of a class.\\
-Shapelets can provide interpretable results,which may help domain practitioners betterunderstand their data.\\
+Shapelets can provide interpretable results,which may help domain practitioners to better understand their data.\\
 Furthermore, shapelets can be significantly more accurate/robust because they are local features, whereas most other state-of-the-art TS classifiers consider global features.
 
 % Finding shapelets
@@ -71,16 +71,16 @@ Furthermore, shapelets can be significantly more accurate/robust because they ar
 \caption{FindingShapeletBF(\textbf{dataset} $D$, $MAXLEN$, $MINLEN$)}
 \begin{algorithmic}[1]
    \State $candidates \gets \text{GenerateCandidates}(D, MAXLEN, MINLEN)$
-   \State $bsf\_gain \gets 0$
-   \State $bsf\_shapelet \gets \text{null}$
+   \State $\textit{bsf}\_gain \gets 0$
+   \State $\textit{bsf}\_shapelet \gets \text{null}$
    \For{each shapelet $S$ in $candidates$}
       \State $gain \gets \text{CheckCandidate}(D, S)$
-      \If{$gain > bsf\_gain$}
-         \State $bsf\_gain \gets gain$
-         \State $bsf\_shapelet \gets S$
+      \If{$gain > \textit{bsf}\_gain$}
+         \State $\textit{bsf}\_gain \gets gain$
+         \State $\textit{bsf}\_shapelet \gets S$
       \EndIf
    \EndFor
-   \State \Return $bsf\_shapelet$
+   \State \Return $\textit{bsf}\_shapelet$
 \end{algorithmic}
 \label{alg:findingshapeletbf}
 \end{algorithm}
@@ -136,7 +136,7 @@ where
 \[\hat{I}(D) = \frac{|D_1|}{|D|} I(D_1) + \frac{|D_2|}{|D|} I(D_2)\]
 We may use the distance from T to S as a splitting rule: all time series with distance less than or equal to a threshold $d_{th}$ go to $D_1$, and the rest go to $D_2$.
 
-The problem is that we have many candidates, and for each candidate we need to compute the distance from each time series sample to the candidate, which is expensive.
+The problem is that we have many candidates, and for each candidate we need to compute the distance from each time series sample to the candidate in order to compute the information gain, which is expensive.
 \[
 \#{\textit{candidates}} = \sum_{l=MINLEN}^{MAXLEN}\sum_{T_i \in D} (|T_i| - l + 1) 
 \]
@@ -177,6 +177,8 @@ This results in a very high computational cost.
       
       So, in other words, for a candidate shapelet $S$, we do not necessarily need to calculate the distance for each training sample.
       After calculating some training samples, if the upper bound of information gain (corresponding to the optimistic scenario) \textit{is less} than the best candidate shapelet, we stop calculation for that candidate and try the next one, since there is no way it can be a better fit than the current best.
+
+      The information gain upper bound can be computed by assuming that all the remaining samples are split in the best possible way, i.e., all the remaining samples of the same class as the majority class in $D_1$ are assigned to $D_1$, and all the remaining samples of the same class as the majority class in $D_2$ are assigned to $D_2$.
       \colfill
    \end{paracol}
       
@@ -226,9 +228,11 @@ The algorithm may be applied multiple times with multiple $m$ values to find the
 
 \begin{paracol}{2}
    
+   \colfill
    For each subsequence we keep only the distance with the closest \textbf{nearest neighbor}.
    The \textbf{distance} to the corresponding nearest neighbor of each subsequence can be stored in a vector called \textbf{matrix profile} $P$.\\
    The matrix profile value at location $i$ is the distance between $T_i$ and its nearest neighbor
+   \colfill
 
    \switchcolumn
 
@@ -284,7 +288,7 @@ and their pointers must be mutual.
 
 \subsection{Computing the Matrix Profile}
 
-% // TODO computing the matrix profile
+TODO computing the matrix profile
 
 
 

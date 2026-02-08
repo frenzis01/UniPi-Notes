@@ -1,0 +1,566 @@
+\chapter{Questions \& Answers}
+
+These will be answered in italian, as the exam will be in italian. The questions are collected from the students of the course, and they are not necessarily the ones that will be asked in the exam, but they are a good indication of the topics that may be covered.
+
+\section{Data Understanding and Representation}
+
+\subsection{t-SNE}
+% - t-SNE. (x4)
+% - tsne
+
+\href{https://www.youtube.com/watch?v=NEaUSP4YerM}{Check out this video for a visual explanation of t-SNE.}
+
+
+t-SNE è una tecnica di riduzione della dimensionalità non lineare, particolarmente utile per la visualizzazione di dati ad alta dimensione in uno spazio a due o tre dimensioni.
+t-SNE funziona costruendo una distribuzione di probabilità sui dati ad alta dimensione, in cui la probabilità che due punti siano vicini è proporzionale alla loro distanza. Poi, t-SNE cerca di trovare una rappresentazione a bassa dimensione che preservi queste probabilità, minimizzando la divergenza di Kullback-Leibler tra le due distribuzioni.
+
+t-SNE funziona in due fasi principali:
+\begin{enumerate}
+   \item Fase di \textbf{Similarità}: nello spazio originale $\mathcal{X}$, quanto sono simili $x_i$ e $x_j$?\\
+   La similarità è misurata convertendo la distanza Euclidea in una distribuzione di probabilità $P_{ij}$, che è simmetrica e normalizzata. Tipicamente si usa una distribuzione gaussiana centrata su $x_i$, con una varianza adattiva $\sigma_i$ (\textit{``perplexity''}) che è scelta in modo da mantenere un numero costante di vicini per ogni punto.\\
+   Notare che la probabilità di vicinanza viene calcolata per ogni punto $x_i$, e la similarità fra $x_i$ e $x_j$, può avere valori diversi, perché dipende dalla varianza adattiva $\sigma_i$ e $\sigma_j$, che dipende dalla densità locale dei dati.\\
+   Per ottenere similarità simmetriche, quindi $P_{ij} = P_{ji}$, si impone che somma di tutte le probabilità ---di vicinanza con $x_j$--- sia 1, ovvero che $\sum_{i \neq j} P_{ij} = 1$ e che la probabilità di vicinanza sia la media, ovvero $P_{ij} = \frac{p_{ij} + p{ji}}{2}$.\\
+   Questo permette di costruire una matrice di similarità simmetrica, che è più facile da gestire nella fase di embedding.
+
+   In altre parole, $P_{ij}$ rappresenta la probabilità che $x_i$ e $x_j$ siano vicini nello spazio originale, e dipende dalla distanza tra i due punti e dalla varianza adattiva.
+
+   \item Fase di \textbf{Embedding} (mappatura): 
+   nello spazio mappato (a due/tre dimensioni) $\hat{\mathcal{X}}$, quanto sono simili $\hat{x}_i$ e $\hat{x}_j$?\\
+   Nello spazio a bassa dimensione $\mathcal{Y}$, t-SNE cerca di trovare una rappresentazione $\hat{x}_i$ per ogni punto $x_i$ in modo che le probabilità $Q_{ij}$ (ovvero la probabilità che $\hat{x}_i$ e $\hat{x}_j$ siano vicini nello spazio a bassa dimensione) siano il più simili possibile alle probabilità $P_{ij}$ nello spazio originale.\\
+   Questo viene fatto minimizzando la divergenza di Kullback-Leibler tra le due distribuzioni.
+   \[C = \sum_i KL(P_i||Q_i) = \sum_i\sum_j p_{j|i} \log \frac{p_{j|i}}{q_{j|i}}\]
+
+   La formula si legge: per ogni punto $i$, calcoliamo la divergenza di Kullback-Leibler tra la distribuzione $P_i$ (le probabilità di vicinanza nello spazio originale) e la distribuzione $Q_i$ (le probabilità di vicinanza nello spazio a bassa dimensione), e poi sommiamo queste divergenze per tutti i punti.\\
+   La distribuzione di probabilità $Q_{ij}$ nello spazio a bassa dimensione è definita usando una distribuzione di Student con un grado di libertà (equivalente a una distribuzione di Cauchy), che ha code più pesanti rispetto a una distribuzione gaussiana. Questo aiuta a preservare la struttura locale dei dati, evitando che i punti vicini nello spazio originale vengano proiettati troppo lontano nello spazio a bassa dimensione.
+
+   A grandi linee, la matrice di similarità nello spazio a bassa dimensione, essendo i dati in esso inizialmente posizionati casualmente, avrà un aspetto casuale, e t-SNE cercherà di ottimizzare la posizione dei punti per minimizzare la differenza fra la matrice di similarità nello spazio originale e quella nello spazio a bassa dimensione, in modo da preservare la struttura dei dati il più possibile.
+\end{enumerate}
+
+t-SNE è particolarmente efficace nel preservare la struttura locale dei dati, il che significa che i punti che sono vicini nello spazio originale tendono ad essere vicini anche nello spazio a bassa dimensione. Tuttavia, t-SNE può essere meno efficace nel preservare la struttura globale dei dati, e può essere sensibile alla scelta dei parametri (come la perplexity) e alla scala dei dati.
+
+Inoltre, t-SNE è non-deterministico, il che significa che può produrre risultati diversi a seconda dell'inizializzazione e dei parametri scelti. 
+Il motivo è che t-SNE, a grandi linee, plotta i dati su un asse assegnando a ciascun punto una posizione casuale, e poi cerca di clusterizzare (avvicinare) i punti che sono vicini nello spazio originale, e di allontanare quelli che sono lontani. Se l'inizializzazione è diversa, il processo di clusterizzazione può portare a risultati diversi.
+Più nello specifico, t-SNE cerca di ottimizzare la posizione dei punti per minimizzare la divergenza di Kullback-Leibler. Quindi, a seconda dell'inizializzazione casuale, t-SNE può convergere a soluzioni diverse, anche se i risultati tendono ad essere simili in termini di struttura dei dati.
+
+
+\subsection{Handling unbalanced classes}
+% - Gestione di classi sbilanciate (unbalanced classes). (x1)
+
+TODO
+
+
+\subsection{UMAP and manifold learning}
+
+% - UMAP (data representation / manifold learning). (x1)
+
+UMAP è una tecnica di riduzione della dimensionalità e di apprendimento del manifold che si basa su concetti di topologia e geometria. UMAP cerca di preservare sia la struttura locale che quella globale dei dati, ed è spesso più veloce di t-SNE, soprattutto su dataset di grandi dimensioni.
+
+Le distanze nello spazio originale inducono una struttura topologica sui dati, che UMAP cerca di preservare nello spazio a bassa dimensione. UMAP costruisce un grafo di connettività basato sulle distanze tra i punti nello spazio originale, e poi cerca di trovare una rappresentazione a bassa dimensione che preservi questa struttura di vicinanza.
+
+A partire dal grafo di connettività, UMAP costruisce una matrice di adiacenza i cui valori rappresentano la forza della connessione tra i punti, corrispondenti alle distanze nello spazio originale e ai pesi degli archi nel grafo.
+
+Per un set di archi E, UMAP minimizza una funzione di costo dove si considera sia la probabilità di esistenza di un arco nello spazio originale che la probabilità di esistenza di un arco nello spazio a bassa dimensione. In altri termini, se è probabile che esista un arco tra due punti nello spazio originale, allora è desiderabile che esista anche un arco tra i corrispondenti punti nello spazio a bassa dimensione, e viceversa. La funzione di costo è data da:
+\[
+-\sum_{e \in E} \left( \underbrace{\Pr(e; X) \log(\Pr(e; Z))}_{\text{existing edges}} + \underbrace{(1 - \Pr(e; Z)) \log(1 - \Pr(e; X))}_{\text{non-existing edges}} \right),
+\]
+Dove $\Pr(e; X)$ è la probabilità che esista un arco tra i punti nello spazio originale, e $\Pr(e; Z)$ è la probabilità che esista un arco tra i corrispondenti punti nello spazio a bassa dimensione. La funzione di costo cerca di massimizzare la probabilità di preservare gli archi esistenti e di minimizzare la probabilità di introdurre archi non esistenti.
+% In this way, when two points in the original space are close ($\Pr(e; X) \approx 1$), the first term dominates and the cost is minimized by making them close in the transformed space as well ($\Pr(e; Z) \approx 1 \Rightarrow \log(\Pr(e; Z)) \approx 0$), because if instead they are far apart in the transformed space $Z$ ($\Pr(e; Z) \approx 0$), then $\log(\Pr(e; Z)) \approx -\infty$ and the cost becomes very large.\\
+
+% Conversely, when two points in the original space are far apart ($\Pr(e; X) \approx 0$), the second term dominates and the cost is minimized by making them far apart in the transformed space as well ($\Pr(e; Z) \approx 0 \Rightarrow \log(1 - \Pr(e; Z)) \approx 0$), because if instead they are close in the transformed space ($\Pr(e; Z) \approx 1$), then $\log(1 - \Pr(e; Z)) \approx -\infty$ and the cost becomes very large.
+
+In questo modo, quando due punti nello spazio originale sono vicini ($\Pr(e; X) \approx 1$), il primo termine domina e il costo è minimizzato rendendoli vicini anche nello spazio trasformato ($\Pr(e; Z) \approx 1 \Rightarrow \log(\Pr(e; Z)) \approx 0$), perché se invece sono lontani nello spazio trasformato $Z$ ($\Pr(e; Z) \approx 0$), allora $\log(\Pr(e; Z)) \approx -\infty$ e il costo diventa molto grande.
+
+UMAP è non-deterministico, in quanto l'inizializzazione dei punti nello spazio a bassa dimensione è casuale (Copilot guess), e può produrre risultati diversi a seconda dell'inizializzazione e dei parametri scelti. Tuttavia, UMAP tende a produrre risultati più stabili rispetto a t-SNE, soprattutto su dataset di grandi dimensioni.
+
+\subsection{PCA}
+% - What is the main objective of a Principal Component Analysis-based representation?
+% - data representation (PCA, TSNE, UMAP)
+
+La Principal Component Analysis (PCA) è una tecnica di riduzione della dimensionalità che trasforma i dati in un nuovo sistema di coordinate, dove le nuove variabili (componenti principali) sono combinazioni lineari delle variabili originali e sono ordinate in modo tale che la prima componente cattura la massima varianza possibile, la seconda componente cattura la massima varianza residua, e così via. La matrice di covarianza dei dati originali gioca un ruolo centrale nella PCA, poiché le componenti principali sono gli autovettori della matrice di covarianza.
+
+Gli step principali, a grandi linee, sono:
+\begin{enumerate}
+   \item A partire dai dati originali si ottengono i dati centrati (valori relativi) sottraendo la media da ogni colonna. Dunque, dalla matrice originale $X$, si ottiene la matrice centrata $\bar{X}$.
+   \item Si calcolano gli autovettori $V$ e gli autovalori della matrice di covarianza dei dati centrati $\bar{X}$. La matrice di covarianza $\bar{\Sigma}$ è data da $\frac{1}{n-1} \bar{X}^T \bar{X}$, dove $n$ è il numero di campioni.
+   \item Per eseguire la proiezione dei dati nello spazio delle componenti principali ci serve $V^T$ la trasposizione di $V$.
+   Gli autovettori $V$ sono ordinati in base agli autovalori, in modo che le prime colonne di $V$ corrispondano alle componenti principali che catturano la maggior parte della varianza dei dati.
+   \item Otteniamo i dati proiettati $\hat{X} = V^T\bar{X}$
+\end{enumerate}
+
+\subsubsection{What does the matrix $\bar{\Sigma}$ (covariance matrix) represent?}
+% - PCA, what represents the matrix X^TX (covariance matrix)? What changes in the covariance matrix of the data after the application of PCA?
+% - PCA: obiettivo della rappresentazione; cosa rappresenta $X^T X$ (covariance matrix); cosa cambia nella covarianza dopo PCA. (x4)
+
+
+La matrice di covarianza $\bar{\Sigma}$ rappresenta la covarianza tra le variabili nei dati centrati. In altre parole, $\bar{\Sigma}_{ij}$ rappresenta la covarianza tra la variabile $i$ e la variabile $j$. La matrice di covarianza è simmetrica e positiva semidefinita, e le sue diagonali rappresentano la varianza di ciascuna variabile.
+
+È importante per la PCA perché le componenti principali sono gli autovettori della matrice di covarianza, e gli autovalori associati a questi autovettori rappresentano la quantità di varianza catturata da ciascuna componente principale.
+Ricordando che gli autovettori di una matrice $A$ sono, in generale, vettori $v$ tali che $Av = \lambda v$, dove $\lambda$ è l'autovalore associato all'autovettore $v$, possiamo interpretare gli autovettori della matrice di covarianza come le direzioni nello spazio dei dati lungo le quali la varianza è massima, e gli autovalori come la quantità di varianza catturata lungo quelle direzioni.  
+
+
+\subsubsection{What changes in the covariance matrix of the data after the application of PCA?}
+
+Dopo l'applicazione della PCA, i dati proiettati $\hat{X}$ hanno una matrice di covarianza che è diagonale, con gli autovalori sulla diagonale. Questo significa che le componenti principali sono ortogonali tra loro e non sono correlate, e la varianza è catturata lungo queste componenti principali. In altre parole, la matrice di covarianza dei dati proiettati è data da $\hat{\Sigma} = V^T \bar{\Sigma} V$, dove $V$ è la matrice degli autovettori della matrice di covarianza originale. Poiché $V$ diagonalizza $\bar{\Sigma}$, otteniamo una matrice diagonale $\hat{\Sigma}$ con gli autovalori sulla diagonale, rappresentando la varianza catturata da ciascuna componente principale.
+
+
+\subsection{How do we handle unbalanced classes?}
+% - how to handle unbalanced classes
+
+TODO 
+
+No clue, many answers are possible\dots
+
+
+\subsection{What is Grubbs' test algorithm?}
+% - Grubs test algorithm and which problems has (Assumption of 1 distrubution, bad with high dimensional data)
+% - Grubbs test: algoritmo e problemi/assunzioni (es. assunzione di una sola distribuzione; difficoltà in alta dimensionalità). (x2)
+
+
+% Grubbs' test è un test statistico utilizzato per identificare outlier in un dataset. L'algoritmo di Grubbs' test si basa sulla statistica $G$, che misura quanto un punto sia distante dalla media del dataset in termini di deviazione standard. La formula per calcolare la statistica $G$ è:
+% \[G = \frac{|x_i - \bar{x}|}{s}\]
+% dove $x_i$ è il punto che si sta testando, $\bar{x}$ è la media del dataset, e $s$ è la deviazione standard del dataset.
+% Grubbs' test confronta la statistica $G$ con un valore critico $G_{critico}$, che dipende dalla dimensione del dataset e dal livello di significatività scelto. Se $G > G_{critico}$, allora il punto $x_i$ è considerato un outlier e può essere rimosso dal dataset.
+
+\begin{algorithm}
+   \caption{Grubbs' test for outliers}
+   \begin{algorithmic}[1]
+      \State Find current outlier set $\hat{X}$
+      \State If $\hat{X} = \emptyset$, stop
+      \State $X = X \setminus \hat{X}$ - remove outliers from dataset
+      \State Go to step 1
+   \end{algorithmic}
+\end{algorithm}
+
+Il test di Grubbs è un test utilizzato per identificare outlier in un dataset rimuovendo iterativamente i punti che sono considerati outlier fino a quando non ne rimangono più. 
+Il test di Grubbs assume una distribuzione Normale dei dati, e identifica come outlier i punti che sono più distanti dalla media in termini di deviazione standard. Il punto chiave è che dopo la rimozione di un set di outlier, i parametri della distribuzione (media e deviazione standard) vengono ricalcolati, e il test viene applicato nuovamente sui dati rimanenti, generando dunque risultati diversi, fino a quando non vengono identificati più outlier.
+
+L'obiettivo del test è di risolvere il ``+1 problem'', ovvero il fatto che rimuovendo un outlier, i parametri della distribuzione cambiano, e quindi è possibile che ci siano altri outlier che non vengono identificati se si applica il test una sola volta. Il test di Grubbs risolve questo problema ricalcolando i parametri dopo ogni rimozione di outlier, e continuando a testare fino a quando non vengono identificati più outlier.
+
+
+\subsubsection{What's the key problem with the algorithm?}
+Il primo problema è che assume che i dati seguano una distribuzione Normale (o comunque una singola distribuzione), il che potrebbe non essere sempre vero. Se i dati non seguono una distribuzione Normale, il test di Grubbs potrebbe non essere efficace nell'identificare gli outlier.
+
+Inoltre, in caso di dati ad alta dimensionalità, il test di Grubbs potrebbe non essere efficace, perché la distanza tra i punti può diventare meno significativa, e quindi potrebbe essere difficile identificare gli outlier in modo affidabile. In alta dimensionalità, la distanza tra i punti tende a diventare più simile, e quindi potrebbe essere difficile distinguere tra punti normali e outlier.
+
+
+\subsection{Outliers with manifold}
+% - Outlier/anomaly detection: manifold ("manyfold"/UMAP), density (mixture models) e neighborhood-based methods (LOF). (x4)
+
+\begin{paracol}{2}
+   
+   Mentre gli approcchi basati su distribuzione definiscono gli outlier come punti che si discostano significativamente dalla distribuzione dei dati, gli approcci basati su manifold definiscono gli outlier come punti che si discostano significativamente dalla struttura del manifold su cui i dati sono distribuiti. In altre parole, un punto è considerato un outlier se non appartiene al manifold che rappresenta la struttura dei dati, o se è lontano da questo manifold.
+
+   \switchcolumn
+
+   \begin{figure}[htbp]
+      \centering
+      \includegraphics{images/20/manifold.png}
+      \caption{Esempio di manifold. I segmenti in rosso, corrispondono all'errore di approssimazione del Least Squares $e_{x}$ (discusso sotto).}
+      \label{fig:20/manifold}
+   \end{figure}
+\end{paracol}
+
+Possiamo quindi definire il grado di anomalia $\tilde{o}(x)$ come la distanza di $x$ dal manifold, ovvero $\tilde{o}(x) = d(x, M)$, dove $M$ è il manifold che rappresenta la struttura dei dati. In questo modo, i punti che sono lontani dal manifold avranno un grado di anomalia più alto, e saranno considerati outlier.
+
+Per determinare il manifold possiamo usare il metodo dei \textbf{Least Squares} (assumendo un manifold lineare), che vuole di risolvere l'equazione $Ax = b$ minimizzando la norma del residuo $||Ax - b||_2^2$\footnote{il ``2'' a pedice e apice indica la norma euclidea}. In questo modo, possiamo trovare il manifold che meglio rappresenta la struttura dei dati, e poi calcolare la distanza di ogni punto da questo manifold per identificare gli outlier.
+
+Questa proiezione dei punti lungo il manifold ci fornisce anche l'errore nell'approssimazione (la distanza dei punti dalla retta manifold), che è una misura del grado di anomalia dei punti. I punti che sono lontani dal manifold avranno un errore di proiezione più alto, e saranno considerati outlier.
+
+\[\tilde{o}(x_i) = e_{x_i}\]
+
+\subsubsection{Collinearità}
+
+La collinearità si verifica quando due o più feature sono altamente correlate tra loro.
+Il metodo Least Squares non ammette soluzioni quando i dati sono perfettamente collineari, ovvero quando esiste una combinazione lineare esatta tra le feature. In questo caso, la matrice $A$ non è invertibile, e quindi non è possibile trovare una soluzione unica per $x$.
+Quando i dati sono molto collineari, ma non del tutto, la soluzione esiste, ma è fortemente instabile, e piccoli cambiamenti nei dati possono portare a grandi cambiamenti nella soluzione. 
+\note{In questo caso, è possibile utilizzare tecniche di regolarizzazione, come Ridge Regression o Lasso Regression, per stabilizzare la soluzione e gestire la collinearità. (Copilot guess)
+}
+
+\[
+\tilde{x}= \underbrace{\Big(\big(\underbrace{A^T A}_{\text{sample covariance matrix}}\big)^{-1} A^T\Big)}_{\text{projection matrix }P}\; b
+\]
+Il metodo dei Least Squares proietta i dati su un sottospazio definito dalle feature, e la matrice di proiezione $P$ è data da $\big(A^T A\big)^{-1} A^T$. Quando le feature sono collineari, la matrice $A^T A$ diventa singolare \footnote{ovvero non ha inversa, perché ha autovalori nulli}, e quindi non è invertibile, rendendo impossibile trovare una soluzione unica $\tilde{x}$, ma fornendone, invece, infinite.
+Se invece, sono fortemente collineari, ma non del tutto, la matrice $A^T A$ è invertibile, ma è mal condizionata, il che significa che piccoli cambiamenti nei dati possono portare a grandi cambiamenti nei coefficienti della soluzione $\tilde{x}$, rendendo la soluzione instabile. Il risultato potrebbe comunque essere circa una retta, ma i coefficienti della soluzione potrebbero essere molto grandi (che si compensano a vicenda), e quindi la soluzione potrebbe essere molto sensibile a piccoli cambiamenti nei dati, portando a risultati non affidabili.
+
+
+Una possibile soluzione a questo problema è di utilizzare la PCA per ridurre la dimensionalità dei dati e rimuovere la collinearità, prima di applicare il metodo dei Least Squares. In questo modo, si ottiene una matrice di proiezione che è invertibile, e si può trovare una soluzione stabile per $\tilde{x}$.
+
+Consideriamo un dataset a due feature (quindi visualizzabile nel piano) che presentano forte collinearità, ad esempio $y = 2x+1  + \epsilon$ (collinearità perfetta al netto di $\epsilon$). Applicando PCA al dataset, otteniamo due componenti principali, di cui la prima cattura la maggior parte della varianza dei dati, e la seconda cattura la varianza residua. La prima componente principale rappresenta il manifold su cui i dati sono distribuiti, e la seconda componente principale rappresenta la direzione ortogonale al manifold. In questo modo, possiamo identificare gli outlier come i punti che sono lontani dalla prima componente principale (il manifold), e quindi hanno un alto grado di anomalia.
+
+
+
+% - outlier detection
+
+\subsection{Outlier Detection}
+
+Ci sono vari approcci per l'identificazione di outlier, ma principalmente si basano su tre principi:
+\begin{itemize}
+   \item Distribuzione 
+   \item Manifold (shape dei dati)
+   \item Neighborhood (connettività e densità con vicini)
+\end{itemize}
+
+Basati su distribuzione abbiamo il test di Grubbs, che identifica outlier come punti che si discostano significativamente dalla distribuzione dei dati, e assume che i dati seguano una distribuzione Normale. Basati su manifold abbiamo il metodo dei Least Squares, che identifica outlier come punti che si discostano significativamente dalla struttura del manifold su cui i dati sono distribuiti. Basati su neighborhood abbiamo il Local Outlier Factor (LOF), che identifica outlier come punti che hanno una densità locale significativamente inferiore rispetto ai loro vicini.
+Abbiamo anche gli Isolation Tree, discussi in un'altra domanda, che identificano outlier come punti che possono essere isolati facilmente in un albero di decisione, e quindi hanno un alto grado di anomalia.
+
+\subsubsection{Connectivity and Concentration Neighborhood-based methods}
+
+Nei metodi basati su \textbf{connettività}, si cerca di misurare quanto un punto è connesso ai suoi vicini.
+Più è connesso, più è probabile che sia un punto normale, mentre se è poco connesso, è più probabile che sia un outlier. Un esempio di metodo basato su connettività è il Local Outlier Factor (LOF).
+
+Si costruisce una \textit{posting matrix}, che descrive la connettività, non la \textit{densità}.
+L'elemento $A_{ij}$ rappresenta l'indice del $j^{th}$ vicino di $i$. La matrice di connettività $A$ è una matrice di dimensione $n \times k$, dove $n$ è il numero di campioni e $k$ è il numero di vicini considerati. Ogni riga della matrice rappresenta un campione, e ogni colonna rappresenta l'indice del vicino corrispondente. La matrice di connettività viene utilizzata per calcolare la densità locale dei punti, che è una misura della connettività dei punti con i loro vicini, e quindi per identificare gli outlier.
+\note{La matrice non è simmetrica, perché $A_{ij}$ rappresenta l'indice del $j^{th}$ vicino di $i$, e non necessariamente $A_{A_{ij}j} = i$. ``Io potrei essere il tuo primo vicino, ma tu potresti non essere il mio primo vicino''}
+
+La posting matrix ci permette di avere tre possibili meccanismi di identificazione degli outlier:
+\begin{itemize}
+   \item \textbf{Hub} - un punto è un hub (inlier) se è almeno il $t^{th}$ vicino di almeno $k$ istanze
+   \item \textbf{Popularity} - un punto è popolare (inlier) se è in media almeno il $t^{th}$ 
+   \item \textbf{Ostracism} - un punto è un ostracismo (outlier) se è al massimo il $t^{th}$ vicino di al massimo $k$ istanze
+\end{itemize}
+
+Per usare invece \textbf{concentrazione} possiamo transire da una matrice di connettività a una matrice di distanza. È importante ordinare la matrice di distanza in modo che $D_{ij}$ rappresenti la distanza tra il punto $i$ e il suo $j^{th}$ vicino, e non la distanza tra il punto $i$ e il punto $j$. 
+Dunque, ciascuna riga della matrice di distanza rappresenta le distanze del punto $i$ dai suoi vicini, ordinate in modo crescente. Trattata in questo modo, la matrice prende il nome di matrice di \textbf{gittata} $A_\gamma$, ed è costruita come segue.
+\[
+A_{\gamma} = \begin{bmatrix}
+\gamma^1(x_1) & \gamma^2(x_1) & \gamma^3(x_1) \\
+\gamma^1(x_2) & \gamma^2(x_2) & \gamma^3(x_2) \\
+\gamma^1(x_3) & \gamma^2(x_3) & \gamma^3(x_3)
+\end{bmatrix}
+\]
+Dove $\gamma^j(x_i)$ rappresenta la distanza tra il punto $x_i$ e il suo $j^{th}$ vicino. 
+
+A questo punto, possiamo anche ottenere la gittata media definisce una concentrazione approssimativa.
+Possiamo ottenere la gittata media al primo vicino, secondo vicino, terzo vicino, ecc. fino al $k^{th}$ vicino.
+$\bar{\gamma}^k(x)$ è la media di $\gamma^1(x), \gamma^2(x), \ldots, \gamma^k(x)$, ovvero la distanza media del punto $x$ dai suoi primi $k$ vicini.
+Costruiamo una matrice di concentrazione $A_{\bar{\gamma}}$, che rappresenta la distanza media dei punti dai loro vicini. La matrice di concentrazione $A_{\bar{\gamma}}$ è data da:
+
+\[
+A_{\gamma} \cdot \begin{bmatrix}
+1 & \frac{1}{2} & \frac{1}{3} \\
+0 & \frac{1}{2} & \frac{1}{3} \\
+0 & 0 & \frac{1}{3}
+\end{bmatrix} = \begin{bmatrix}
+\bar{\gamma}^1(x_1) & \bar{\gamma}^2(x_1) & \bar{\gamma}^3(x_1) \\
+\bar{\gamma}^1(x_2) & \bar{\gamma}^2(x_2) & \bar{\gamma}^3(x_2) \\
+\bar{\gamma}^1(x_3) & \bar{\gamma}^2(x_3) & \bar{\gamma}^3(x_3)
+\end{bmatrix}
+= \begin{bmatrix}
+\gamma^1(x_1) & \frac{1}{2}(\gamma^1(x_1) + \gamma^2(x_1)) & \frac{1}{3}(\gamma^1(x_1) + \gamma^2(x_1) + \gamma^3(x_1)) \\
+\gamma^1(x_2) & ... & ... \\
+... & ... & ... 
+\end{bmatrix}
+\]
+
+Definiamo il \textbf{Reach Ratio Factor} come il rapporto fra la gittata media al $k^{th}$ vicino di due istanze $x$ e $y$:
+\[
+   \tilde{o}^k_{i,j} = \frac{\bar{\gamma}^k(x_i)}{\bar{\gamma}^k(x_j)}
+\]
+
+Da qui otteniamo il \textbf{Local Outlier Factor} (LOF), mediando il Reach Ratio Factor sui $k$ vicini di un'istanza.
+	\[
+		\tilde{o}(x_i) = \sum_{x_j \in neigh(x_i)} \tilde{o}^k_{i,j}
+   \]
+
+Il \textbf{Connectivity Outlier Factor} (COF) è una variante del LOF che costruisce ``catene'' di vicini, invece di considerare solo i vicini diretti. In questo modo, il COF tiene anche conto della connettività dei punti con i loro vicini. Dunque se un punto ha un vicino molto vicino, e gli altri relativamente lontani, il COF potrebbe essere più tollerante, se c'è una catena di vicini che lo collega a zone più dense, mentre il LOF potrebbe considerarlo un outlier a causa dei numerosi vicini lontani.
+   \[
+		\tilde{o}(x_i) = \sum_{x_j \in \textit{connect\_neigh}(x_i)} \tilde{o}^k_{i,j}
+      \]
+
+Il \textbf{k-NN Outlier Factor} (kNNOF) è un'altra variante del LOF che usa come misura la gittata al $k^{th}$ vicino, invece della gittata media. In questo modo, il kNNOF è più sensibile alla presenza di vicini molto lontani, e potrebbe identificare come outlier i punti che hanno un vicino molto lontano, anche se la maggior parte dei loro vicini è relativamente vicina.
+   \[
+   \tilde{o}(x_i) = \gamma^k(x_i)
+   \]
+\nl
+\nl
+
+Abbiamo anche approcci basati sulla concentrazione esplicita di vicini in un'area circostante un punto.
+Possiamo considerare un raggio $\delta$ intorno a un punto $x$, e contare quanti vicini si trovano all'interno di questo raggio. Scegliamo anche un secondo raggio $\epsilon$, più grande o più piccolo di $\delta$, e contiamo quanti vicini si trovano all'interno di questo secondo raggio. 
+Contare semplicimenente il numero di vicini è insufficiente, perché non possiamo stabilire arbitrariamente quale sia una concentrazione sufficiente di vicini all'interno di $\delta$ (o $\epsilon$) per considerare un punto come normale, e quale sia una concentrazione insufficiente per considerarlo un outlier.\\
+Per questo motivo si fa una comparazione fra la concentrazione di un punto e la concentrazione dei suoi vicini.
+\[
+\tilde{o}(x_i) = \bar{c}^\varepsilon(B_i) - c^\varepsilon(x_i),
+\quad \text{with} \quad
+\bar{c}^\varepsilon(B_i) = \frac{\sum_{x_j \in B_i} c^\varepsilon(x_j)}{|B_i|}
+\]
+
+% Typically we define concentration as a ratio with $n$ the number of instances in the dataset but I guess we could also use $\max_i(|B_i|)$
+Tipicamente si definisce la concentrazione come il rapporto fra il numero di vicini all'interno del raggio $\varepsilon$ e il numero totale di istanze nel dataset, ma si potrebbe anche usare il numero massimo di vicini all'interno di un raggio $\varepsilon$ (o $\delta$) per normalizzare la concentrazione.
+
+\[
+c^\varepsilon(x_i) = \frac{{x_j \in \mathcal{X} : d(x_i,x_j) \leq \varepsilon} - 1}{n-1}
+\]
+
+
+
+
+
+\subsection{Isolation Trees e Forests}
+% Isolation tree e forests
+% - Isolation Tree per outlier detection (chiederà anche gli altri immagino)
+% - Isolation Tree / Isolation Forest: idea generale; come segmenta lo spazio d’ingresso; come definisce l’outlier score. (x5)
+% - isolation forest
+% - How do isolation forests segment the input space? How do they define the outlier degree of instances?
+% - outlier detection using manifold, density (mixture models), neighborhood and isolation forest
+
+
+L'Isolation Tree è un algoritmo di apprendimento automatico utilizzato per l'identificazione di outlier. L'idea alla base dell'Isolation Tree è che gli outlier sono più facili da isolare rispetto ai punti normali, poiché tendono ad essere più distanti dagli altri punti nel dataset.\\
+L'Isolation Tree segmenta lo spazio d'ingresso in modo ricorsivo, scegliendo casualmente una feature e un valore di split per dividere i dati in due parti. Questo processo continua fino a quando ogni punto è isolato in una foglia dell'albero o finché non si raggiunge una profondità massima.\\
+Se avessimo i dati in un piano, potremmo immaginare di tracciare linee verticali e orizzontali (o diagonali, se si fa una combinazione lineare delle feature $x$ e $y$, gli assi del piano, questo avviene nelle EIF (\textit{Extended Isolation Forests})) per segmentare lo spazio, e ogni volta che tracciamo una linea, stiamo isolando i punti. Gli outlier, essendo più distanti dagli altri punti, tendono ad essere isolati più rapidamente, ovvero con meno linee, rispetto ai punti normali.\\ 
+Gli outlier tendono ad essere isolati più rapidamente rispetto ai punti normali, poiché sono più distanti dagli altri punti.
+
+L'outlier score è definito in funzione della lunghezza del percorso da un nodo foglia alla root e della lunghezza media di un path nell'albero, o forse dalla soglia di massima profondità. Dato un nodo foglia $x_i$ (che rappresenta un punto del dataset) dell'albero con radice $t$ e $c = avg(path(j,t))$ abbiamo:
+\[\tilde{o}^t = \frac{path(x_i,t)}{c}\]
+Diversamente da altri casi, minore è il valore di $\tilde{o}^t$, più è probabile che $x_i$ sia un outlier, perché significa che è stato isolato più rapidamente rispetto alla media.
+
+L'Isolation Forest è un ensemble di Isolation Tree, e l'outlier score di un punto $x_i$ è dato dalla media degli outlier score calcolati su ciascun albero dell'ensemble. L'idea è che, combinando più alberi, si ottiene una stima più robusta dell'outlier score, e si riduce la varianza del modello.
+Formalmente,
+\[
+\tilde{o}(x_i) = 2 \frac{\sum_{t\in T}path(x_i,t)}{|T|c}
+\]
+
+
+\section{Clustering}
+
+\subsection{K-Means Convergence}
+% Convergenza K-Means
+% - convergence proof of k-means
+% - proof of convergence of kmeans
+% - K-means: proof of convergence (dimostrazione di convergenza). (x4)
+
+K-Means è un algoritmo di clustering che mira a partizionare un dataset in $k$ cluster, minimizzando la somma dei quadrati delle distanze tra i punti e i centroidi dei cluster. L'algoritmo iterativamente assegna i punti ai cluster più vicini e aggiorna i centroidi fino a quando non converge, ovvero quando le assegnazioni dei punti ai cluster non cambiano più o quando i centroidi non si spostano più.
+
+Consideriamo la funzione di costo (o goodness, vista al contrario) di K-Means, che è data da:
+\begin{align*}
+   SSE(s,s_c) = \sum_{i=1}^n (d_i, s_c)^2\\
+   G(C,s) = \sum_{c \in C} SSE(c,s_c)
+\end{align*}
+Con $s$ che rappresenta i centroidi dei cluster, $s_c$ che rappresenta il centroide del cluster $c$, e $d_i$ che rappresenta un punto del dataset. La funzione di costo $G(C,s)$ misura la somma dei quadrati delle distanze tra i punti e i centroidi dei cluster, e l'obiettivo di K-Means è minimizzare questa funzione di costo.
+
+Più nel dettaglio, dato in input il numero di Cluster, l'algoritmo assegna casualmente $k$ centroidi scegliendo $k$ istanze casuali, e poi iterativamente esegue due passaggi:
+\begin{enumerate}
+   \item Fissati i centroidi $s$, ottimizziamo $C$ - assegnamento dei punti $d_i$ al cluster più vicino, ovvero al centroide più vicino $s_c$. Questo passaggio riduce la funzione di costo $G(C,s)$ rispetto a $C$, mantenendo fissi i centroidi $s$.
+   \item Fissati i cluster $C$, ottimizziamo $s$ - aggiornamento dei centroidi $s_c$ come media dei punti assegnati al cluster $c$. Questo passaggio riduce la funzione di costo $G(C,s)$ rispetto a $s$, mantenendo fissi i cluster $C$.
+\end{enumerate}
+Entrambi i passaggi portano a una riduzione del costo $G(C,s)$, e poiché la funzione di costo è limitata inferiormente (non può essere negativa), l'algoritmo converge a un punto in cui non è più possibile ridurre ulteriormente il costo, ovvero quando le assegnazioni dei punti ai cluster non cambiano più o quando i centroidi non si spostano più (o si muovono di una quantità trascurabile).\\
+È importante notare che K-Means può convergere a un minimo locale, e non necessariamente al minimo globale della funzione di costo. Per questo motivo, è comune eseguire K-Means più volte con inizializzazioni casuali diverse dei centroidi, e scegliere la soluzione con il costo più basso.
+
+\subsubsection{What does it change if we use categorical attributes?}
+
+% - K-means proof of convergence; what would change if using categorical attributes, and does it still converge if we use the version with categorical attributes?
+% - Clustering/K-means con attributi categorici: come gestirli; impatto su SSE; convergenza nella versione con categoriche. (x2)
+% - how are handled categorical attribute for clustering and how the SSE is affected
+Se usiamo attributi categorici, dobbiamo definire una distanza appropriata per misurare la distanza tra i punti e i centroidi dei cluster. Una possibile scelta è la distanza di Jaccard, che misura la dissimilarità tra due insiemi di attributi categorici. 
+
+La distanza di Jaccard è definita così:
+\[d_j(A,B) = 1 - J(A,B) = 1 - \frac{|A \cap B|}{|A \cup B|}\]
+\begin{align*}
+   x_i = \{sport, musica, viaggi\} \\
+   x_j = \{arte, musica\}\\
+   d_j(x_i, x_j) = 1 - \frac{|\{musica\}|}{|\{sport, musica, viaggi, arte\}|} = 1 - \frac{1}{4} = \frac{3}{4}
+\end{align*}
+\begin{align*}
+   A = \{\textit{colore = rosso, forma = rotonda, materiale = legno}\} \\
+   B = \{\textit{colore = rosso, forma = quadrata, materiale = metallo}\} \\
+   d_j(A,B) = 1 - \frac{|\{\textit{colore = rosso}\}|}{|\{\textit{colore = rosso, forma = rotonda, materiale = legno, forma = quadrata, materiale = metallo}\}|} = 1 - \frac{1}{5} = \frac{4}{5}
+\end{align*}
+\begin{align*}
+   A = [1,0,1,0,0] \\
+   B = [1,0,0,1,0] \\
+   d_j(A,B) = 1 - \frac{|\{1\textit{ in comune}\}|}{|\{1\textit{ in totale}\}|} = 1 - \frac{1}{3} = \frac{2}{3}
+\end{align*}
+
+Jaccard tuttavia non ci permette di definire un centroide come media dei punti assegnati al cluster, perché non possiamo calcolare la media di attributi categorici. In questo caso, potremmo definire il centroide come l'istanza più rappresentativa del cluster, ovvero l'istanza che minimizza la distanza media dagli altri punti del cluster.
+Questo algoritmo si chiama K-medoids, e converge anche lui, perché la funzione di costo è limitata inferiormente (non può essere negativa), e ogni iterazione riduce la funzione di costo, quindi l'algoritmo converge a un punto in cui non è più possibile ridurre ulteriormente il costo, ovvero quando le assegnazioni dei punti ai cluster non cambiano più o quando i centroidi non si spostano più (o si muovono di una quantità trascurabile).
+
+N.B. La moda non funziona come minimizzazione della distanza, perché non è detto che la moda sia l'istanza più vicina agli altri punti del cluster, e quindi potrebbe non minimizzare la funzione di costo.
+Considera questo esempio:
+\begin{align*}
+   x_i = \{sport, musica, viaggi, matematica\} \\
+   x_k = \{arte, filosofia\}\\
+   s_c = \{arte\}\\
+   x_f = \{judo, musica, libri, storia,\} \\
+   s_c^{new} = \{musica\}
+\end{align*}
+Supponendo che inizialmente la moda sia \textit{arte} e poi diventi \textit{musica}, è possibile che la distanza media di \textit{musica} dagli altri punti del cluster sia maggiore della distanza media di \textit{arte} dagli altri punti del cluster, e quindi la moda non minimizza la funzione di costo.
+In particolare, avremmo 
+\begin{align*}
+   s_c = \{arte\} \Rightarrow \frac{1 + \frac{1}{2}}{2} = \frac{3}{4} \\
+   s_c^{new} = \{musica\} \Rightarrow \frac{\frac{3}{4} + 1 + \frac{3}{4}}{3} = \frac{5}{6}
+\end{align*}
+Vediamo come la moda non abbia minimizzato la funzione di costo, perché la distanza media di \textit{musica} dagli altri punti del cluster è maggiore della distanza media di \textit{arte} dagli altri punti del cluster, e quindi la funzione di costo è aumentata invece di diminuire.
+
+\subsection{Hierarchical Clustering}
+% - hierarchical
+
+Il clustering gerarchico è un metodo di clustering che costruisce una gerarchia di cluster, rappresentata da un albero chiamato dendrogramma. Esistono due approcci principali al clustering gerarchico: agglomerativo (bottom-up) e divisivo (top-down).\\
+Nel clustering agglomerativo, si parte con ogni punto come un cluster separato, e si uniscono iterativamente i cluster più vicini fino a quando non rimane un solo cluster che contiene tutti i punti. Nel clustering divisivo, si parte con tutti i punti in un unico cluster, e si dividono iterativamente i cluster in sottogruppi più piccoli fino a quando ogni punto è in un cluster separato.
+
+Per stabilire la vicinanza fra cluster ci sono vari metodi di linkage:
+\begin{itemize}
+   \item \textbf{Single linkage} - la distanza tra due cluster è definita come la distanza \textbf{minima} tra i punti dei due cluster. Questo metodo tende a creare cluster allungati e può essere sensibile ai rumori e agli outlier.
+   \item \textbf{Complete linkage} - la distanza tra due cluster è definita come la distanza \textbf{massima} tra i punti dei due cluster. Questo metodo tende a creare cluster più compatti e può essere meno sensibile ai rumori e agli outlier rispetto al single linkage.
+   \item \textbf{Average linkage} - la distanza tra due cluster è definita come la distanza \textbf{media} tra i punti dei due cluster. Questo metodo tende a creare cluster più equilibrati e può essere meno sensibile ai rumori e agli outlier rispetto al single linkage.
+   \item \textbf{Ward's linkage} - la distanza tra due cluster è definita come l'aumento della somma dei quadrati delle distanze all'interno dei cluster che si verifica quando i due cluster vengono uniti. Questo metodo tende a creare cluster più compatti e può essere meno sensibile ai rumori e agli outlier rispetto al single linkage.
+   \[
+      d(c_i,c_j) = |c_i| \cdot |c_j| \cdot \frac{||\mu_i - \mu_j||^2}{|c_i| + |c_j|}
+   \]
+   Dove $|c_i|$ e $|c_j|$ sono le dimensioni dei cluster $c_i$ e $c_j$, e $\mu_i$ e $\mu_j$ sono i centroidi dei cluster $c_i$ e $c_j$. La distanza di Ward's linkage misura l'aumento della somma dei quadrati delle distanze all'interno dei cluster che si verifica quando i due cluster vengono uniti, e quindi tende a creare cluster più compatti.
+   \item \textbf{Centroid linkage} - la distanza tra due cluster è definita come la distanza tra i centroidi dei due cluster. Questo metodo può essere sensibile ai rumori e agli outlier, poiché i centroidi possono essere influenzati da punti anomali.
+\end{itemize}
+
+Questo viene fatto usando una matrice di prossimità, che contiene le distanze tra i cluster nel dataset. La matrice di prossimità viene aggiornata ad ogni iterazione del processo di clustering, e viene utilizzata per determinare quali cluster unire o dividere in base al metodo di linkage scelto.
+\nl
+
+Per quanto riguarda il clustering \textbf{divisivo}, si inizia costruendo un MST (Minimum Spanning Tree) dei dati, e poi si rimuovono iterativamente gli archi più lunghi del MST per dividere i cluster in sottogruppi più piccoli, finché ogni punto è in un cluster separato. 
+% Questo metodo è chiamato divisive hierarchical clustering based on MST, e può essere meno sensibile ai rumori e agli outlier rispetto al clustering agglomerativo, poiché i bordi più lunghi del MST tendono a collegare punti anomali o rumore.
+
+
+\subsubsection{Categorical Features}
+% - Hierarchical clustering: spiegare tutti i tipi di linkage visti; gestione di feature categoriche (es. distanza di Jaccard). (x3)
+% - Hierarchical con feature categoriche (come fare con Jaccard distance)
+In caso di feature categoriche non abbiamo numeri su cui calcolare le distanze, ma possiamo usare la distanza di Jaccard, che misura la dissimilarità tra due insiemi di attributi categorici. La distanza di Jaccard è definita come:
+\[d_j(A,B) = 1 - J(A,B) = 1 - \frac{|A \cap B|}{|A \cup B|}\]
+Dove $A$ e $B$ sono due insiemi di attributi categorici, $|A \cap B|$ è il numero di attributi in comune tra $A$ e $B$,e $|A \cup B|$ è il numero totale di attributi presenti in $A$ o in $B$. La distanza di Jaccard varia tra 0 e 1,dove 0 indica che i due insiemi sono identici, e 1 indica che i due insiemi non hanno attributi in comune. \\
+Utilizzando la distanza di Jaccard come misura di distanza, non possiamo applicare tutti i metodi di linkage, ma solo \textit{single}, \textit{complete} e \textit{average}.\\
+Infatti, per il \textbf{centroid} linkage abbiamo il problema di definire un centroide come media dei punti assegnati al cluster, perché non possiamo calcolare la media di attributi categorici. In questo caso, potremmo definire il centroide come l'istanza più rappresentativa del cluster, ovvero l'istanza che minimizza la distanza media dagli altri punti del cluster, ma questo forse non è sempre possibile, e quindi il centroid linkage potrebbe non essere applicabile in questo caso.\\
+Per il \textbf{Ward's} linkage, invece, abbiamo il problema di definire l'aumento della somma dei quadrati delle distanze all'interno dei cluster che si verifica quando i due cluster vengono uniti, perché non possiamo calcolare la media dei punti assegnati al cluster, e quindi non possiamo calcolare la distanza tra i centroidi dei cluster. 
+
+
+
+\section{Pattern Mining}
+
+\subsection{Rule generation}
+% - Rule generation: come si generano le regole da itemset frequenti. (x1)
+% - rule generation
+% - Merge/join step nel’algoritmo: come si fa il merge e tutti i particolari. (x1)
+
+\subsection{Apriori principle and algorithm}
+% - pattern mining: apriori algorithm
+% - A Priori principle
+% Apriori
+
+
+\subsubsection{Antimonotonicity of support and confidence}
+% - antimonotonia sia nel support che nella confidence
+% - Apriori (frequent itemset mining / pattern mining): come funziona; Apriori principle; pruning; antimonotonicità (supporto e confidence). (x5)
+% - Antimonotonicity of confidence
+
+\subsection{GSP algorithm}
+% - GSP: come funziona
+% - GSP (sequential pattern mining): come funziona; differenze rispetto ad Apriori; vincoli temporali (min-gap, max-gap, max-span) e impatto sul pruning. (x4)
+% - GSP, differences compared to Apriori (e.g. in generating new sequences); time constraints (how GSP changes when they are applied and the reduction in pruning power)
+% GSP
+
+\subsubsection{Time constraints and subsequences}
+% - "dimmi la definizione formale di sottosequenze"
+% - GSP con vincoli temporali: min-gap, max-gap e max span. Cosa cambia con i vincoli temporali in GSP? (ultime slides lo dice)
+% - come si fa il merge e tutti i particolari dell'algoritmo
+% - Definizione formale di sottosequenza (subsequence). (x1)
+
+\subsection{FP-Growth}
+% FP-Growth
+% - fp-growth, miglior ordinamento degli items e perché
+\subsubsection{Is there a better items ordering? Why?}
+% - FP-Growth: come funziona; miglior ordinamento degli item e perché. (x2)
+
+
+\subsection{CORELS}
+% - CORELS: nel search tree, relazione tra un nodo e i figli; riflesso sull’obiettivo di ottimizzazione. (x1)
+% - In the CORELS search tree, what relationships exist between a node and its children? How does this reflect on the optimization objective defined by CORELS?
+
+
+\section{Classification}
+
+\subsection{Bagging e Boosting}
+% Bagging boosting 
+% - Boosting e bagging. (x2)
+\subsubsection{Bagging}
+Il bagging è un metodo di ensemble learning che consiste nel creare più modelli di apprendimento automatico indipendenti, addestrati su campioni casuali del dataset originale (con sostituzione), e poi combinare le loro previsioni per ottenere una previsione finale più robusta. Il bagging è particolarmente efficace nel ridurre la varianza del modello, e può migliorare le prestazioni di modelli instabili come gli alberi decisionali.\\
+L'idea di fondo è che la varianza di più modelli indipendenti sia minore della varianza di un singolo modello.
+Il bagging funziona bene con modelli ad alta varianza e basso bias, come i Decision Tree. ``Bias'' si riferisce a quanto il modello è ``rigido'', se è ad alto bias è un modello semplice, se è a basso bias, ha una maggiore capacità  di catturare la complessità dei dati. ``Varianza'', invece si riferisce alla sensibilità del modello ai cambiamenti nei dati di addestramento. I modelli ad alta varianza tendono a sovradattarsi ai dati di addestramento, mentre i modelli ad alto bias tendono a sottodattarsi. Il bagging aiuta a ridurre la varianza combinando più modelli, e quindi può migliorare le prestazioni di modelli instabili come i Decision Tree.
+
+Il campionamento con rimpiazzo (bootstrap) è importante perché consente di creare modelli indipendenti, addestrati su campioni diversi del dataset originale. Se si utilizzasse un campionamento senza rimpiazzo, i modelli sarebbero addestrati su campioni simili del dataset, e quindi  meno indipendenti, riducendo l'efficacia del bagging nel ridurre la varianza.
+
+Nelle isolation forest si applica bagging sia sulle feature che sulle istanze. Ogni albero dell'ensemble è addestrato su un campione casuale del dataset originale, e su un sottoinsieme casuale delle feature. Ogni albero sarà capace di catturare la complessità dei dati, e sarà anche troppo ``rumoroso'', eccessivamente adattato ai dati di addestramento, ma combinando più alberi, si ottiene una stima più robusta, riducendo la rumorosità ma mantenendo la specificità di ciascun albero, e quindi migliorando le prestazioni complessive dell'ensemble.
+
+\subsubsection{Boosting}
+Boosting crea delle ``soft/fuzzy'' bag. Invece di creare modelli indipendenti, il boosting crea una sequenza di modelli dipendenti, in cui ogni modello successivo cerca di correggere gli errori del modello precedente. In questo senso, i dati vengono sempre usati tutti, ma a ciascuna iterazione con pesi diversi.
+Il boosting è particolarmente efficace nel ridurre il bias del modello, e può migliorare le prestazioni di modelli stabili come i Decision Tree.
+
+Il boosting può essere interpretato nello spazio delle funzioni come un gradient descent, in cui ogni modello successivo cerca di minimizzare la funzione di perdita del modello precedente, seguendo il gradiente negativo della funzione di perdita. 
+Essendo lo spazio delle funzioni non necessariamente continuo, e non necessariamente differenziabile, il boosting utilizza una stima del gradiente, basata sui residui del modello precedente, per aggiornare i pesi dei dati e addestrare il modello successivo, in modo che sia il più vicino possibile alla direzione ``pura'' del gradiente negativo della funzione di perdita.
+
+È importante il learning step $\eta_t$ che controlla quanto ci spostiamo nella direzione del gradiente negativo, e quindi quanto il modello successivo cerca di correggere gli errori del modello precedente. Se $\eta_t$ è troppo grande, potremmo sovradattare i dati di addestramento all'iterazione $t$, mentre se è troppo piccolo, potremmo non correggere sufficientemente gli errori del modello precedente, e quindi non migliorare le prestazioni complessive dell'ensemble. 
+
+Lo spazio delle funzioni può essere qualunque modello, lo spazio dei Decision Trees, della Regressione Lineare, ecc\dots
+
+\subsection{Decision Trees}
+
+% - Decision Tree: come scegliere lo split (threshold o probability). (x1)
+% - how to split for DT (threshold or probability)
+
+\subsubsection{Threshold or Probability?}
+
+
+
+\section{Time Series}
+
+\subsection{Shapelet extraction and classification}
+% - classificazione con shapelet: come si fa
+% - estrazione degli shapelets
+% Shapelet
+% - Shapelets: classificazione; estrazione degli shapelets; (se richiesto) uso di istogrammi. (x4)
+\subsubsection{How are Histogram used in Shapelet classification?}
+% - classification with shapelets (say that histogram are used, they want it to be said)
+\subsection{Motif extraction}
+% - come si trovano i motif
+% - Motif discovery (time series): come si trovano; algoritmo di estrazione; differenza con shapelet. (x3)
+% - differenza tra shaplet e motif e algoritmo per estrarre i motif
+\subsubsection{Motif vs Shapelets}
+% TimeSeries Motif discovery
+\subsection{Fourier vs Wavelet representation}
+% Fourier e wavelets
+% - Fourier e wavelet representation: Fourier (phasor → ampiezza) e wavelet (rappresentazione multi-risoluzione). (x3)
+\subsubsection{How does a phasor define amplitude?}
+% - In Fourier analysis, how does a phasor define amplitude?
+\subsection{Dynamic Time Warping}
+% - Dynamic Time Warping (DTW): uso per shapelet/classification; invarianza a time shifts e come limitarla a local shifts; definizione di “warp” (casi di allineamento). (x3)
+% - DTW come utilizzarlo per shapelet e classification
+\subsubsection{Invariance of DTW to time shifts}
+% - Dynamic Time Warping is invariant to time shifts. In order to allow invariances to local shifts only, which solution can we apply?
+
+
+\section{XAI}
+% - SHAP, LIME, LORE. (x1)
+% - SHAP, LIME, LORE
+
+\subsection{SHAP}
+
+\subsection{LIME}
+
+\subsection{LORE}
+
+
+
+% Francesco, [28/01/2026 11:49]
+% domande DM (tra stamani e leggendo quello di altre persone quest'anno e anni passati, ordine sparso):
+% - Esercizi non ne chiede quest'anno sembra, ma saper fare quelli sulle slides aiuta, consigliato
+
+% Giovanni
+% Riguardando nel gruppo a me chiese:
+% Ricordo che anche se dovevo avere l’orale semplificato perché avevo fatto il paper la Monreale non aveva avvertito il Setzu della cosa e quindi ci fece comunque l’orale completo
+
+
+
+
+
+% Gruppo DM
+% Convergenza K-Means
+% Leonardo Cozzolino, [28/01/2026 12:01]
+% - Esercizi delle slide: saperli fare (anche se “quest’anno sembra non li chieda”). (x1)
+
+% MONREALE:
+
+% SETZU:
+% SCRITTO:

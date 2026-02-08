@@ -97,12 +97,12 @@ S_1 \subseteq S_2 \implies support(S_1) \geq support(S_2)
 \]
 \note{\textbf{Proof}: Any input sequence that contains S2 will also contain S1}
 
-\begin{figure}[htbp]
-   \centering
-   \includegraphics{images/09/gspExample.png}
-   \caption{GSP example}
-   \label{fig:09/gspExample}
-\end{figure}
+% \begin{figure}[htbp]
+%    \centering
+%    \includegraphics{images/09/gspExample.png}
+%    \caption{GSP example}
+%    \label{fig:09/gspExample}
+% \end{figure}
 
 \begin{algorithm}
 \caption{GSP - Generalized Sequential Pattern}
@@ -183,7 +183,7 @@ Given $n$ events: $i_1, i_2, i_3, \dots, i_n$
             \item Special case: check if $w_1$ can be merged with itself
             \begin{itemize}
                 \item Works when it contains only one event type: $\langle\{a\}\{a\}\rangle + \langle\{a\}\{a\}\rangle = \langle\{a\}\{a\}\{a\}\rangle$
-                \item This woudl not work
+                \item This would not work
                 \[\langle\{a,b\}\{a,b\}\rangle + \langle\{a,b\}\{a,b\}\rangle = \textit{!!!}\]
             \end{itemize}
         \end{itemize}
@@ -213,6 +213,8 @@ Given $n$ events: $i_1, i_2, i_3, \dots, i_n$
 Candidate pruning follows ---again--- the Apriori principle:
 If a k-sequence $W$ contains a $(k-1)$-subsequence that is not frequent, then $W$ is not frequent and can be pruned.
 
+\note{No need to evaluate $(k-2)$-subsequences, because they have already been checked at the previous step! If one of them was not frequent, one of the $(k-1)$-subsequences containing it would also be infrequent, and we would have already pruned $W$ at that step.}
+
 \textbf{Method:}
 \begin{itemize}
     \item Enumerate all $(k-1)$-subsequences:
@@ -233,7 +235,7 @@ If a k-sequence $W$ contains a $(k-1)$-subsequence that is not frequent, then $W
     \end{itemize}
 \end{itemize}
 
-\newpage
+% \newpage
 \begin{figure}[htbp]
     \centering
     \includegraphics{images/09/candidatePruning.png}
@@ -266,12 +268,14 @@ In some applications, it is useful to impose timing constraints on the sequentia
 An approach to enforce timing constraints is to mine sequential patterns without constraints and then filter the resulting patterns by checking their instances against the timing constraints. This however could be inefficient if many patterns are generated that do not satisfy the timing constraints.
 
 It would be better to modify GSP to take timing constraints into account during candidate generation and support counting. This would reduce the number of candidates generated and the number of instances counted that do not satisfy the timing constraints.\\
-However we must ensure that the Apriori principle still holds when timing constraints are applied.
+However we must ensure that the Apriori principle still holds when timing constraints are applied.\\
+In the algorithm when we check whether a subsequence is frequent, do we have also to check whether it satisfies the given timing constraints, or is it sufficient to check only the support?
+The answer depends on the type of timing constraint:
 
 
 \begin{itemize}
     \item 
-    \textsc{Span}\\
+    \textsc{max-span}\\
     If we remove instances in the middle, the span remains the same. If we remove from the edges, the span can only decrease. 
 % Therefore, if a sequence does not satisfy the max span constraint, none of its super-sequences will satisfy it.
 
@@ -284,7 +288,6 @@ However we must ensure that the Apriori principle still holds when timing constr
     We need to use \textbf{contiguous subsequences} to ensure that the max-gap constraint is preserved when generating candidates and counting support.
 
 \end{itemize}
-
 
 \subsection{Contiguous Subsequences}
 
