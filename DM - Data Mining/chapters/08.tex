@@ -625,7 +625,11 @@ l_0(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\Big(1-
 \operatorname{supp}(P_R,x)\Big)\;
 \mathbf{1}[y\neq y_R^{0}]
 \]
-
+\[
+l_0(R,X,Y)=\frac{1}{n}\sum_{(x,y)\in X\times Y}\Big(
+\operatorname{supp}(y_R^0,x)\Big)\;
+\mathbf{1}[y\neq y_R^{0}]\qquad \text{alternative definition}
+\]
 
 To read the formula, the fraction and the sum over $X \times Y$ is just the average over all instances, which will yield a ratio.
 Recall that $\operatorname{supp}_{P_R}(p_R^j,x)$ is $1$ if rule $j$ is the first rule to satisfy instance $x$, and $0$ otherwise, and that \ul{\textit{exactly one} rule will satisfy} $x$.
@@ -647,8 +651,10 @@ In general less rules mean more generalization and interpretability, so we want 
    b(R,X,Y) &= l_R(R,X,Y) + \lambda k^R \leq L(R,X,Y)
 \end{align*}
 
-
-\note{In formulas this  is a mess, and I couldn't get it.}
+$\lambda k^R$ accounts for the complexity of the rule list, with $\lambda$ controlling how much we want to penalize longer lists.
+Being $l_R(R,X,Y)$ the empirical error due to the rules in the list, 
+it is smaller than $L(R,X,Y)$, which also includes the error due to the default rule.\\
+That is, the lower bound $b(R,X,Y)$ is a lower bound on the total loss $L(R,X,Y)$, because it only accounts for the error due to the rules, and not for the error due to the default rule.
 
 The overall idea, if I understood correctly is that extensions $R^+$ of a rule list $R$ will always have a loss $L_R(R^+)$ greater than or equal to the loss of the parent rule list $L_R(R)$, because adding more rules can only increase the number of misclassifications (or leave it unchanged, because the rules in $R$ have priority, and if they were picked before, they will still be picked even if there are more rules ``at the bottom'').
 We can only decrease $L_0(R)$, the loss due to the default rule.
@@ -673,7 +679,7 @@ sequences so that we can have
 prefixes
 % • Otherwise, there is no common prefix
 % between sets {A,B} and {B,C,A}
-We need to impose an order to the items.Initially, we assume a lexicographic order.
+We need to impose an order to the items. Initially, we assume a lexicographic order.
 
 \begin{figure}[htbp]
    \centering
@@ -701,7 +707,7 @@ The method we can exploit follows the divide-and-conquer paradigm, and it is cal
 The intuition is the following: consider all itemsets that end with a given suffix $X$, for instance $EDCBA$.
 \begin{itemize}
    \item For each possible ending item, consider the itemsets with the last item equal to one of items preceding it in the ordering
-   \item e.g. for E, consider all itemsets with last item $DCBA$. In this way we get all the itemsets ending at $DE, CE, BE, AE$.
+   \item e.g. for E, consider all itemsets with last item $D,C,B$ or $A$. In this way we get all the itemsets ending at $DE, CE, BE, AE$.
    \item Proceed recursively in this way.
    \item Iterate for all the items.
 \end{itemize}
@@ -709,7 +715,7 @@ The intuition is the following: consider all itemsets that end with a given suff
 \begin{figure}[htbp]
    \centering
    \includegraphics{images/08/frequentItemsets.png}
-   \caption{Searching for frequent itemsets}
+   \caption{This represents the search space of possible solutions. As you can see A has no children, because it's the first item in the ordering, so there may be no items preceding it. This contains all the suffixes we will consider at each iteration of the algorithm. There may be some suffixes which do not occur in the transactions, but we will consider them anyway, and then we will find out that they are not frequent.}
    \label{fig:08/frequentItemsets}
 \end{figure}
 
@@ -785,6 +791,7 @@ The intuition is the following: consider all itemsets that end with a given suff
    \paragraph*{Repeat recuversively}:
    At this point we have to repeat the process for ${DE},{CE},{AE}$.
    We start off with ${DE}$, removing nodes without $D$ as suffix.
+   \note{$AE$ does not appear in the dataset, but we will consider it anyway because it is present in the search space in \autoref{fig:08/frequentItemsets}, and then we will find out that it is not frequent.}
    \colfill
 
    \switchcolumn

@@ -45,8 +45,11 @@ Più nello specifico, t-SNE cerca di ottimizzare la posizione dei punti per mini
 
 \subsection{Handling unbalanced classes}
 % - Gestione di classi sbilanciate (unbalanced classes). (x1)
+% - how to handle unbalanced classes
 
-TODO
+TODO 
+
+No clue, many answers are possible\dots
 
 
 \subsection{UMAP and manifold learning}
@@ -103,12 +106,7 @@ Ricordando che gli autovettori di una matrice $A$ sono, in generale, vettori $v$
 Dopo l'applicazione della PCA, i dati proiettati $\hat{X}$ hanno una matrice di covarianza che è diagonale, con gli autovalori sulla diagonale. Questo significa che le componenti principali sono ortogonali tra loro e non sono correlate, e la varianza è catturata lungo queste componenti principali. In altre parole, la matrice di covarianza dei dati proiettati è data da $\hat{\Sigma} = V^T \bar{\Sigma} V$, dove $V$ è la matrice degli autovettori della matrice di covarianza originale. Poiché $V$ diagonalizza $\bar{\Sigma}$, otteniamo una matrice diagonale $\hat{\Sigma}$ con gli autovalori sulla diagonale, rappresentando la varianza catturata da ciascuna componente principale.
 
 
-\subsection{How do we handle unbalanced classes?}
-% - how to handle unbalanced classes
 
-TODO 
-
-No clue, many answers are possible\dots
 
 
 \subsection{What is Grubbs' test algorithm?}
@@ -430,15 +428,27 @@ Per il \textbf{Ward's} linkage, invece, abbiamo il problema di definire l'aument
 
 \section{Pattern Mining}
 
-\subsection{Rule generation}
-% - Rule generation: come si generano le regole da itemset frequenti. (x1)
-% - rule generation
-% - Merge/join step nel’algoritmo: come si fa il merge e tutti i particolari. (x1)
 
 \subsection{Apriori principle and algorithm}
 % - pattern mining: apriori algorithm
 % - A Priori principle
 % Apriori
+
+Innanzitutto, un \textbf{itemset} è una collezione di uno o più item, e un itemset è \textbf{frequente} se la sua frequenza (o supporto) nel dataset è maggiore o uguale a una soglia minima di supporto.
+
+Se il support count è denotato da $\sigma(X)$ (ovvero l'effettivo numero di occurrenze di $X$ nel dataset), allora il supporto di una regola di associazione $X \rightarrow Y$ è il seguente, con $T$ che rappresenta le transazioni nel dataset:
+\[s = \frac{\sigma(X\cup Y)}{|T|}\]
+La sua confidence invece è la proporzione delle transizioni che contengono $X$ che contengono anche $Y$ rispetto a tutte le transazioni che contengono $X$:
+\[c = \frac{\sigma(X\cup Y)}{\sigma(X)}\]
+
+L'obiettivo del association rule mining è di trovare tutte le regole tali che il loro supporto è maggiore o uguale a una soglia minima di supporto, e la loro confidence è maggiore o uguale a una soglia minima di confidence.
+
+Enumerare tutte le regole di associazione è computazionalmente proibitivo, perché il numero di possibili regole cresce esponenzialmente con il numero di item nel dataset. 
+L'approccio segue due step:
+\begin{enumerate}
+   \item Generazione degli itemset frequenti - si generano tutti gli itemset che hanno un supporto maggiore o uguale alla soglia minima di supporto.
+   \item Generazione delle regole di associazione - si generano tutte le regole di associazione che hanno un supporto maggiore o uguale alla soglia minima di supporto e una confidence maggiore o uguale alla soglia minima di confidence, a partire dagli itemset frequenti
+\end{enumerate}
 
 
 \subsubsection{Antimonotonicity of support and confidence}
@@ -446,28 +456,255 @@ Per il \textbf{Ward's} linkage, invece, abbiamo il problema di definire l'aument
 % - Apriori (frequent itemset mining / pattern mining): come funziona; Apriori principle; pruning; antimonotonicità (supporto e confidence). (x5)
 % - Antimonotonicity of confidence
 
+Per trovare efficientemente tutti gli itemset frequenti, si usa l'Apriori principle, che afferma che se un itemset è frequente, allora tutti i suoi sottoinsiemi sono frequenti. Questo ci permette di ridurre lo spazio di ricerca, perché possiamo escludere tutti gli itemset che contengono un itemset non frequente.
+\[
+\forall X,Y : (X\subseteq Y)
+\]
+Il supporto di un itemset $Y$ è sempre minore o uguale al supporto di un suo sottoinsieme $X$, perché ogni transazione che contiene $Y$ contiene anche $X$. Quindi, se $Y$ è frequente, allora $X$ deve essere frequente, e se $X$ non è frequente, allora $Y$ non può essere frequente.
+
+Per la confidence è leggermente diverso, non c'è una relazione di antimonotonicità diretta: $c(ABC \rightarrow D)$ non è necessariamente maggiore o uguale a $c(AB \rightarrow D)$, perché la confidence dipende dal supporto di $X$ e $X \cup Y$, e non c'è una relazione di inclusione diretta tra questi due itemset. Tuttavia, se consideriamo regole generate dallo stesso itemset, allora possiamo osservare un'anti-monotonicità della confidence rispetto al numero di item sul lato destro della regola. Ad esempio, se ${A,B,C,D}$ è un frequent 4-itemset, allora possiamo generare le seguenti regole:
+\[c(ABC \rightarrow D) \geq c(AB \rightarrow CD) \geq c(A \rightarrow BCD)\]
+Infatti ricordando la formula della confidence
+\[c(X \Rightarrow Y) = \frac{\sigma(X \cup Y)}{\sigma(X)}\]
+Il numeratore $\sigma(X \cup Y)$ rimane lo stesso mentre il denominatore $\sigma(X)$ diminuisce man mano che spostiamo gli item dal lato destro al lato sinistro della regola, perché $\sigma(A) \geq \sigma(AB) \geq \sigma(ABC)$ secondo il principio di Apriori, portando a un aumento della confidence.
+
+
+% In general, confidence does not have an antimonotone
+% property, so $c(ABC \rightarrow D)$ can be larger or smaller than $c(AB \rightarrow D)$.
+% However, confidence of rules generated from the same itemset has an anti-monotone property. 
+% E.g., Suppose ${A,B,C,D}$ is a frequent 4-itemset:
+% \[c(ABC \rightarrow D) \geq c(AB \rightarrow CD) \geq c(A \rightarrow BCD)\]
+% Confidence is anti-monotone w.r.t. number of items on the right-hand-side (RHS) of the rule. This happens because, recalling the confidence formula 
+% \[c(X \Rightarrow Y) = \frac{\sigma(X \cup Y)}{\sigma(X)}\]
+% the numerator $\sigma(X \cup Y)$ remains the same while the denominator $\sigma(X)$ decreases as we move items from the RHS to the left-hand-side (LHS) of the rule, because $\sigma(A) \geq \sigma(AB) \geq \sigma(ABC)$ according to the Apriori principle, yielding an increase in confidence.
+
+
+
+\subsubsection{Rule generation}
+% - Rule generation: come si generano le regole da itemset frequenti. (x1)
+% - rule generation
+% - Merge/join step nel’algoritmo: come si fa il merge e tutti i particolari. (x1)
+
+\begin{algorithm}[H]
+\caption{Apriori Algorithm}
+\begin{algorithmic}[1]
+\State $k \gets 1$
+\State $F_1 \gets \{\text{frequent 1-itemsets}\}$ \Comment{Scan database and count support of each item}
+\Repeat
+\State $L_{k+1} \gets$ \textbf{Candidate Generation} from $F_k$ \Comment{Generate candidate $(k+1)$-itemsets}
+\State $L_{k+1} \gets$ \textbf{Candidate Pruning} of $L_{k+1}$ \Comment{Prune candidates with infrequent $k$-subsets}
+\State Scan transaction database to count support of each candidate in $L_{k+1}$
+\State $F_{k+1} \gets$ candidates in $L_{k+1}$ with support $\geq$ minsup
+\State $k \gets k + 1$
+\Until{$F_k = \emptyset$ or $|F_k| = 1$}
+\State \Return $\bigcup_k F_k$ \Comment{Return all frequent itemsets}
+\end{algorithmic}
+\end{algorithm}
+
+Si parte dall'insieme di frequent 1-itemsets, che si può trovare banalmente.
+Al passo induttivo, si generano dei candidati $L_{k+1}$ con il metodo del prefisso $F_{k-1} \times F_{k-1}$ oppure un alternativo $F_{k-1} \times F_{k-1}$ (stessa sigla), poi si esegue un pruning step, in cui si eliminano tutti i candidati che contengono un sottoinsieme non frequente, e infine si conta il supporto dei candidati rimanenti per determinare quali sono effettivamente frequenti.
+Se l'insieme di itemset frequenti $F_k$ è vuoto o contiene un singolo elemento, allora l'algoritmo termina, altrimenti si continua con il passo induttivo successivo.
+
+Il metodo del prefisso $F_{k-1} \times F_{k-1}$ consiste nel generare candidati di lunghezza $k$ unendo coppie di itemset frequenti di lunghezza $k-1$ che condividono un prefisso comune di lunghezza $k-2$. Ad esempio, se $F_3$ contiene gli itemset $\{A,B,C\}$ e $\{A,B,D\}$, allora possiamo generare il candidato $\{A,B,C,D\}$ unendo questi due itemset, perché condividono il prefisso comune $\{A,B\}$.
+
+Il metodo alternativo $F_{k-1} \times F_{k-1}$ consiste nel generare candidati di lunghezza $k$ unendo due itemset frequenti di lunghezza $k-1$ se gli ultimi $k-2$ item di uno sono uguali ai primi $k-2$ item dell'altro. Ad esempio, se $F_3$ contiene gli itemset $\{A,B,C\}$ e $\{B,C,D\}$, allora possiamo generare il candidato $\{A,B,C,D\}$ unendo questi due itemset, perché gli ultimi $k-2=1$ item di $\{A,B,C\}$ (ovvero $C$) sono uguali ai primi $k-2=1$ item di $\{B,C,D\}$ (ovvero $B$).
+
+
+Per quanto riguarda il \textbf{pruning step}, si eliminano tutti i candidati che contengono un sottoinsieme non frequente, perché secondo il principio di Apriori, se un itemset è frequente, allora tutti i suoi sottoinsiemi devono essere frequenti. Quindi, se un candidato contiene un sottoinsieme che non è frequente, allora quel candidato non può essere frequente, e quindi viene eliminato dallo spazio di ricerca.
+
+\begin{align*}
+   F_3 = {ABC, ABD, ABE,ACD,BCD,BDE,CDE} \\
+   L_4 = {ABCD, ACDE, ABDE, BCDE}
+\end{align*}
+{Per fare il pruning dei candidati in $L_4$ dobbiamo verificare se tutti i loro possibili sottoinsiemi di 3-item sono in $F_3$:\ns
+\begin{itemize}
+   \item $ABCD$ - tutti i sottoinsiemi sono frequenti - mantieni
+   \item $ACDE$ - $ADE$ e $ACE$ non sono frequenti - elimina
+   \item $ABDE$ - $ADE$ non è frequente - elimina
+   \item $BCDE$ - $BCE$ non è frequente - elimina
+\end{itemize}}
+
+
+\subsubsection{Rule Generation}
+
+Avendo ottenuto gli itemset frequenti, dobbiamo generare regole di associazione che soddisfino le soglie di supporto e confidence. 
+Si costruisce un \textit{lattice} di regole a partire dagli itemset frequenti più lunghi, e da ciascuno di questi si generano regole spostando un item alla volta dal lato sinistro al lato destro della regola, e calcolando la confidence di ciascuna regola generata. Se la confidence di una regola è maggiore o uguale alla soglia minima di confidence, allora quella regola viene mantenuta, altrimenti viene eliminata dallo spazio di ricerca, insieme a tutte le regole ottenute spostando altri elementi da sinistra a destra.
+Guardando il lattice in \autoref{fig:08/confidenceLattice} è più semplice da capire.
+Partendo da $ABCD \Rightarrow {}$, possiamo generare le seguenti regole:
+\begin{align*}
+   ABC \Rightarrow D \\
+   ABD \Rightarrow C \\
+   ACD \Rightarrow B \\
+   BCD \Rightarrow A
+\end{align*}
+Se ad esempio $c(ABC \Rightarrow D) < minconf$, allora eliminiamo questa regola, e tutte le regole che si ottengono spostando altri elementi da sinistra a destra, ovvero $AB \Rightarrow CD$, $AC \Rightarrow BD$, $BC \Rightarrow AD$, $A \Rightarrow BCD$, $B \Rightarrow ACD$, $C \Rightarrow ABD$ e $D \Rightarrow ABC$.
+E così via.
+
+
 \subsection{GSP algorithm}
 % - GSP: come funziona
 % - GSP (sequential pattern mining): come funziona; differenze rispetto ad Apriori; vincoli temporali (min-gap, max-gap, max-span) e impatto sul pruning. (x4)
 % - GSP, differences compared to Apriori (e.g. in generating new sequences); time constraints (how GSP changes when they are applied and the reduction in pruning power)
 % GSP
 
-\subsubsection{Time constraints and subsequences}
-% - "dimmi la definizione formale di sottosequenze"
-% - GSP con vincoli temporali: min-gap, max-gap e max span. Cosa cambia con i vincoli temporali in GSP? (ultime slides lo dice)
-% - come si fa il merge e tutti i particolari dell'algoritmo
+GSP (Generalized Sequential Pattern) è un algoritmo di mining di pattern sequenziali che mira a trovare tutte le sequenze frequenti in un dataset di sequenze, dove una sequenza è un insieme ordinato di itemset. GSP è un'estensione dell'Apriori algorithm, e condivide con esso il principio di Apriori, che afferma che se una sequenza è frequente, allora tutte le sue sottosequenze sono frequenti. Tuttavia, GSP introduce alcune differenze rispetto ad Apriori, principalmente nella generazione delle nuove sequenze e nella gestione dei vincoli temporali.
+
+Intanto, una \ul{sequenza è una lista ordinata di elementi (transazioni/itemsets)}. Un elemento è un insieme di item (o ``eventi'') che occorrono simultaneamente a un timestamp $t$.\\
+Una k-sequence contiene $k$ \textit{eventi} ($\neq$ elementi!).
+
+
 % - Definizione formale di sottosequenza (subsequence). (x1)
+% - "dimmi la definizione formale di sottosequenze"
+È importante definire anche le sottosequenze.
+Una sequenza $s_a = \langle a_1,a_2,...,a_n \rangle$ è una sottosequenza di $s_b = \langle b_1,b_2,...,b_m \rangle$ se esiste una sequenza di indici $1 \leq i_1 < i_2 < ... < i_n \leq m$ tale che $a_1 \subseteq b_{i_1}$, $a_2 \subseteq b_{i_2}$, ..., $a_n \subseteq b_{i_n}$. In altre parole, $s_a$ è una sottosequenza di $s_b$ se possiamo trovare gli elementi di $s_a$ in $s_b$ nell'ordine corretto, anche se non necessariamente consecutivi.
+
+
+L'Apriori principle, adattato per le sequenze, si formula così:
+\[
+\forall S, S' : (S \subseteq S') \Rightarrow (support(S) \geq support(S'))
+\]
+Ovvero, se una sequenza $S'$ è frequente, allora tutte le sue sottosequenze $S$ devono essere frequenti, perché ogni sequenza che contiene $S'$ contiene anche $S$, e quindi il supporto di $S$ deve essere maggiore o uguale al supporto di $S'$.
+
+L'algoritmo è strutturato così:
+\begin{enumerate}
+   \item Generazione delle sequenze frequenti di lunghezza 1 - si generano tutte le sequenze di lunghezza 1 che hanno un supporto maggiore o uguale alla soglia minima di supporto.
+   \item Passo induttivo
+   \begin{enumerate}
+      \item Generazione Candidati - unisci coppie di sottosequenze frequenti di lunghezza $k-1$ che condividono un prefisso comune di lunghezza $k-2$ per generare candidati di lunghezza $k$.
+      \item Pruning - elimina tutti i candidati che contengono una sottosequenza non frequente, perché secondo il principio di Apriori, se una sequenza è frequente, allora tutte le sue sottosequenze devono essere frequenti.
+      \item Conta il supporto dei candidati rimanenti per determinare quali sono effettivamente frequenti.
+      \item Elimina i candidati che non soddisfano la soglia minima di supporto.
+   \end{enumerate}
+\end{enumerate}
+
+% - come si fa il merge e tutti i particolari dell'algoritmo
+L'operazione di \textbf{merge} dei candidati è la più critica. 
+\begin{itemize}
+   \item Caso base ($k=2$): unisci coppie di sequenze frequenti di lunghezza 1 per generare candidati di lunghezza 2. Ad esempio, se $F_1$ contiene le sequenze $\{A\}$ e $\{B\}$, allora possiamo generare i candidati $\{A\}\{B\}$ e $\{B\}\{A\}$ unendo queste due sequenze, perché condividono il prefisso comune $\{\}$.\\
+   Si può anche fare il merge di una sequenza con sé stessa, ad esempio $\{A\}\{A\}$.
+   \item Passo induttivo ($k>2$): unisci coppie di sequenze $w_1$ e $w_2$ frequenti di lunghezza $k-1$ se la sottosequenza $w_1[2:k-1]$ è uguale alla sottosequenza $w_2[1:k-2]$, ovvero se rimuovendo il primo evento da $w_1$ otteniamo la stessa sequenza che si ottiene rimuovendo l'ultimo evento da $w_2$.\\ 
+   Ad esempio, se $F_3$ contiene le sequenze $\{A\}\{B\}\{C\}$ e $\{B\}\{C\}\{D\}$, allora possiamo generare il candidato $\{A\}\{B\}\{C\}\{D\}$ unendo queste due sequenze, perché la sottosequenza $\{B\}\{C\}$ di $w_1$ è uguale alla sottosequenza $\{B\}\{C\}$ di $w_2$.
+
+   Bisogna porre attenzione agli elementi.
+
+   \begin{itemize}
+      \item Se gli ultimi due eventi in $w_2$ appartengono allo stesso elemento, allora l'ultimo evento in $w_2$ diventa parte dell'ultimo elemento in $w_1$. Ad esempio, se $w_1 = \langle\{d\}\{a\}\{b\}\rangle$ e $w_2 = \langle\{a\}\{b,c\}\rangle$, allora possiamo generare il candidato $\langle\{d\}\{a\}\{b,c\}\rangle$ unendo queste due sequenze, perché se rimuoviamo il primo evento da $w_1$ otteniamo $\langle\{a\}\{b\}\rangle$, e se rimuoviamo l'ultimo evento da $w_2$ otteniamo $\langle\{a\}\{b\}\rangle$, che sono la stessa sequenza.\\
+      \item Altrimenti, l'ultimo evento in $w_2$ diventa un elemento separato aggiunto alla fine di $w_1$. Ad esempio, se $w_1 = \langle\{a,d\}\{b\}\rangle$ e $w_2 = \langle\{d\}\{b\}\{c\}\rangle$, allora possiamo generare il candidato $\langle\{a,d\}\{b\}\{c\}\rangle$ unendo queste due sequenze, perché se rimuoviamo il primo evento da $w_1$ otteniamo $\langle\{d\}\{b\}\rangle$, e se rimuoviamo l'ultimo evento da $w_2$ otteniamo $\langle\{d\}\{b\}\rangle$, che sono la stessa sequenza.
+      \item Quello che non possiamo fare è: se $w_1 = \langle\{d\}\{a,b\}\rangle$ e $w_2 = \langle\{a\}\{b,d\}\rangle$, non possiamo generare il candidato $\langle\{d\}\{a,b,d\}\rangle$ unendo queste due sequenze, perché se rimuoviamo il primo evento da $w_1$ otteniamo $\langle\{a,b\}\rangle$, e se rimuoviamo l'ultimo evento da $w_2$ otteniamo $\langle\{a\}\{b\}\rangle$, che non sono la stessa sequenza, seppur abbiano gli stessi eventi, perché la sequenza è definita in termini di elementi, non solo di eventi.
+   \end{itemize}
+\end{itemize}
+
+\subsubsection{Time constraints}
+% - GSP con vincoli temporali: min-gap, max-gap e max span. Cosa cambia con i vincoli temporali in GSP? (ultime slides lo dice)
+
+Sulle transazioni è possibile porre dei vincoli temporali, come il min-gap, il max-gap e il max-span, che limitano le sequenze che possono essere considerate frequenti.
+\begin{itemize}
+   \item Il min-gap è il tempo minimo che deve intercorrere tra due eventi consecutivi in una sequenza. Ad esempio, se il min-gap è di 5 minuti, allora una sequenza come $\langle\{A\}\{B\}\rangle$ non sarebbe considerata frequente se gli eventi $A$ e $B$ si verificano a meno di 5 minuti di distanza l'uno dall'altro.
+   \item Il max-gap è il tempo massimo che può intercorrere tra due eventi consecutivi in una sequenza. Ad esempio, se il max-gap è di 30 minuti, allora una sequenza come $\langle\{A\}\{B\}\rangle$ non sarebbe considerata frequente se gli eventi $A$ e $B$ si verificano a più di 30 minuti di distanza l'uno dall'altro.
+   \item Il max-span è il tempo massimo che può intercorrere tra il primo e l'ultimo evento in una sequenza. Ad esempio, se il max-span è di 1 ora, allora una sequenza come $\langle\{A\}\{B\}\{C\}\rangle$ non sarebbe considerata frequente se gli eventi $A$ e $C$ si verificano a più di 1 ora di distanza l'uno dall'altro, anche se $A$ e $B$ e $B$ e $C$ si verificano a meno di 1 ora di distanza l'uno dall'altro.
+\end{itemize}
+Si pone un problema fondamentale. Nella fase di pruning consideriamo tutte le possibili sottosequenze dei candidati, ma se ci sono dei vincoli temporali, non tutte le sottosequenze di un candidato sono valide, perché potrebbero non soddisfare i vincoli temporali.\\
+Per min-gap e max-span non c'è problema, perché rimuovere un evento da una sequenza non può che aumentare il gap fra gli eventi, o ridurre lo span della sequenza. Per \textit{max-gap} invece questo non è vero, perché rimuovere un evento da una sequenza può ridurre il gap fra gli eventi, e quindi potrebbe rendere una sottosequenza valida che altrimenti non sarebbe valida.\\
+Per porre rimedio, si utilizza la nozione di \textbf{sottosequenze contigue}.
+$s$ è una sottosequenza contigua di $w = \langle e_1 \rangle \langle e_2 \rangle \dots \langle e_k \rangle$ se una delle seguenti condizioni è soddisfatta:
+\begin{itemize}
+   \item $s$ è ottenuta da $w$ cancellando un evento da $e_1$ o da $e_k$. Ad esempio, se $w = \langle\{A\},\{B\}\{C\}\angle$, allora $s = \langle\{B\}\{C\}\rangle$ è una sottosequenza contigua di $w$, perché si ottiene cancellando l'evento $A$ da $e_1$.
+   \item $s$ è ottenuta da $w$ cancellando un evento da un elemento $e_i$ che contiene almeno 2 eventi. Ad esempio, se $w = \langle\{A,B\}\{C\}\angle$, allora $s = \langle\{A\}\{C\}\rangle$ è una sottosequenza contigua di $w$, perché si ottiene cancellando l'evento $B$ da $e_1$.
+   \item $s$ è una sottosequenza contigua di $s'$ e $s'$ è una sottosequenza contigua di $w$. 
+\end{itemize}
 
 \subsection{FP-Growth}
 % FP-Growth
-% - fp-growth, miglior ordinamento degli items e perché
-\subsubsection{Is there a better items ordering? Why?}
-% - FP-Growth: come funziona; miglior ordinamento degli item e perché. (x2)
+Possiamo costruire un trie per rappresentare tutte le transazioni del dataset, in cui ogni nodo rappresenta un item, e ogni percorso dalla radice a una foglia rappresenta una transazione. 
 
+L'algoritmo FP-Growth utilizza una struttura dati chiamata FP-Tree (Frequent Pattern Tree) per rappresentare il dataset in modo compatto, e poi esegue una ricerca ricorsiva per trovare tutti gli itemset frequenti.
+L'FP-Tree è costruito in due passaggi:
+\begin{enumerate}
+   \item Scansione del dataset per contare il supporto di ogni item, e per ordinare gli item in ordine decrescente di supporto (oppure lessicografico). Gli item che non soddisfano la soglia minima di supporto vengono eliminati.
+   \note{Gli itemset, di base, non hanno un ordinamento fra gli item, dobbiamo imporlo noi.}
+   \item Scansione del dataset per costruire l'FP-Tree, inserendo ogni transazione ordinata secondo l'ordinamento degli item stabilito nel passo precedente. Ogni nodo dell'FP-Tree rappresenta un item, e contiene un contatore che indica quante transazioni contengono quel nodo. Inoltre, ogni nodo contiene un puntatore al nodo successivo che rappresenta lo stesso item, in modo da poter facilmente accedere a tutte le transazioni che contengono un certo item.
+\end{enumerate}
+
+\framedt{Miglior ordinamento nell'itemset}{
+   L'ordinamento degli item all'interno di un itemset è cruciale per l'efficienza dell'algoritmo FP-Growth. Gli itemset, di base, non hanno un ordinamento fra gli item, quindi dobbiamo imporlo noi. Un ordinamento comune (e il migliore) è quello decrescente in base al supporto degli item, in modo da massimizzare la condivisione dei prefissi nell'FP-Tree.\\
+   Fare diversamente può portare ad avere più foglie.\\
+   Consideriamo il caso estremo in cui abbiamo itemset della forma $\{A,Z\},\{B,Z\},\{C,Z\},\{D,Z\},\{E,Z\}\dots\{Y,Z\}$, con $Z$ l'item più frequente. 
+   Se ordinassimo con ordine lessicografico (crescente) avremmo 25 rami, uno per lettera, ciascuno con un figlio $Z$. Invece, se ordiniamo gli item in ordine decrescente di supporto, otteniamo un FP-Tree con un solo ramo, in cui $Z$ è il nodo radice, e $A$, $B$, $C$, $D$ ,$E$, ecc. sono i suoi figli.
+}
+
+
+L'idea è di considerare tutti gli itemsets che che finiscono con un certo suffisso $X$, ad esempio $EDCBA$.
+\begin{itemize}
+   \item Per ogni possibile evento finale, consideriamo gli itemset che finiscono uno degli eventi che lo precedono nell'ordinamento
+   \item e.g. per E, consideriamo tutti gli itemset che abbiano come item finale $D, C, B$ o $A$. In questo modo otteniamo tutti gli itemset che finiscono con $DE$, $CE$, $BE$ e $AE$. Per ognuno di questi itemset, otteniamo un FP-Tree condizionale, che rappresenta tutte le transazioni che contengono quell'itemset come suffisso. 
+   \item Procediamo ricorsivamente su ciascuno di questi FP-Tree condizionali, considerando come suffisso l'itemset che stiamo analizzando, e così via fino a quando non otteniamo itemset frequenti di lunghezza 1.
+\end{itemize}
+
+\begin{algorithm}
+\caption{FP-Growth Algorithm}
+\begin{algorithmic}[1]
+\State $\bar{X}$ = set di possibili suffissi nel FP-tree \footnote{Li otteniamo seguendo i puntatori della header table}
+\For{each suffix $X$}
+    \State \textbf{Fase 1:} Costruisci il trie per $X$ e calcola il supporto di $X$ usando i puntatori nell'header table
+    \If{$X$ is frequent}
+        \State \textbf{Fase 2:} Costruisci l'FP-tree \textit{condizionale} per $X$:
+        \State \quad 1. Ricalcola il supporto
+        \State \quad 2. Elimina gli item infrequenti
+        \State \quad 3. Elimina le foglie e ricorsione
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+Facendo un esempio discorsivo riprendendo il trie in \autoref{fig:08/trie2}.
+Consideriamo il suffisso $E$. I percorsi, seguendo una visita bottom-up, che terminano in $E$ sono $ACDE$, $ADE$ e $BCE$.
+A questo punto dobbiamo ricalcolare il supporto dei nodi che precedono $E$, contando solo le tre transazioni $ACDE$, $ADE$ e $BCE$. Possiamo eliminare i nodi foglia $E$ dall'albero.\\
+Tutti gli item nei prefissi di $E$ hanno supporto pari a 2, ad eccezione di $B$ che ha supporto 1, quindi eliminiamo $B$.
+A questo punto rimaniamo con i suffissi $DE$, $CE$, e $AE$.
+\note{Si considera anche $AE$ ($BE$ no perché $B$ è infrequente) nonostantenon appaia come suffisso nelle tre transazioni che terminano in $E$, perché stiamo esplorando l'albero degli itemset possibili.}
+Si considera prima $DE$, e ricordando che i nodi $E$ li avevamo già rimossi, possiamo ripetere il procedimento identico a prima ma usando $D$ invece di $E$. 
+Innanzitutto rimuoviamo i nodi che non hanno $D$ nel proprio subtree.
+Quindi, aggiorniamo il supporto dei nodi intermedi e rimuoviamo i nodi foglia $D$.
+Rimane solo il nodo, quindi sappiamo che $ADE$ è un itemset frequente.\\
+Si procede ugualmente per $CE$. 
+Ripartiamo dal conditional subtree di $E$, e rimuoviamo i nodi che non hanno $C$ nel proprio subtree, ricalcoliamo supporto e rimuoviamo i nodi foglia $C$. Rimane solo il nodo radice \verb|null| quindi nessun suffisso $CE$ è frequente.\\
+Infine, si considera $AE$.
+Ripartiamo dal conditional subtree di $E$, e rimuoviamo i nodi che non hanno $A$ nel proprio subtree, ricalcoliamo supporto e rimuoviamo i nodi foglia $A$. Rimane solo il nodo radice \verb|null| quindi nessun suffisso $AE$ è frequente.
+
+Notare che i sottoproblemi risolti a ogni iterazione sono disgiunti, perché ogni suffisso $X$ è considerato solo una volta, e quindi ogni itemset che termina con $X$ è considerato solo una volta, e quindi non c'è sovrapposizione tra i sottoproblemi risolti a ogni iterazione.
+
+\subsubsection{Is there a better items ordering? Why?}
+Come menzionato prima, il miglior ordinamento è quello su support decrescente, permette di avere meno nodi nell'albero, e quindi meno iterazioni.
 
 \subsection{CORELS}
 % - CORELS: nel search tree, relazione tra un nodo e i figli; riflesso sull’obiettivo di ottimizzazione. (x1)
 % - In the CORELS search tree, what relationships exist between a node and its children? How does this reflect on the optimization objective defined by CORELS?
+In CORELS (Certifiably Optimal RulE ListS) si modella una rule list come una tupla $R : (P_R,Y_R,y_R^0)$, rispettivamente premesse, output e default output.
+Il search tree di CORELS è un prefix tree (trie) in cui ogni nodo rappresenta una regola da aggiungere alla rule list, e ogni percorso dalla radice a una foglia rappresenta una rule list completa.
+Se una rule list $R$ è prefisso di una $R^+$, allora  $R \preceq R^+$, e quindi $R$ è più generale di $R^+$, perché $R$ ha meno regole di $R^+$, e quindi è più semplice, e quindi ha un costo minore secondo la funzione di costo definita da CORELS, che penalizza la complessità della rule list.
+
+Il punto chiave è che l'errore ---rispetto a un dataset etichettato $(X,Y)$--- è composta da due termini:
+\[
+l(R,X,Y) = \underbrace{supported}{l_R(R,X,Y)} + \underbrace{default}{l_0(R,X,Y)}
+\]
+Aggiungere regole può solo aumentare $l_R$, non può diminuirlo. Possono invece ridurre $l_0$, perché aggiungere regole può ridurre il numero di istanze classificate con l'etichetta di default, e quindi ridurre il costo associato a queste istanze.\\
+Quindi, se $R \preceq R^+$, allora $l_R(R,X,Y) \leq l_R(R^+,X,Y)$, perché $R$ è più generale di $R^+$.
+
+La funzione di Loss $L$ definita da CORELS vuole considerare sia l'errore che la complessità della rule list, e quindi è definita come:
+\[
+L(R,X,Y) = \underbrace{errore}_{l(R,X,Y)} + \underbrace{regolarizzazione\\complessità}_{\lambda \cdot k^R}
+\]
+\[
+   b(R,X,Y) = l_R(R,X,Y) + \lambda k^R \leq L(R,X,Y)\quad \text{Lower bound sulla loss per } R
+\]
+
+Per navigare e ridurre lo spazio di ricerca, CORELS considera il miglior modello attuale $R^C$ e la sua loss $L^C$, e anche una lista ottimale $R^*$ e la sua loss $L^*$.\\
+Vengono eliminati nodi che hanno un bound $b$ superiore a $b^C$, perché non possono portare a una rule list migliore di $R^C$.\\
+Inoltre, voglio tagliare anche i nodi con liste troppo lunghe: per un massimo di $\bar{r}$ regole, abbiamo la seguende relazione fra la lunghezza di $R^*$ e $R^C$ (l'attuale ottimo):
+\[k^{R^*} \leq min(\frac{L^C}{\lambda}, \bar{r})\]
+Questo ci permette di eliminare tutti i nodi a profondità maggiore di $max(\frac{L^C}{\lambda}, \bar{r})$, perché non possono portare a una rule list migliore di $R^C$.\\
+Si può anche eseguire pruning in base a un'accuracy minima che deve avere una nuova regola.
+
 
 
 \section{Classification}
@@ -511,12 +748,58 @@ Lo spazio delle funzioni può essere qualunque modello, lo spazio dei Decision T
 % - estrazione degli shapelets
 % Shapelet
 % - Shapelets: classificazione; estrazione degli shapelets; (se richiesto) uso di istogrammi. (x4)
+
+L'idea degli shapelet è di rappresentare una Time Series come un vettore di distanze da un insieme di sottosequenze rappresentative, chiamate shapelets.
+Gli shapelet hanno un potere descrittivo e disciminativo, ovvero essere descrivere bene una classe ed eventualmente distinguerla dalle altre. Sono particolarmente interessanti e robusti perché catturano feature locali.
+L'estrazione degli shapelet è un processo computazionalmente costoso, perché richiede di considerare tutte le possibili sottosequenze di tutte le Time Series del dataset, e di calcolare la distanza di ciascuna sottosequenza da tutte le Time Series del dataset, per poi selezionare quelle che hanno il potere descrittivo e discriminativo più elevato.\\
+Per ridurre la complessità computazionale, si possono utilizzare degli istogrammi per rappresentare la distribuzione delle distanze di ciascuna sottosequenza dalle Time Series del dataset, e poi selezionare solo le sottosequenze che hanno una distribuzione di distanze che è significativamente diversa tra le classi. In questo modo, si riduce il numero di sottosequenze da considerare, e si aumenta la probabilità di selezionare shapelet che sono realmente descrittivi e discriminativi.
+
+L'algoritmo, a macrostep è così composto:
+\begin{enumerate}
+   \item Generazione candidati di dimensioni \verb|(MINLEN,MAXLEN)| a partire dal dataset D
+   \item Per ogni candidato, si ottiene il \textit{gain} associato a quel candidato, che misura quanto quel candidato è descrittivo e discriminativo rispetto alle classi del dataset. Il gain è calcolato come la differenza tra l'entropia della distribuzione delle classi prima di considerare il candidato, e l'entropia della distribuzione delle classi dopo aver considerato il candidato, pesata per la proporzione di Time Series che sono vicine al candidato (ovvero, che hanno una distanza inferiore a una certa soglia).\\
+   \item Si seleziona il candidato con gain più elevato e si aggiunge alla lista degli shapelet selezionati.
+\end{enumerate}
+
 \subsubsection{How are Histogram used in Shapelet classification?}
+La generazione di candidati si fa facendo scorrere una finestra di size $l$ (inizialmente pari a \verb|MAXLEN| e poi fatta decrescere a ogni iterazione fino a \verb|MINLEN|) su tutte le Time Series del dataset, e considerando tutte le sottosequenze di size $l$ come candidati shapelet, aggiungendoli a un pool di candidati.\\
+A questo punto entrano in gioco gli istogrammi.
+Per ogni candidato $S$, viene eseguita la funzione \verb|CheckCandidate(D,S)|, la quale per ogni time series $T$ in $D$ ottiene la distanza $dist$ fra $T$ e $S$, e inserisce $T$ (non $dist$!!!)in un istogramma usando come chiave $dist$.
+Fatto questo, \verb|CheckCandidate| calcola l'information gain usando l'istogramma così costruito.\\
+\verb|CalculateInformationGain(hist)| innanzitutto trova fra le chiavi $dist$ dell'istogramma un punto di split ottimale $split_dist$ che massimizzi l'information gain (come lo faccia è a noi oscuro, userà la sfera di cristallo, o calcola il gain per tutti i possibili split (tutte le chiavi dell'istogramma)\dots).
+Dopodiché itera sui bin dell'istogramma, e tutte le TS a sinistra di $split_dist$ finiscono in un pool $D_1$ e tutte le TS a destra di $split_dist$ finiscono in un pool $D_2$. Si calcola l'entropia di $D_1$ e $D_2$, e si restituisce la differenza tra l'entropia di $D$ e la media pesata delle entropie di $D_1$ e $D_2$.
+
+\subsubsection{Possibili ottimizzazioni}
+Ci sono due possibili ottimizzazioni.
+\begin{itemize}
+   \item \textbf{Distance early abandoning}: ridurre la computazione della distanza fra una TS e un candidato shapelet. Si cerca di sovrapporre uno shapelet a una time series in cerca della migliore matching location per avere la distanza minima. Teniamo traccia della distanza minima trovata finora, e se durante il processo di sovrapposizione la distanza corrente supera la distanza minima, possiamo abbandonare il calcolo della distanza per quella TS, perché sappiamo che non sarà mai migliore della distanza minima trovata finora.
+   
+   Per capirlo meglio, dobbiamo ricordarci che $SubsequenceDist(T,S)$
+   
+
+   \item \textbf{Admissible Entropy Pruning}:
+   Non è necessario calcolare interamente l'information gain per tutti i candidati shapelet. Si può fare un calcolo parziale dell'entropia mantentendo un upper bound (i.e. l'entropia avendo assegnato a SX e DX 26 TS su 72 vale X, se tutte le rimanenti si distribuissero nel miglior modo possibile avrei entropia Y), e se questo upper bound è inferiore al gain del miglior shapelet trovato finora, allora possiamo abbandonare il calcolo dell'information gain per quel candidato shapelet.
+\end{itemize}
+
+
 % - classification with shapelets (say that histogram are used, they want it to be said)
 \subsection{Motif extraction}
 % - come si trovano i motif
 % - Motif discovery (time series): come si trovano; algoritmo di estrazione; differenza con shapelet. (x3)
 % - differenza tra shaplet e motif e algoritmo per estrarre i motif
+
+I motif sono sottosequenze che appaiono frequentemente in un dataset di Time Series, e che rappresentano pattern ricorrenti nei dati. A differenza degli shapelet, i motif non sono necessariamente descrittivi o discriminativi rispetto alle classi del dataset, ma sono semplicemente pattern ricorrenti che possono essere utili per l'analisi dei dati, ad esempio per identificare eventi comuni o per segmentare le Time Series in parti significative.
+
+I Motif li troviamo con il Matrix Profile, che è una vettore che contiene la distanza di ciascuna possibile sottosequenza di una Time Series dalla sottosequenza più vicina (della stessa Time Series). I motif sono identificati come coppie di sottosequenze che hanno una distanza minima nella Matrix Profile, ovvero sono le coppie di sottosequenze più simili tra loro.
+
+Per trovarli serve in input una lunghezza $m$ desiderata per i motif.
+Si estraggono tutte le sottosequenze di lunghezza $m$ di una time series con una sliding window, e poi si calcolano le distanze a coppie fra tali sottosequenze, e per ciascuna sottosequenza si mantiene solo la distanza minima dalla sua vicina più prossima.
+Il valore $i-esimo$ è la distanza fra la sottosequenza $T_i$ di $T$ e la sua vicina più prossima, ovvero la sottosequenza di $T$ che è più simile a $T_i$ (escludendo se stessa).\\
+Notare che questa relazione non è simmetrica, ovvero se $T_j$ è la vicina più prossima di $T_i$, non è detto che $T_i$ sia la vicina più prossima di $T_j$.
+Il MP ci permette di trovare il vicino più prossimo di ciascuna sottosequenza in tempo costante.
+
+\subsubsection{Come si calcola il Matrix Profile?}
+
 \subsubsection{Motif vs Shapelets}
 % TimeSeries Motif discovery
 \subsection{Fourier vs Wavelet representation}
