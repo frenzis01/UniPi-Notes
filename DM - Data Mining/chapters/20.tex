@@ -52,6 +52,19 @@ TODO
 No clue, many answers are possible\dots
 
 
+In caso si riferisca alla performance evaluation della classificazione, quando si hanno classi sbilanciate, metriche come l'accuracy potrebbero essere fuorvianti, perché un modello che predice sempre la classe maggioritaria potrebbe avere un'accuracy elevata, ma non essere in grado di identificare correttamente la classe minoritaria.\\
+Precision e recall (e F1-score) richiedono di considerare le classi separatamente (una positiva e l'altra negativa), e possono dare una valutazione più accurata delle prestazioni del modello su ciascuna classe, soprattutto quando le classi sono sbilanciate.\\
+Possiamo in generale calcolare metriche (inclusa  accuracy) su ciascuna classe separatamente, e poi fare una media pesata in base alla frequenza di ciascuna classe, per ottenere una valutazione complessiva delle prestazioni del modello che tenga conto dello sbilanciamento delle classi.\\
+Ricordiamo che 
+\begin{align*}
+   accuracy = \frac{TP+TN}{TP+TN+FP+FN} \quad \text{Quante cose giuste ho predetto}\\
+   recall = \frac{TP}{TP+FN} \quad \text{Quante cose positive ho predetto correttamente}\\
+   precision = \frac{TP}{TP+FP} \quad \text{Quante cose che ho predetto positive sono effettivamente positive}\\
+   F1-score = 2 \cdot \frac{precision \cdot recall}{precision + recall} \quad \text{Media armonica tra precision e recall}\\ \text{quante cose positive ho predetto correttamente, tenendo conto anche di quante cose positive ho predetto in totale}
+\end{align*}
+
+
+
 \subsection{UMAP and manifold learning}
 
 % - UMAP (data representation / manifold learning). (x1)
@@ -685,14 +698,14 @@ Se una rule list $R$ è prefisso di una $R^+$, allora  $R \preceq R^+$, e quindi
 
 Il punto chiave è che l'errore ---rispetto a un dataset etichettato $(X,Y)$--- è composta da due termini:
 \[
-l(R,X,Y) = \underbrace{supported}{l_R(R,X,Y)} + \underbrace{default}{l_0(R,X,Y)}
+l(R,X,Y) = \underbrace{l_R(R,X,Y)}{supported} + \underbrace{l_0(R,X,Y)}{default}
 \]
 Aggiungere regole può solo aumentare $l_R$, non può diminuirlo. Possono invece ridurre $l_0$, perché aggiungere regole può ridurre il numero di istanze classificate con l'etichetta di default, e quindi ridurre il costo associato a queste istanze.\\
 Quindi, se $R \preceq R^+$, allora $l_R(R,X,Y) \leq l_R(R^+,X,Y)$, perché $R$ è più generale di $R^+$.
 
 La funzione di Loss $L$ definita da CORELS vuole considerare sia l'errore che la complessità della rule list, e quindi è definita come:
 \[
-L(R,X,Y) = \underbrace{errore}_{l(R,X,Y)} + \underbrace{regolarizzazione\\complessità}_{\lambda \cdot k^R}
+L(R,X,Y) = \underbrace{l(R,X,Y)}_{errore} + \underbrace{\lambda \cdot k^R}_{regolarizzazione\\complessità}
 \]
 \[
    b(R,X,Y) = l_R(R,X,Y) + \lambda k^R \leq L(R,X,Y)\quad \text{Lower bound sulla loss per } R
@@ -737,8 +750,91 @@ Lo spazio delle funzioni può essere qualunque modello, lo spazio dei Decision T
 % - Decision Tree: come scegliere lo split (threshold o probability). (x1)
 % - how to split for DT (threshold or probability)
 
+Nei decision tree costruiamo un albero in cui ogni nodo rappresenta una condizione su una feature, e ogni foglia rappresenta una classe. Per costruire l'albero, dobbiamo scegliere quale feature utilizzare per lo split a ogni nodo, e quale soglia utilizzare per dividere i dati in base a quella feature.\\
+La scelta della feature e della soglia per lo split è cruciale per le prestazioni del decision tree, e ci sono diversi criteri che possiamo utilizzare per fare questa scelta, come l'information gain, il Gini impurity, o la mean squared error (per problemi di regressione).
+
+Prima di capire come viene scelta la feature e la condizione, è bene tenere presente che in generale possiamo avere degli split binari o multi-way, con leggere variazioni in base al tipo di attributo, che sia binario, nominale, ordinale o continuo (si attua discretizzazione per trasformarlo in attributo ordinale/categorico).
+
+Per scegliere il miglior split si individuano i nodi che hanno una distribuzione di classe pura (omogenea). Se avessimo due classi $C1$ e $C2$, un set di nodi con distribuzione di classe pura sarebbe un set di nodi in cui tutti i nodi contengono solo istanze di $C1$ o solo istanze di $C2$; la massima impurità invece si ha quando ogni nodo contiene un numero uguale di istanze di $C1$ e $C2$.\\
+Le misure dell'impurità sono il GINI index, l'entropia e il misclassification error
+\begin{align*}
+   GINI(t) = 1 - \sum_j[p(j|t)]^2\quad \max = (1 - \frac{1}{\textit{\#classes}}) \quad \min=0\\
+   Entropy(t) = -\sum_j p(j|t) \log_2 p(j|t)\quad \max = \log_2(\textit{\#classes}) \quad \min=0\\
+   MisclassificationError(t) = 1 - \max_j p(j|t)\quad \max = (1 - \frac{1}{\textit{\#classes}}) \quad \min=0
+\end{align*}
+A livello pratico si calcola la misura di impurità prima e dopo lo split. Se la differenza è positiva, allora abbiamo \textit{gain} e accettiamo lo split, altrimenti no.
+\subsubsection{GINI index}
+Nel caso del GINI index, se effettuiamo lo split di un nodo $p$ in $k$ partizioni (figli), il calcolo diventa
+\[
+   GINI_{split} = \sum_{i=1}^k \frac{N_i}{N} GINI(i)
+\]
+Per un efficiente calcolo del gini index e della miglior condizione di split, si tiene una count matrix per ciascun attributo di split. Si suddivide usando e ordinando tutti i valori dell'attributo che appaiono nei record. 
+Si selezionano delle posizioni di split che sono a metà strada fra due valori consecutivi, e si calcola il gini index per ciascuna di queste posizioni di split. Si seleziona la posizione di split che minimizza il gini index dopo lo split, ovvero che massimizza il gain.
+\subsubsection{Entropy}
+\[GAIN_{split} = Entropy(parent) - \sum_{i=1}^k \frac{N_i}{N} Entropy(i)\]
+L'entropia tende a preferire split che abbiano un grande numero di partizioni, ciascuna piccola ma pura. Per questo motivo si usa il $GainRATIO_{split}$ che normalizza il gain per il numero di partizioni, in modo da penalizzare split con molte partizioni. $SplitINFO$, nella formula sotto, rappresenta l'entropia del partizionamento.
+\[GainRATIO_{split} = \frac{{split}}{SplitINFO} \quad SplitINFO = -\sum_{i=1}^{k} \frac{N_i}{N} \log_2 \frac{N_i}{N}\]
+
+\subsubsection{Redundant attributes}
+I Decision Tree gestiscono implicitamente gli attributi ridondanti, perché se un attributo è ridondante rispetto a un altro, allora non fornisce alcuna informazione aggiuntiva per la classificazione, e quindi non viene selezionato come feature di split.
+
+\subsubsection{Missing Values}
+
+I valori mancanti presentano tre problematiche che vanno gestite:
+\begin{itemize}
+   \item Come calcolare le misure di impurità per scegliere lo split, se non abbiamo tutti i valori delle feature?\\
+   Per gestire i valori mancanti nella fase di training/costruzione ho tre soluzioni:
+   \begin{itemize}
+      \item \textbf{Probabilistic split} - Assegno un peso a ciascuna partizione in base alla proporzione di record che finiscono in quella partizione, e poi calcolo le misure di impurità pesate per ciascuna partizione. Ad esempio, se ho un nodo con 100 record, di cui 70 finiscono nella partizione A e 30 finiscono nella partizione B, allora assegno un peso di 0.7 alla partizione A e un peso di 0.3 alla partizione B, e calcolo le misure di impurità pesate per ciascuna partizione.
+      \begin{align*}
+         \#(Refund=yes) = 6 \quad \#(Refund=no) = 3\quad \#(Refund=missing) = 1\\
+         Entropy(Refund =Yes) = 0.0\\
+         Entropy(Refund = No) = -\frac{2}{6} \log_2 \frac{2}{6} - \frac{4}{6} \log_2 \frac{4}{6} = 0.9183\\
+         Entropy(Children) = 0.3 \cdot 0.0 + 0.6 \cdot 0.9183 = 0.551
+      \end{align*}
+      \item \textbf{Surrogate split} - Trovo un'altra feature che è altamente correlata con la feature di split originale, e utilizzo quella feature per calcolare le misure di impurità. Ad esempio, se la feature di split originale è l'età, e ho un'altra feature che è altamente correlata con l'età, come l'anno di nascita, allora posso utilizzare l'anno di nascita per calcolare le misure di impurità invece dell'età.
+      \item \textbf{Separate Class} - Tratto i valori mancanti come una classe separata, e calcolo le misure di impurità considerando i record con valori mancanti come appartenenti a una classe a parte. Ad esempio, se ho una feature che rappresenta il reddito, e alcuni record hanno un valore mancante per questa feature, posso trattare i record con valori mancanti come appartenenti a una classe separata, e calcolare le misure di impurità considerando questa classe separata.
+   \end{itemize}
+   \item Come assegnare un record con un valore mancante a una partizione dopo lo split, se la feature di split è quella con il valore mancante?\\
+   Anche in questo caso si può usare la probabilità nel conto delle classi.\\
+   \begin{figure}[htbp]
+      \centering
+      \begin{tikzpicture}[node distance=3cm,>=latex]
+         % root
+         \node[draw=blue,fill=yellow,thick,rounded corners,inner sep=6pt,font=\bfseries] (root) {Refund};
+         % children (tables)
+         \node[below left=1cm and 1cm of root] (left) {
+            \begin{tabular}{|l|c|}
+               \hline
+               \textbf{Class=Yes} & 0 + 3/9 \\ \hline
+               \textbf{Class=No}  & 3 \\ \hline
+            \end{tabular}
+            };
+            \node[below right=1cm and 1cm of root] (right) {
+               \begin{tabular}{|l|c|}
+                  \hline
+                  \textbf{Class=Yes} & 2 + 6/9 \\ \hline
+                  \textbf{Class=No}  & 4 \\ \hline
+               \end{tabular}
+               };
+               % arrows with labels
+               \draw[->,thick] (root.south west) to[bend right=18] node[midway,above left]{Yes} (left.north);
+               \draw[->,thick] (root.south east) to[bend left=18]  node[midway,above right]{No}  (right.north);
+            \end{tikzpicture}
+            \label{fig:20/missingAssignment}
+         \end{figure}
+   \item Come calcolare la previsione per un record con un valore mancante, se la feature di split è quella con il valore mancante?\\
+   Anche qui possiamo assegnare label con una certa probabilità.
+\end{itemize}
+
+
+
+
 \subsubsection{Threshold or Probability?}
 
+TODO non so a cosa si riferisca la domanda.
+
+Forse riguarda la possibiltà di usare un valore soglia come condizione per uno split e l'utilizzo di una probabilità quando invece sono presenti dati mancanti.
 
 
 \section{Time Series}
@@ -787,6 +883,7 @@ Ci sono due possibili ottimizzazioni.
 % - come si trovano i motif
 % - Motif discovery (time series): come si trovano; algoritmo di estrazione; differenza con shapelet. (x3)
 % - differenza tra shaplet e motif e algoritmo per estrarre i motif
+% TimeSeries Motif discovery
 
 I motif sono sottosequenze che appaiono frequentemente in un dataset di Time Series, e che rappresentano pattern ricorrenti nei dati. A differenza degli shapelet, i motif non sono necessariamente descrittivi o discriminativi rispetto alle classi del dataset, ma sono semplicemente pattern ricorrenti che possono essere utili per l'analisi dei dati, ad esempio per identificare eventi comuni o per segmentare le Time Series in parti significative.
 
@@ -795,23 +892,82 @@ I Motif li troviamo con il Matrix Profile, che è una vettore che contiene la di
 Per trovarli serve in input una lunghezza $m$ desiderata per i motif.
 Si estraggono tutte le sottosequenze di lunghezza $m$ di una time series con una sliding window, e poi si calcolano le distanze a coppie fra tali sottosequenze, e per ciascuna sottosequenza si mantiene solo la distanza minima dalla sua vicina più prossima.
 Il valore $i-esimo$ è la distanza fra la sottosequenza $T_i$ di $T$ e la sua vicina più prossima, ovvero la sottosequenza di $T$ che è più simile a $T_i$ (escludendo se stessa).\\
-Notare che questa relazione non è simmetrica, ovvero se $T_j$ è la vicina più prossima di $T_i$, non è detto che $T_i$ sia la vicina più prossima di $T_j$.
-Il MP ci permette di trovare il vicino più prossimo di ciascuna sottosequenza in tempo costante.
+Notare che questa relazione non è simmetrica, ovvero se $T_j$ è la vicina più prossima di $T_i$, non è detto che $T_i$ sia la vicina più prossima di $T_j$.\\
+Un'altra struttura, il \textbf{Matrix Profile Index}, ci dice l'indice della vicina più prossima di ciascuna sottosequenza, ovvero se $MP[i]$ è la distanza fra $T_i$ e la sua vicina più prossima, allora $MPI[i]$ è l'indice della sottosequenza che è la vicina più prossima di $T_i$.\\
+Il MP (e MPI) ci permette di trovare il vicino più prossimo, e la rispettiva distanza, di ciascuna sottosequenza in tempo costante.
 
 \subsubsection{Come si calcola il Matrix Profile?}
+Si inizializza un vettore Matrix Profile tutto a $+\infty$.
+Si sceglie una sottosequenza iniziale casuale $T_i$ di lunghezza $m$, e si calcolano tutte le distanze fra $T_i$ e tutte le altre sottosequenze di lunghezza $m$ di $T$ ($O(|T|log(|T|))$), posizionandole in un vettore delle distanze. 
+Nella posizione $j$ di $MP$ memorizziamo la distanza fra $T_i$ e $T_j$. Nella posizione $i$, ovvero la distanza fra $T_i$ e sé stessa, ci sarà $0$.\\
+A questo punto, si aggiorna il Matrix Profile facendo il minimo pairwise con il vettore delle distanze per $T_i$. Dove aggiorniamo un minimo, aggiorniamo anche il Matrix Profile Index con l'indice $i$, che è l'indice della sottosequenza che ha portato a quel minimo.\\
+Ripetiamo questo processo per tutte le sottosequenze di $T$, e alla fine avremo il Matrix Profile completo, che ci permette di identificare i motif come le coppie di sottosequenze che hanno la distanza minima nella Matrix Profile.
+
 
 \subsubsection{Motif vs Shapelets}
-% TimeSeries Motif discovery
+Un motif è un pattern che si ripete in una certa TS. Si può dire che abbia un certo potere descrittivo di una singola TS, ma non discriminativo, o non descrittivo su un set di TS.
+
+Uno shapelet è un pattern che è descrittivo e discriminativo per una classe di TS. È una feature locale che può essere usata per distinguere una classe di TS da un'altra classe di TS. Il motif è una feature locale, ma ristretta a una TS.
+
+
 \subsection{Fourier vs Wavelet representation}
 % Fourier e wavelets
 % - Fourier e wavelet representation: Fourier (phasor → ampiezza) e wavelet (rappresentazione multi-risoluzione). (x3)
+
+L'analisi di Fourier riguarda la rappresentazione di una Time Series periodica come somma di sinusoidi di frequenze diverse; in questi casi si parla di ``segnali''.
+Un fasore è una rappresentazione che associa a ciascuna frequenza una coppia di valori che rappresentano l'ampiezza e la fase della sinusoide corrispondente a quella frequenza. L'ampiezza di una sinusoide è data dalla lunghezza del fasore, mentre la fase è data dall'angolo del fasore rispetto all'asse reale.\\
+A un tempo $t$, avendo $f_0$ la frequenza del fasore, un fasore definisce una componente di un segnale in questo modo:
+\[
+s_t = 
+\underbrace{\alpha}_{\text{amplitude scaling}}
+\,
+\cos(
+\overbrace{2\pi f_0 t}^{\text{angle } \theta_{0,t}}
+\underbrace{+\phi}_{\text{shifting}}
+).
+\]
+
+La DFT (Discrete Fourier Transform) è una trasformazione che prende una sequenza di valori discreti (ad esempio, i campioni di una Time Series) e li trasforma in una sequenza di valori complessi che rappresentano le componenti di frequenza della sequenza originale.
+\nl
+
+La rappresentazione con Wavelet è profondamente diversa e si basa su brevi sottosequenze che posso essere scalate e traslate per rappresentare la Time Series a diverse risoluzioni temporali. La rappresentazione con Wavelet è particolarmente utile per analizzare segnali non stazionari, ovvero segnali che cambiano nel tempo, perché consente di catturare sia le componenti di frequenza che le variazioni temporali del segnale.\\
+Formalmente un wavelet è una funzione che ha media 0 e energia finita e che è localizzata nel tempo.
+
+Una mother wavelet $\psi_{K,T}$ definisce una famiglia di wavelet $\psi_{\kappa,\tau}$ che sono scalate ($\kappa$ è una frequenza, può shrinkare o stretchare la wavelet) e traslate (shift $\tau$) della mother wavelet.
+
 \subsubsection{How does a phasor define amplitude?}
 % - In Fourier analysis, how does a phasor define amplitude?
+Un fasore definisce l'ampiezza di una sinusoide come la lunghezza del fasore stesso. In altre parole, se abbiamo un fasore rappresentato come un vettore nel piano complesso, l'ampiezza della sinusoide corrispondente a quel fasore è data dalla distanza del punto rappresentato dal fasore dall'origine del piano complesso.
+
+Se il fasore è lungo un'unità, l'ampiezza picco-picco dipende dal fattore $\alpha$ che scala tutto.
+Come intende il professore, con ampiezza lui si riferisce al valore del segnale al momento $t$, Dunque
+\[
+s_t = \alpha \cos(2\pi f_o t + \phi)
+\]
+
+
+
 \subsection{Dynamic Time Warping}
 % - Dynamic Time Warping (DTW): uso per shapelet/classification; invarianza a time shifts e come limitarla a local shifts; definizione di “warp” (casi di allineamento). (x3)
 % - DTW come utilizzarlo per shapelet e classification
+
+Quando cerchiamo di capire se uno shapelet è rappresentativo di una classe dobbiamo compararlo con le varie TS nel dataset. Compararlo significa calcolare la distanza fra le varie sottosequenze di ciascuna TS e lo shapelet, e prendere la distanza minima.\\
+La distanza va calcolata come la differenza fra le distanze punto a punto fra lo shapelet e la sottosequenza in questione.
+Chiaramente, abbiamo un problema in caso lo shapelet e la sottosequenza abbiano lunghezze diverse, o diverse frequenze di sampling.
+
+Il Dynamic Time Warping (DTW) è una tecnica che consente di calcolare la distanza fra due sequenze temporali che possono avere lunghezze diverse o frequenze di sampling diverse, allineando le due sequenze in modo da minimizzare la distanza fra di esse.\\
+Il DTW funziona costruendo una matrice di costo cumulativo (!) in cui ogni elemento rappresenta la distanza fra un punto di una sequenza e un punto dell'altra sequenza, e poi cercando il percorso di allineamento che minimizza la somma dei costi lungo quel percorso. Il percorso di allineamento è chiamato ``warp'', e rappresenta la mappatura fra i punti delle due sequenze che minimizza la distanza fra di esse.
+
+Per il primo allineamento, il costo è banale, il primo elemento di una sequenza è allineato con il primo elemento dell'altra sequenza, e il costo è la distanza fra questi due elementi. Per gli altri, il costo è calcolato così:
+\begin{align*}
+   C^\Sigma(i,j) &= c^a_{i,j} + c^\Sigma_{i,j} =\\
+   &\underbrace{||l_i + u_j||_p}_{alignment cost} + \min{\underbrace{C^\Sigma(i-1,j-1)}_{No Warp},\underbrace{C^\Sigma(i-1,j)}_{Lower Warp}, \underbrace{C^\Sigma(i,j-1)}_{Upper Warp}}
+\end{align*}
+
 \subsubsection{Invariance of DTW to time shifts}
 % - Dynamic Time Warping is invariant to time shifts. In order to allow invariances to local shifts only, which solution can we apply?
+Il DTW è invariante a traslazioni lungo l'asse del tempo, nel senso che due segnali uguali ma traslati temporalmente avranno una distanza DTW pari a zero, perché il percorso di allineamento (warp) può semplicemente traslare una sequenza rispetto all'altra per allinearle perfettamente.\\
+Per limitare l'invarianza del DTW a traslazioni locali, si può utilizzare una finestra di Sakoe-Chiba, che limita il percorso di allineamento a una banda intorno alla diagonale della matrice di costo cumulativo. In questo modo, si consente solo un certo grado di traslazione temporale, e si evita che il DTW possa allineare due sequenze che sono molto shiftate ma che possono essere allineate traslando una sequenza rispetto all'altra.
 
 
 \section{XAI}
@@ -820,9 +976,59 @@ Il MP ci permette di trovare il vicino più prossimo di ciascuna sottosequenza i
 
 \subsection{SHAP}
 
+SHAP (SHapley Additive exPlanations) è un metodo di interpretabilità che si basa sui concetti di teoria dei giochi, in particolare sui valori di Shapley, per attribuire a ciascuna feature l'importanza che ha avuto nella predizione di un modello. 
+Lo Shapley value è un mezzo per distribuire in modo equo il guadagno totale di un gioco cooperativo tra i giocatori, tenendo conto del contributo marginale di ciascun giocatore a tutte le possibili coalizioni di giocatori. Nel contesto dell'interpretabilità dei modelli, i giocatori sono le feature del modello, e il guadagno totale è la predizione del modello per un certo input.\\
+SHAP calcola i valori di Shapley per ogni feature, che rappresentano la media ponderata dell'effetto marginale di quella feature sulla predizione del modello, considerando tutte le possibili combinazioni di feature. In questo modo, SHAP fornisce una spiegazione globale e coerente del comportamento del modello, e consente di identificare le feature più importanti per la predizione.
+
+
 \subsection{LIME}
 
+LIME (Local Interpretable Model-agnostic Explanations) è un metodo di interpretabilità che si concentra sulla spiegazione locale delle predizioni di un modello, ovvero cerca di spiegare la predizione del modello per un singolo input, piuttosto che fornire una spiegazione globale del comportamento del modello.\\
+LIME funziona creando un modello interpretabile (ad esempio, una regressione lineare o un albero decisionale) che approssima il comportamento del modello originale in un intorno locale dell'input che si vuole spiegare. Per fare questo, LIME genera un set di dati sintetici perturbando l'input originale, e poi addestra il modello interpretabile su questi dati sintetici, pesando ogni esempio in base alla sua vicinanza all'input originale. In questo modo, LIME fornisce una spiegazione interpretabile della predizione del modello per quell'input specifico, evidenziando le feature più importanti che hanno contribuito alla predizione.
+
 \subsection{LORE}
+
+LORE (LOcal Rule-based Explanations) è un metodo di interpretabilità che si basa sulla generazione di regole locali per spiegare le predizioni di un modello. LORE funziona creando un set di dati sintetici perturbando l'input originale, e poi addestra un modello interpretabile (ad esempio, una regressione lineare o un albero decisionale) su questi dati sintetici, pesando ogni esempio in base alla sua vicinanza all'input originale. In questo modo, LORE fornisce una spiegazione interpretabile della predizione del modello per quell'input specifico, evidenziando le feature più importanti che hanno contribuito alla predizione, e generando regole che descrivono il comportamento del modello in quell'intorno locale.
+
+% 01 Z = {}
+% 02 x instance to explain
+% 03 x’ = real2interpretable(x)
+% 04 for i in {1, 2, …, N}
+% 05 zi= sample_around(x’)
+% 06 z = interpretabel2real(z’)
+% 07 Z = Z ∪ {<zi, b(zi), d(x, z)>}
+% 08 w = solve_Lasso(Z, k)
+% 09 return w
+
+\begin{algorithm}
+\caption{LORE Algorithm}
+\begin{algorithmic}[1]
+\State $Z = \{\}$ \Comment{Set di dati sintetici}
+\State $x$ \Comment{Istanza da spiegare}
+\State $x' = real2interpretable(x)$ \Comment{Trasformazione dell'istanza in uno spazio interpretabile}
+\For{$i$ in $\{1, 2, \dots, N\}$}
+    \State $z_i = sample\_around(x')$ \Comment{Generazione di un'istanza sintetica perturbando $x'$}
+    \State $z = interpretable2real(z_i)$ \Comment{Trasformazione dell'istanza sintetica nello spazio reale}
+    \State $Z = Z \cup \{<z_i, b(z), d(x, z)>\}$ \Comment{Aggiunta dell'istanza sintetica al set di dati, con la predizione del modello $b(z)$ e la distanza da $x$}
+\EndFor
+\State $w = solve\_Lasso(Z, k)$ \Comment{Addestramento di un modello interpretabile (ad esempio, una regressione lineare) sui dati sintetici, pesando ogni esempio in base alla sua vicinanza a $x$}
+\State \textbf{return} $w$ \Comment{Restituzione dei pesi del modello interpretabile, che rappresentano l'importanza delle feature per la predizione del modello originale}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Stability and Faithfulness}
+
+Stability e Faithfulness sono due proprietà desiderabili per i metodi di interpretabilità dei modelli.\\
+La stabilità si riferisce alla coerenza delle spiegazioni fornite da un metodo di interpretabilità quando si applica a input simili. Un metodo di interpretabilità è considerato stabile se fornisce spiegazioni simili per input che sono vicini tra loro nello spazio delle feature. La stabilità è importante perché garantisce che le spiegazioni fornite dal metodo siano affidabili e non siano influenzate da piccoli cambiamenti nei dati di input.\\
+La fedeltà (faithfulness) si riferisce alla capacità di un metodo di interpretabilità di fornire spiegazioni che riflettano accuratamente il comportamento del modello originale. Un metodo di interpretabilità è considerato fedele se le spiegazioni che fornisce sono coerenti con le predizioni del modello originale, e se le feature che vengono evidenziate come importanti nelle spiegazioni sono effettivamente quelle che influenzano le predizioni del modello originale. La fedeltà è importante perché garantisce che le spiegazioni fornite dal metodo siano utili per comprendere il comportamento del modello, e non siano semplicemente artefatti o rumore.
+
+La stabilità si può calcolare misurando la similarità tra le spiegazioni fornite per input simili, ad 
+esempio utilizzando una metrica di distanza o di similarità tra le spiegazioni.\\
+Nel progetto, abbiamo 
+
+
+% La fedeltà si può calcolare misurando la correlazione tra le spiegazioni fornite e le predizioni del modello originale, ad esempio utilizzando una metrica di correlazione o di concordanza tra le spiegazioni e le predizioni del modello originale.
+Per calcolare la fedeltà nel progetto abbiamo provato rimuovendo le top 5 feature più importanti secondo le spiegazioni fornite da un metodo di interpretabilità, e poi abbiamo misurato l'accuratezza del modello originale sui dati di test dopo aver rimosso queste feature. Se l'accuratezza del modello originale diminuisce significativamente dopo aver rimosso le feature più importanti, allora possiamo concludere che le spiegazioni fornite dal metodo di interpretabilità sono fedeli, perché le feature evidenziate come importanti sono effettivamente quelle che influenzano le predizioni del modello originale.
 
 
 
