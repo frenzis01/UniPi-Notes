@@ -702,7 +702,7 @@ Se una rule list $R$ è prefisso di una $R^+$, allora  $R \preceq R^+$, e quindi
 
 Il punto chiave è che l'errore ---rispetto a un dataset etichettato $(X,Y)$--- è composta da due termini:
 \[
-l(R,X,Y) = \underbrace{l_R(R,X,Y)}{supported} + \underbrace{l_0(R,X,Y)}{default}
+l(R,X,Y) = \underbrace{l_R(R,X,Y)}_{supported} + \underbrace{l_0(R,X,Y)}_{default}
 \]
 Aggiungere regole può solo aumentare $l_R$, non può diminuirlo. Possono invece ridurre $l_0$, perché aggiungere regole può ridurre il numero di istanze classificate con l'etichetta di default, e quindi ridurre il costo associato a queste istanze.\\
 Quindi, se $R \preceq R^+$, allora $l_R(R,X,Y) \leq l_R(R^+,X,Y)$, perché $R$ è più generale di $R^+$.
@@ -736,7 +736,7 @@ Il bagging funziona bene con modelli ad alta varianza e basso bias, come i Decis
 
 Il campionamento con rimpiazzo (bootstrap) è importante perché consente di creare modelli indipendenti, addestrati su campioni diversi del dataset originale. Se si utilizzasse un campionamento senza rimpiazzo, i modelli sarebbero addestrati su campioni simili del dataset, e quindi  meno indipendenti, riducendo l'efficacia del bagging nel ridurre la varianza.
 
-Nelle isolation forest si applica bagging sia sulle feature che sulle istanze. Ogni albero dell'ensemble è addestrato su un campione casuale del dataset originale, e su un sottoinsieme casuale delle feature. Ogni albero sarà capace di catturare la complessità dei dati, e sarà anche troppo ``rumoroso'', eccessivamente adattato ai dati di addestramento, ma combinando più alberi, si ottiene una stima più robusta, riducendo la rumorosità ma mantenendo la specificità di ciascun albero, e quindi migliorando le prestazioni complessive dell'ensemble.
+Nelle random forest si applica bagging sia sulle feature che sulle istanze. Ogni albero dell'ensemble è addestrato su un campione casuale del dataset originale, e su un sottoinsieme casuale delle feature. Ogni albero sarà capace di catturare la complessità dei dati, e sarà anche troppo ``rumoroso'', eccessivamente adattato ai dati di addestramento, ma combinando più alberi, si ottiene una stima più robusta, riducendo la rumorosità ma mantenendo la specificità di ciascun albero, e quindi migliorando le prestazioni complessive dell'ensemble.
 
 \subsubsection{Boosting}
 Boosting crea delle ``soft/fuzzy'' bag. Invece di creare modelli indipendenti, il boosting crea una sequenza di modelli dipendenti, in cui ogni modello successivo cerca di correggere gli errori del modello precedente. In questo senso, i dati vengono sempre usati tutti, ma a ciascuna iterazione con pesi diversi.
@@ -770,7 +770,7 @@ A livello pratico si calcola la misura di impurità prima e dopo lo split. Se la
 \subsubsection{GINI index}
 Nel caso del GINI index, se effettuiamo lo split di un nodo $p$ in $k$ partizioni (figli), il calcolo diventa
 \[
-   GINI_{split} = \sum_{i=1}^k \frac{N_i}{N} GINI(i)
+   GAIN_{split} = GINI(parent) - \sum_{i=1}^k \frac{N_i}{N} GINI(i)
 \]
 Per un efficiente calcolo del gini index e della miglior condizione di split, si tiene una count matrix per ciascun attributo di split. Si suddivide usando e ordinando tutti i valori dell'attributo che appaiono nei record. 
 Si selezionano delle posizioni di split che sono a metà strada fra due valori consecutivi, e si calcola il gini index per ciascuna di queste posizioni di split. Si seleziona la posizione di split che minimizza il gini index dopo lo split, ovvero che massimizza il gain.
@@ -866,8 +866,8 @@ La generazione di candidati si fa facendo scorrere una finestra di size $l$ (ini
 A questo punto entrano in gioco gli istogrammi.
 Per ogni candidato $S$, viene eseguita la funzione \verb|CheckCandidate(D,S)|, la quale per ogni time series $T$ in $D$ ottiene la distanza $dist$ fra $T$ e $S$, e inserisce $T$ (non $dist$!!!)in un istogramma usando come chiave $dist$.
 Fatto questo, \verb|CheckCandidate| calcola l'information gain usando l'istogramma così costruito.\\
-\verb|CalculateInformationGain(hist)| innanzitutto trova fra le chiavi $dist$ dell'istogramma un punto di split ottimale $split_dist$ che massimizzi l'information gain (come lo faccia è a noi oscuro, userà la sfera di cristallo, o calcola il gain per tutti i possibili split (tutte le chiavi dell'istogramma)\dots).
-Dopodiché itera sui bin dell'istogramma, e tutte le TS a sinistra di $split_dist$ finiscono in un pool $D_1$ e tutte le TS a destra di $split_dist$ finiscono in un pool $D_2$. Si calcola l'entropia di $D_1$ e $D_2$, e si restituisce la differenza tra l'entropia di $D$ e la media pesata delle entropie di $D_1$ e $D_2$.
+\verb|CalculateInformationGain(hist)| innanzitutto trova fra le chiavi $dist$ dell'istogramma un punto di split ottimale $split_{dist}$ che massimizzi l'information gain (come lo faccia è a noi oscuro, userà la sfera di cristallo, o calcola il gain per tutti i possibili split (tutte le chiavi dell'istogramma)\dots).
+Dopodiché itera sui bin dell'istogramma, e tutte le TS a sinistra di $split_{dist}$ finiscono in un pool $D_1$ e tutte le TS a destra di $split_{dist}$ finiscono in un pool $D_2$. Si calcola l'entropia di $D_1$ e $D_2$, e si restituisce la differenza tra l'entropia di $D$ e la media pesata delle entropie di $D_1$ e $D_2$.
 
 \subsubsection{Possibili ottimizzazioni}
 Ci sono due possibili ottimizzazioni.
@@ -889,7 +889,7 @@ Ci sono due possibili ottimizzazioni.
 % - differenza tra shaplet e motif e algoritmo per estrarre i motif
 % TimeSeries Motif discovery
 
-I motif sono sottosequenze che appaiono frequentemente in un dataset di Time Series, e che rappresentano pattern ricorrenti nei dati. A differenza degli shapelet, i motif non sono necessariamente descrittivi o discriminativi rispetto alle classi del dataset, ma sono semplicemente pattern ricorrenti che possono essere utili per l'analisi dei dati, ad esempio per identificare eventi comuni o per segmentare le Time Series in parti significative.
+I motif sono sottosequenze che appaiono frequentemente in una Time Series, e che rappresentano pattern ricorrenti nei dati. A differenza degli shapelet, i motif non sono necessariamente descrittivi o discriminativi rispetto alle classi del dataset, ma sono semplicemente pattern ricorrenti che possono essere utili per l'analisi dei dati, ad esempio per identificare eventi comuni o per segmentare le Time Series in parti significative.
 
 I Motif li troviamo con il Matrix Profile, che è una vettore che contiene la distanza di ciascuna possibile sottosequenza di una Time Series dalla sottosequenza più vicina (della stessa Time Series). I motif sono identificati come coppie di sottosequenze che hanno una distanza minima nella Matrix Profile, ovvero sono le coppie di sottosequenze più simili tra loro.
 
@@ -1028,7 +1028,6 @@ La fedeltà (faithfulness) si riferisce alla capacità di un metodo di interpret
 
 La stabilità si può calcolare misurando la similarità tra le spiegazioni fornite per input simili, ad 
 esempio utilizzando una metrica di distanza o di similarità tra le spiegazioni.\\
-Nel progetto, abbiamo 
 
 
 % La fedeltà si può calcolare misurando la correlazione tra le spiegazioni fornite e le predizioni del modello originale, ad esempio utilizzando una metrica di correlazione o di concordanza tra le spiegazioni e le predizioni del modello originale.
