@@ -19,14 +19,14 @@ t-SNE funziona in due fasi principali:
    \item Fase di \textbf{Similarità}: nello spazio originale $\mathcal{X}$, quanto sono simili $x_i$ e $x_j$?\\
    La similarità è misurata convertendo la distanza Euclidea in una distribuzione di probabilità $P_{ij}$, che è simmetrica e normalizzata. Tipicamente si usa una distribuzione gaussiana centrata su $x_i$, con una varianza adattiva $\sigma_i$ (\textit{``perplexity''}) che è scelta in modo da mantenere un numero costante di vicini per ogni punto.\\
    Notare che la probabilità di vicinanza viene calcolata per ogni punto $x_i$, e la similarità fra $x_i$ e $x_j$, può avere valori diversi, perché dipende dalla varianza adattiva $\sigma_i$ e $\sigma_j$, che dipende dalla densità locale dei dati.\\
-   Per ottenere similarità simmetriche, quindi $P_{ij} = P_{ji}$, si impone che somma di tutte le probabilità ---di vicinanza con $x_j$--- sia 1, ovvero che $\sum_{i \neq j} P_{ij} = 1$ e che la probabilità di vicinanza sia la media, ovvero $P_{ij} = \frac{p_{ij} + p{ji}}{2}$.\\
+   Per ottenere similarità simmetriche, quindi $P_{ij} = P_{ji}$, si impone che somma di tutte le probabilità ---di vicinanza con $x_j$--- sia 1, ovvero che $\sum_{i \neq j} P_{ij} = 1$ e che la probabilità di vicinanza sia la media, ovvero $P_{ij} = \frac{p_{ij} + p_{ji}}{2}$.\\
    Questo permette di costruire una matrice di similarità simmetrica, che è più facile da gestire nella fase di embedding.
 
    In altre parole, $P_{ij}$ rappresenta la probabilità che $x_i$ e $x_j$ siano vicini nello spazio originale, e dipende dalla distanza tra i due punti e dalla varianza adattiva.
 
    \item Fase di \textbf{Embedding} (mappatura): 
    nello spazio mappato (a due/tre dimensioni) $\hat{\mathcal{X}}$, quanto sono simili $\hat{x}_i$ e $\hat{x}_j$?\\
-   Nello spazio a bassa dimensione $\mathcal{Y}$, t-SNE cerca di trovare una rappresentazione $\hat{x}_i$ per ogni punto $x_i$ in modo che le probabilità $Q_{ij}$ (ovvero la probabilità che $\hat{x}_i$ e $\hat{x}_j$ siano vicini nello spazio a bassa dimensione) siano il più simili possibile alle probabilità $P_{ij}$ nello spazio originale.\\
+   Nello spazio a bassa dimensione $\hat{\mathcal{X}}$, t-SNE cerca di trovare una rappresentazione $\hat{x}_i$ per ogni punto $x_i$ in modo che le probabilità $Q_{ij}$ (ovvero la probabilità che $\hat{x}_i$ e $\hat{x}_j$ siano vicini nello spazio a bassa dimensione) siano il più simili possibile alle probabilità $P_{ij}$ nello spazio originale.\\
    Questo viene fatto minimizzando la divergenza di Kullback-Leibler tra le due distribuzioni.
    \[C = \sum_i KL(P_i||Q_i) = \sum_i\sum_j p_{j|i} \log \frac{p_{j|i}}{q_{j|i}}\]
 
@@ -100,7 +100,7 @@ Gli step principali, a grandi linee, sono:
    \item Si calcolano gli autovettori $V$ e gli autovalori della matrice di covarianza dei dati centrati $\bar{X}$. La matrice di covarianza $\bar{\Sigma}$ è data da $\frac{1}{n-1} \bar{X}^T \bar{X}$, dove $n$ è il numero di campioni.
    \item Per eseguire la proiezione dei dati nello spazio delle componenti principali ci serve $V^T$ la trasposizione di $V$.
    Gli autovettori $V$ sono ordinati in base agli autovalori, in modo che le prime colonne di $V$ corrispondano alle componenti principali che catturano la maggior parte della varianza dei dati.
-   \item Otteniamo i dati proiettati $\hat{X} = V^T\bar{X}$
+   \item Otteniamo i dati proiettati $\hat{X} = V^T\bar{X}$, sapendo che sulla matrice $\hat{\Sigma}$ dei dati proiettati, avremo una matrice diagonale con gli autovalori sulla diagonale rappresentando la varianza catturata da ciascuna componente principale, e quindi le componenti principali sono ortogonali tra loro e non sono correlate.
 \end{enumerate}
 
 \subsubsection{What does the matrix $\bar{\Sigma}$ (covariance matrix) represent?}
@@ -158,8 +158,9 @@ Inoltre, in caso di dati ad alta dimensionalità, il test di Grubbs potrebbe non
 % - Outlier/anomaly detection: manifold ("manyfold"/UMAP), density (mixture models) e neighborhood-based methods (LOF). (x4)
 
 \begin{paracol}{2}
-   
+   \colfill
    Mentre gli approcchi basati su distribuzione definiscono gli outlier come punti che si discostano significativamente dalla distribuzione dei dati, gli approcci basati su manifold definiscono gli outlier come punti che si discostano significativamente dalla struttura del manifold su cui i dati sono distribuiti. In altre parole, un punto è considerato un outlier se non appartiene al manifold che rappresenta la struttura dei dati, o se è lontano da questo manifold.
+   \colfill
 
    \switchcolumn
 
@@ -225,9 +226,9 @@ L'elemento $A_{ij}$ rappresenta l'indice del $j^{th}$ vicino di $i$. La matrice 
 
 La posting matrix ci permette di avere tre possibili meccanismi di identificazione degli outlier:
 \begin{itemize}
-   \item \textbf{Hub} - un punto è un hub (inlier) se è almeno il $t^{th}$ vicino di almeno $k$ istanze
-   \item \textbf{Popularity} - un punto è popolare (inlier) se è in media almeno il $t^{th}$ 
-   \item \textbf{Ostracism} - un punto è un ostracismo (outlier) se è al massimo il $t^{th}$ vicino di al massimo $k$ istanze
+   \item \textbf{Hub} - un punto è un hub (inlier) se è al massimo il $t^{th}$ vicino di almeno $k$ istanze
+   \item \textbf{Popularity} - un punto è popolare (inlier) se è in media al massimo il $t^{th}$ 
+   \item \textbf{Ostracism} - un punto è un ostracismo (outlier) se è almeno il $t^{th}$ vicino di altre $k$ istanze
 \end{itemize}
 
 Per usare invece \textbf{concentrazione} possiamo transire da una matrice di connettività a una matrice di distanza. È importante ordinare la matrice di distanza in modo che $D_{ij}$ rappresenti la distanza tra il punto $i$ e il suo $j^{th}$ vicino, e non la distanza tra il punto $i$ e il punto $j$. 
@@ -263,7 +264,7 @@ A_{\gamma} \cdot \begin{bmatrix}
 \end{bmatrix}
 \]
 
-Definiamo il \textbf{Reach Ratio Factor} come il rapporto fra la gittata media al $k^{th}$ vicino di due istanze $x$ e $y$:
+Definiamo il \textbf{Reach Ratio Factor} come il rapporto fra la gittata media al $k^{th}$ vicino di due istanze $x_i$ e $x_j$:
 \[
    \tilde{o}^k_{i,j} = \frac{\bar{\gamma}^k(x_i)}{\bar{\gamma}^k(x_j)}
 \]
@@ -327,8 +328,10 @@ Diversamente da altri casi, minore è il valore di $\tilde{o}^t$, più è probab
 L'Isolation Forest è un ensemble di Isolation Tree, e l'outlier score di un punto $x_i$ è dato dalla media degli outlier score calcolati su ciascun albero dell'ensemble. L'idea è che, combinando più alberi, si ottiene una stima più robusta dell'outlier score, e si riduce la varianza del modello.
 Formalmente,
 \[
-\tilde{o}(x_i) = 2 \frac{\sum_{t\in T}path(x_i,t)}{|T|c}
+\tilde{o}(x_i) = 2^{-\frac{\sum_{t\in T}path(x_i,t)}{|T|c}}
 \]
+
+Notare che questo score è sempre compreso fra 0 e 1, e che più è prossimo a 1, più è probabile che l'istanza sia un outlier. Se è invece prossimo a 0, è più probabile che l'istanza sia prossima alla lunghezza media attesa per i punti normali.
 
 
 \section{Clustering}
@@ -343,7 +346,7 @@ K-Means è un algoritmo di clustering che mira a partizionare un dataset in $k$ 
 
 Consideriamo la funzione di costo (o goodness, vista al contrario) di K-Means, che è data da:
 \begin{align*}
-   SSE(s,s_c) = \sum_{i=1}^n (d_i, s_c)^2\\
+   SSE(c,s_c) = \sum_{i=1}^n (d_i, s_c)^2\\
    G(C,s) = \sum_{c \in C} SSE(c,s_c)
 \end{align*}
 Con $s$ che rappresenta i centroidi dei cluster, $s_c$ che rappresenta il centroide del cluster $c$, e $d_i$ che rappresenta un punto del dataset. La funzione di costo $G(C,s)$ misura la somma dei quadrati delle distanze tra i punti e i centroidi dei cluster, e l'obiettivo di K-Means è minimizzare questa funzione di costo.
@@ -471,7 +474,7 @@ L'approccio segue due step:
 
 Per trovare efficientemente tutti gli itemset frequenti, si usa l'Apriori principle, che afferma che se un itemset è frequente, allora tutti i suoi sottoinsiemi sono frequenti. Questo ci permette di ridurre lo spazio di ricerca, perché possiamo escludere tutti gli itemset che contengono un itemset non frequente.
 \[
-\forall X,Y : (X\subseteq Y)
+\forall X,Y : (X\subseteq Y) \Rightarrow (s(Y) \leq s(X))
 \]
 Il supporto di un itemset $Y$ è sempre minore o uguale al supporto di un suo sottoinsieme $X$, perché ogni transazione che contiene $Y$ contiene anche $X$. Quindi, se $Y$ è frequente, allora $X$ deve essere frequente, e se $X$ non è frequente, allora $Y$ non può essere frequente.
 
@@ -621,8 +624,8 @@ Per min-gap e max-span non c'è problema, perché rimuovere un evento da una seq
 Per porre rimedio, si utilizza la nozione di \textbf{sottosequenze contigue}.
 $s$ è una sottosequenza contigua di $w = \langle e_1 \rangle \langle e_2 \rangle \dots \langle e_k \rangle$ se una delle seguenti condizioni è soddisfatta:
 \begin{itemize}
-   \item $s$ è ottenuta da $w$ cancellando un evento da $e_1$ o da $e_k$. Ad esempio, se $w = \langle\{A\},\{B\}\{C\}\angle$, allora $s = \langle\{B\}\{C\}\rangle$ è una sottosequenza contigua di $w$, perché si ottiene cancellando l'evento $A$ da $e_1$.
-   \item $s$ è ottenuta da $w$ cancellando un evento da un elemento $e_i$ che contiene almeno 2 eventi. Ad esempio, se $w = \langle\{A,B\}\{C\}\angle$, allora $s = \langle\{A\}\{C\}\rangle$ è una sottosequenza contigua di $w$, perché si ottiene cancellando l'evento $B$ da $e_1$.
+   \item $s$ è ottenuta da $w$ cancellando un evento da $e_1$ o da $e_k$. Ad esempio, se $w = \langle\{A\},\{B\}\{C\}\rangle$, allora $s = \langle\{B\}\{C\}\rangle$ è una sottosequenza contigua di $w$, perché si ottiene cancellando l'evento $A$ da $e_1$.
+   \item $s$ è ottenuta da $w$ cancellando un evento da un elemento $e_i$ che contiene almeno 2 eventi. Ad esempio, se $w = \langle\{A,B\}\{C\}\rangle$, allora $s = \langle\{A\}\{C\}\rangle$ è una sottosequenza contigua di $w$, perché si ottiene cancellando l'evento $B$ da $e_1$.
    \item $s$ è una sottosequenza contigua di $s'$ e $s'$ è una sottosequenza contigua di $w$. 
 \end{itemize}
 
@@ -648,7 +651,7 @@ L'FP-Tree è costruito in due passaggi:
 
 L'idea è di considerare tutti gli itemsets che che finiscono con un certo suffisso $X$, ad esempio $EDCBA$.
 \begin{itemize}
-   \item Per ogni possibile evento finale, consideriamo gli itemset che finiscono uno degli eventi che lo precedono nell'ordinamento
+   \item Per ogni possibile evento finale, consideriamo gli itemset che finiscono con uno degli eventi che lo precedono nell'ordinamento
    \item e.g. per E, consideriamo tutti gli itemset che abbiano come item finale $D, C, B$ o $A$. In questo modo otteniamo tutti gli itemset che finiscono con $DE$, $CE$, $BE$ e $AE$. Per ognuno di questi itemset, otteniamo un FP-Tree condizionale, che rappresenta tutte le transazioni che contengono quell'itemset come suffisso. 
    \item Procediamo ricorsivamente su ciascuno di questi FP-Tree condizionali, considerando come suffisso l'itemset che stiamo analizzando, e così via fino a quando non otteniamo itemset frequenti di lunghezza 1.
 \end{itemize}
@@ -657,8 +660,9 @@ L'idea è di considerare tutti gli itemsets che che finiscono con un certo suffi
 \caption{FP-Growth Algorithm}
 \begin{algorithmic}[1]
 \State $\bar{X}$ = set di possibili suffissi nel FP-tree \footnote{Li otteniamo seguendo i puntatori della header table}
+\State Costruisci il trie
 \For{each suffix $X$}
-    \State \textbf{Fase 1:} Costruisci il trie per $X$ e calcola il supporto di $X$ usando i puntatori nell'header table
+    \State \textbf{Fase 1:} calcola il supporto di $X$ usando i puntatori nell'header table
     \If{$X$ is frequent}
         \State \textbf{Fase 2:} Costruisci l'FP-tree \textit{condizionale} per $X$:
         \State \quad 1. Ricalcola il supporto
@@ -678,7 +682,7 @@ A questo punto rimaniamo con i suffissi $DE$, $CE$, e $AE$.
 Si considera prima $DE$, e ricordando che i nodi $E$ li avevamo già rimossi, possiamo ripetere il procedimento identico a prima ma usando $D$ invece di $E$. 
 Innanzitutto rimuoviamo i nodi che non hanno $D$ nel proprio subtree.
 Quindi, aggiorniamo il supporto dei nodi intermedi e rimuoviamo i nodi foglia $D$.
-Rimane solo il nodo, quindi sappiamo che $ADE$ è un itemset frequente.\\
+Rimane solo il nodo $A$, quindi sappiamo che $ADE$ è un itemset frequente.\\
 Si procede ugualmente per $CE$. 
 Ripartiamo dal conditional subtree di $E$, e rimuoviamo i nodi che non hanno $C$ nel proprio subtree, ricalcoliamo supporto e rimuoviamo i nodi foglia $C$. Rimane solo il nodo radice \verb|null| quindi nessun suffisso $CE$ è frequente.\\
 Infine, si considera $AE$.
